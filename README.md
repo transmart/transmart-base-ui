@@ -4,6 +4,10 @@ Boilerplate code for tranSMART UI
 ## Pre-requisites
 Install the required tools: `yo`, `gulp`, `bower`
 
+```
+npm install -g yo gulp bower
+```
+
 ### Use Gulp tasks
 
 * `gulp` or `gulp build` to build an optimized version of your application in `/dist`
