@@ -2,13 +2,26 @@
 Boilerplate code for tranSMART UI
 
 ## Pre-requisites
-Install the required tools: `yo`, `gulp`, `bower`
+Make sure you have npm installed
+https://docs.npmjs.com/getting-started/installing-node
 
+## Usage
+Run following from the project root
+
+- Install tools
 ```
-npm install -g yo gulp bower
+$ npm install 
+```
+- Install libs
+```
+$ bower install 
+```
+- Launch browser
+```
+$ gulp serve
 ```
 
-### Use Gulp tasks
+### Use More Gulp tasks
 
 * `gulp` or `gulp build` to build an optimized version of your application in `/dist`
 * `gulp serve` to launch a browser sync server on your source files
