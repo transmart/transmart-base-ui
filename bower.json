@@ -2,6 +2,7 @@
   "name": "transmartBaseUi",
   "version": "0.0.0",
   "dependencies": {
+    "angular-smart-table" : "2.0.1",
     "angular-animate": "~1.3.4",
     "angular-cookies": "~1.3.4",
     "angular-touch": "~1.3.4",
