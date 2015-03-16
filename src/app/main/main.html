@@ -1,17 +1,64 @@
 <div class="container">
-
+  <!-- Navigator -->
   <div ng-include="'components/navbar/navbar.html'"></div>
 
+  <!-- Alert -->
+  <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
+
+  <!-- Selected Study Panel -->
+  <div class="panel panel-primary" ng-show="selectedStudy.panel.isDisplayed">
+    <div class="panel-heading">
+      <button class="close"class="pull-left" ng-click="closeConceptsPanel()">&times;</button>
+      <h3 class="panel-title">Concepts of {{selectedStudy.title}}</h3>
+    </div>
+    <div class="panel-body">
+      <table class="table table-striped">
+        <thead>
+        <tr>
+          <th>Name</th>
+          <th>Key</th>
+          <th>Fullname</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="ontology_term in selectedStudy.obj.ontology_terms">
+          <td>{{ontology_term.name | uppercase}}</td>
+          <td>{{ontology_term.key}}</td>
+          <td>{{ontology_term.fullName}}</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Study List Panel -->
   <div class="panel panel-default">
     <div class="panel-body">
-      Welcome to TranSMART UI!
+      <table class="table table-striped">
+        <thead>
+        <tr>
+          <th>Study ID</th>
+          <th>Name</th>
+          <th>Key</th>
+          <th>Fullname</th>
+          <th>#</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="study in studies">
+          <td>{{study.id}}</td>
+          <td>{{study.ontologyTerm.name | uppercase}}</td>
+          <td>{{study.ontologyTerm.key}}</td>
+          <td>{{study.ontologyTerm.fullName}}</td>
+          <td><a href="#" ng-click="getStudyConcepts('{{study.id}}')">Details</a></td>
+        </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 
   <hr>
 
-  <div class="footer">
-    <p> {{version}} | <a href="http://transmartfoundation.org/">TranSMART Foundation &copy; 2015 </a></p>
-  </div>
-
+  <!-- Footer -->
+  <div ng-include="'components/footer/footer.html'"></div>
 </div>

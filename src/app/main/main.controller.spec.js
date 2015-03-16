@@ -1,22 +1,38 @@
 'use strict';
 
-describe('controllers', function(){
-  var scope;
-
+describe('MainCtrl', function () {
   beforeEach(module('transmartBaseUi'));
 
-  beforeEach(inject(function($rootScope) {
-    scope = $rootScope.$new();
+  var $controller;
+
+  beforeEach(inject(function (_$controller_) {
+    // The injector unwraps the underscores (_) from around the parameter names when matching
+    $controller = _$controller_;
   }));
 
-  it('should define more than 5 awesome things', inject(function($controller) {
-    expect(scope.awesomeThings).toBeUndefined();
+  describe('MainPage', function () {
+    var $scope, controller;
 
-    $controller('MainCtrl', {
-      $scope: scope
+    beforeEach(function () {
+      $scope = {};
+      controller = $controller('MainCtrl', {$scope: $scope});
     });
 
-    expect(angular.isArray(scope.awesomeThings)).toBeTruthy();
-    expect(scope.awesomeThings.length > 5).toBeTruthy();
-  }));
+    it('removes alert when alert is closed', function () {
+      $scope.alerts.push({type: 'success', msg: 'Successfully connected to rest-api'});
+      $scope.closeAlert();
+      expect($scope.alerts.length).toBeLessThan(1);
+    });
+
+    it('sets displayed to false when concept panel is closed', function () {
+      $scope.selectedStudy.panel.isDisplayed = true;
+      $scope.closeConceptsPanel();
+      expect($scope.selectedStudy.panel.isDisplayed).toBeFalsy();
+    });
+
+  });
+
+  // TODO: Unit tests for rest-api call
+
+
 });
