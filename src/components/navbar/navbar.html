@@ -5,24 +5,20 @@
         <span class="glyphicon glyphicon-home"></span>
       </a>
     </div>
-
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-6">
       <ul class="nav navbar-nav">
         <li class="active"><a ng-href="#">Main</a></li>
-        <li class="" dropdown on-toggle="toggled(open)">
-          <a href="#"  class="dropdown-toggle" dropdown-toggle> Second</a>
-          <ul class="dropdown-menu">
-            <li ng-repeat="choice in items">
-              <a href>{{choice}}</a>
-            </li>
-          </ul>
-        </li>
-        <li class=""><a ng-href="#">Third</a></li>
-        <li class=""><a ng-href="#">Forth</a></li>
       </ul>
 
       <ul class="nav navbar-nav navbar-right">
-        <li>Current date: {{ date | date:'yyyy-MM-dd' }}</li>
+        <li class="" dropdown on-toggle="toggled(open)">
+          <a href="#"  class="dropdown-toggle" dropdown-toggle> My Account</a>
+          <ul class="dropdown-menu">
+            <li ng-repeat="usermenu in usermenus">
+              <a href="#" ng-click="{{usermenu.action + '()'}}">{{usermenu.label}}</a>
+            </li>
+          </ul>
+        </li>
         <li><a ng-href="#"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span> Help</a></li>
       </ul>
     </div>
