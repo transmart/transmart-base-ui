@@ -1,64 +1,61 @@
-<div class="container">
-  <!-- Navigator -->
-  <div ng-include="'components/navbar/navbar.html'"></div>
+<div class="container-fluid">
 
-  <!-- Alert -->
-  <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
 
-  <!-- Selected Study Panel -->
-  <div class="panel panel-primary" ng-show="selectedStudy.panel.isDisplayed">
-    <div class="panel-heading">
-      <button class="close"class="pull-left" ng-click="closeConceptsPanel()">&times;</button>
-      <h3 class="panel-title">Concepts of {{selectedStudy.title}}</h3>
-    </div>
-    <div class="panel-body">
-      <table class="table table-striped">
-        <thead>
-        <tr>
-          <th>Name</th>
-          <th>Key</th>
-          <th>Fullname</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr ng-repeat="ontology_term in selectedStudy.obj.ontology_terms">
-          <td>{{ontology_term.name | uppercase}}</td>
-          <td>{{ontology_term.key}}</td>
-          <td>{{ontology_term.fullName}}</td>
-        </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
+  <div class="row">
 
-  <!-- Study List Panel -->
-  <div class="panel panel-default">
-    <div class="panel-body">
-      <table class="table table-striped">
-        <thead>
-        <tr>
-          <th>Study ID</th>
-          <th>Name</th>
-          <th>Key</th>
-          <th>Fullname</th>
-          <th>#</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr ng-repeat="study in studies">
-          <td>{{study.id}}</td>
-          <td>{{study.ontologyTerm.name | uppercase}}</td>
-          <td>{{study.ontologyTerm.key}}</td>
-          <td>{{study.ontologyTerm.fullName}}</td>
-          <td><a href="#" ng-click="getStudyConcepts('{{study.id}}')">Details</a></td>
-        </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
+    <!--Side Bar-->
+    <div ng-include="'app/main/sidebar/sidebar.html'"></div>
 
-  <hr>
+    <!--Main-->
+    <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
 
-  <!-- Footer -->
-  <div ng-include="'components/footer/footer.html'"></div>
+      <!-- Alert -->
+      <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
+
+      <!--Welcome-->
+      <div ng-include="'app/main/welcome.html'" ng-show="!selectedStudy.title"></div>
+
+      <!--Selected Study-->
+      <div ng-show="selectedStudy.title">
+        <h2>{{selectedStudy.title}}</h2>
+
+        <tabset ng-show="selectedStudy.panel.isDisplayed">
+          <tab heading="Summary">
+            <div class="row">
+              <div class="col-md-1">
+                <div id='gender-pie-chart' ng-show="!dataLoading"></div>
+                <img ng-if="dataLoading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
+              </div>
+            </div>
+          </tab>
+          <tab heading="Grid">
+            <!-- Selected Study Panel -->
+            <img ng-if="dataLoading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
+            <table class="table table-striped" ng-show="!dataLoading">
+              <thead>
+              <tr>
+                <th>ID</th>
+                <th>Sex</th>
+                <th>Age</th>
+                <th>Race</th>
+                <th>TrialID</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr ng-repeat="item in selectedStudy.obj">
+                <td>{{item._embedded.subject.id}}</td>
+                <td>{{item._embedded.subject.sex}}</td>
+                <td>{{item._embedded.subject.age}}</td>
+                <td>{{item._embedded.subject.race}}</td>
+                <td>{{item._embedded.subject.inTrialId}}</td>
+              </tr>
+              </tbody>
+            </table>
+          </tab>
+        </tabset>
+      </div>
+
+    </div> <!--end main-->
+  </div> <!--end row-->
+
 </div>

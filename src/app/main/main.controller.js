@@ -4,6 +4,8 @@ angular.module('transmartBaseUi')
   .controller('MainCtrl',
   ['$scope', 'Restangular', function ($scope, Restangular) {
 
+    $scope.dataLoading = false;
+
     $scope.alerts = [];
 
     $scope.selectedStudy = {
@@ -14,20 +16,37 @@ angular.module('transmartBaseUi')
       }
     };
 
-    Restangular.all('studies').getList()
-      .then(function (studies) {
-        $scope.alerts.push({type: 'success', msg: 'Successfully connected to rest-api'});
-        $scope.studies = studies;
-      }, function (err) {
-        $scope.alerts.push({type: 'danger', msg: 'Oops! Cannot connect to rest-api.'});
-        console.error(err);
-      });
+    $scope.getStudyConcepts = function (studyLink, studyId) {
 
-    $scope.getStudyConcepts = function (studyId) {
+      var t = studyLink.substr(1);
+      $scope.dataLoading = true;
 
-      $scope.selectedStudy.obj = ($scope.studies.one(studyId).one('concepts').get()).$object;
-      $scope.selectedStudy.title = studyId;
-      $scope.selectedStudy.panel.isDisplayed = true;
+      Restangular.one(t + '/concepts/ROOT/observations').get()
+        .then(function (d) {
+
+          $scope.selectedStudy.obj = d._embedded['observations'];
+          $scope.displayedCollection = [].concat($scope.selectedStudy.obj);
+          $scope.selectedStudy.title = studyId;
+          $scope.selectedStudy.panel.isDisplayed = true;
+
+          var genderPieChart = dc.pieChart("#gender-pie-chart");
+
+          var ndx = crossfilter($scope.selectedStudy.obj),
+              sexDimension = ndx.dimension(function(d) {return d._embedded.subject.sex;}),
+              sexGroup = sexDimension.group();
+
+          genderPieChart
+            .width(400)
+            .height(200)
+            .innerRadius(0)
+            .dimension(sexDimension)
+            .group(sexGroup)
+            .legend(dc.legend());
+
+          genderPieChart.render();
+
+          $scope.dataLoading = false;
+        });
 
     };
 

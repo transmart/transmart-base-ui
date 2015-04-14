@@ -1,0 +1,48 @@
+<div class="col-sm-3 col-md-2 sidebar" ng-controller="SidebarCtrl">
+  <accordion close-others="oneAtATime">
+    <accordion-group heading=" Highlights" is-open="status.isFirstOpen" is-disabled="status.isFirstDisabled">
+      Browse studies by clicking study header below.
+    </accordion-group>
+    <accordion-group ng-repeat="study in studies"
+                     ng-click="getStudyConcepts('{{study._links.self.href}}', '{{study._embedded.ontologyTerm.name}}')">
+      <accordion-heading>
+        {{study._embedded.ontologyTerm.name}}
+      </accordion-heading>
+      <div>
+        {{study.id}} <br>
+        {{study._embedded.ontologyTerm.name | uppercase}} <br>
+        {{study._embedded.ontologyTerm.fullName}}
+      </div>
+    </accordion-group>
+    <accordion-group>
+      <accordion-heading>
+        Resources
+      </accordion-heading>
+
+      <ul>
+        <li><a href="http://localhost:8080/transmart-rest-api/" tooltip="http://localhost:8080/transmart-rest-api/">Local</a></li>
+      </ul>
+
+      <br>
+
+      <form name="form" ng-submit="login()" role="form">
+        <div class="form-group">
+          <input type="text" class="form-control input-sm" placeholder="Title">
+        </div>
+        <div class="input-group input-group form-group">
+          <span class="input-group-addon" id="sizing-addon1">http://</span>
+          <input type="text" class="form-control input-sm" placeholder="Resource" aria-describedby="sizing-addon1">
+        </div>
+        <div class="form-group">
+          <input type="text" class="form-control input-sm" placeholder="Client ID">
+        </div>
+        <div class="form-group">
+          <input type="text" class="form-control input-sm" placeholder="Client Secret">
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Add Resource</button>
+        </div>
+      </form>
+    </accordion-group>
+  </accordion>
+</div>
