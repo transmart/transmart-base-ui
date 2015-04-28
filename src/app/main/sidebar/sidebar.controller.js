@@ -2,8 +2,8 @@
 
 angular.module('transmartBaseUi')
   .controller('SidebarCtrl',
-  ['$scope', 'Restangular', 'endpointService',
-  function ($scope, Restangular, endpointService) {
+  ['$scope', 'endpointService',
+  function ($scope, endpointService) {
 
     $scope.formData = {};
 

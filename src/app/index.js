@@ -11,8 +11,8 @@ angular.module('transmartBaseUi', [
   'restangular'
 ])
 
-  .config( ['$stateProvider', '$urlRouterProvider', 'RestangularProvider',
-    function ($stateProvider, $urlRouterProvider, RestangularProvider) {
+  .config( ['$stateProvider', 'RestangularProvider',
+    function ($stateProvider, RestangularProvider) {
 
       $stateProvider
         .state('main', {
