@@ -20,7 +20,7 @@
       </accordion-heading>
 
       <ul>
-        <li><a href="http://localhost:8080/transmart-rest-api/" tooltip="http://localhost:8080/transmart-rest-api/">Local</a></li>
+        <li ng-repeat="endpoint in endpoints"><a href="{{endpoint.url}}" tooltip="{{endpoint.url}}">{{endpoint.title}}</a></li>
       </ul>
 
       <br>

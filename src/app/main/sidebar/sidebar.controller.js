@@ -5,6 +5,7 @@ angular.module('transmartBaseUi')
   ['$scope', 'endpointService',
   function ($scope, endpointService) {
 
+    $scope.endpoints = [];
     $scope.formData = {};
 
     $scope.status = {
@@ -17,8 +18,10 @@ angular.module('transmartBaseUi')
     loadStudies();
 
     function loadStudies() {
+      var endpoints = endpointService.getEndpoints();
+      $scope.endpoints = endpoints;
       $scope.studies = [];
-      endpointService.getEndpoints().forEach(function(endpoint) {
+      endpoints.forEach(function(endpoint) {
         endpoint.restangular.all('studies').getList()
           .then(function (studies) {
             $scope.alerts.push({type: 'success', msg: 'Successfully connected to rest-api'});
