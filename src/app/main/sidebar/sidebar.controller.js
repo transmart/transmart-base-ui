@@ -19,7 +19,7 @@ angular.module('transmartBaseUi')
     function loadStudies() {
       $scope.studies = [];
       endpointService.getEndpoints().forEach(function(endpoint) {
-        endpoint.all('studies').getList()
+        endpoint.restangular.all('studies').getList()
           .then(function (studies) {
             $scope.alerts.push({type: 'success', msg: 'Successfully connected to rest-api'});
             $scope.studies = $scope.studies.concat(studies);

@@ -6,22 +6,33 @@ angular.module('transmartBaseUi')
   ['$http', '$q', 'Restangular',
     function ($http, $q, Restangular) {
 
-      var restAngularProviders = [];
+      var endpoints = [];
 
       var service = {};
 
       service.getEndpoints = function() {
-        return restAngularProviders;
+        return endpoints;
       }
 
       service.addEndpoint = function(title, url) {
-        var endpoint = Restangular.withConfig(function(RestangularConfigurer) {
+        
+        // Create new restangular instance
+        var newRestangular = Restangular.withConfig(function(RestangularConfigurer) {
               RestangularConfigurer.setBaseUrl(url);
               RestangularConfigurer.setDefaultHeaders({
                 'Accept': 'application/hal+json'
               });
             });
-        restAngularProviders.push(endpoint);
+
+        // Store meta data and restangular instance in object
+        var endpoint = {
+          title: title,
+          url: url,
+          restangular: newRestangular
+        }
+
+        // Add endpoint to the list
+        endpoints.push(endpoint);
       }
 
       service.addOAuthEndpoint = function(title, url, requestToken) {
@@ -47,8 +58,8 @@ angular.module('transmartBaseUi')
           .success(function (response) {
             var access_token = response.access_token;
 
-            // Create new rest endpoint
-            var endpoint = Restangular.withConfig(function(RestangularConfigurer) {
+            // Create new restangular instance
+            var newRestangular = Restangular.withConfig(function(RestangularConfigurer) {
               RestangularConfigurer.setBaseUrl(url);
               RestangularConfigurer.setDefaultHeaders({
                 'Accept': 'application/hal+json',
@@ -56,8 +67,16 @@ angular.module('transmartBaseUi')
               });
             });
 
+            // Store meta data and restangular instance in object
+            var endpoint = {
+              title: title,
+              url: url,
+              access_token: access_token,
+              restangular: newRestangular
+            }
+
             // Add endpoint to the list
-            restAngularProviders.push(endpoint);
+            endpoints.push(endpoint);
 
             deferred.resolve(response);
           })
