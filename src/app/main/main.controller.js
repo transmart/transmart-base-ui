@@ -2,7 +2,7 @@
 
 angular.module('transmartBaseUi')
   .controller('MainCtrl',
-  ['$scope', 'Restangular', function ($scope, Restangular) {
+  ['$scope', function ($scope) {
 
     $scope.dataLoading = false;
 
@@ -16,12 +16,14 @@ angular.module('transmartBaseUi')
       }
     };
 
-    $scope.getStudyConcepts = function (studyLink, studyId) {
-
+    $scope.getStudyConcepts = function (study) {
+      var studyLink = study._links.self.href;
+      var studyId = study._embedded.ontologyTerm.name;
+      
       var t = studyLink.substr(1);
       $scope.dataLoading = true;
 
-      Restangular.one(t + '/concepts/ROOT/observations').get()
+      study.endpoint.restangular.one(t + '/concepts/ROOT/observations').get()
         .then(function (d) {
 
           $scope.selectedStudy.obj = d._embedded['observations'];
