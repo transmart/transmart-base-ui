@@ -39,6 +39,7 @@ angular.module('transmartBaseUi', [
       // when getting a list of resources
       RestangularProvider.setResponseInterceptor(function(data, operation, what) {
         if (operation == 'getList') {
+          if (what === 'concepts') what = 'ontology_terms';
           var resp =  data._embedded[what];
           resp._links = data._links;
           return resp
