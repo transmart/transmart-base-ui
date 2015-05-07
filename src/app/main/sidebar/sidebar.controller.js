@@ -101,21 +101,88 @@ angular.module('transmartBaseUi')
       ]
     }];
 
-
     $scope.status = {
       isFirstOpen: true,
       isFirstDisabled: false
     };
 
-
     $scope.oneAtATime = true;
 
     Restangular.all('studies').getList()
       .then(function (studies) {
+
+        /**
+         *
+         * @param idx
+         * @param token
+         * @param jsonTree
+         * @returns {*}
+         */
+        var createNode = function (idx, study, jsonTree) {
+
+          var aTreeNode = {
+            id: idx,
+            title : study.id,
+            nodes: []
+          };
+
+          // build nodes
+          study.getList("concepts").then(function(d) {
+
+          });
+
+          jsonTree.push(aTreeNode);
+
+          return jsonTree;
+        };
+
+        /**
+         * build the study tree
+         * @param studies
+         * @returns {Array}
+         */
+        var buildTree = function (studies) {
+          var jsonTree = [];
+
+          // build study root
+          for (var i=0; i<studies.length; i++) {
+            jsonTree = createNode(i, studies[i], jsonTree);
+          }
+
+          console.log(jsonTree);
+
+          //for (var i=0; i<studies.length; i++) {
+          //  studies[i].getList("concepts").then(function (d) {
+          //
+          //    console.log('=========================== debug \n');
+          //    console.log(d);
+          //    console.log(d[i]);
+          //    console.log(d[i].fullName);
+          //    console.log(d[i].name);
+          //
+          //    var token, concept_tokens = d[i].fullName.split("\\");
+          //
+          //    for (token in concept_tokens) {
+          //      if (concept_tokens[token] === ""){
+          //        continue;
+          //      }
+          //      if ($.inArray(concept_tokens[token], jsonTree) < 0) {
+          //        jsonTree = createNode(concept_tokens[token], jsonTree);
+          //      }
+          //    }
+          //  });
+          //}
+        };
+
+        // alert user that it successfully connects to the rest-api
         $scope.alerts.push({type: 'success', msg: 'Successfully connected to rest-api'});
-        console.log(studies);
+
+        buildTree(studies);
+
         $scope.studies = studies;
+
       }, function (err) {
+        // alert user that system cannot talk to the rest-api
         $scope.alerts.push({type: 'danger', msg: 'Oops! Cannot connect to rest-api.'});
         console.error(err);
       });
