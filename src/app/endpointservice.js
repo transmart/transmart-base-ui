@@ -7,6 +7,7 @@ angular.module('transmartBaseUi')
     function ($http, $q, Restangular) {
 
       var endpoints = [];
+      var proxyUrl = 'http://localhost:8001/rest/';
 
       var service = {};
 
@@ -18,9 +19,10 @@ angular.module('transmartBaseUi')
         
         // Create new restangular instance
         var newRestangular = Restangular.withConfig(function(RestangularConfigurer) {
-              RestangularConfigurer.setBaseUrl(url);
+              RestangularConfigurer.setBaseUrl(proxyUrl);
               RestangularConfigurer.setDefaultHeaders({
-                'Accept': 'application/hal+json'
+                'Accept': 'application/hal+json',
+                'Endpoint': url
               });
             });
 
@@ -39,20 +41,19 @@ angular.module('transmartBaseUi')
         var deferred = $q.defer();
 
         // Make sure url ends with '/'
-        if (url.substring(url.length-1, url.length) != '/') {
-          url += '/';
+        if (url.substring(url.length-1, url.length) == '/') {
+          url = url.substring(0, url.length-1);
         }
 
         // Get the access_token using the request token (code)
         $http({
-          url: url + 'oauth/token', 
+          url: proxyUrl + 'oauth/token',
           method: 'GET',
+          headers: {
+            'Endpoint': url
+          },
           params: {
-            grant_type: 'authorization_code',
-            client_id: 'api-client',
-            client_secret: 'api-client',
-            code: requestToken,
-            redirect_uri: url + 'oauth/verify'
+            code: requestToken
           }
         })
           .success(function (response) {
@@ -60,10 +61,11 @@ angular.module('transmartBaseUi')
 
             // Create new restangular instance
             var newRestangular = Restangular.withConfig(function(RestangularConfigurer) {
-              RestangularConfigurer.setBaseUrl(url);
+              RestangularConfigurer.setBaseUrl(proxyUrl);
               RestangularConfigurer.setDefaultHeaders({
                 'Accept': 'application/hal+json',
-                'Authorization': 'Bearer ' + access_token
+                'Authorization': 'Bearer ' + access_token,
+                'Endpoint': url
               });
             });
 
