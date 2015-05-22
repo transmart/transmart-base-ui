@@ -43,8 +43,9 @@ angular.module('transmartBaseUi')
     // ************************************************************
     // TODO: DUMMY DATA, USE REAL CONCEPTS FOR EACH SELECTED STUDY
     // ************************************************************
+
     $scope.data = [{
-      "id": 1,
+      "id": "",
       "title": "node1",
       "nodes": [
         {
@@ -112,72 +113,71 @@ angular.module('transmartBaseUi')
       .then(function (studies) {
 
         /**
-         *
-         * @param idx
-         * @param token
-         * @param jsonTree
-         * @returns {*}
-         */
-        var createNode = function (idx, study, jsonTree) {
-
-          var aTreeNode = {
-            id: idx,
-            title : study.id,
-            nodes: []
-          };
-
-          // build nodes
-          study.getList("concepts").then(function(d) {
-
-          });
-
-          jsonTree.push(aTreeNode);
-
-          return jsonTree;
-        };
-
-        /**
-         * build the study tree
+         * Build the study tree
          * @param studies
          * @returns {Array}
          */
-        var buildTree = function (studies) {
-          var jsonTree = [];
+        var buildTree = function (study) {
 
-          // build study root
-          for (var i=0; i<studies.length; i++) {
-            jsonTree = createNode(i, studies[i], jsonTree);
-          }
+          var files={};
+          $scope.data = [];
 
-          console.log(jsonTree);
+          var parseFolder = function (path){
+            var cur = files;
+            //console.log(path);
+            path.split("\\").slice(1).forEach(function(elem){
+                if (elem != "") {
+                  if (!cur.hasOwnProperty("title")) {
+                    cur["title"] = elem;
+                    cur["nodes"] = new Array({});
+                    cur = cur.nodes[0];
+                  } else {
+                    var arrIdx = 0;
+                    // already has some nodes
+                    if (cur["title"] == elem) {
+                      cur = cur.nodes[arrIdx]; // cont. traverse
+                    } else {
+                      // create new leaf and then push it
+                      var newNode = {};
+                      newNode["title"] = elem;
+                      newNode["nodes"] = new Array({});
 
-          //for (var i=0; i<studies.length; i++) {
-          //  studies[i].getList("concepts").then(function (d) {
-          //
-          //    console.log('=========================== debug \n');
-          //    console.log(d);
-          //    console.log(d[i]);
-          //    console.log(d[i].fullName);
-          //    console.log(d[i].name);
-          //
-          //    var token, concept_tokens = d[i].fullName.split("\\");
-          //
-          //    for (token in concept_tokens) {
-          //      if (concept_tokens[token] === ""){
-          //        continue;
-          //      }
-          //      if ($.inArray(concept_tokens[token], jsonTree) < 0) {
-          //        jsonTree = createNode(concept_tokens[token], jsonTree);
-          //      }
-          //    }
-          //  });
-          //}
-        };
+                      cur.nodes.push(newNode);
+                      cur = newNode; // get latest item in nodes
+                    }
+                  }
+                }
+            });
+          }; //end parseFolder
+
+          study.getList("concepts").then(function(concepts) {
+            //console.log(concepts);
+            for (var id in concepts) {
+              if (!isNaN(id)) {
+               // console.log(concepts[id]);
+                parseFolder(concepts[id].fullName);
+              }
+            }
+          });
+
+          $scope.data.push(files);
+
+        }; //end of build tree
 
         // alert user that it successfully connects to the rest-api
         $scope.alerts.push({type: 'success', msg: 'Successfully connected to rest-api'});
 
-        buildTree(studies);
+        //buildTree(studies[0]);
+
+        studies.forEach(function (study) {
+          //console.log(study);
+          buildTree(study);
+        });
+
+
+        //for (var i=0; i<studies.length; i++) {
+        //  buildTree(studies[i]);
+        //}
 
         $scope.studies = studies;
 

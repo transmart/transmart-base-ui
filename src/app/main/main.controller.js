@@ -90,7 +90,7 @@ angular.module('transmartBaseUi')
           numericAgeChart.yAxis().ticks(5);
           numericAgeChart.xAxisLabel("Age");
           numericAgeChart.yAxisLabel("# of subjects");
-          numericAgeChart.xAxisPadding(1000);
+          numericAgeChart.xAxisPadding(100);
 
           maritalChart
             .width(200)

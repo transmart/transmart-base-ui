@@ -9,7 +9,8 @@ angular.module('transmartBaseUi', [
   'ui.router',
   'ui.bootstrap',
   'restangular',
-  'ui.tree'
+  'ui.tree',
+  'smart-table'
 ])
 
   .config( ['$stateProvider', '$urlRouterProvider', 'RestangularProvider',
@@ -30,7 +31,7 @@ angular.module('transmartBaseUi', [
       // =========================
       // Set restful api base url
       // =========================
-      RestangularProvider.setBaseUrl('http://10.8.10.221:8080/transmart-rest-api');
+      RestangularProvider.setBaseUrl('http://localhost:8080/transmart-rest-api');
       RestangularProvider.setDefaultHeaders(
         {"Accept": 'application/hal+json'}
       );
