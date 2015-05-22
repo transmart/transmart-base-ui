@@ -40,67 +40,6 @@ angular.module('transmartBaseUi')
       scope.expandAll();
     };
 
-    // ************************************************************
-    // TODO: DUMMY DATA, USE REAL CONCEPTS FOR EACH SELECTED STUDY
-    // ************************************************************
-
-    $scope.data = [{
-      "id": "",
-      "title": "node1",
-      "nodes": [
-        {
-          "id": 11,
-          "title": "node1.1",
-          "nodes": [
-            {
-              "id": 111,
-              "title": "node1.1.1",
-              "nodes": []
-            }
-          ]
-        },
-        {
-          "id": 12,
-          "title": "node1.2",
-          "nodes": []
-        }
-      ]
-    }, {
-      "id": 2,
-      "title": "node2",
-      "nodes": [
-        {
-          "id": 21,
-          "title": "node2.1",
-          "nodes": []
-        },
-        {
-          "id": 22,
-          "title": "node2.2",
-          "nodes": []
-        }
-      ]
-    }, {
-      "id": 3,
-      "title": "node3",
-      "nodes": [
-        {
-          "id": 31,
-          "title": "node3.1",
-          "nodes": []
-        }
-      ]
-    }, {
-      "id": 4,
-      "title": "node4",
-      "nodes": [
-        {
-          "id": 41,
-          "title": "node4.1",
-          "nodes": []
-        }
-      ]
-    }];
 
     $scope.status = {
       isFirstOpen: true,
@@ -118,44 +57,51 @@ angular.module('transmartBaseUi')
          * @returns {Array}
          */
         var buildTree = function (study) {
-
           var files={};
           $scope.data = [];
 
           var parseFolder = function (path){
-            var cur = files;
-            //console.log(path);
-            path.split("\\").slice(1).forEach(function(elem){
-                if (elem != "") {
-                  if (!cur.hasOwnProperty("title")) {
-                    cur["title"] = elem;
-                    cur["nodes"] = new Array({});
-                    cur = cur.nodes[0];
-                  } else {
-                    var arrIdx = 0;
-                    // already has some nodes
-                    if (cur["title"] == elem) {
-                      cur = cur.nodes[arrIdx]; // cont. traverse
-                    } else {
-                      // create new leaf and then push it
-                      var newNode = {};
-                      newNode["title"] = elem;
-                      newNode["nodes"] = new Array({});
+            var cur = files,
+                last = files;
+            path = path.split("\\").slice(1,-1);
 
-                      cur.nodes.push(newNode);
-                      cur = newNode; // get latest item in nodes
-                    }
-                  }
+            while(path.length){
+              var elem = path.shift();
+              if (!cur.hasOwnProperty("title")) {
+                cur["title"] = elem;
+                if(path.length){
+                  cur["nodes"] = new Array({});
+                  cur = cur.nodes[0];
                 }
-            });
+              } else {
+                if (cur["title"] == elem) {
+                  if(!cur.hasOwnProperty("nodes") && path.length) {
+                    cur["nodes"] = new Array({});
+                  }
+                  last = cur;
+                  cur = cur.nodes[cur.nodes.length-1]; // cont. traverse
+                } else {
+                    // create new leaf and then push it
+                  var newNode = {};
+                  newNode["title"] = elem;
+                  last.nodes.push(newNode);
+                  cur = newNode; // get latest item in nodes
+                }
+              }
+            };
           }; //end parseFolder
 
           study.getList("concepts").then(function(concepts) {
-            //console.log(concepts);
-            for (var id in concepts) {
+            var paths = concepts.map(function(obj){
+              return obj.fullName;
+            })
+            paths = paths.sort();
+            console.log(paths);
+
+            for (var id in paths) {
               if (!isNaN(id)) {
                // console.log(concepts[id]);
-                parseFolder(concepts[id].fullName);
+                parseFolder(paths[id]);
               }
             }
           });
