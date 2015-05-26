@@ -2,7 +2,7 @@
 
 angular.module('transmartBaseUi')
   .controller('MainCtrl',
-  ['$scope', 'Restangular', function ($scope, Restangular) {
+  ['$scope', 'Restangular', 'dataService', function ($scope, Restangular, dataService) {
 
     $scope.dataLoading = false;
 
@@ -25,17 +25,11 @@ angular.module('transmartBaseUi')
       Restangular.one(t + '/subjects').get()
         .then(function (d) {
 
-          //console.log(d);
-
           $scope.selectedStudy.obj = d._embedded['subjects'];
           $scope.displayedCollection = [].concat($scope.selectedStudy.obj);
           $scope.selectedStudy.title = studyId;
           $scope.selectedStudy.panel.isDisplayed = true;
 
-          $scope.selectedStudy.obj = d._embedded['subjects'];
-          $scope.displayedCollection = [].concat($scope.selectedStudy.obj);
-          $scope.selectedStudy.title = studyId;
-          $scope.selectedStudy.panel.isDisplayed = true;
 
           var genderPieChart = dc.pieChart("#gender-pie-chart");
           var racePieChart = dc.pieChart("#race-pie-chart");
