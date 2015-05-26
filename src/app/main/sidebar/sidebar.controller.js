@@ -5,6 +5,7 @@ angular.module('transmartBaseUi')
   ['$scope', 'Restangular', 'dataService', function ($scope, Restangular, dataService) {
 
     $scope.data = [];
+    $scope.studies = [];
 
     $scope.remove = function(scope) {
       scope.remove();
@@ -42,7 +43,6 @@ angular.module('transmartBaseUi')
       scope.expandAll();
     };
 
-
     $scope.status = {
       isFirstOpen: true,
       isFirstDisabled: false
@@ -51,5 +51,6 @@ angular.module('transmartBaseUi')
     $scope.oneAtATime = true;
 
     $scope.data = dataService.studies.getTree();
+    $scope.studies = dataService.studies.getStudies();
 
   }]);
