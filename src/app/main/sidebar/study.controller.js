@@ -43,14 +43,14 @@ angular.module('transmartBaseUi')
     };
 
     $scope.status = {
-      isFirstOpen: true,
+      isFirstOpen: false,
       isFirstDisabled: false
     };
 
     $scope.oneAtATime = true;
 
     $scope.getTree = function (study) {
-      $scope.tree = dataService.trees.getSingleTree(study);
+      $scope.tree = dataService.getSingleTree(study);
       console.log($scope.tree);
     };
 
