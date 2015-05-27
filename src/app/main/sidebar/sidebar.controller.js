@@ -15,11 +15,11 @@ angular.module('transmartBaseUi')
     // TODO: other cases not public or private
     $scope.studies.forEach(function(study){
       if(study._embedded.ontologyTerm.fullName.split('\\')[1] ==
-          "Public studies") {
+          "Public Studies") {
         $scope.publicStudies.push(study);
       } else {
         $scope.privateStudies.push(study);
       }
     })
-    
+
   }]);
