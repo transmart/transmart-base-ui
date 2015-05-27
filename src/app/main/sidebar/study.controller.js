@@ -6,6 +6,10 @@ angular.module('transmartBaseUi')
 
     $scope.tree = [{}];
 
+    $scope.treeConfig = {
+      drag: false
+    };
+
     $scope.remove = function(scope) {
       scope.remove();
     };
