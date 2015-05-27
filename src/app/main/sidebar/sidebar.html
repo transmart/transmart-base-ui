@@ -27,8 +27,8 @@
           </ol>
         </script>
         <div ui-tree id="tree-root">
-          <ol ui-tree-nodes="" ng-model="tree">
-            <li ng-repeat="node in tree" ui-tree-node ng-include="'nodes_renderer.html'"></li>
+          <ol ui-tree-nodes="" ng-model="tree.nodes[0].nodes">
+            <li ng-repeat="node in tree.nodes[0].nodes" ui-tree-node ng-include="'nodes_renderer.html'"></li>
           </ol>
         </div>
       </div>
@@ -54,8 +54,8 @@
           </ol>
         </script>
         <div ui-tree id="tree-root">
-          <ol ui-tree-nodes="" ng-model="tree">
-            <li ng-repeat="node in tree" ui-tree-node ng-include="'nodes_renderer.html'"></li>
+          <ol ui-tree-nodes="" ng-model="tree.nodes[0].nodes">
+            <li ng-repeat="node in tree.nodes[0].nodes" ui-tree-node ng-include="'nodes_renderer.html'"></li>
           </ol>
         </div>
       </div>

@@ -72,9 +72,10 @@ angular.module('transmartBaseUi')
             parseFolder(paths[id]);
           }
         }
+
       });
 
-
-      return [tree];
+      console.log(tree);
+      return tree;
     };
 }]);

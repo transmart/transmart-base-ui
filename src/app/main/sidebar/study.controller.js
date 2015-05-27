@@ -52,6 +52,7 @@ angular.module('transmartBaseUi')
     $scope.getTree = function (study) {
       $scope.tree = dataService.getSingleTree(study);
       console.log($scope.tree);
+
     };
 
   }]);

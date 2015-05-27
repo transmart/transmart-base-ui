@@ -7,8 +7,6 @@ angular.module('transmartBaseUi')
     $scope.publicStudies = [];
     $scope.privateStudies = [];
 
-    $scope.studies = [];
-
     $scope.studies = dataService.getStudies();
 
     // Check if studies are public or private
