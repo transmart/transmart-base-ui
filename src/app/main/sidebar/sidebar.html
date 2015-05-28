@@ -26,7 +26,7 @@
 
     <hr>
     <span><h4>Public studies</h4></span>
-    <accordion-group ng-repeat="study in publicStudies">
+    <accordion-group ng-repeat="study in publicStudies" ng-click="getStudyConcepts('{{study._links.self.href}}', '{{study._embedded.ontologyTerm.name}}')">
 
       <div ng-controller="StudyCtrl">
         <accordion-heading>
@@ -43,8 +43,7 @@
     </accordion-group>
 
     <span><h4>Private studies</h4></span>
-
-    <accordion-group ng-repeat="study in privateStudies">
+    <accordion-group ng-repeat="study in privateStudies" ng-click="getStudyConcepts('{{study._links.self.href}}', '{{study._embedded.ontologyTerm.name}}')">
 
       <div ng-controller="StudyCtrl">
         <accordion-heading>
