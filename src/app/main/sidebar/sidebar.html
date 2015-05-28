@@ -4,7 +4,7 @@
       Browse studies by clicking study header below.
     </accordion-group>
     <accordion-group ng-repeat="study in studies"
-                     ng-click="getStudyConcepts(study)">
+                     ng-click="getStudyConcepts('{{study._links.self.href}}', '{{study._embedded.ontologyTerm.name}}')">
       <accordion-heading>
         {{study._embedded.ontologyTerm.name}}
       </accordion-heading>

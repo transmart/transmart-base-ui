@@ -18,13 +18,12 @@ angular.module('transmartBaseUi')
       service.addEndpoint = function(title, url) {
         
         // Create new restangular instance
-        var newRestangular = Restangular.withConfig(function(RestangularConfigurer) {
-              RestangularConfigurer.setBaseUrl(proxyUrl);
-              RestangularConfigurer.setDefaultHeaders({
-                'Accept': 'application/hal+json',
-                'Endpoint': url
-              });
-            });
+        var newRestangular = Restangular;
+        Restangular.setDefaultHeaders({
+          'Authorization': '',
+          'Accept': 'application/hal+json',
+          'Endpoint': url
+        });
 
         // Store meta data and restangular instance in object
         var endpoint = {
@@ -34,6 +33,7 @@ angular.module('transmartBaseUi')
         }
 
         // Add endpoint to the list
+        endpoints = [];
         endpoints.push(endpoint);
       }
 
@@ -60,14 +60,12 @@ angular.module('transmartBaseUi')
             var access_token = response.access_token;
 
             // Create new restangular instance
-            var newRestangular = Restangular.withConfig(function(RestangularConfigurer) {
-              RestangularConfigurer.setBaseUrl(proxyUrl);
-              RestangularConfigurer.setDefaultHeaders({
-                'Accept': 'application/hal+json',
-                'Authorization': 'Bearer ' + access_token,
-                'Endpoint': url
-              });
-            });
+            var newRestangular = Restangular;
+            Restangular.setDefaultHeaders({
+              'Authorization': 'Bearer ' + access_token,
+              'Accept': 'application/hal+json',
+              'Endpoint': url
+            })
 
             // Store meta data and restangular instance in object
             var endpoint = {
@@ -78,6 +76,7 @@ angular.module('transmartBaseUi')
             }
 
             // Add endpoint to the list
+            endpoints = [];
             endpoints.push(endpoint);
 
             deferred.resolve(response);

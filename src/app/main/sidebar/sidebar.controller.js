@@ -2,8 +2,8 @@
 
 angular.module('transmartBaseUi')
   .controller('SidebarCtrl',
-  ['$scope', 'endpointService',
-  function ($scope, endpointService) {
+  ['$scope', 'Restangular', 'endpointService',
+  function ($scope, Restangular, endpointService) {
 
     $scope.endpoints = [];
     $scope.formData = {};
@@ -21,12 +21,14 @@ angular.module('transmartBaseUi')
       var endpoints = endpointService.getEndpoints();
       $scope.endpoints = endpoints;
       $scope.studies = [];
+      
+      // Load studies for each endpoint
       endpoints.forEach(function(endpoint) {
         endpoint.restangular.all('studies').getList()
           .then(function (studies) {
             $scope.alerts.push({type: 'success', msg: 'Successfully connected to rest-api'});
             studies.forEach(function(study) {
-              study.endpoint = endpoint;
+              study.endpoint = endpoint; // Keep reference to endpoint
               $scope.studies.push(study);
             });
           }, function (err) {

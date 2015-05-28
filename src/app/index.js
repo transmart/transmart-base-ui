@@ -29,7 +29,7 @@ angular.module('transmartBaseUi', [
       // =========================
       // Set restful api base url
       // =========================
-      RestangularProvider.setBaseUrl('http://localhost:8080/transmart-rest-api');
+      RestangularProvider.setBaseUrl('http://localhost:8001/rest');
       RestangularProvider.setDefaultHeaders(
         {"Accept": 'application/hal+json'}
       );
