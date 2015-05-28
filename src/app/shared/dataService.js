@@ -48,6 +48,7 @@ angular.module('transmartBaseUi')
           return obj.fullName;
         })
         paths = paths.sort();
+        console.log(paths);
 
         for (var id in paths) {
           if (!isNaN(id)) {
