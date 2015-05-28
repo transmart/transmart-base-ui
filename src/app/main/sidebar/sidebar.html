@@ -41,7 +41,7 @@
       </div>
 
     </accordion-group>
-
+    <br>
     <span><h4>Private studies</h4></span>
     <accordion-group ng-repeat="study in privateStudies" ng-click="getStudyConcepts('{{study._links.self.href}}', '{{study._embedded.ontologyTerm.name}}')">
 
