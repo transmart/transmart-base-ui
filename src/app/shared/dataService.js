@@ -2,28 +2,6 @@ angular.module('transmartBaseUi')
   .service('dataService',
   ['Restangular', function(Restangular){
 
-    var stud = [];
-
-    Restangular.all('studies').getList()
-      .then(function (studies) {
-
-        // alert user that it successfully connects to the rest-api
-        //$scope.alerts.push({type: 'success', msg: 'Successfully connected to rest-api'});
-
-        stud = studies;
-
-
-      }, function (err) {
-        // alert user that system cannot talk to the rest-api
-        //$scope.alerts.push({type: 'danger', msg: 'Oops! Cannot connect to rest-api.'});
-        console.error(err);
-      });
-
-
-    this.getStudies = function(){
-        return stud;
-    };
-
     this.getSingleTree = function(study) {
       var tree = {};
 
@@ -72,9 +50,10 @@ angular.module('transmartBaseUi')
             parseFolder(paths[id]);
           }
         }
+
       });
 
-
-      return [tree];
+      console.log(tree);
+      return tree;
     };
 }]);
