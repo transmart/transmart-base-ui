@@ -16,9 +16,11 @@ angular.module('transmartBaseUi')
           var elem = path.shift();
           if (!cur.hasOwnProperty("title")) {
             cur["title"] = elem;
+            // TODO: determine type from API answer
             if(path.length){
               cur["nodes"] = new Array({});
               cur = cur.nodes[0];
+            } else {
             }
           } else {
             if (cur["title"] == elem) {
@@ -31,6 +33,9 @@ angular.module('transmartBaseUi')
               // create new leaf and then push it
               var newNode = {};
               newNode["title"] = elem;
+              if(!path.length) {
+              }
+              //
               last.nodes.push(newNode);
               cur = newNode; // get latest item in nodes
             }
@@ -50,6 +55,20 @@ angular.module('transmartBaseUi')
             parseFolder(paths[id]);
           }
         }
+
+        var setType = function (tree) {
+          if (!tree.hasOwnProperty("nodes")){
+            var t = ["NUMERICAL", "CATEGORICAL", "HIGH_DIMENSIONAL"];
+            tree['type'] = t[Math.floor(Math.random()*t.length)];
+          } else {
+            tree['type'] = "FOLDER"
+            tree.nodes.forEach(function (node){
+              setType(node);
+            })
+          }
+        }
+
+        setType(tree);
 
       });
 

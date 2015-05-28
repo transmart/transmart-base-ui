@@ -1,3 +1,21 @@
+<script type="text/ng-template" id="nodes_renderer.html">
+  <div ui-tree-handle class="tree-node tree-node-content">
+    <a data-nodrag ng-click="toggle(this)">
+              <span class="glyphicon" ng-class="{'glyphicon-folder-close': collapsed && type.fol(node),
+                                                  'glyphicon-folder-open': !collapsed && type.fol(node),
+                                                  'glyphicon glyphicon-sort-by-order': type.num(node),
+                                                  'glyphicon glyphicon-sort-by-alphabet': type.cat(node),
+                                                  'glyphicon-hd-video': type.hid(node),
+                                                  }"></span>
+    </a>
+    {{node.title}}
+  </div>
+  <ol ui-tree-nodes="" ng-model="node.nodes" ng-class="{hidden: collapsed}">
+    <li ng-repeat="node in node.nodes" ui-tree-node ng-include="'nodes_renderer.html'">
+    </li>
+  </ol>
+</script>
+
 <div class="col-sm-3 col-md-2 sidebar" ng-controller="SidebarCtrl">
 
   <!-- START STUDIES -->
@@ -7,7 +25,6 @@
     </accordion-group>
 
     <hr>
-
     <span><h4>Public studies</h4></span>
     <accordion-group ng-repeat="study in publicStudies">
 
@@ -16,17 +33,7 @@
           <span ng-click="getTree(study)">{{study._embedded.ontologyTerm.name}}</span>
         </accordion-heading>
 
-        <script type="text/ng-template" id="nodes_renderer.html">
-          <div ui-tree-handle class="tree-node tree-node-content">
-            <a data-nodrag ng-click="toggle(this)"><span class="glyphicon" ng-class="{'glyphicon-chevron-right': collapsed, 'glyphicon-chevron-down': !collapsed}"></span></a>
-            {{node.title}}
-          </div>
-          <ol ui-tree-nodes="" ng-model="node.nodes" ng-class="{hidden: collapsed}">
-            <li ng-repeat="node in node.nodes" ui-tree-node ng-include="'nodes_renderer.html'">
-            </li>
-          </ol>
-        </script>
-        <div ui-tree id="tree-root">
+        <div ui-tree id="tree-root" data-drag-enabled="treeConfig.drag">
           <ol ui-tree-nodes="" ng-model="tree.nodes[0].nodes">
             <li ng-repeat="node in tree.nodes[0].nodes" ui-tree-node ng-include="'nodes_renderer.html'"></li>
           </ol>
@@ -36,6 +43,7 @@
     </accordion-group>
 
     <span><h4>Private studies</h4></span>
+
     <accordion-group ng-repeat="study in privateStudies">
 
       <div ng-controller="StudyCtrl">
@@ -43,17 +51,7 @@
           <span ng-click="getTree(study)">{{study._embedded.ontologyTerm.name}}</span>
         </accordion-heading>
 
-        <script type="text/ng-template" id="nodes_renderer.html">
-          <div ui-tree-handle class="tree-node tree-node-content">
-            <a data-nodrag ng-click="toggle(this)"><span class="glyphicon" ng-class="{'glyphicon-chevron-right': collapsed, 'glyphicon-chevron-down': !collapsed}"></span></a>
-            {{node.title}}
-          </div>
-          <ol ui-tree-nodes="" ng-model="node.nodes" ng-class="{hidden: collapsed}">
-            <li ng-repeat="node in node.nodes" ui-tree-node ng-include="'nodes_renderer.html'">
-            </li>
-          </ol>
-        </script>
-        <div ui-tree id="tree-root">
+        <div ui-tree id="tree-root" data-drag-enabled="treeConfig.drag">
           <ol ui-tree-nodes="" ng-model="tree.nodes[0].nodes">
             <li ng-repeat="node in tree.nodes[0].nodes" ui-tree-node ng-include="'nodes_renderer.html'"></li>
           </ol>
@@ -61,7 +59,6 @@
       </div>
 
     </accordion-group>
-
 
     <hr>
 

@@ -10,6 +10,13 @@ angular.module('transmartBaseUi')
       drag: false
     };
 
+    $scope.type = {
+      fol: function(node){return node.type == "FOLDER"},
+      num: function(node){return node.type == "NUMERICAL"},
+      cat: function(node){return node.type == "CATEGORICAL"},
+      hid: function(node){return node.type == "HIGH_DIMENSIONAL"},
+    }
+
     $scope.remove = function(scope) {
       scope.remove();
     };
