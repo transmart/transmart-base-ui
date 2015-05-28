@@ -1,6 +1,13 @@
 <script type="text/ng-template" id="nodes_renderer.html">
   <div ui-tree-handle class="tree-node tree-node-content">
-    <a data-nodrag ng-click="toggle(this)"><span class="glyphicon" ng-class="{'glyphicon-chevron-right': collapsed, 'glyphicon-chevron-down': !collapsed}"></span></a>
+    <a data-nodrag ng-click="toggle(this)">
+              <span class="glyphicon" ng-class="{'glyphicon-folder-close': collapsed && type.fol(node),
+                                                  'glyphicon-folder-open': !collapsed && type.fol(node),
+                                                  'glyphicon glyphicon-sort-by-order': type.num(node),
+                                                  'glyphicon glyphicon-sort-by-alphabet': type.cat(node),
+                                                  'glyphicon-hd-video': type.hid(node),
+                                                  }"></span> &nbsp;
+    </a>
     {{node.title}}
   </div>
   <ol ui-tree-nodes="" ng-model="node.nodes" ng-class="{hidden: collapsed}">
@@ -18,7 +25,6 @@
     </accordion-group>
 
     <hr>
-
     <span><h4>Public studies</h4></span>
     <accordion-group ng-repeat="study in publicStudies" ng-click="getStudyConcepts('{{study._links.self.href}}', '{{study._embedded.ontologyTerm.name}}')">
 
@@ -27,7 +33,7 @@
           <span ng-click="getTree(study)">{{study._embedded.ontologyTerm.name}}</span>
         </accordion-heading>
 
-        <div ui-tree id="tree-root-public">
+        <div ui-tree id="tree-root-public" data-drag-enabled="treeConfig.drag">
           <ol ui-tree-nodes="" ng-model="tree.nodes[0].nodes">
             <li ng-repeat="node in tree.nodes[0].nodes" ui-tree-node ng-include="'nodes_renderer.html'"></li>
           </ol>
@@ -44,7 +50,7 @@
           <span ng-click="getTree(study)">{{study._embedded.ontologyTerm.name}}</span>
         </accordion-heading>
 
-        <div ui-tree id="tree-root-private">
+        <div ui-tree id="tree-root-private" data-drag-enabled="treeConfig.drag">
           <ol ui-tree-nodes="" ng-model="tree.nodes[0].nodes">
             <li ng-repeat="node in tree.nodes[0].nodes" ui-tree-node ng-include="'nodes_renderer.html'"></li>
           </ol>
