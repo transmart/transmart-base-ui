@@ -8,9 +8,8 @@ angular.module('transmartBaseUi')
       var parseFolder = function (path){
         var cur = tree,
           last = tree;
+        var strPath = path;
         path = path.split("\\").slice(1,-1);
-
-
 
         while(path.length){
           var elem = path.shift();
@@ -19,6 +18,8 @@ angular.module('transmartBaseUi')
             if(path.length){
               cur["nodes"] = new Array({});
               cur = cur.nodes[0];
+            } else {
+              cur["link"] = strPath;
             }
           } else {
             if (cur["title"] == elem) {
@@ -31,6 +32,9 @@ angular.module('transmartBaseUi')
               // create new leaf and then push it
               var newNode = {};
               newNode["title"] = elem;
+              if (!path.length) {
+                newNode["link"] = strPath;
+              }
               last.nodes.push(newNode);
               cur = newNode; // get latest item in nodes
             }
@@ -50,10 +54,10 @@ angular.module('transmartBaseUi')
             parseFolder(paths[id]);
           }
         }
-
+        console.log(tree);
       });
 
-      console.log(tree);
+
       return tree;
     };
 }]);
