@@ -1,5 +1,5 @@
 <script type="text/ng-template" id="nodes_renderer.html">
-  <div ui-tree-handle class="tree-node tree-node-content">
+  <div ui-tree-handle class="tree-node tree-node-content" ng-click="countChilds(node)">
     <a data-nodrag ng-click="toggle(this)">
               <span class="glyphicon" ng-class="{'glyphicon-folder-close': collapsed && type.fol(node),
                                                   'glyphicon-folder-open': !collapsed && type.fol(node),
@@ -8,7 +8,7 @@
                                                   'glyphicon-hd-video': type.hid(node)
                                                   }"></span> &nbsp;
     </a>
-    {{node.title}}
+    {{node.title}} &nbsp; &nbsp; <small>({{node.total}})</small>
   </div>
   <ol ui-tree-nodes="" ng-model="node.nodes" ng-class="{hidden: collapsed}">
     <li ng-repeat="node in node.nodes" ui-tree-node ng-include="'nodes_renderer.html'" data-collapsed="treeConfig.collapsed">
