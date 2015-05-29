@@ -33,27 +33,24 @@ angular.module('transmartBaseUi', [
       // =========================
       RestangularProvider.setBaseUrl('http://localhost:8080/transmart-rest-api');
       RestangularProvider.setDefaultHeaders(
-        {"Accept": 'application/hal+json'}
+        {'Accept': 'application/hal+json'}
       );
 
       // Set an interceptor in order to parse the API response
       // when getting a list of resources
       RestangularProvider.setResponseInterceptor(function(data, operation, what) {
-        if (operation == 'getList') {
+        if (operation === 'getList') {
+            var resp = data;
             if (what === 'concepts') {
               what = 'ontology_terms';
-              var resp =  data._embedded[what];
+              resp =  data._embedded[what];
             }
             else if (what === 'subjects' || what.slice(-8) === 'subjects') {
-              var resp =  data._embedded['subjects'];
-              console.log(resp);
+              resp =  data._embedded.subjects;
             } else {
-              var resp =  data._embedded[what];
+              resp =  data._embedded[what];
             }
-
-
-            //resp._links = data._links;
-            return resp
+            return resp;
           }
         return data;
       });
@@ -71,10 +68,10 @@ angular.module('transmartBaseUi', [
       $rootScope.globals = $cookieStore.get('globals') || {};
 
       if ($rootScope.globals.currentUser) {
-        $http.defaults.headers.common['Authorization'] = 'Basic ' + $rootScope.globals.currentUser.authdata;
+        $http.defaults.headers.common.Authorization = 'Basic ' + $rootScope.globals.currentUser.authdata;
       }
 
-      $rootScope.$on('$locationChangeStart', function (event, next, current) {
+      $rootScope.$on('$locationChangeStart', function () {
         // redirect to login page if not logged in
         if ($location.path() !== '/login' && !$rootScope.globals.currentUser) {
           $location.path('/login');

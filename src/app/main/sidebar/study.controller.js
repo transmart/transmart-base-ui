@@ -18,33 +18,33 @@ angular.module('transmartBaseUi')
         while(path.length){
           var elem = path.shift();
           if (!cur.hasOwnProperty('title')) {
-            cur['title'] = elem;
+            cur.title = elem;
             // TODO: determine type from API answer
             if(path.length){
-              cur['nodes'] = new Array({});
+              cur.nodes = new Array({});
               cur = cur.nodes[0];
             } else {
-              cur['link'] = strPath;
+              cur.link = strPath;
             }
           } else {
-            if (cur['title'] == elem) {
+            if (cur.title === elem) {
               if(!cur.hasOwnProperty('nodes') && path.length) {
-                cur['nodes'] = new Array({});
+                cur.nodes = new Array({});
               }
               last = cur;
               cur = cur.nodes[cur.nodes.length-1]; // cont. traverse
             } else {
               // create new leaf and then push it
               var newNode = {};
-              newNode['title'] = elem;
+              newNode.title = elem;
               if (!path.length) {
-                newNode['link'] = strPath;
+                newNode.link = strPath;
               }
               last.nodes.push(newNode);
               cur = newNode; // get latest item in nodes
             }
           }
-        };
+        }
       }; //end parseFolder
 
       study.getList('concepts').then(function(concepts) {
@@ -70,12 +70,12 @@ angular.module('transmartBaseUi')
         var setType = function (tree) {
           if (!tree.hasOwnProperty('nodes')){
             var t = ['NUMERICAL', 'CATEGORICAL', 'HIGH_DIMENSIONAL'];
-            tree['type'] = t[Math.floor(Math.random()*t.length)];
+            tree.type = t[Math.floor(Math.random()*t.length)];
           } else {
-            tree['type'] = 'FOLDER';
+            tree.type = 'FOLDER';
             tree.nodes.forEach(function (node){
               setType(node);
-            })
+            });
           }
         };
         setType(tree);
@@ -92,10 +92,10 @@ angular.module('transmartBaseUi')
     };
 
     $scope.type = {
-      fol: function(node){return node.type == "FOLDER"},
-      num: function(node){return node.type == "NUMERICAL"},
-      cat: function(node){return node.type == "CATEGORICAL"},
-      hid: function(node){return node.type == "HIGH_DIMENSIONAL"}
+      fol: function(node){return node.type === 'FOLDER';},
+      num: function(node){return node.type === 'NUMERICAL';},
+      cat: function(node){return node.type === 'CATEGORICAL';},
+      hid: function(node){return node.type === 'HIGH_DIMENSIONAL';}
     };
 
     $scope.remove = function(scope) {
@@ -121,7 +121,7 @@ angular.module('transmartBaseUi')
     };
 
     var getRootNodesScope = function() {
-      return angular.element(document.getElementById("tree-root-public")).scope();
+      return angular.element(document.getElementById('tree-root-public')).scope();
     };
 
     $scope.collapseAll = function() {
@@ -147,13 +147,13 @@ angular.module('transmartBaseUi')
     };
 
     $scope.countSubjects = function(node) {
-      if(!node.hasOwnProperty("total")){
+      if(!node.hasOwnProperty('total')){
         var path = node.link.slice(1);
-        Restangular.all(path + "/subjects").getList()
+        Restangular.all(path + '/subjects').getList()
           .then(function (subjects) {
             node.total = subjects.length;
 
-          }, function (err) {
+          }, function () {
 
           });
       }
@@ -162,7 +162,7 @@ angular.module('transmartBaseUi')
     $scope.countChilds = function (node) {
       node.nodes.forEach(function(child){
         $scope.countSubjects(child);
-      })
+      });
     };
 
   }]);
