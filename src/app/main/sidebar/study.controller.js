@@ -6,6 +6,27 @@ angular.module('transmartBaseUi')
 
     $scope.tree = [{}];
 
+    $scope.orderTreeNodes = function (tree) {
+      // Order the nodes by type with folders first
+      var folders = [];
+      var numerical = [];
+      var catego = [];
+      var high = [];
+
+      if(tree.hasOwnProperty('nodes')){
+        tree.nodes.forEach(function (node){
+          if(node.type === 'FOLDER') folders.push(node);
+          if(node.type === 'NUMERICAL') numerical.push(node);
+          if(node.type === 'CATEGORICAL') catego.push(node);
+          if(node.type === 'HIGH_DIMENSIONAL') high.push(node);
+        });
+        tree.nodes = folders.concat(numerical).concat(catego).concat(high);
+
+        // Traverse the tree
+        tree.nodes.forEach($scope.orderTreeNodes);
+      }
+    };
+
     $scope.getSingleTree = function(study) {
       var tree = {};
 
@@ -78,7 +99,10 @@ angular.module('transmartBaseUi')
             });
           }
         };
+
+
         setType(tree);
+        $scope.orderTreeNodes(tree);
         $scope.countChilds(tree.nodes[0]);
 
       });
@@ -164,5 +188,7 @@ angular.module('transmartBaseUi')
         $scope.countSubjects(child);
       });
     };
+
+
 
   }]);
