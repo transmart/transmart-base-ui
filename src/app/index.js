@@ -40,11 +40,21 @@ angular.module('transmartBaseUi', [
       // when getting a list of resources
       RestangularProvider.setResponseInterceptor(function(data, operation, what) {
         if (operation == 'getList') {
-          if (what === 'concepts') what = 'ontology_terms';
-          var resp =  data._embedded[what];
-          resp._links = data._links;
-          return resp
-        }
+            if (what === 'concepts') {
+              what = 'ontology_terms';
+              var resp =  data._embedded[what];
+            }
+            else if (what === 'subjects' || what.slice(-8) === 'subjects') {
+              var resp =  data._embedded['subjects'];
+              console.log(resp);
+            } else {
+              var resp =  data._embedded[what];
+            }
+
+
+            //resp._links = data._links;
+            return resp
+          }
         return data;
       });
 

@@ -2,9 +2,89 @@
 
 angular.module('transmartBaseUi')
   .controller('StudyCtrl',
-  ['$scope', 'Restangular', 'dataService', function ($scope, Restangular, dataService) {
+  ['$scope', 'Restangular', function ($scope, Restangular) {
 
     $scope.tree = [{}];
+
+    $scope.getSingleTree = function(study) {
+      var tree = {};
+
+      var parseFolder = function (paths){
+        var cur = tree,
+          last = tree;
+        var strPath = paths.path;
+        var path = paths.full.split('\\').slice(1,-1);
+
+        while(path.length){
+          var elem = path.shift();
+          if (!cur.hasOwnProperty('title')) {
+            cur['title'] = elem;
+            // TODO: determine type from API answer
+            if(path.length){
+              cur['nodes'] = new Array({});
+              cur = cur.nodes[0];
+            } else {
+              cur['link'] = strPath;
+            }
+          } else {
+            if (cur['title'] == elem) {
+              if(!cur.hasOwnProperty('nodes') && path.length) {
+                cur['nodes'] = new Array({});
+              }
+              last = cur;
+              cur = cur.nodes[cur.nodes.length-1]; // cont. traverse
+            } else {
+              // create new leaf and then push it
+              var newNode = {};
+              newNode['title'] = elem;
+              if (!path.length) {
+                newNode['link'] = strPath;
+              }
+              last.nodes.push(newNode);
+              cur = newNode; // get latest item in nodes
+            }
+          }
+        };
+      }; //end parseFolder
+
+      study.getList('concepts').then(function(concepts) {
+        var paths = concepts.map(function(obj){
+          return {full: obj.fullName, path: obj._links.self.href};
+        });
+
+        paths = paths.sort(function (a, b) {
+          if (a.full > b.full) {
+            return 1;
+          }
+          if (a.full < b.full) {
+            return -1;
+          }
+          return 0;
+        });
+
+
+        for (var id in paths) {
+          parseFolder(paths[id]);
+        }
+
+        var setType = function (tree) {
+          if (!tree.hasOwnProperty('nodes')){
+            var t = ['NUMERICAL', 'CATEGORICAL', 'HIGH_DIMENSIONAL'];
+            tree['type'] = t[Math.floor(Math.random()*t.length)];
+          } else {
+            tree['type'] = 'FOLDER';
+            tree.nodes.forEach(function (node){
+              setType(node);
+            })
+          }
+        };
+        setType(tree);
+        $scope.countChilds(tree.nodes[0]);
+
+      });
+
+      return tree;
+    };
 
     $scope.treeConfig = {
       drag: false,
@@ -61,22 +141,28 @@ angular.module('transmartBaseUi')
 
     $scope.oneAtATime = true;
 
-    $scope.getTree = function (study) {
-      $scope.tree = dataService.getSingleTree(study);
-      console.log($scope.tree);
 
+    $scope.getTree = function (study) {
+      $scope.tree = $scope.getSingleTree(study);
     };
 
     $scope.countSubjects = function(node) {
-      console.log(node);
-      var path = node.link
-      Restangular.all('node').getList()
-        .then(function (studies) {
+      if(!node.hasOwnProperty("total")){
+        var path = node.link.slice(1);
+        Restangular.all(path + "/subjects").getList()
+          .then(function (subjects) {
+            node.total = subjects.length;
 
+          }, function (err) {
 
-        }, function (err) {
+          });
+      }
+    };
 
-        });
-    }
+    $scope.countChilds = function (node) {
+      node.nodes.forEach(function(child){
+        $scope.countSubjects(child);
+      })
+    };
 
   }]);

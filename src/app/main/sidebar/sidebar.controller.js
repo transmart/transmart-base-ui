@@ -2,7 +2,7 @@
 
 angular.module('transmartBaseUi')
   .controller('SidebarCtrl',
-  ['$scope', 'Restangular', 'dataService', function ($scope, Restangular) {
+  ['$scope', 'Restangular', function ($scope, Restangular) {
 
     $scope.publicStudies = [];
     $scope.privateStudies = [];

@@ -2,7 +2,7 @@
 
 angular.module('transmartBaseUi')
   .controller('MainCtrl',
-  ['$scope', 'Restangular', 'dataService', function ($scope, Restangular, dataService) {
+  ['$scope', 'Restangular', function ($scope, Restangular) {
 
     $scope.dataLoading = false;
 
