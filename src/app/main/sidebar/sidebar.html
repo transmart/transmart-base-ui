@@ -1,11 +1,13 @@
+<link rel='stylesheet' href='bower_components/typicons/src/font/typicons.min.css' />
+
 <script type="text/ng-template" id="nodes_renderer.html">
   <div ui-tree-handle class="tree-node tree-node-content" ng-click="countChilds(node)">
     <a data-nodrag ng-click="toggle(this)">
-              <span class="glyphicon" ng-class="{'glyphicon-folder-close': collapsed && type.fol(node),
-                                                  'glyphicon-folder-open': !collapsed && type.fol(node),
-                                                  'glyphicon glyphicon-sort-by-order': type.num(node),
-                                                  'glyphicon glyphicon-sort-by-alphabet': type.cat(node),
-                                                  'glyphicon-hd-video': type.hid(node)
+              <span class="typcn" ng-class="{'typcn-folder': collapsed && type.fol(node),
+                                                  'typcn-folder-open': !collapsed && type.fol(node),
+                                                  'typcn-sort-numerically': type.num(node),
+                                                  'typcn-sort-alphabetically': type.cat(node),
+                                                  'typcn-chart-bar': type.hid(node)
                                                   }"></span> &nbsp;
     </a>
     {{node.title}} &nbsp; &nbsp; <small>({{node.total}})</small>
