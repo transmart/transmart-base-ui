@@ -9,32 +9,32 @@ angular.module('transmartBaseUi')
         var cur = tree,
           last = tree;
         var strPath = path;
-        path = path.split("\\").slice(1,-1);
+        path = path.split('\\').slice(1,-1);
 
         while(path.length){
           var elem = path.shift();
-          if (!cur.hasOwnProperty("title")) {
-            cur["title"] = elem;
+          if (!cur.hasOwnProperty('title')) {
+            cur['title'] = elem;
             // TODO: determine type from API answer
             if(path.length){
-              cur["nodes"] = new Array({});
+              cur['nodes'] = new Array({});
               cur = cur.nodes[0];
             } else {
-              cur["link"] = strPath;
+              cur['link'] = strPath;
             }
           } else {
-            if (cur["title"] == elem) {
-              if(!cur.hasOwnProperty("nodes") && path.length) {
-                cur["nodes"] = new Array({});
+            if (cur['title'] == elem) {
+              if(!cur.hasOwnProperty('nodes') && path.length) {
+                cur['nodes'] = new Array({});
               }
               last = cur;
               cur = cur.nodes[cur.nodes.length-1]; // cont. traverse
             } else {
               // create new leaf and then push it
               var newNode = {};
-              newNode["title"] = elem;
+              newNode['title'] = elem;
               if (!path.length) {
-                newNode["link"] = strPath;
+                newNode['link'] = strPath;
               }
               last.nodes.push(newNode);
               cur = newNode; // get latest item in nodes
@@ -43,10 +43,10 @@ angular.module('transmartBaseUi')
         };
       }; //end parseFolder
 
-      study.getList("concepts").then(function(concepts) {
+      study.getList('concepts').then(function(concepts) {
         var paths = concepts.map(function(obj){
           return obj.fullName;
-        })
+        });
         paths = paths.sort();
         // console.log(paths);
 
@@ -57,11 +57,11 @@ angular.module('transmartBaseUi')
           }
         }
         var setType = function (tree) {
-          if (!tree.hasOwnProperty("nodes")){
-            var t = ["NUMERICAL", "CATEGORICAL", "HIGH_DIMENSIONAL"];
+          if (!tree.hasOwnProperty('nodes')){
+            var t = ['NUMERICAL', 'CATEGORICAL', 'HIGH_DIMENSIONAL'];
             tree['type'] = t[Math.floor(Math.random()*t.length)];
           } else {
-            tree['type'] = "FOLDER";
+            tree['type'] = 'FOLDER';
             tree.nodes.forEach(function (node){
               setType(node);
             })
@@ -70,7 +70,6 @@ angular.module('transmartBaseUi')
         setType(tree);
 
       });
-
 
       return tree;
     };
