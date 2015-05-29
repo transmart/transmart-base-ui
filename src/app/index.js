@@ -45,6 +45,8 @@ angular.module('transmartBaseUi', [
               what = 'ontology_terms';
               resp =  data._embedded[what];
             }
+            // TODO: Conditional below shouldn't happenend.
+            // To check again why REST returns the whole path on what parameter
             else if (what === 'subjects' || what.slice(-8) === 'subjects') {
               resp =  data._embedded.subjects;
             } else {
