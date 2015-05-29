@@ -66,4 +66,16 @@ angular.module('transmartBaseUi')
 
     };
 
+    $scope.countSubjects = function(node) {
+      console.log(node);
+      var path = node.link
+      Restangular.all('node').getList()
+        .then(function (studies) {
+
+
+        }, function (err) {
+
+        });
+    }
+
   }]);
