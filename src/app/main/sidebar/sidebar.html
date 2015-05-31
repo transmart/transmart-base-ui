@@ -1,7 +1,7 @@
 <link rel='stylesheet' href='bower_components/typicons/src/font/typicons.min.css' />
 
 <script type="text/ng-template" id="nodes_renderer.html">
-  <div ui-tree-handle class="tree-node tree-node-content" ng-click="countChilds(node)">
+  <div ui-tree-handle class="tree-node tree-node-content" ng-click="countChilds(node); displayNodeSummaryStatistics(node);">
     <a data-nodrag ng-click="toggle(this)">
               <span class="typcn" ng-class="{'typcn-folder': collapsed && type.fol(node),
                                                   'typcn-folder-open': !collapsed && type.fol(node),
