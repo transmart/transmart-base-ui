@@ -1,53 +1,57 @@
 'use strict';
 
 var gulp = require('gulp');
-
-var paths = gulp.paths;
+var browserSync = require('browser-sync');
 
 var $ = require('gulp-load-plugins')();
 
-gulp.task('styles', function () {
+var wiredep = require('wiredep').stream;
 
-  var lessOptions = {
-    paths: [
-      'bower_components',
-      paths.src + '/app',
-      paths.src + '/components'
-    ]
-  };
+module.exports = function(options) {
+  gulp.task('styles', function () {
+    var lessOptions = {
+      options: [
+        'bower_components',
+        options.src + '/app',
+        options.scr + '/components'
+      ]
+    };
 
-  var injectFiles = gulp.src([
-    paths.src + '/{app,components}/**/*.less',
-    '!' + paths.src + '/app/index.less',
-    '!' + paths.src + '/app/vendor.less'
-  ], { read: false });
+    var injectFiles = gulp.src([
+    options.src + '/{app,components}/**/*.less',
+      '!' + options.src + '/app/index.less',
+      '!' + options.src + '/app/vendor.less'
+    ], { read: false });
 
-  var injectOptions = {
-    transform: function(filePath) {
-      filePath = filePath.replace(paths.src + '/app/', '');
-      filePath = filePath.replace(paths.src + '/components/', '../components/');
-      return '@import \'' + filePath + '\';';
-    },
-    starttag: '// injector',
-    endtag: '// endinjector',
-    addRootSlash: false
-  };
+    var injectOptions = {
+      transform: function(filePath) {
+        filePath = filePath.replace(options.src + '/app/', '');
+        filePath = filePath.replace(options.src + '/components/', '../components/');
+        return '@import \'' + filePath + '\';';
+      },
+      starttag: '// injector',
+      endtag: '// endinjector',
+      addRootSlash: false
+    };
 
-  var indexFilter = $.filter('index.less');
+    var indexFilter = $.filter('index.less');
+    var vendorFilter = $.filter('vendor.less');
 
-  return gulp.src([
-    paths.src + '/app/index.less',
-    paths.src + '/app/vendor.less'
-  ])
-    .pipe(indexFilter)
-    .pipe($.inject(injectFiles, injectOptions))
-    .pipe(indexFilter.restore())
-    .pipe($.less())
-
-  .pipe($.autoprefixer())
-    .on('error', function handleError(err) {
-      console.error(err.toString());
-      this.emit('end');
-    })
-    .pipe(gulp.dest(paths.tmp + '/serve/app/'));
-});
+    return gulp.src([
+      options.src + '/app/index.less',
+      options.src + '/app/vendor.less'
+    ])
+      .pipe(indexFilter)
+      .pipe($.inject(injectFiles, injectOptions))
+      .pipe(indexFilter.restore())
+      .pipe(vendorFilter)
+      .pipe(wiredep(options.wiredep))
+      .pipe(vendorFilter.restore())
+      .pipe($.sourcemaps.init())
+      .pipe($.less(lessOptions)).on('error', options.errorHandler('Less'))
+      .pipe($.autoprefixer()).on('error', options.errorHandler('Autoprefixer'))
+      .pipe($.sourcemaps.write())
+      .pipe(gulp.dest(options.tmp + '/serve/app/'))
+      .pipe(browserSync.reload({ stream: true }));
+  });
+};

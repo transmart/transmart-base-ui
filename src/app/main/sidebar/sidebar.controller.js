@@ -2,34 +2,44 @@
 
 angular.module('transmartBaseUi')
   .controller('SidebarCtrl',
+
   ['$scope', 'Restangular', 'endpointService',
   function ($scope, Restangular, endpointService) {
 
     $scope.endpoints = [];
     $scope.formData = {};
 
-    $scope.status = {
-      isFirstOpen: true,
-      isFirstDisabled: false
-    };
-
-    $scope.oneAtATime = true;
+    $scope.publicStudies = [];
+    $scope.privateStudies = [];
 
     loadStudies();
 
     function loadStudies() {
       var endpoints = endpointService.getEndpoints();
       $scope.endpoints = endpoints;
-      $scope.studies = [];
+      $scope.publicStudies = [];
+      $scope.privateStudies = [];
       
       // Load studies for each endpoint
       endpoints.forEach(function(endpoint) {
         endpoint.restangular.all('studies').getList()
           .then(function (studies) {
+
+            // alert user that it successfully connects to the rest-api
             $scope.alerts.push({type: 'success', msg: 'Successfully connected to rest-api'});
-            studies.forEach(function(study) {
+
+            $scope.studies = studies;
+
+            // Check if studies are public or private
+            // TODO: other cases not public or private
+            $scope.studies.forEach(function(study){
               study.endpoint = endpoint; // Keep reference to endpoint
-              $scope.studies.push(study);
+              if(study._embedded.ontologyTerm.fullName.split('\\')[1] ==
+                "Public Studies") {
+                $scope.publicStudies.push(study);
+              } else {
+                $scope.privateStudies.push(study);
+              }
             });
           }, function (err) {
             $scope.alerts.push({type: 'danger', msg: 'Oops! Cannot connect to rest-api.'});

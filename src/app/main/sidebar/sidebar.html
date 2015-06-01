@@ -1,19 +1,70 @@
 <div class="col-sm-3 col-md-2 sidebar" ng-controller="SidebarCtrl">
+
+  <!-- START STUDIES -->
   <accordion close-others="oneAtATime">
     <accordion-group heading=" Highlights" is-open="status.isFirstOpen" is-disabled="status.isFirstDisabled">
       Browse studies by clicking study header below.
     </accordion-group>
-    <accordion-group ng-repeat="study in studies"
-                     ng-click="getStudyConcepts('{{study._links.self.href}}', '{{study._embedded.ontologyTerm.name}}')">
-      <accordion-heading>
-        {{study._embedded.ontologyTerm.name}}
-      </accordion-heading>
-      <div>
-        {{study.id}} <br>
-        {{study._embedded.ontologyTerm.name | uppercase}} <br>
-        {{study._embedded.ontologyTerm.fullName}}
+
+    <hr>
+
+    <span><h4>Public studies</h4></span>
+    <accordion-group ng-repeat="study in publicStudies" ng-click="getStudyConcepts('{{study._links.self.href}}', '{{study._embedded.ontologyTerm.name}}')">
+
+      <div ng-controller="StudyCtrl">
+        <accordion-heading>
+          <span ng-click="getTree(study)">{{study._embedded.ontologyTerm.name}}</span>
+        </accordion-heading>
+
+        <script type="text/ng-template" id="nodes_renderer.html">
+          <div ui-tree-handle class="tree-node tree-node-content">
+            <a data-nodrag ng-click="toggle(this)"><span class="glyphicon" ng-class="{'glyphicon-chevron-right': collapsed, 'glyphicon-chevron-down': !collapsed}"></span></a>
+            {{node.title}}
+          </div>
+          <ol ui-tree-nodes="" ng-model="node.nodes" ng-class="{hidden: collapsed}">
+            <li ng-repeat="node in node.nodes" ui-tree-node ng-include="'nodes_renderer.html'">
+            </li>
+          </ol>
+        </script>
+        <div ui-tree id="tree-root">
+          <ol ui-tree-nodes="" ng-model="tree.nodes[0].nodes">
+            <li ng-repeat="node in tree.nodes[0].nodes" ui-tree-node ng-include="'nodes_renderer.html'"></li>
+          </ol>
+        </div>
       </div>
+
     </accordion-group>
+
+    <span><h4>Private studies</h4></span>
+    <accordion-group ng-repeat="study in privateStudies" ng-click="getStudyConcepts('{{study._links.self.href}}', '{{study._embedded.ontologyTerm.name}}')">
+
+      <div ng-controller="StudyCtrl">
+        <accordion-heading>
+          <span ng-click="getTree(study)">{{study._embedded.ontologyTerm.name}}</span>
+        </accordion-heading>
+
+        <script type="text/ng-template" id="nodes_renderer.html">
+          <div ui-tree-handle class="tree-node tree-node-content">
+            <a data-nodrag ng-click="toggle(this)"><span class="glyphicon" ng-class="{'glyphicon-chevron-right': collapsed, 'glyphicon-chevron-down': !collapsed}"></span></a>
+            {{node.title}}
+          </div>
+          <ol ui-tree-nodes="" ng-model="node.nodes" ng-class="{hidden: collapsed}">
+            <li ng-repeat="node in node.nodes" ui-tree-node ng-include="'nodes_renderer.html'">
+            </li>
+          </ol>
+        </script>
+        <div ui-tree id="tree-root">
+          <ol ui-tree-nodes="" ng-model="tree.nodes[0].nodes">
+            <li ng-repeat="node in tree.nodes[0].nodes" ui-tree-node ng-include="'nodes_renderer.html'"></li>
+          </ol>
+        </div>
+      </div>
+
+    </accordion-group>
+
+
+    <hr>
+
     <accordion-group>
       <accordion-heading>
         Resources
@@ -41,4 +92,8 @@
       </form>
     </accordion-group>
   </accordion>
+</div>
+  <!--end tree-->
+  <br>
+
 </div>

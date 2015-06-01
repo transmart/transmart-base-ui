@@ -8,7 +8,9 @@ angular.module('transmartBaseUi', [
   'restangular',
   'ui.router',
   'ui.bootstrap',
-  'restangular'
+  'restangular',
+  'ui.tree',
+  'smart-table'
 ])
 
   .config( ['$stateProvider', 'RestangularProvider',
@@ -33,10 +35,12 @@ angular.module('transmartBaseUi', [
       RestangularProvider.setDefaultHeaders(
         {"Accept": 'application/hal+json'}
       );
+
       // Set an interceptor in order to parse the API response
       // when getting a list of resources
       RestangularProvider.setResponseInterceptor(function(data, operation, what) {
         if (operation == 'getList') {
+          if (what === 'concepts') what = 'ontology_terms';
           var resp =  data._embedded[what];
           resp._links = data._links;
           return resp
