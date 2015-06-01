@@ -41,7 +41,7 @@ http.createServer(function (req, res) {
       url: newUrl,
       qs: qs
     }).on('error', function(e) {
-      res.end(e);
+      res.end(e.toString());
     }).pipe(res);
   }
   else if (req.url.slice(0, 6) == '/rest/') {
@@ -72,7 +72,7 @@ http.createServer(function (req, res) {
       url: newUrl,
       headers: headers
     }).on('error', function(e) {
-      res.end(e);
+      res.end(e.toString());
     }).pipe(res);
   }
   else {
@@ -80,7 +80,7 @@ http.createServer(function (req, res) {
     request({
       url: "http://localhost:3000" + req.url
     }).on('error', function(e) {
-      res.end(e);
+      res.end(e.toString());
     }).pipe(res);
   }
 
