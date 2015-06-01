@@ -33,18 +33,27 @@ angular.module('transmartBaseUi', [
       // =========================
       RestangularProvider.setBaseUrl('http://localhost:8001/rest');
       RestangularProvider.setDefaultHeaders(
-        {"Accept": 'application/hal+json'}
+        {'Accept': 'application/hal+json'}
       );
 
       // Set an interceptor in order to parse the API response
       // when getting a list of resources
       RestangularProvider.setResponseInterceptor(function(data, operation, what) {
-        if (operation == 'getList') {
-          if (what === 'concepts') what = 'ontology_terms';
-          var resp =  data._embedded[what];
-          resp._links = data._links;
-          return resp
-        }
+        if (operation === 'getList') {
+            var resp = data;
+            if (what === 'concepts') {
+              what = 'ontology_terms';
+              resp =  data._embedded[what];
+            }
+            // TODO: Conditional below shouldn't happenend.
+            // To check again why REST returns the whole path on what parameter
+            else if (what === 'subjects' || what.slice(-8) === 'subjects') {
+              resp =  data._embedded.subjects;
+            } else {
+              resp =  data._embedded[what];
+            }
+            return resp;
+          }
         return data;
       });
 
@@ -63,10 +72,10 @@ angular.module('transmartBaseUi', [
       $rootScope.globals = $cookieStore.get('globals') || {};
 
       if ($rootScope.globals.currentUser) {
-        $http.defaults.headers.common['Authorization'] = 'Basic ' + $rootScope.globals.currentUser.authdata;
+        $http.defaults.headers.common.Authorization = 'Basic ' + $rootScope.globals.currentUser.authdata;
       }
 
-      $rootScope.$on('$locationChangeStart', function (event, next, current) {
+      $rootScope.$on('$locationChangeStart', function () {
         // redirect to login page if not logged in
         if ($location.path() !== '/login' && !$rootScope.globals.currentUser) {
           $location.path('/login');
