@@ -1,3 +1,7 @@
+<script type="text/ng-template" id="chart.html">
+  <div id="chart_{{observation.id}}"><span>{{observation.title}}</span></div>
+</script>
+
 <div class="container-fluid" >
 
 
@@ -12,7 +16,6 @@
       <!-- Alert -->
       <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
 
-
       <!--Welcome-->
       <div ng-include="'app/main/welcome.html'" ng-show="!selectedStudy.title"></div>
 
@@ -21,7 +24,17 @@
         <h2>{{selectedStudy.title}}</h2>
 
         <tabset ng-show="selectedStudy.panel.isDisplayed">
-          <tab heading="Summary">
+
+          <!--Node Summary Tab-->
+          <tab heading="Node Summary">
+
+            <div ng-repeat="observation in observations" ng-include="'chart.html'">
+
+            </div>
+          </tab>
+
+          <!--Summary-->
+          <tab heading="Study Summary">
             <div class="row placeholders">
               <div class="col-xs-6 col-sm-3 placeholder">
                 <div id="gender-pie-chart" ng-show="!dataLoading"></div>
@@ -49,29 +62,6 @@
           <tab heading="Grid">
             <!-- Selected Study Panel -->
             <img ng-if="dataLoading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
-            <!--
-            <table class="table table-striped table-hover table-condensed table-responsive" ng-show="!dataLoading">
-              <thead>
-              <tr>
-                <th>ID</th>
-                <th>Sex</th>
-                <th>Age</th>
-                <th>Race</th>
-                <th>TrialID</th>
-              </tr>
-              </thead>
-              <tbody>
-              <tr ng-repeat="item in selectedStudy.obj">
-                <td>{{item.id}}</td>
-                <td>{{item.sex}}</td>
-                <td>{{item.age}}</td>
-                <td>{{item.race}}</td>
-                <td>{{item.inTrialId}}</td>
-              </tr>
-              </tbody>
-            </table>
-            -->
-
             <style>
               .st-sort-ascent:before{
                 content: '\25B2';

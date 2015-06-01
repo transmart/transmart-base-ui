@@ -2,7 +2,7 @@
 
 angular.module('transmartBaseUi')
   .controller('MainCtrl',
-  ['$scope', 'Restangular', function ($scope, Restangular) {
+  ['$scope', 'Restangular', 'ChartService', function ($scope, Restangular, ChartService) {
 
     $scope.dataLoading = false;
 
@@ -15,6 +15,8 @@ angular.module('transmartBaseUi')
         isDisplayed: false
       }
     };
+
+    $scope.observations = [];
 
     $scope.getStudyConcepts = function (studyLink, studyId) {
 
@@ -29,7 +31,6 @@ angular.module('transmartBaseUi')
           $scope.displayedCollection = [].concat($scope.selectedStudy.obj);
           $scope.selectedStudy.title = studyId;
           $scope.selectedStudy.panel.isDisplayed = true;
-
 
           var genderPieChart = dc.pieChart('#gender-pie-chart');
           var racePieChart = dc.pieChart('#race-pie-chart');
@@ -107,6 +108,17 @@ angular.module('transmartBaseUi')
 
     $scope.closeConceptsPanel = function () {
       $scope.selectedStudy.panel.isDisplayed = false;
+    };
+
+    $scope.displayNodeSummaryStatistics = function (node) {
+
+      ChartService.getObservations(node).then(function (d) {
+        console.log('d',d);
+        $scope.observations = d;
+
+        ChartService.generateCharts(d);
+      })
+
     };
 
   }]);

@@ -100,7 +100,6 @@ angular.module('transmartBaseUi')
           }
         };
 
-
         setType(tree);
         $scope.orderTreeNodes(tree);
         $scope.countChilds(tree.nodes[0]);
@@ -184,14 +183,15 @@ angular.module('transmartBaseUi')
       }
     };
 
-    $scope.countChilds = function (node) {
-      node.nodes.forEach(function(child){
-        $scope.countSubjects(child);
-      });
+    $scope.countChilds = function (node)
+    {
+      if (node.hasOwnProperty('nodes')) {
+        node.nodes.forEach(function(child){
+          $scope.countSubjects(child);
+        });
+      }
     };
 
-    $scope.displayNodeSummaryStatistics = function (node) {
-      ChartService.displayStats(node, $scope.selectedStudy);
-    };
+
 
   }]);
