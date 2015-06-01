@@ -22,8 +22,8 @@ angular.module('transmartBaseUi')
         .height(200)
         .innerRadius(0)
         .dimension(cDimension)
-        .group(cGroup);
-      //.legend(dc.legend());
+        .group(cGroup)
+        .legend(dc.legend());
 
 
      return tChart;
