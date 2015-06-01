@@ -7,7 +7,15 @@ angular.module('transmartBaseUi')
     $scope.tree = [{}];
 
     $scope.treeConfig = {
-      drag: false
+      drag: false,
+      collapsed: true
+    };
+
+    $scope.type = {
+      fol: function(node){return node.type == "FOLDER"},
+      num: function(node){return node.type == "NUMERICAL"},
+      cat: function(node){return node.type == "CATEGORICAL"},
+      hid: function(node){return node.type == "HIGH_DIMENSIONAL"}
     };
 
     $scope.remove = function(scope) {
@@ -33,7 +41,7 @@ angular.module('transmartBaseUi')
     };
 
     var getRootNodesScope = function() {
-      return angular.element(document.getElementById("tree-root")).scope();
+      return angular.element(document.getElementById("tree-root-public")).scope();
     };
 
     $scope.collapseAll = function() {
