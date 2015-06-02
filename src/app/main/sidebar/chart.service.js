@@ -6,10 +6,50 @@ angular.module('transmartBaseUi')
 
     var chartService = {}, charts = [];
 
-    chartService.myCharts = function () {
-      return charts;
+    /**
+     * Create dc.js bar chart
+     * @param cDimension
+     * @param cGroup
+     * @param el
+     * @private
+     */
+    var _barChart = function (cDimension, cGroup, el, min, max, nodeTitle) {
+      var _barChart = dc.barChart(el);
+      _barChart
+        .width(270)
+        .height(200)
+        .margins({top: 5, right: 5, bottom: 30, left: 25})
+        .dimension(cDimension)
+        .group(cGroup)
+        .elasticY(true)
+        .centerBar(true)
+        .gap(0)
+        .x(d3.scale.linear().domain([min, max]))
+        .renderHorizontalGridLines(true)
+        .filterPrinter(function (filters) {
+          var filter = filters[0], s = '';
+          // TODO number format
+          s += numberFormat(filter[0]) + '% -> ' + numberFormat(filter[1]) + '%';
+          return s;
+        })
+      ;
+      _barChart.xAxis().tickFormat(
+        function (v) { return v; });
+      _barChart.yAxis().ticks(5);
+      _barChart.xAxisLabel(nodeTitle);
+      _barChart.yAxisLabel('# subjects');
+
+      return _barChart;
     };
 
+    /**
+     * Create dc.js pie chart
+     * @param cDimension
+     * @param cGroup
+     * @param el
+     * @returns {*}
+     * @private
+     */
     var _pieChart = function (cDimension, cGroup, el) {
       var tChart = dc.pieChart(el);
 
@@ -21,7 +61,6 @@ angular.module('transmartBaseUi')
         .group(cGroup)
         .renderLabel(false)
         .legend(dc.legend());
-
 
      return tChart;
     };
@@ -81,6 +120,10 @@ angular.module('transmartBaseUi')
       return _d;
     };
 
+    chartService.myCharts = function () {
+      return charts;
+    };
+
     chartService.getObservations = function (node) {
       var _observationsList = [],
         _path = node.link.slice(1);
@@ -92,8 +135,7 @@ angular.module('transmartBaseUi')
             _observationsList = _groupObservationsBasedOnLabels(d);
             resolve(_observationsList);
           }, function (err) {
-            console.log('Error', err);
-            reject(err);
+            reject("Cannot get data from the end-point.");
           });
       });
 
@@ -102,20 +144,25 @@ angular.module('transmartBaseUi')
 
     chartService.generateCharts = function (nodes) {
       var _charts = [];
+        nodes.forEach (function(node, idx){
 
-      nodes.forEach (function(node, idx){
-        var ndx = crossfilter(node.observations),
-          tDimension = ndx.dimension(function(d) {return d.value;}),
-          tGroup = tDimension.group();
+          var ndx = crossfilter(node.observations),
+            tDimension = ndx.dimension(function(d) {return d.value;}),
+            tGroup = tDimension.group();
 
           if (node.type === 'string') {
             _charts.push(_pieChart(tDimension, tGroup, '#chart_' + idx));
+          } else if (node.type === 'number') {
+            var _max = Math.max.apply(Math,node.observations.map(function(o){return o.value;})),
+                _min = Math.min.apply(Math,node.observations.map(function(o){return o.value;}));
+            _charts.push(_barChart(tDimension, tGroup, '#chart_' + idx, _min, _max, node.title));
           }
-      });
+        });
 
-      _charts.forEach(function (c) {
-        c.render();
-      });
+        // now render all charts ..
+        _charts.forEach(function (c) {
+          c.render();
+        });
     };
 
     /**
@@ -134,8 +181,8 @@ angular.module('transmartBaseUi')
             _observationsList = _groupObservationsBasedOnLabels(d);
 
             _observationsList.forEach (function(observation, idx){
-              console.log(idx);
-              console.log(observation);
+              //console.log(idx);
+              //console.log(observation);
               var ndx = crossfilter(observation),
                 tDimension = ndx.dimension(function(_d) {return _d.value;}),
                 tGroup = tDimension.group();
@@ -144,7 +191,7 @@ angular.module('transmartBaseUi')
             charts = _charts;
             resolve(_charts);
           }, function (err) {
-            console.log('Error', err);
+            //console.log('Error', err);
             reject(err);
           });
       });
