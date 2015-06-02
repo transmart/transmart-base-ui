@@ -13,16 +13,13 @@ angular.module('transmartBaseUi')
     var _pieChart = function (cDimension, cGroup, el) {
       var tChart = dc.pieChart(el);
 
-      //console.log(cDimension);
-      //console.log(cGroup);
-      //console.log(el);
-
       tChart
-        .width(200)
+        .width(270)
         .height(200)
         .innerRadius(0)
         .dimension(cDimension)
         .group(cGroup)
+        .renderLabel(false)
         .legend(dc.legend());
 
 
@@ -114,10 +111,7 @@ angular.module('transmartBaseUi')
           if (node.type === 'string') {
             _charts.push(_pieChart(tDimension, tGroup, '#chart_' + idx));
           }
-
-
       });
-
 
       _charts.forEach(function (c) {
         c.render();
