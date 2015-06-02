@@ -3,20 +3,37 @@
 <!--------------------------------------------------------------------------------------------------------------------->
 <!-- START Popover template -->
 <script type="text/ng-template" id="PopoverTemplate">
-  <div>Content</div>
+  <div>
+    <div><b>Data1:  </b>This is info</div>
+    <div><b>Data2:  </b>This is also some info</div>
+    <div><b>Data3:  </b>This is more info</div>
+    <hr>
+    <span class="typcn typcn-key"></span>
+    <span class="typcn typcn-user"></span>
+    <span class="typcn typcn-book"></span>
+  </div>
 </script>
 <!-- END Popover template -->
 <!--------------------------------------------------------------------------------------------------------------------->
 
+<!--------------------------------------------------------------------------------------------------------------------->
+<!-- START Node template -->
 <script type="text/ng-template" id="nodes_renderer.html">
-  <div ui-tree-handle class="tree-node tree-node-content" ng-click="countChilds(node); displayNodeSummaryStatistics(node);">
+  <div ui-tree-handle
+       class="tree-node tree-node-content"
+       ng-click="countChilds(node)"
+       popover-template="'PopoverTemplate'"
+       popover-placement="right"
+       popover-append-to-body="true"
+       popover-trigger="mouseenter"
+       popover-title="{{node.title}}">
     <a data-nodrag ng-click="toggle(this)">
-              <span class="typcn" ng-class="{'typcn-folder': collapsed && type.fol(node),
-                                                  'typcn-folder-open': !collapsed && type.fol(node),
-                                                  'typcn-sort-numerically': type.num(node),
-                                                  'typcn-sort-alphabetically': type.cat(node),
-                                                  'typcn-chart-bar': type.hid(node)
-                                                  }"></span> &nbsp;
+      <span class="typcn" ng-class="{'typcn-folder': collapsed && type.fol(node),
+                                     'typcn-folder-open': !collapsed && type.fol(node),
+                                     'typcn-sort-numerically': type.num(node),
+                                     'typcn-sort-alphabetically': type.cat(node),
+                                     'typcn-chart-bar': type.hid(node)}">
+      </span> &nbsp;
     </a>
     {{node.title}} &nbsp; &nbsp; <small>({{node.total}})</small>
   </div>
@@ -25,6 +42,8 @@
     </li>
   </ol>
 </script>
+<!--------------------------------------------------------------------------------------------------------------------->
+<!-- END Node template -->
 
 <div class="col-sm-3 col-md-2 sidebar" ng-controller="SidebarCtrl">
 
