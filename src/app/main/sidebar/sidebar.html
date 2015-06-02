@@ -25,7 +25,7 @@
 <script type="text/ng-template" id="nodes_renderer.html">
   <div ui-tree-handle
        class="tree-node tree-node-content"
-       ng-click="countChilds(node)"
+       ng-click="countChilds(node);displayNodeSummaryStatistics(node);"
        popover-template="'PopoverTemplate'"
        popover-placement="right"
        popover-append-to-body="true"
