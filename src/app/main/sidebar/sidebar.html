@@ -1,7 +1,24 @@
 <link rel='stylesheet' href='bower_components/typicons/src/font/typicons.min.css' />
 
+<!--------------------------------------------------------------------------------------------------------------------->
+<!-- START Popover template -->
+<script type="text/ng-template" id="PopoverTemplate">
+  <div>Content</div>
+</script>
+<!-- END Popover template -->
+<!--------------------------------------------------------------------------------------------------------------------->
+
 <script type="text/ng-template" id="nodes_renderer.html">
-  <div ui-tree-handle class="tree-node tree-node-content" ng-click="countChilds(node)">
+  <div ui-tree-handle
+       class="tree-node tree-node-content"
+       ng-click="countChilds(node)"
+
+       popover-template="'PopoverTemplate'"
+       popover-title="MetaData"
+       popover-placement="right"
+       popover-append-to-body="true"
+       popover-trigger="mouseenter">
+
     <a data-nodrag ng-click="toggle(this)">
               <span class="typcn" ng-class="{'typcn-folder': collapsed && type.fol(node),
                                                   'typcn-folder-open': !collapsed && type.fol(node),
