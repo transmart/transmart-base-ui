@@ -22,8 +22,6 @@
 
 <!--------------------------------------------------------------------------------------------------------------------->
 <!-- START Node template -->
-
-
 <script type="text/ng-template" id="nodes_renderer.html">
   <div ui-tree-handle
        class="tree-node tree-node-content"
@@ -44,7 +42,10 @@
     {{node.title}} &nbsp; &nbsp; <small>({{node.total}})</small>
   </div>
   <ol ui-tree-nodes="" ng-model="node.nodes" ng-class="{hidden: collapsed}">
-    <li ng-repeat="node in node.nodes" ui-tree-node ng-include="'nodes_renderer.html'" data-collapsed="treeConfig.collapsed">
+    <li ng-repeat="node in node.nodes"
+        ui-tree-node
+        ng-include="'nodes_renderer.html'"
+        data-collapsed="treeConfig.collapsed">
     </li>
   </ol>
 </script>
@@ -61,11 +62,20 @@
 
     <hr>
     <span><h4>Public studies</h4></span>
-    <accordion-group ng-repeat="study in publicStudies" ng-click="getStudyConcepts('{{study._links.self.href}}', '{{study._embedded.ontologyTerm.name}}')">
 
-      <div ng-controller="StudyCtrl">
+    <div ng-repeat="study in publicStudies" ng-controller="StudyCtrl">
+      <accordion-group>
+
         <accordion-heading>
-          <span ng-click="getTree(study)">{{study._embedded.ontologyTerm.name}}</span>
+          <div ng-click="getTree(study); getStudyConcepts('{{study._links.self.href}}', '{{study._embedded.ontologyTerm.name}}')"
+               popover-template="'PopoverTemplate'"
+               popover-placement="right"
+               popover-append-to-body="true"
+               popover-trigger="mouseenter"
+               popover-title="{{study._embedded.ontologyTerm.name}}">
+            {{study._embedded.ontologyTerm.name}}
+            <i class="glyphicon glyphicon-spin" ng-class="{'glyphicon-refresh': treeLoading}"></i>
+          </div>
         </accordion-heading>
 
         <div ui-tree id="tree-root-public" data-drag-enabled="treeConfig.drag" data-drop-enabled="false">
@@ -73,16 +83,25 @@
             <li ng-repeat="node in tree.nodes[0].nodes" ui-tree-node ng-include="'nodes_renderer.html'" data-collapsed="treeConfig.collapsed"></li>
           </ol>
         </div>
-      </div>
 
-    </accordion-group>
+      </accordion-group>
+    </div>
+
     <br>
     <span><h4>Private studies</h4></span>
-    <accordion-group ng-repeat="study in privateStudies" ng-click="getStudyConcepts('{{study._links.self.href}}', '{{study._embedded.ontologyTerm.name}}')">
+    <div ng-repeat="study in privateStudies" ng-controller="StudyCtrl">
+      <accordion-group>
 
-      <div  ng-controller="StudyCtrl">
         <accordion-heading>
-          <span ng-click="getTree(study)">{{study._embedded.ontologyTerm.name}}</span>
+          <div ng-click="getTree(study); getStudyConcepts('{{study._links.self.href}}', '{{study._embedded.ontologyTerm.name}}')"
+               popover-template="'PopoverTemplate'"
+               popover-placement="right"
+               popover-append-to-body="true"
+               popover-trigger="mouseenter"
+               popover-title="{{study._embedded.ontologyTerm.name}}">
+            {{study._embedded.ontologyTerm.name}}
+            <i class="glyphicon glyphicon-spin" ng-class="{'glyphicon-refresh': treeLoading}"></i>
+          </div>
         </accordion-heading>
 
         <div ui-tree id="tree-root-private" data-drag-enabled="treeConfig.drag">
@@ -90,9 +109,10 @@
             <li ng-repeat="node in tree.nodes[0].nodes" ui-tree-node ng-include="'nodes_renderer.html'"></li>
           </ol>
         </div>
-      </div>
+
 
     </accordion-group>
+  </div>
 
     <hr>
 
