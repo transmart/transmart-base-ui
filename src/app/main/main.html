@@ -1,5 +1,10 @@
 <script type="text/ng-template" id="chart.html">
-  <div id="chart_{{observation.id}}"><span>{{observation.title}}</span></div>
+    <div class="panel panel-default" style="width:300px;height:300px;float: left; margin-right: 5px; font-size: .8em;">
+      <div class="panel-heading"><h4>{{observation.title}}</h4></div>
+      <div class="panel-body">
+        <div id="chart_{{observation.id}}" style=""></div>
+      </div>
+    </div>
 </script>
 
 <div class="container-fluid" >

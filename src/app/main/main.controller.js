@@ -99,7 +99,6 @@ angular.module('transmartBaseUi')
 
           $scope.dataLoading = false;
         });
-
     };
 
     $scope.closeAlert = function (index) {
@@ -111,13 +110,22 @@ angular.module('transmartBaseUi')
     };
 
     $scope.displayNodeSummaryStatistics = function (node) {
-
       ChartService.getObservations(node).then(function (d) {
-        console.log('d',d);
-        $scope.observations = d;
-
-        ChartService.generateCharts(d);
-      })
+        // at first, get the observation data for the selected node
+        $scope.$apply(function () {
+          $scope.observations = d;
+          return $scope.observations;
+        });
+      }, function (err) {
+          $scope.alerts.pop();
+          $scope.alerts.push({type: 'danger', msg: err});
+        }
+      ).then(function () {
+        // then generate charts out of it
+        if (typeof $scope.observations !== 'undefined') {
+          ChartService.generateCharts($scope.observations);
+        }
+      });
 
     };
 
