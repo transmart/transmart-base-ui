@@ -69,24 +69,20 @@
       </accordion-heading>
 
       <ul>
-        <li><a href="http://localhost:8080/transmart-rest-api/" tooltip="http://localhost:8080/transmart-rest-api/">Local</a></li>
+        <li ng-repeat="endpoint in endpoints"><a href="{{endpoint.url}}" tooltip="{{endpoint.url}}">{{endpoint.title}}</a></li>
       </ul>
 
       <br>
 
-      <form name="form" ng-submit="login()" role="form">
+      <form name="formData.endpointForm" ng-submit="addResource()" role="form">
         <div class="form-group">
-          <input type="text" class="form-control input-sm" placeholder="Title">
+          <input type="text" class="form-control input-sm" placeholder="Title" ng-model="formData.title">
         </div>
         <div class="input-group input-group form-group">
-          <span class="input-group-addon" id="sizing-addon1">http://</span>
-          <input type="text" class="form-control input-sm" placeholder="Resource" aria-describedby="sizing-addon1">
+          <input type="text" class="form-control input-sm" placeholder="Endpoint url" ng-model="formData.url">
         </div>
         <div class="form-group">
-          <input type="text" class="form-control input-sm" placeholder="Client ID">
-        </div>
-        <div class="form-group">
-          <input type="text" class="form-control input-sm" placeholder="Client Secret">
+          <input type="text" class="form-control input-sm" placeholder="Request token" ng-model="formData.requestToken">
         </div>
         <div class="form-actions">
           <button type="submit" class="btn btn-primary">Add Resource</button>
