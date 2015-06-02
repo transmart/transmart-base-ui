@@ -2,7 +2,7 @@
 
 angular.module('transmartBaseUi')
   .controller('StudyCtrl',
-  ['$scope', 'Restangular', function ($scope, Restangular) {
+  ['$scope', 'Restangular', 'ChartService', function ($scope, Restangular, ChartService) {
 
     $scope.tree = [{}];
 
@@ -167,6 +167,7 @@ angular.module('transmartBaseUi')
 
 
     $scope.getTree = function (study) {
+      $scope.selectedStudy = study;
       $scope.tree = $scope.getSingleTree(study);
     };
 
@@ -189,6 +190,8 @@ angular.module('transmartBaseUi')
       });
     };
 
-
+    $scope.displayNodeSummaryStatistics = function (node) {
+      ChartService.displayStats(node, $scope.selectedStudy);
+    };
 
   }]);

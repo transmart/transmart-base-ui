@@ -39,18 +39,26 @@ angular.module('transmartBaseUi', [
       // Set an interceptor in order to parse the API response
       // when getting a list of resources
       RestangularProvider.setResponseInterceptor(function(data, operation, what) {
+
+        /**
+         * Get the last token when requested model is a string path
+         * @param what
+         * @returns {*}
+         * @private
+         */
+        var _getLastToken = function (what) {
+          var _t = what.split('/').slice(1);
+          return what.indexOf('/') === -1 ? what : _t[_t.length-1];
+        };
+
         if (operation === 'getList') {
-            var resp = data;
+            var _what, resp = data;
             if (what === 'concepts') {
               what = 'ontology_terms';
               resp =  data._embedded[what];
-            }
-            // TODO: Conditional below shouldn't happenend.
-            // To check again why REST returns the whole path on what parameter
-            else if (what === 'subjects' || what.slice(-8) === 'subjects') {
-              resp =  data._embedded.subjects;
             } else {
-              resp =  data._embedded[what];
+              _what = _getLastToken(what);
+              resp =  data._embedded[_what];
             }
             return resp;
           }
