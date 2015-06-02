@@ -13,8 +13,8 @@ angular.module('transmartBaseUi', [
   'smart-table'
 ])
 
-  .config( ['$stateProvider', '$urlRouterProvider', 'RestangularProvider',
-    function ($stateProvider, $urlRouterProvider, RestangularProvider) {
+  .config( ['$stateProvider', 'RestangularProvider',
+    function ($stateProvider, RestangularProvider) {
 
       $stateProvider
         .state('main', {
@@ -31,7 +31,7 @@ angular.module('transmartBaseUi', [
       // =========================
       // Set restful api base url
       // =========================
-      RestangularProvider.setBaseUrl('http://localhost:8080/transmart-rest-api');
+      RestangularProvider.setBaseUrl('http://localhost:8001/rest');
       RestangularProvider.setDefaultHeaders(
         {'Accept': 'application/hal+json'}
       );
@@ -71,8 +71,10 @@ angular.module('transmartBaseUi', [
       });
   }])
 
-  .run(['$rootScope', '$location', '$cookieStore', '$http',
-    function ($rootScope, $location, $cookieStore, $http) {
+  .run(['$rootScope', '$location', '$cookieStore', '$http', 'endpointService',
+    function ($rootScope, $location, $cookieStore, $http, endpointService) {
+
+      endpointService.addEndpoint('Local', 'http://localhost:8080/transmart-rest-api');
 
       // keep user logged in after page refresh
       $rootScope.globals = $cookieStore.get('globals') || {};
