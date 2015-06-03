@@ -36,6 +36,15 @@ angular.module('transmartBaseUi')
       }
     };
 
+    $scope.countChilds = function (node)
+    {
+      if (node.hasOwnProperty('nodes')) {
+        node.nodes.forEach(function(child){
+          countSubjects(child);
+        });
+      }
+    };
+
     //------------------------------------------------------------------------------------------------------------------
     // DUMMY
     //------------------------------------------------------------------------------------------------------------------
@@ -58,15 +67,6 @@ angular.module('transmartBaseUi')
           }, function () {
 
           });
-      }
-    };
-
-    var countChilds = function (node)
-    {
-      if (node.hasOwnProperty('nodes')) {
-        node.nodes.forEach(function(child){
-          countSubjects(child);
-        });
       }
     };
 
@@ -166,7 +166,7 @@ angular.module('transmartBaseUi')
 
         setType(tree);
         orderTreeNodes(tree);
-        countChilds(tree.nodes[0]);
+        $scope.countChilds(tree.nodes[0]);
 
       }).then(function(){
         $scope.treeLoading = false;
