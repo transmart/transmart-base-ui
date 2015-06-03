@@ -1,56 +1,3 @@
-<link rel='stylesheet' href='bower_components/typicons/src/font/typicons.min.css' />
-
-<!--------------------------------------------------------------------------------------------------------------------->
-<!-- START Popover template -->
-<script type="text/ng-template" id="PopoverTemplate">
-  <div>
-    <table >
-      <tr ng-repeat="(key, value) in metadata" class="popover-table-row">
-        <td ><b>{{key}}:&nbsp&nbsp</b></td>
-        <td></td>
-        <td>{{value}}</td>
-      </tr>
-    </table>
-
-    <span class="typcn typcn-key"></span>
-    <span class="typcn typcn-user"></span>
-    <span class="typcn typcn-book"></span>
-  </div>
-</script>
-<!-- END Popover template -->
-<!--------------------------------------------------------------------------------------------------------------------->
-
-<!--------------------------------------------------------------------------------------------------------------------->
-<!-- START Node template -->
-<script type="text/ng-template" id="nodes_renderer.html">
-  <div ui-tree-handle
-       class="tree-node tree-node-content"
-       ng-click="countChilds(node);displayNodeSummaryStatistics(node);"
-       popover-template="'PopoverTemplate'"
-       popover-placement="right"
-       popover-append-to-body="true"
-       popover-trigger="mouseenter"
-       popover-title="{{node.title}}">
-    <a data-nodrag ng-click="toggle(this)">
-      <span class="typcn" ng-class="{'typcn-folder': collapsed && type.fol(node),
-                                     'typcn-folder-open': !collapsed && type.fol(node),
-                                     'typcn-sort-numerically': type.num(node),
-                                     'typcn-sort-alphabetically': type.cat(node),
-                                     'typcn-chart-bar': type.hid(node)}">
-      </span> &nbsp;
-    </a>
-    {{node.title}} &nbsp; &nbsp; <small>({{node.total}})</small>
-  </div>
-  <ol ui-tree-nodes="" ng-model="node.nodes" ng-class="{hidden: collapsed}">
-    <li ng-repeat="node in node.nodes"
-        ui-tree-node
-        ng-include="'nodes_renderer.html'"
-        data-collapsed="treeConfig.collapsed">
-    </li>
-  </ol>
-</script>
-<!--------------------------------------------------------------------------------------------------------------------->
-<!-- END Node template -->
 
 <div class="col-sm-3 col-md-2 sidebar" ng-controller="SidebarCtrl">
 
@@ -60,61 +7,11 @@
       Browse studies by clicking study header below.
     </accordion-group>
 
-    <hr>
-    <span><h4>Public studies</h4></span>
+    <study-accordion acc-studies="publicStudies" acc-title="'Public studies'" study-action="getStudyConcepts"
+                     node-action="displayNodeSummaryStatistics"></study-accordion>
 
-    <div ng-repeat="study in publicStudies" ng-controller="StudyCtrl">
-      <accordion-group>
-
-        <accordion-heading>
-          <div ng-click="getTree(study); getStudyConcepts('{{study._links.self.href}}', '{{study._embedded.ontologyTerm.name}}')"
-               popover-template="'PopoverTemplate'"
-               popover-placement="right"
-               popover-append-to-body="true"
-               popover-trigger="mouseenter"
-               popover-title="{{study._embedded.ontologyTerm.name}}">
-            {{study._embedded.ontologyTerm.name}}
-            <i class="glyphicon glyphicon-spin" ng-class="{'glyphicon-refresh': treeLoading}"></i>
-          </div>
-        </accordion-heading>
-
-        <div ui-tree id="tree-root-public" data-drag-enabled="treeConfig.drag" data-drop-enabled="false">
-          <ol ui-tree-nodes="" ng-model="tree.nodes[0].nodes">
-            <li ng-repeat="node in tree.nodes[0].nodes" ui-tree-node ng-include="'nodes_renderer.html'" data-collapsed="treeConfig.collapsed"></li>
-          </ol>
-        </div>
-
-      </accordion-group>
-    </div>
-
-    <br>
-    <span><h4>Private studies</h4></span>
-    <div ng-repeat="study in privateStudies" ng-controller="StudyCtrl">
-      <accordion-group>
-
-        <accordion-heading>
-          <div ng-click="getTree(study); getStudyConcepts('{{study._links.self.href}}', '{{study._embedded.ontologyTerm.name}}')"
-               popover-template="'PopoverTemplate'"
-               popover-placement="right"
-               popover-append-to-body="true"
-               popover-trigger="mouseenter"
-               popover-title="{{study._embedded.ontologyTerm.name}}">
-            {{study._embedded.ontologyTerm.name}}
-            <i class="glyphicon glyphicon-spin" ng-class="{'glyphicon-refresh': treeLoading}"></i>
-          </div>
-        </accordion-heading>
-
-        <div ui-tree id="tree-root-private" data-drag-enabled="treeConfig.drag">
-          <ol ui-tree-nodes="" ng-model="tree.nodes[0].nodes">
-            <li ng-repeat="node in tree.nodes[0].nodes" ui-tree-node ng-include="'nodes_renderer.html'"></li>
-          </ol>
-        </div>
-
-
-    </accordion-group>
-  </div>
-
-    <hr>
+    <study-accordion acc-studies="privateStudies" acc-title="'Private studies'" study-action="getStudyConcepts"
+                     node-action="displayNodeSummaryStatistics"></study-accordion>
 
     <accordion-group>
       <accordion-heading>
