@@ -13,10 +13,10 @@ angular.module('transmartBaseUi')
 
       service.getEndpoints = function() {
         return endpoints;
-      }
+      };
 
       service.addEndpoint = function(title, url) {
-        
+
         // Create new restangular instance
         var newRestangular = Restangular;
         Restangular.setDefaultHeaders({
@@ -30,18 +30,18 @@ angular.module('transmartBaseUi')
           title: title,
           url: url,
           restangular: newRestangular
-        }
+        };
 
         // Add endpoint to the list
         endpoints = [];
         endpoints.push(endpoint);
-      }
+      };
 
       service.addOAuthEndpoint = function(title, url, requestToken) {
         var deferred = $q.defer();
 
         // Make sure url ends with '/'
-        if (url.substring(url.length-1, url.length) == '/') {
+        if (url.substring(url.length-1, url.length) === '/') {
           url = url.substring(0, url.length-1);
         }
 
@@ -65,7 +65,7 @@ angular.module('transmartBaseUi')
               'Authorization': 'Bearer ' + access_token,
               'Accept': 'application/hal+json',
               'Endpoint': url
-            })
+            });
 
             // Store meta data and restangular instance in object
             var endpoint = {
@@ -73,7 +73,7 @@ angular.module('transmartBaseUi')
               url: url,
               access_token: access_token,
               restangular: newRestangular
-            }
+            };
 
             // Add endpoint to the list
             endpoints = [];
@@ -81,12 +81,12 @@ angular.module('transmartBaseUi')
 
             deferred.resolve(response);
           })
-          .error(function (data, status) {
+          .error(function (data) {
             deferred.reject(data);
           });
 
         return deferred.promise;
-      }
+      };
 
       return service;
     }

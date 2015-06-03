@@ -24,7 +24,7 @@ angular.module('transmartBaseUi', [
         })
         .state('login', {
           url: '/login',
-          templateUrl: 'components/login/login.html',
+          templateUrl: 'app/components/login/login.html',
           controller: 'LoginCtrl'
         });
 

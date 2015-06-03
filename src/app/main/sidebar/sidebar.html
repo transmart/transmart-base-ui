@@ -6,7 +6,7 @@
 <script type="text/ng-template" id="nodes_renderer.html">
   <div ui-tree-handle
        class="tree-node tree-node-content"
-       ng-click="countChilds(node)"
+       ng-click="countChilds(node);displayNodeSummaryStatistics(node);"
        popover-template="'PopoverTemplate'"
        popover-placement="right"
        popover-append-to-body="true"
@@ -111,8 +111,11 @@
         <div class="form-group">
           <input type="text" class="form-control input-sm" placeholder="Title" ng-model="formData.title">
         </div>
-        <div class="input-group input-group form-group">
+        <div class="form-group">
           <input type="text" class="form-control input-sm" placeholder="Endpoint url" ng-model="formData.url">
+        </div>
+        <div class="form-group">
+          <button type="button" class="form-control btn btn-default" ng-click="navigateToAuthorizationPage()">Get request token</button>
         </div>
         <div class="form-group">
           <input type="text" class="form-control input-sm" placeholder="Request token" ng-model="formData.requestToken">
