@@ -7,7 +7,9 @@ angular.module('transmartBaseUi')
     scope: {
       studies: '=accStudies',
       title: '=accTitle',
-      action: '=accAction'
+      saction: '&studyAction',
+      naction: '&nodeAction'
+
     },
     templateUrl: "/app/main/sidebar/study.accordion.html"
   };
