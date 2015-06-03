@@ -82,7 +82,7 @@ angular.module('transmartBaseUi')
        */
       var _findElement = function (arr, propName, propValue) {
         for (var i=0; i < arr.length; i++)
-          if (arr[i][propName] == propValue)
+          if (arr[i][propName] === propValue)
             return arr[i];
         // will return undefined if not found; you could return a default instead
       };
@@ -101,7 +101,7 @@ angular.module('transmartBaseUi')
       d.forEach(function (o, idx) {
         var _x = _findElement(_d, 'label', o.label);
 
-        if (typeof _x == 'undefined') {
+        if (typeof _x === 'undefined') {
           _d.push(
             {
               id: idx,
@@ -135,7 +135,7 @@ angular.module('transmartBaseUi')
             _observationsList = _groupObservationsBasedOnLabels(d);
             resolve(_observationsList);
           }, function (err) {
-            reject("Cannot get data from the end-point.");
+            reject('Cannot get data from the end-point.');
           });
       });
 

@@ -19,7 +19,7 @@ angular.module('transmartBaseUi')
       $scope.endpoints = endpoints;
       $scope.publicStudies = [];
       $scope.privateStudies = [];
-      
+
       // Load studies for each endpoint
       endpoints.forEach(function(endpoint) {
         endpoint.restangular.all('studies').getList()
@@ -34,8 +34,8 @@ angular.module('transmartBaseUi')
             // TODO: other cases not public or private
             $scope.studies.forEach(function(study){
               study.endpoint = endpoint; // Keep reference to endpoint
-              if(study._embedded.ontologyTerm.fullName.split('\\')[1] ==
-                "Public Studies") {
+              if(study._embedded.ontologyTerm.fullName.split('\\')[1] ===
+                'Public Studies') {
                 $scope.publicStudies.push(study);
               } else {
                 $scope.privateStudies.push(study);
@@ -58,15 +58,15 @@ angular.module('transmartBaseUi')
 
     $scope.navigateToAuthorizationPage = function() {
       var url = $scope.formData.url;
-      
+
       // Cut off any '/'
-      if (url.substring(url.length-1, url.length) == '/') {
+      if (url.substring(url.length-1, url.length) === '/') {
         url = url.substring(0, url.length-1);
       }
 
       var authorizationUrl = url + '/oauth/authorize?response_type=code&client_id=api-client&client_secret=api-client&redirect_uri=' + url + '/oauth/verify';
       $window.open(authorizationUrl, '_blank');
-    }
+    };
 
     $scope.addResource = function() {
       var formData = $scope.formData;
@@ -82,6 +82,6 @@ angular.module('transmartBaseUi')
         resetEndpointForm();
         loadStudies();
       }
-    }
+    };
 
   }]);
