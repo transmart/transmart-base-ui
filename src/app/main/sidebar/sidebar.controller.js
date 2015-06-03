@@ -3,8 +3,8 @@
 angular.module('transmartBaseUi')
   .controller('SidebarCtrl',
 
-  ['$scope', 'Restangular', 'endpointService',
-  function ($scope, Restangular, endpointService) {
+  ['$scope', '$window', 'Restangular', 'endpointService',
+  function ($scope, $window, Restangular, endpointService) {
 
     $scope.endpoints = [];
     $scope.formData = {};
@@ -54,6 +54,18 @@ angular.module('transmartBaseUi')
       formData.url = '';
       formData.requestToken = '';
       formData.endpointForm.$setPristine();
+    }
+
+    $scope.navigateToAuthorizationPage = function() {
+      var url = $scope.formData.url;
+      
+      // Cut off any '/'
+      if (url.substring(url.length-1, url.length) == '/') {
+        url = url.substring(0, url.length-1);
+      }
+
+      var authorizationUrl = url + '/oauth/authorize?response_type=code&client_id=api-client&client_secret=api-client&redirect_uri=' + url + '/oauth/verify';
+      $window.open(authorizationUrl, '_blank');
     }
 
     $scope.addResource = function() {
