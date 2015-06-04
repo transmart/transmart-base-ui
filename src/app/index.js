@@ -13,8 +13,8 @@ angular.module('transmartBaseUi', [
   'smart-table'
 ])
 
-  .config( ['$stateProvider', 'RestangularProvider',
-    function ($stateProvider, RestangularProvider) {
+  .config( ['$stateProvider', 'RestangularProvider', '$tooltipProvider',
+    function ($stateProvider, RestangularProvider, $tooltipProvider) {
 
       $stateProvider
         .state('main', {
@@ -69,6 +69,9 @@ angular.module('transmartBaseUi', [
       RestangularProvider.setRestangularFields({
         selfLink: 'self.link'
       });
+
+      // Set default actions for popover
+      $tooltipProvider.setTriggers({'click': 'ts-blur'})
   }])
 
   .run(['$rootScope', '$location', '$cookieStore', '$http', 'endpointService',
