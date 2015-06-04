@@ -17,6 +17,11 @@ angular.module('transmartBaseUi')
 
       service.addEndpoint = function(title, url) {
 
+        // Cut off any '/'
+        if (url.substring(url.length-1, url.length) === '/') {
+          url = url.substring(0, url.length-1);
+        }
+        
         // Create new restangular instance
         var newRestangular = Restangular;
         Restangular.setDefaultHeaders({
@@ -40,7 +45,7 @@ angular.module('transmartBaseUi')
       service.addOAuthEndpoint = function(title, url, requestToken) {
         var deferred = $q.defer();
 
-        // Make sure url ends with '/'
+        // Cut off any '/'
         if (url.substring(url.length-1, url.length) === '/') {
           url = url.substring(0, url.length-1);
         }
