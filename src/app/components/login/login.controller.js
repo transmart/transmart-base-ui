@@ -1,9 +1,11 @@
 'use strict';
 
 angular.module('transmartBaseUi')
-  .controller('LoginCtrl', ['$scope', '$state', '$location', 'AuthenticationService', function ($scope, $state, $location, AuthenticationService) {
+  .controller('LoginCtrl', ['$scope', '$state', '$location', 'AuthenticationService', 'alertService',
+    function ($scope, $state, $location, AuthenticationService, alertService) {
 
-    $scope.alerts = []; // init alerts
+    $scope.close = alertService.remove;
+    $scope.alerts = alertService.get();
 
     // reset login status
     AuthenticationService.ClearCredentials();
@@ -12,18 +14,15 @@ angular.module('transmartBaseUi')
       $scope.dataLoading = true;
       AuthenticationService.Login($scope.username, $scope.password, function(response) {
         if(response.success) {
+          alertService.reset();
           AuthenticationService.SetCredentials($scope.username, $scope.password);
           $location.path('/');
         } else {
-          $scope.alerts.push({type: 'danger', msg: 'Invalid login credentials.' });
+          alertService.add('danger', 'Invalid login credentials.');
           $scope.error = response.message;
           $scope.dataLoading = false;
         }
       });
-    };
-
-    $scope.closeAlert = function(index) {
-      $scope.alerts.splice(index, 1);
     };
 
   }]);
