@@ -8,7 +8,7 @@
     <div class="col-sm-10 col-sm-offset-3 col-md-10 col-md-offset-2 main" >
 
       <!-- Alert -->
-      <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
+      <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="close(alert.id)">{{alert.message}}</alert>
 
       <!--Welcome-->
       <div ng-include="'app/main/welcome.html'" ng-show="!selectedStudy.title"></div>
