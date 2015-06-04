@@ -19,8 +19,8 @@ describe('MainCtrl', function () {
     });
 
     it('removes alert when alert is closed', function () {
-      $scope.alerts.push({type: 'success', msg: 'Successfully connected to rest-api'});
-      $scope.closeAlert();
+      alertService.add('success', 'Successfully connected to rest-api');
+      alertService.remove(1);
       expect($scope.alerts.length).toBeLessThan(1);
     });
 

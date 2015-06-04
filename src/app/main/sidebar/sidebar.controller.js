@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('transmartBaseUi')
-  .controller('SidebarCtrl', ['$scope', '$window', 'Restangular', 'endpointService',
-    function ($scope, $window, Restangular, endpointService) {
+  .controller('SidebarCtrl', ['$scope', '$window', 'Restangular', 'endpointService', 'alertService',
+    function ($scope, $window, Restangular, endpointService, alertService) {
     //------------------------------------------------------------------------------------------------------------------
     // Scope
     //------------------------------------------------------------------------------------------------------------------
@@ -61,7 +61,7 @@ angular.module('transmartBaseUi')
           .then(function (studies) {
 
             // alert user that it successfully connects to the rest-api
-            $scope.alerts.push({type: 'success', msg: 'Successfully connected to rest-api'});
+            alertService.add('success', 'Successfully connected to rest-api', 3000);
 
             $scope.studies = studies;
 
@@ -77,7 +77,7 @@ angular.module('transmartBaseUi')
               }
             });
           }, function (err) {
-            $scope.alerts.push({type: 'danger', msg: 'Oops! Cannot connect to rest-api.'});
+            alertService.add('danger', 'Oops! Cannot connect to rest-api.');
             console.error(err);
           });
       });

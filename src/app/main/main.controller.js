@@ -2,11 +2,12 @@
 
 angular.module('transmartBaseUi')
   .controller('MainCtrl',
-  ['$scope', 'Restangular', 'ChartService', function ($scope, Restangular, ChartService) {
+  ['$scope', 'Restangular', 'ChartService', 'alertService', function ($scope, Restangular, ChartService, alertService) {
 
     $scope.dataLoading = false;
 
-    $scope.alerts = [];
+    $scope.close = alertService.remove;
+    $scope.alerts = alertService.get();
 
     $scope.selectedStudy = {
       'obj': null,
@@ -101,10 +102,6 @@ angular.module('transmartBaseUi')
         });
     };
 
-    $scope.closeAlert = function (index) {
-      $scope.alerts.splice(index, 1);
-    };
-
     $scope.closeConceptsPanel = function () {
       $scope.selectedStudy.panel.isDisplayed = false;
     };
@@ -117,8 +114,7 @@ angular.module('transmartBaseUi')
           return $scope.observations;
         });
       }, function (err) {
-          $scope.alerts.pop();
-          $scope.alerts.push({type: 'danger', msg: err});
+          alertService.add('danger', err);
         }
       ).then(function () {
         // then generate charts out of it

@@ -5,7 +5,7 @@
 
   <p><div ng-controller="LoginCtrl">
 
-    <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
+    <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="close(alert.id)">{{alert.message}}</alert>
 
     <form name="form" ng-submit="login()" role="form">
       <div class="form-group" ng-class="{ 'has-error': form.username.$dirty && form.username.$error.required }">
