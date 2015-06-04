@@ -11,6 +11,6 @@ angular.module('transmartBaseUi')
       naction: '&nodeAction'
 
     },
-    templateUrl: "/app/main/sidebar/study.accordion.html"
+    templateUrl: '/app/main/sidebar/study.accordion.html'
   };
 });

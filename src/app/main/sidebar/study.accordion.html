@@ -1,5 +1,3 @@
-<link rel='stylesheet' href='bower_components/typicons/src/font/typicons.min.css' />
-
 <!--------------------------------------------------------------------------------------------------------------------->
 <!-- START Node template -->
 
@@ -76,7 +74,8 @@
 
     <div ui-tree id="tree-root" data-drag-enabled="treeConfig.drag" data-drop-enabled="false">
       <ol ui-tree-nodes="" ng-model="tree.nodes[0].nodes">
-        <li ng-repeat="node in tree.nodes[0].nodes" ui-tree-node ng-include="'nodes_renderer.html'" data-collapsed="treeConfig.collapsed"></li>
+        <li ng-repeat="node in tree.nodes[0].nodes" ui-tree-node ng-include="'nodes_renderer.html'" 
+          data-collapsed="treeConfig.collapsed"></li>
       </ol>
     </div>
 
