@@ -110,10 +110,19 @@ angular.module('transmartBaseUi')
     };
 
     $scope.displayNodeSummaryStatistics = function (node) {
+
+
+      angular.element('#node-charts-container').empty();
+
+      $scope.dataLoading = true;
+      $scope.chartLoading = true;
+
       ChartService.getObservations(node).then(function (d) {
         // at first, get the observation data for the selected node
         $scope.$apply(function () {
           $scope.observations = d;
+          $scope.chartLoading = true;
+          $scope.dataLoading = false;
           return $scope.observations;
         });
       }, function (err) {
@@ -125,6 +134,10 @@ angular.module('transmartBaseUi')
         if (typeof $scope.observations !== 'undefined') {
           ChartService.generateCharts($scope.observations);
         }
+      })
+        .then (function () {
+        $scope.dataLoading = false;
+        $scope.chartLoading = false;
       });
 
     };

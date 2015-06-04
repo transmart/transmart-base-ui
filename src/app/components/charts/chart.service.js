@@ -6,6 +6,8 @@ angular.module('transmartBaseUi')
 
     var chartService = {}, charts = [];
 
+    chartService.loading = false;
+
     /**
      * Create dc.js bar chart
      * @param cDimension
