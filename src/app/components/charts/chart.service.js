@@ -6,8 +6,6 @@ angular.module('transmartBaseUi')
 
     var chartService = {}, charts = [];
 
-    chartService.loading = false;
-
     /**
      * Create dc.js bar chart
      * @param cDimension
@@ -67,7 +65,7 @@ angular.module('transmartBaseUi')
      return tChart;
     };
 
-    var _groupObservationsBasedOnLabels = function (d) {
+    var _createGroupObservationsBasedOnLabel = function (d) {
       var _d = [];
 
       var _getDataType = function (val) {
@@ -122,6 +120,18 @@ angular.module('transmartBaseUi')
       return _d;
     };
 
+    var _groupSubjectsBasedOnStudy = function (d) {
+      var returnVal = {
+        'obj': d._embedded.subjects,
+        'title': '',
+        'panel': {
+          isDisplayed: false
+        }
+      };
+
+      return returnVal;
+    };
+
     chartService.myCharts = function () {
       return charts;
     };
@@ -134,12 +144,31 @@ angular.module('transmartBaseUi')
         Restangular.all(_path + '/observations').getList()
           .then(function (d) {
             // create categorical or numerical dimension based on observation data
-            _observationsList = _groupObservationsBasedOnLabels(d);
+            _observationsList = _createGroupObservationsBasedOnLabel(d);
             resolve(_observationsList);
           }, function (err) {
             reject('Cannot get data from the end-point.');
           });
       });
+
+      return promise;
+    };
+
+    chartService.getSubjects = function (node) {
+      var _subjects,
+        studyLink = node._links.self.href.slice(1),
+        studyId = node._embedded.ontologyTerm.name;
+
+      var promise = new Promise( function (resolve, reject) {
+        Restangular.one(studyLink + '/subjects').get()
+          .then(function (d) {
+            _subjects = _groupSubjectsBasedOnStudy(d);
+            _subjects.title = studyId;
+            resolve(_subjects);
+          }, function (err) {
+            reject('Cannot get subjects from the end-point.');
+          });
+      }); //end Promise
 
       return promise;
     };
@@ -151,7 +180,6 @@ angular.module('transmartBaseUi')
           var ndx = crossfilter(node.observations),
             tDimension = ndx.dimension(function(d) {return d.value;}),
             tGroup = tDimension.group();
-
           if (node.type === 'string') {
             _charts.push(_pieChart(tDimension, tGroup, '#chart_' + idx));
           } else if (node.type === 'number') {
@@ -180,7 +208,7 @@ angular.module('transmartBaseUi')
         Restangular.all(_path + '/observations').getList()
           .then(function (d) {
             // create categorical or numerical dimension based on observation data
-            _observationsList = _groupObservationsBasedOnLabels(d);
+            _observationsList = _createGroupObservationsBasedOnLabel(d);
 
             _observationsList.forEach (function(observation, idx){
               //console.log(idx);

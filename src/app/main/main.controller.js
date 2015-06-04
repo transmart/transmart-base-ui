@@ -19,11 +19,20 @@ angular.module('transmartBaseUi')
 
     $scope.observations = [];
 
-    $scope.getStudyConcepts = function (studyLink, studyId) {
+    $scope.getStudyConceptsNEW = function (study) {
+      ChartService.getSubjects(study).then(function(d) {
+          console.log(d);
+      });
+    };
+
+    $scope.getStudyConcepts = function (study) {
+
+
+      var studyLink = study._links.self.href,
+          studyId = study._embedded.ontologyTerm.name;
 
       var t = studyLink.substr(1);
       $scope.dataLoading = true;
-
 
       Restangular.one(t + '/subjects').get()
         .then(function (d) {
@@ -108,32 +117,32 @@ angular.module('transmartBaseUi')
 
     $scope.displayNodeSummaryStatistics = function (node) {
 
+      var _setLoadingAnim = function (data, chart) {
+        $scope.dataLoading = data;
+        $scope.chartLoading = chart;
+      };
 
       angular.element('#node-charts-container').empty();
-
-      $scope.dataLoading = true;
-      $scope.chartLoading = true;
+      _setLoadingAnim(true, false);
 
       ChartService.getObservations(node).then(function (d) {
         // at first, get the observation data for the selected node
         $scope.$apply(function () {
           $scope.observations = d;
-          $scope.chartLoading = true;
-          $scope.dataLoading = false;
+          _setLoadingAnim(false, true);
           return $scope.observations;
         });
       }, function (err) {
           alertService.add('danger', err);
-        }
-      ).then(function () {
+        })
+        .then(function () {
         // then generate charts out of it
         if (typeof $scope.observations !== 'undefined') {
           ChartService.generateCharts($scope.observations);
         }
       })
         .then (function () {
-        $scope.dataLoading = false;
-        $scope.chartLoading = false;
+        _setLoadingAnim(false, false);
       });
 
     };
