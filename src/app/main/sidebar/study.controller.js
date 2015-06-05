@@ -56,16 +56,17 @@ angular.module('transmartBaseUi')
       Description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris faucibus ut nisl quis ullamcorper. Quisque in orci vitae nibh rhoncus blandit. Integer tincidunt nunc sit amet magna faucibus, eget pellentesque libero finibus. Sed eu cursus risus, ac pretium felis. In non turpis eros. Nam nec tellus venenatis, consectetur dui a, posuere dui. In id pellentesque elit, ac mattis orci. Donec aliquam feugiat neque nec efficitur. Donec fermentum posuere diam, quis semper felis aliquam vel. Praesent sit amet dapibus tortor. Aliquam sed quam non augue imperdiet scelerisque. Vivamus pretium pretium eros. Nullam finibus accumsan tempor. Duis mollis, ex nec maximus bibendum.'
     };
 
-    angular.element('html').on('click', function(e) {
-      if (typeof angular.element(e.target).data('original-title') == 'undefined' &&
-        !angular.element(e.target).parents().is('.popover.inner')) {
+    //------------------------------------------------------------------------------------------------------------------
+    // Helper functions
+    //------------------------------------------------------------------------------------------------------------------
+
+    // Hide popover on click outside
+    $('html').on('click', function(e) {
+      if(!$(e.target).parents().is('.popover.inner')) {
         $('.popover').hide();
       }
     });
 
-    //------------------------------------------------------------------------------------------------------------------
-    // Helper functions
-    //------------------------------------------------------------------------------------------------------------------
     var countSubjects = function(node) {
       if(!node.hasOwnProperty('total')){
         var path = node.link.slice(1);
