@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('transmartBaseUi')
-  .controller('SidebarCtrl', ['$scope', '$window', 'Restangular', 'endpointService', 'alertService',
-    function ($scope, $window, Restangular, endpointService, alertService) {
+  .controller('SidebarCtrl', ['$scope', '$window', 'Restangular', 'EndpointService', 'AlertService',
+    function ($scope, $window, Restangular, EndpointService, AlertService) {
     //------------------------------------------------------------------------------------------------------------------
     // Scope
     //------------------------------------------------------------------------------------------------------------------
@@ -16,14 +16,14 @@ angular.module('transmartBaseUi')
     $scope.addResource = function() {
       var formData = $scope.formData;
       if (formData.requestToken) {
-        endpointService.addOAuthEndpoint(formData.title, formData.url, formData.requestToken)
+        EndpointService.addOAuthEndpoint(formData.title, formData.url, formData.requestToken)
           .then(function() {
             resetEndpointForm();
             loadStudies();
           });
       }
       else {
-        endpointService.addEndpoint(formData.title, formData.url);
+        EndpointService.addEndpoint(formData.title, formData.url);
         resetEndpointForm();
         loadStudies();
       }
@@ -50,7 +50,7 @@ angular.module('transmartBaseUi')
     // Helper functions
     //------------------------------------------------------------------------------------------------------------------
     function loadStudies() {
-      var endpoints = endpointService.getEndpoints();
+      var endpoints = EndpointService.getEndpoints();
       $scope.endpoints = endpoints;
       $scope.publicStudies = [];
       $scope.privateStudies = [];
@@ -61,7 +61,7 @@ angular.module('transmartBaseUi')
           .then(function (studies) {
 
             // alert user that it successfully connects to the rest-api
-            alertService.add('success', 'Successfully connected to rest-api', 3000);
+            AlertService.add('success', 'Successfully connected to rest-api', 3000);
 
             $scope.studies = studies;
 
@@ -77,7 +77,7 @@ angular.module('transmartBaseUi')
               }
             });
           }, function (err) {
-            alertService.add('danger', 'Oops! Cannot connect to rest-api.');
+            AlertService.add('danger', 'Oops! Cannot connect to rest-api.');
             console.error(err);
           });
       });

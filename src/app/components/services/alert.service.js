@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('transmartBaseUi').factory('alertService', ['$interval', function($interval){
+angular.module('transmartBaseUi').factory('AlertService', ['$interval', function($interval){
   var service = {};
   var alerts = [];
   service.ids = 0;

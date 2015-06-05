@@ -2,12 +2,12 @@
 
 angular.module('transmartBaseUi')
   .controller('MainCtrl',
-  ['$scope', 'Restangular', 'ChartService', 'alertService', function ($scope, Restangular, ChartService, alertService) {
+  ['$scope', 'Restangular', 'ChartService', 'AlertService', function ($scope, Restangular, ChartService, AlertService) {
 
     $scope.dataLoading = false;
 
-    $scope.close = alertService.remove;
-    $scope.alerts = alertService.get();
+    $scope.close = AlertService.remove;
+    $scope.alerts = AlertService.get();
 
     $scope.selectedStudy = {
       'obj': null,
@@ -114,7 +114,7 @@ angular.module('transmartBaseUi')
           return $scope.observations;
         });
       }, function (err) {
-          alertService.add('danger', err);
+          AlertService.add('danger', err);
         }
       ).then(function () {
         // then generate charts out of it
