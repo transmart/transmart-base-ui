@@ -61,9 +61,9 @@ angular.module('transmartBaseUi')
     //------------------------------------------------------------------------------------------------------------------
 
     // Hide popover on click outside
-    $('html').on('click', function(e) {
-      if(!$(e.target).parents().is('.popover.inner')) {
-        $('.popover').hide();
+    angular.element('html').on('click', function(e) {
+      if(!angular.element(e.target).parents().is('.popover.inner')) {
+        angular.element('.popover').hide();
       }
     });
 

@@ -56,14 +56,9 @@
         {{study._embedded.ontologyTerm.name}}
       </span>
       <span class="glyphicon glyphicon-spin" ng-class="{'glyphicon-refresh': treeLoading}"></span>
-      <a href class="info info-icon glyphicon glyphicon-info-sign"
-            ng-click="$event.stopPropagation()"
-            popover-template="'PopoverTemplate'"
-            popover-placement="right"
-            popover-append-to-body="true"
-            popover-trigger="click"
-
-            popover-title="{{study._embedded.ontologyTerm.name}}">
+      <a href class="info info-icon glyphicon glyphicon-info-sign" ng-click="$event.stopPropagation()"
+         popover-template="'PopoverTemplate'"
+         popover-title="{{study._embedded.ontologyTerm.name}}">
       </a>
     </accordion-heading>
 
