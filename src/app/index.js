@@ -10,11 +10,12 @@ angular.module('transmartBaseUi', [
   'ui.bootstrap',
   'restangular',
   'ui.tree',
-  'smart-table'
+  'smart-table',
+  'angular-loading-bar'
 ])
 
-  .config( ['$stateProvider', 'RestangularProvider', '$tooltipProvider',
-    function ($stateProvider, RestangularProvider, $tooltipProvider) {
+  .config( ['$stateProvider', 'RestangularProvider', '$tooltipProvider', 'cfpLoadingBarProvider',
+    function ($stateProvider, RestangularProvider, $tooltipProvider, cfpLoadingBarProvider) {
 
       $stateProvider
         .state('main', {
@@ -77,6 +78,9 @@ angular.module('transmartBaseUi', [
         appendToBody: 'true',
         trigger: 'click'
       });
+
+      // Remove spinner from http request loading bar
+      cfpLoadingBarProvider.includeSpinner = false;
   }])
 
   .run(['$rootScope', '$location', '$cookieStore', '$http', 'EndpointService',
