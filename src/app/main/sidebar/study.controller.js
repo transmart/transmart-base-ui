@@ -6,6 +6,7 @@ angular.module('transmartBaseUi')
     //------------------------------------------------------------------------------------------------------------------
     // Scope
     //------------------------------------------------------------------------------------------------------------------
+
     $scope.tree = [{}];
     $scope.opened = false;
     $scope.treeLoading = false;
@@ -17,8 +18,9 @@ angular.module('transmartBaseUi')
     $scope.status = {
       isFirstOpen: false,
       isFirstDisabled: false,
-      oneAtATime: true
+      oneAtATime: true,
     };
+
 
     $scope.type = {
       fol: function(node){return node.type === 'FOLDER';},
@@ -57,6 +59,14 @@ angular.module('transmartBaseUi')
     //------------------------------------------------------------------------------------------------------------------
     // Helper functions
     //------------------------------------------------------------------------------------------------------------------
+
+    // Hide popover on click outside
+    angular.element('html').on('click', function(e) {
+      if(!angular.element(e.target).parents().is('.popover.inner')) {
+        angular.element('.popover').hide();
+      }
+    });
+
     var countSubjects = function(node) {
       if(!node.hasOwnProperty('total')){
         var path = node.link.slice(1);

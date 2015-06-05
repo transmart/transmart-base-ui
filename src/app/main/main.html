@@ -1,3 +1,33 @@
+<<<<<<< HEAD
+=======
+<script type="text/ng-template" id="chart.html">
+    <div class="panel panel-default" style="width:300px;height:300px;float: left; margin-right: 5px; font-size: .8em;">
+      <div class="panel-heading"><h4>{{observation.title}}</h4></div>
+      <div class="panel-body">
+        <div id="chart_{{observation.id}}" style=""></div>
+      </div>
+    </div>
+</script>
+
+<!--------------------------------------------------------------------------------------------------------------------->
+<!-- START Popover template -->
+
+<script type="text/ng-template" id="NodePopoverTemplate">
+  <div ng-click="$event.stopPropagation()">
+    <table >
+      <tr ng-repeat="(key, value) in metadata" class="popover-table-row">
+        <td ><b>{{key}}:&nbsp&nbsp</b></td>
+        <td></td>
+        <td>{{value}}</td>
+      </tr>
+    </table>
+  </div>
+</script>
+<!-- END Popover template -->
+<!--------------------------------------------------------------------------------------------------------------------->
+
+
+>>>>>>> dev
 <div class="container-fluid" >
   <div class="row">
 
@@ -20,7 +50,13 @@
         <tabset ng-show="selectedStudy.panel.isDisplayed">
 
           <!--Node Summary Tab-->
-          <tab heading="Summary Statistics">
+          <tab>
+          <tab-heading>Summary Statistics &nbsp; &nbsp;
+            <a href class="info info-icon glyphicon glyphicon-info-sign" ng-click="$event.stopPropagation()"
+               popover-template="'NodePopoverTemplate'"
+               popover-title="{{study._embedded.ontologyTerm.name}}">
+            </a>
+          </tab-heading>
 
             <accordion close-others="oneAtATime">
               <accordion-group is-open="true" style="background-color: powderblue;">
@@ -49,6 +85,7 @@
                 <div ng-repeat="observation in observations" ng-include="'app/components/charts/chart-template.html'" id="node-charts-container"></div>
               </accordion-group>
             </accordion>
+
           </tab>
 
           <tab heading="Subjects">

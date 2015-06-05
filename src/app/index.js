@@ -10,11 +10,12 @@ angular.module('transmartBaseUi', [
   'ui.bootstrap',
   'restangular',
   'ui.tree',
-  'smart-table'
+  'smart-table',
+  'angular-loading-bar'
 ])
 
-  .config( ['$stateProvider', 'RestangularProvider',
-    function ($stateProvider, RestangularProvider) {
+  .config( ['$stateProvider', 'RestangularProvider', '$tooltipProvider', 'cfpLoadingBarProvider',
+    function ($stateProvider, RestangularProvider, $tooltipProvider, cfpLoadingBarProvider) {
 
       $stateProvider
         .state('main', {
@@ -69,12 +70,23 @@ angular.module('transmartBaseUi', [
       RestangularProvider.setRestangularFields({
         selfLink: 'self.link'
       });
+
+      // Set default actions for popover
+      $tooltipProvider.setTriggers({'click': 'never'});
+      $tooltipProvider.options({
+        placement: 'right',
+        appendToBody: 'true',
+        trigger: 'click'
+      });
+
+      // Remove spinner from http request loading bar
+      cfpLoadingBarProvider.includeSpinner = false;
   }])
 
-  .run(['$rootScope', '$location', '$cookieStore', '$http', 'endpointService',
-    function ($rootScope, $location, $cookieStore, $http, endpointService) {
+  .run(['$rootScope', '$location', '$cookieStore', '$http', 'EndpointService',
+    function ($rootScope, $location, $cookieStore, $http, EndpointService) {
 
-      endpointService.addEndpoint('Local', 'http://localhost:8080/transmart-rest-api');
+      EndpointService.addEndpoint('Local', 'http://localhost:8080/transmart-rest-api');
 
       // keep user logged in after page refresh
       $rootScope.globals = $cookieStore.get('globals') || {};
