@@ -1,11 +1,13 @@
-describe("AlertService Unit Tests", function() {
+'use strict';
 
+describe("AlertService Unit Tests", function() {
+  var AlertService, $interval;
   //--------------------------------------------------------------------------------------------------------------------
   // Setup
   beforeEach(function() {module('transmartBaseUi');});
 
   beforeEach(inject(function (_AlertService_, _$interval_) {
-    AlertService = _AlertService_;
+   AlertService = _AlertService_;
     $interval = _$interval_;
   }));
 
