@@ -71,7 +71,7 @@ angular.module('transmartBaseUi', [
       });
 
       // Set default actions for popover
-      $tooltipProvider.setTriggers({'click': 'd4gd4f'})
+      $tooltipProvider.setTriggers({'click': 'd4gd4f'});
   }])
 
   .run(['$rootScope', '$location', '$cookieStore', '$http', 'EndpointService',

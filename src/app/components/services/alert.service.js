@@ -7,7 +7,7 @@ angular.module('transmartBaseUi').factory('AlertService', ['$interval', function
 
   service.get = function(){
     return alerts;
-  }
+  };
 
   service.add = function(type, message, delay){
      var id = ++service.ids;
