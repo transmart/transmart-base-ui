@@ -24,10 +24,7 @@
 <!-- END Popover template -->
 <!--------------------------------------------------------------------------------------------------------------------->
 
-
 <div class="container-fluid" >
-
-
   <div class="row">
 
     <!--Side Bar-->
@@ -50,52 +47,50 @@
 
           <!--Node Summary Tab-->
           <tab>
-            <tab-heading>Node summary &nbsp; &nbsp;
-              <a href class="info info-icon glyphicon glyphicon-info-sign" ng-click="$event.stopPropagation()"
-                                               popover-template="'NodePopoverTemplate'"
-                                               popover-title="{{study._embedded.ontologyTerm.name}}">
-              </a>
-            </tab-heading>
+          <tab-heading>Summary Statistics &nbsp; &nbsp;
+            <a href class="info info-icon glyphicon glyphicon-info-sign" ng-click="$event.stopPropagation()"
+               popover-template="'NodePopoverTemplate'"
+               popover-title="{{study._embedded.ontologyTerm.name}}">
+            </a>
+          </tab-heading>
 
-              <div ng-repeat="observation in observations" ng-include="'chart.html'">
+            <accordion close-others="oneAtATime">
+              <accordion-group is-open="true" style="background-color: powderblue;">
+                <accordion-heading>
+                  Demographics <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
+                </accordion-heading>
+                <div class="col-xs-6 col-sm-3 placeholder">
+                  <div id="gender-pie-chart" ng-show="!dataLoading"></div>
+                </div>
+                <div class="col-xs-6 col-sm-3 placeholder">
+                  <div id="race-pie-chart" ng-show="!dataLoading"></div>
+                </div>
+                <div class="col-xs-6 col-sm-3 placeholder">
+                  <div id="marital-pie-chart" ng-show="!dataLoading"></div>
+                </div>
+                <div class="col-xs-6 col-sm-3 placeholder">
+                  <div id="numeric-age-chart" ng-show="!dataLoading"></div>
+                </div>
+                <div class="col-md-1" ng-if="dataLoading">
+                  <img ng-show="dataLoading" class="loading-img"/>
+                </div>
+              </accordion-group>
 
-            </div>
+              <accordion-group heading="Statistics" is-open="true" is-disabled="false">
+                <i class="glyphicon glyphicon-spin" ng-class="{'glyphicon-refresh': dataLoading}"></i>
+                <div ng-repeat="observation in observations" ng-include="'app/components/charts/chart-template.html'" id="node-charts-container"></div>
+              </accordion-group>
+            </accordion>
+
           </tab>
 
-          <!--Summary-->
-          <tab heading="Study Summary">
-            <div class="row placeholders">
-              <div class="col-xs-6 col-sm-3 placeholder">
-                <div id="gender-pie-chart" ng-show="!dataLoading"></div>
-                <h4>Gender</h4>
-              </div>
-              <div class="col-xs-6 col-sm-3 placeholder">
-                <div id="race-pie-chart" ng-show="!dataLoading"></div>
-                <h4>Race</h4>
-              </div>
-              <div class="col-xs-6 col-sm-3 placeholder">
-                <div id="marital-pie-chart" ng-show="!dataLoading"></div>
-                <h4>Marital Status</h4>
-              </div>
-              <div class="col-md-1" ng-if="dataLoading">
-                <img ng-show="dataLoading" class="loading-img"/>
-              </div>
-            </div>
-
-            <div class="row placeholders">
-              <div class="col-xs-6 col-sm-10 placeholder">
-                <div id="numeric-age-chart" ng-show="!dataLoading"></div>
-              </div>
-            </div>
-          </tab>
-          <tab heading="Grid">
+          <tab heading="Subjects">
             <!-- Selected Study Panel -->
             <img ng-show="dataLoading" class="loading-img"/>
             <style>
               .st-sort-ascent:before{
                 content: '\25B2';
               }
-
               .st-sort-descent:before{
                 content: '\25BC';
               }

@@ -51,7 +51,7 @@
   <accordion-group>
 
     <accordion-heading >
-      <span ng-click="getTree(study);saction()('{{study._links.self.href}}', '{{study._embedded.ontologyTerm.name}}');">
+      <span ng-click="getTree(study); saction()(study);">
         {{study._embedded.ontologyTerm.name}}
       </span>
       <span class="glyphicon glyphicon-spin" ng-class="{'glyphicon-refresh': treeLoading}"></span>

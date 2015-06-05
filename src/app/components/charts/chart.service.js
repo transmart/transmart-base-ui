@@ -29,7 +29,7 @@ angular.module('transmartBaseUi')
         .filterPrinter(function (filters) {
           var filter = filters[0], s = '';
           // TODO number format
-          s += numberFormat(filter[0]) + '% -> ' + numberFormat(filter[1]) + '%';
+          //s += numberFormat(filter[0]) + '% -> ' + numberFormat(filter[1]) + '%';
           return s;
         })
       ;
@@ -65,7 +65,13 @@ angular.module('transmartBaseUi')
      return tChart;
     };
 
-    var _groupObservationsBasedOnLabels = function (d) {
+    /**
+     * Group observations based on its labels
+     * @param d
+     * @returns {Array}
+     * @private
+     */
+    var _createGroupObservationsBasedOnLabel = function (d) {
       var _d = [];
 
       var _getDataType = function (val) {
@@ -120,6 +126,18 @@ angular.module('transmartBaseUi')
       return _d;
     };
 
+    var _groupSubjectsBasedOnStudy = function (d) {
+      var returnVal = {
+        'obj': d._embedded.subjects,
+        'title': '',
+        'panel': {
+          isDisplayed: false
+        }
+      };
+
+      return returnVal;
+    };
+
     chartService.myCharts = function () {
       return charts;
     };
@@ -132,7 +150,7 @@ angular.module('transmartBaseUi')
         Restangular.all(_path + '/observations').getList()
           .then(function (d) {
             // create categorical or numerical dimension based on observation data
-            _observationsList = _groupObservationsBasedOnLabels(d);
+            _observationsList = _createGroupObservationsBasedOnLabel(d);
             resolve(_observationsList);
           }, function (err) {
             reject('Cannot get data from the end-point.');
@@ -142,27 +160,78 @@ angular.module('transmartBaseUi')
       return promise;
     };
 
+    chartService.getSubjects = function (node) {
+      var selectedStudy,
+        studyLink = node._links.self.href.slice(1),
+        studyId = node._embedded.ontologyTerm.name;
+
+      var promise = new Promise( function (resolve, reject) {
+        Restangular.one(studyLink + '/subjects').get()
+          .then(function (d) {
+            selectedStudy = _groupSubjectsBasedOnStudy(d);
+            selectedStudy.title = studyId;
+            resolve(selectedStudy);
+          }, function (err) {
+            reject('Cannot get subjects from the end-point.');
+          });
+      }); //end Promise
+
+      return promise;
+    };
+
+    chartService.generateSubjectCharts = function (subjects) {
+      var _charts = [];
+
+      var ndx = crossfilter(subjects),
+
+        sexDimension = ndx.dimension(function(d) {return d.sex;}),
+        sexGroup = sexDimension.group(),
+
+        raceDimension = ndx.dimension(function(d) {return d.race;}),
+        raceGroup = raceDimension.group(),
+
+        ageDimension = ndx.dimension(function(d) {return d.age;}),
+        ageGroup = ageDimension.group(),
+
+        maritalDimension = ndx.dimension(function(d) {return d.maritalStatus;}),
+        maritalGroup = maritalDimension.group();
+
+      var _max = Math.max.apply(Math, subjects.map(function(o){return o.age;})),
+        _min = Math.min.apply(Math, subjects.map(function(o){return o.age;}));
+
+      _charts.push(_pieChart(sexDimension, sexGroup, '#gender-pie-chart'));
+      _charts.push(_pieChart(raceDimension, raceGroup, '#race-pie-chart'));
+      _charts.push(_pieChart(maritalDimension, maritalGroup, '#marital-pie-chart'));
+      _charts.push(_barChart(ageDimension, ageGroup, '#numeric-age-chart', _min, _max, "Age"));
+
+      // now render all charts ..
+      _charts.forEach(function (c) {
+        c.render(); // TODO: still contains bug, somehow it can't render on the first invoke
+      });
+
+    };
+
     chartService.generateCharts = function (nodes) {
       var _charts = [];
-        nodes.forEach (function(node, idx){
 
-          var ndx = crossfilter(node.observations),
-            tDimension = ndx.dimension(function(d) {return d.value;}),
-            tGroup = tDimension.group();
+      nodes.forEach (function(node, idx){
+        var ndx = crossfilter(node.observations),
+          tDimension = ndx.dimension(function(d) {return d.value;}),
+          tGroup = tDimension.group();
 
-          if (node.type === 'string') {
-            _charts.push(_pieChart(tDimension, tGroup, '#chart_' + idx));
-          } else if (node.type === 'number') {
-            var _max = Math.max.apply(Math,node.observations.map(function(o){return o.value;})),
-                _min = Math.min.apply(Math,node.observations.map(function(o){return o.value;}));
-            _charts.push(_barChart(tDimension, tGroup, '#chart_' + idx, _min, _max, node.title));
-          }
-        });
+        if (node.type === 'string') {
+          _charts.push(_pieChart(tDimension, tGroup, '#chart_' + idx));
+        } else if (node.type === 'number') {
+          var _max = Math.max.apply(Math,node.observations.map(function(o){return o.value;})),
+              _min = Math.min.apply(Math,node.observations.map(function(o){return o.value;}));
+          _charts.push(_barChart(tDimension, tGroup, '#chart_' + idx, _min, _max, node.title));
+        }
+      });
 
-        // now render all charts ..
-        _charts.forEach(function (c) {
-          c.render();
-        });
+      // now render all charts ..
+      _charts.forEach(function (c) {
+        c.render(); // TODO: still contains bug, somehow it can't render on the first invoke
+      });
     };
 
     /**
@@ -178,7 +247,7 @@ angular.module('transmartBaseUi')
         Restangular.all(_path + '/observations').getList()
           .then(function (d) {
             // create categorical or numerical dimension based on observation data
-            _observationsList = _groupObservationsBasedOnLabels(d);
+            _observationsList = _createGroupObservationsBasedOnLabel(d);
 
             _observationsList.forEach (function(observation, idx){
               //console.log(idx);
