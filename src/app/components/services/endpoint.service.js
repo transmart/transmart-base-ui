@@ -2,7 +2,7 @@
 
 angular.module('transmartBaseUi')
 
-  .factory('endpointService',
+  .factory('EndpointService',
   ['$http', '$q', 'Restangular',
     function ($http, $q, Restangular) {
 

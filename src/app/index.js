@@ -13,8 +13,8 @@ angular.module('transmartBaseUi', [
   'smart-table'
 ])
 
-  .config( ['$stateProvider', 'RestangularProvider',
-    function ($stateProvider, RestangularProvider) {
+  .config( ['$stateProvider', 'RestangularProvider', '$tooltipProvider',
+    function ($stateProvider, RestangularProvider, $tooltipProvider) {
 
       $stateProvider
         .state('main', {
@@ -69,12 +69,15 @@ angular.module('transmartBaseUi', [
       RestangularProvider.setRestangularFields({
         selfLink: 'self.link'
       });
+
+      // Set default actions for popover
+      $tooltipProvider.setTriggers({'click': 'd4gd4f'});
   }])
 
-  .run(['$rootScope', '$location', '$cookieStore', '$http', 'endpointService',
-    function ($rootScope, $location, $cookieStore, $http, endpointService) {
+  .run(['$rootScope', '$location', '$cookieStore', '$http', 'EndpointService',
+    function ($rootScope, $location, $cookieStore, $http, EndpointService) {
 
-      endpointService.addEndpoint('Local', 'http://localhost:8080/transmart-rest-api');
+      EndpointService.addEndpoint('Local', 'http://localhost:8080/transmart-rest-api');
 
       // keep user logged in after page refresh
       $rootScope.globals = $cookieStore.get('globals') || {};

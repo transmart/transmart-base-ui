@@ -2,14 +2,7 @@
 <!-- START Node template -->
 
 <script type="text/ng-template" id="nodes_renderer.html">
-  <div ui-tree-handle
-       class="tree-node tree-node-content"
-       ng-click="countChilds(node); naction()(node);"
-       popover-template="'PopoverTemplate'"
-       popover-placement="right"
-       popover-append-to-body="true"
-       popover-trigger="mouseenter"
-       popover-title="{{node.title}}">
+  <div ui-tree-handle class="tree-node tree-node-content" ng-click="countChilds(node); naction()(node);">
     <a data-nodrag ng-click="toggle(this)">
       <span class="typcn" ng-class="{'typcn-folder': collapsed && type.fol(node),
                                      'typcn-folder-open': !collapsed && type.fol(node),
@@ -35,7 +28,7 @@
 <!-- START Popover template -->
 
 <script type="text/ng-template" id="PopoverTemplate">
-  <div>
+  <div ng-click="$event.stopPropagation()">
     <table >
       <tr ng-repeat="(key, value) in metadata" class="popover-table-row">
         <td ><b>{{key}}:&nbsp&nbsp</b></td>
@@ -44,9 +37,7 @@
       </tr>
     </table>
 
-    <span class="typcn typcn-key"></span>
-    <span class="typcn typcn-user"></span>
-    <span class="typcn typcn-book"></span>
+    <a href="http://www.thehyve.nl" target="_blank"><i class="typcn typcn-link-outline"></i>View study</a>
   </div>
 </script>
 <!-- END Popover template -->
@@ -60,21 +51,25 @@
 
   <accordion-group>
 
-    <accordion-heading>
-      <div ng-click="getTree(study); saction()('{{study._links.self.href}}', '{{study._embedded.ontologyTerm.name}}');"
-           popover-template="'PopoverTemplate'"
-           popover-placement="right"
-           popover-append-to-body="true"
-           popover-trigger="mouseenter"
-           popover-title="{{study._embedded.ontologyTerm.name}}">
+    <accordion-heading >
+      <span ng-click="getTree(study);saction()('{{study._links.self.href}}', '{{study._embedded.ontologyTerm.name}}');">
         {{study._embedded.ontologyTerm.name}}
-        <i class="glyphicon glyphicon-spin" ng-class="{'glyphicon-refresh': treeLoading}"></i>
-      </div>
+      </span>
+      <span class="glyphicon glyphicon-spin" ng-class="{'glyphicon-refresh': treeLoading}"></span>
+      <a href class="info info-icon glyphicon glyphicon-info-sign"
+            ng-click="$event.stopPropagation()"
+            popover-template="'PopoverTemplate'"
+            popover-placement="right"
+            popover-append-to-body="true"
+            popover-trigger="click"
+
+            popover-title="{{study._embedded.ontologyTerm.name}}">
+      </a>
     </accordion-heading>
 
     <div ui-tree id="tree-root" data-drag-enabled="treeConfig.drag" data-drop-enabled="false">
       <ol ui-tree-nodes="" ng-model="tree.nodes[0].nodes">
-        <li ng-repeat="node in tree.nodes[0].nodes" ui-tree-node ng-include="'nodes_renderer.html'" 
+        <li ng-repeat="node in tree.nodes[0].nodes" ui-tree-node ng-include="'nodes_renderer.html'"
           data-collapsed="treeConfig.collapsed"></li>
       </ol>
     </div>
