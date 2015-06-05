@@ -7,6 +7,24 @@
     </div>
 </script>
 
+<!--------------------------------------------------------------------------------------------------------------------->
+<!-- START Popover template -->
+
+<script type="text/ng-template" id="NodePopoverTemplate">
+  <div ng-click="$event.stopPropagation()">
+    <table >
+      <tr ng-repeat="(key, value) in metadata" class="popover-table-row">
+        <td ><b>{{key}}:&nbsp&nbsp</b></td>
+        <td></td>
+        <td>{{value}}</td>
+      </tr>
+    </table>
+  </div>
+</script>
+<!-- END Popover template -->
+<!--------------------------------------------------------------------------------------------------------------------->
+
+
 <div class="container-fluid" >
 
 
@@ -31,7 +49,13 @@
         <tabset ng-show="selectedStudy.panel.isDisplayed">
 
           <!--Node Summary Tab-->
-          <tab heading="Node Summary">
+          <tab>
+            <tab-heading>Node summary &nbsp; &nbsp;
+              <a href class="info info-icon glyphicon glyphicon-info-sign" ng-click="$event.stopPropagation()"
+                                               popover-template="'NodePopoverTemplate'"
+                                               popover-title="{{study._embedded.ontologyTerm.name}}">
+              </a>
+            </tab-heading>
 
               <div ng-repeat="observation in observations" ng-include="'chart.html'">
 

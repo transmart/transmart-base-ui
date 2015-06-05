@@ -1,4 +1,23 @@
 <!--------------------------------------------------------------------------------------------------------------------->
+<!-- START Popover template -->
+
+<script type="text/ng-template" id="PopoverTemplate">
+  <div ng-click="$event.stopPropagation()">
+    <table >
+      <tr ng-repeat="(key, value) in metadata" class="popover-table-row">
+        <td ><b>{{key}}:&nbsp&nbsp</b></td>
+        <td></td>
+        <td>{{value}}</td>
+      </tr>
+    </table>
+
+    <a href="http://www.thehyve.nl" target="_blank"><i class="typcn typcn-link-outline"></i>View study</a>
+  </div>
+</script>
+<!-- END Popover template -->
+<!--------------------------------------------------------------------------------------------------------------------->
+
+<!--------------------------------------------------------------------------------------------------------------------->
 <!-- START Node template -->
 
 <script type="text/ng-template" id="nodes_renderer.html">
@@ -24,26 +43,6 @@
 <!--------------------------------------------------------------------------------------------------------------------->
 <!-- END Node template -->
 
-<!--------------------------------------------------------------------------------------------------------------------->
-<!-- START Popover template -->
-
-<script type="text/ng-template" id="PopoverTemplate">
-  <div ng-click="$event.stopPropagation()">
-    <table >
-      <tr ng-repeat="(key, value) in metadata" class="popover-table-row">
-        <td ><b>{{key}}:&nbsp&nbsp</b></td>
-        <td></td>
-        <td>{{value}}</td>
-      </tr>
-    </table>
-
-    <a href="http://www.thehyve.nl" target="_blank"><i class="typcn typcn-link-outline"></i>View study</a>
-  </div>
-</script>
-<!-- END Popover template -->
-<!--------------------------------------------------------------------------------------------------------------------->
-
-
 <hr>
 <span><h4>{{title}}</h4></span>
 
@@ -56,14 +55,9 @@
         {{study._embedded.ontologyTerm.name}}
       </span>
       <span class="glyphicon glyphicon-spin" ng-class="{'glyphicon-refresh': treeLoading}"></span>
-      <a href class="info info-icon glyphicon glyphicon-info-sign"
-            ng-click="$event.stopPropagation()"
-            popover-template="'PopoverTemplate'"
-            popover-placement="right"
-            popover-append-to-body="true"
-            popover-trigger="click"
-
-            popover-title="{{study._embedded.ontologyTerm.name}}">
+      <a href class="info info-icon glyphicon glyphicon-info-sign" ng-click="$event.stopPropagation()"
+         popover-template="'PopoverTemplate'"
+         popover-title="{{study._embedded.ontologyTerm.name}}">
       </a>
     </accordion-heading>
 

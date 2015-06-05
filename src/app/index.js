@@ -10,11 +10,12 @@ angular.module('transmartBaseUi', [
   'ui.bootstrap',
   'restangular',
   'ui.tree',
-  'smart-table'
+  'smart-table',
+  'angular-loading-bar'
 ])
 
-  .config( ['$stateProvider', 'RestangularProvider', '$tooltipProvider',
-    function ($stateProvider, RestangularProvider, $tooltipProvider) {
+  .config( ['$stateProvider', 'RestangularProvider', '$tooltipProvider', 'cfpLoadingBarProvider',
+    function ($stateProvider, RestangularProvider, $tooltipProvider, cfpLoadingBarProvider) {
 
       $stateProvider
         .state('main', {
@@ -71,7 +72,15 @@ angular.module('transmartBaseUi', [
       });
 
       // Set default actions for popover
-      $tooltipProvider.setTriggers({'click': 'd4gd4f'});
+      $tooltipProvider.setTriggers({'click': 'never'});
+      $tooltipProvider.options({
+        placement: 'right',
+        appendToBody: 'true',
+        trigger: 'click'
+      });
+
+      // Remove spinner from http request loading bar
+      cfpLoadingBarProvider.includeSpinner = false;
   }])
 
   .run(['$rootScope', '$location', '$cookieStore', '$http', 'EndpointService',
