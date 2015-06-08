@@ -17,6 +17,8 @@ angular.module('transmartBaseUi')
       }
     };
 
+    $scope.selectedNode = $scope.selectedStudy;
+
     $scope.metadata = {
       Title: 'Node title',
       Organism: 'Homo sapiens',
@@ -50,6 +52,8 @@ angular.module('transmartBaseUi')
     };
 
     $scope.displayNodeSummaryStatistics = function (node) {
+
+      $scope.selectedNode = node;
 
       var _setLoadingAnim = function (data, chart) {
         $scope.dataLoading = data;
