@@ -61,10 +61,6 @@ angular.module('transmartBaseUi')
       });
     };
 
-    $scope.closeConceptsPanel = function () {
-      $scope.selectedStudy.panel.isDisplayed = false;
-    };
-
     $scope.displayNodeSummaryStatistics = function (node) {
 
       $scope.selectedNode = node;

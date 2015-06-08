@@ -22,15 +22,15 @@ angular.module('transmartBaseUi').factory('AlertService', ['$interval', function
     // If a delay is specified, a removal interval is registered
     if(delay){
       $interval(function(){
-        service.remove(id)
+        service.remove(id);
       }, delay, 1);
-    };
+    }
 
   };
 
   service.remove = function(id){
     var index = alerts.map(function(x) {return x.id; }).indexOf(id);
-    if(index != -1) alerts.splice(index, 1);
+    if(index !== -1) {alerts.splice(index, 1)};
   };
 
   service.reset = function(){

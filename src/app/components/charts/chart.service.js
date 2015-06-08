@@ -6,7 +6,6 @@ angular.module('transmartBaseUi')
 
     var chartService = {};
 
-
     /**
      * Chart data constructor
      * @param idx
@@ -23,7 +22,7 @@ angular.module('transmartBaseUi')
         title: title,
         type: dataType,
         observations: observations
-      }
+      };
     };
 
     /**
@@ -89,9 +88,9 @@ angular.module('transmartBaseUi')
      * @private
      */
     var _findElement = function (arr, propName, propValue) {
-      for (var i=0; i < arr.length; i++)
-        if (arr[i][propName] === propValue)
-          return arr[i];
+      for (var i=0; i < arr.length; i++) {
+        if (arr[i][propName] === propValue) { return arr[i]; }
+      }
       // will return undefined if not found; you could return a default instead
     };
 
