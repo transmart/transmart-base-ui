@@ -15,6 +15,8 @@ angular.module('transmartBaseUi')
       collapsed: true
     };
 
+    $scope.divWidth = 100;
+
     $scope.status = {
       isFirstOpen: false,
       isFirstDisabled: false,
@@ -56,9 +58,17 @@ angular.module('transmartBaseUi')
       Description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris faucibus ut nisl quis ullamcorper. Quisque in orci vitae nibh rhoncus blandit. Integer tincidunt nunc sit amet magna faucibus, eget pellentesque libero finibus. Sed eu cursus risus, ac pretium felis. In non turpis eros. Nam nec tellus venenatis, consectetur dui a, posuere dui. In id pellentesque elit, ac mattis orci. Donec aliquam feugiat neque nec efficitur. Donec fermentum posuere diam, quis semper felis aliquam vel. Praesent sit amet dapibus tortor. Aliquam sed quam non augue imperdiet scelerisque. Vivamus pretium pretium eros. Nullam finibus accumsan tempor. Duis mollis, ex nec maximus bibendum.'
     };
 
+
+
     //------------------------------------------------------------------------------------------------------------------
     // Helper functions
     //------------------------------------------------------------------------------------------------------------------
+
+    //TODO: Adjust to node depth
+    $scope.$watch(function() {
+      $scope.divWidth = (angular.element(document.getElementById('sidebardiv')).width()-85)/10;
+      console.log($scope.divWidth);
+    });
 
     // Hide popover on click outside
     angular.element('html').on('click', function(e) {
