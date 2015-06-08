@@ -25,6 +25,8 @@ angular.module('transmartBaseUi')
         $scope.chartLoading = chart;
       };
 
+      // console.log(study);
+
       angular.element('#node-charts-container').empty();
       _setLoadingAnim(true, false);
       $scope.selectednode = study;
@@ -34,23 +36,26 @@ angular.module('transmartBaseUi')
         $scope.$apply(function () {
           $scope.observations = d.chartData;
           $scope.selectedStudy.subjects = d.subjects;
-          console.log($scope.selectedStudy.subjects)
+          $scope.selectedStudy.title = study.id;
+
+          //console.log($scope.selectedStudy.subjects);
+
           $scope.displayedCollection = [].concat($scope.selectedStudy.subjects);
           _setLoadingAnim(false, true);
-          return $scope.observations;
-        });
 
+        });
+        return $scope.observations;
 
       }, function (err) {
-        alertService.add("danger", err, 10000);
-      }).then (function () {
+        AlertService.add("danger", err, 10000);
+      }).then (function (observations) {
+        //console.log(observations);
         // then generate charts out of it
-        if (typeof $scope.observations !== 'undefined') {
-          ChartService.generateCharts($scope.observations).then(function (c) {
-            ChartService.renderAll(c);
+        if (typeof observations !== 'undefined') {
+          ChartService.generateCharts(observations).then(function (charts) {
+            ChartService.renderAll(charts);
           });
         }
-
       }).then (function () {
         _setLoadingAnim(false, false);
       });
@@ -61,6 +66,8 @@ angular.module('transmartBaseUi')
     };
 
     $scope.displayNodeSummaryStatistics = function (node) {
+
+      $scope.selectedNode = node;
 
       var _setLoadingAnim = function (data, chart) {
         $scope.dataLoading = data;
