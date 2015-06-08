@@ -240,6 +240,7 @@ angular.module('transmartBaseUi')
 
     chartService.renderAll = function (charts) {
       angular.forEach (charts, function (chart) {
+         // console.log(chart);
         chart.render();
       });
     };

@@ -43,21 +43,24 @@
       <div >
         <h2>{{selectedStudy.title}}</h2>
 
-        <!--<tabset ng-show="selectedStudy.panel.isDisplayed">-->
-        <tabset>
+        <tabset ng-show="selectedStudy.title">
 
           <!--Node Summary Tab-->
           <tab>
-            <tab-heading>Summary Statistics &nbsp; &nbsp;
-              <a href class="info info-icon glyphicon glyphicon-info-sign" ng-click="$event.stopPropagation()"
-                 popover-template="'NodePopoverTemplate'"
-                 popover-title="{{study._embedded.ontologyTerm.name}}">
-              </a>
+            <tab-heading>
+              <span ng-show="!selectedNode.title">Summary Statistics</span>
+              <span ng-show="selectedNode.title">
+                Selected node: <strong>{{selectedNode.title}}</strong> &nbsp;
+                <a href class="info info-icon glyphicon glyphicon-info-sign " ng-click="$event.stopPropagation()"
+                   popover-template="'NodePopoverTemplate'"
+                   popover-title="{{study._embedded.ontologyTerm.name}}" ng-show="selectedNode.title" style="float:right;">
+
+                </a>
+              </span>
             </tab-heading>
 
             <i class="glyphicon glyphicon-spin" ng-class="{'glyphicon-refresh': dataLoading}"></i>
-            <div ng-repeat="observation in observations" ng-include="'app/components/charts/chart-template.html'"
-                 id="node-charts-container"></div>
+            <ts-chart ng-repeat="observation in observations"></ts-chart>
 
           </tab>
 
@@ -107,7 +110,6 @@
               </tr>
               </tfoot>
             </table>
-
 
           </tab>
         </tabset>

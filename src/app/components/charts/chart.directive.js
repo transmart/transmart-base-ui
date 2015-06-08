@@ -1,3 +1,8 @@
-/**
- * Created by chucknorris on 09/06/15.
- */
+'use strict';
+
+angular.module('transmartBaseUi')
+  .directive('tsChart', function() {
+    return {
+      templateUrl: '/app/components/charts/chart-template.html'
+    };
+  });
