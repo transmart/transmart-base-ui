@@ -30,7 +30,7 @@
                                      'typcn-chart-bar': type.hid(node)}">
       </span> &nbsp;
     </a>
-    {{node.title}} &nbsp; &nbsp; <small>({{node.total}})</small>
+     {{node.title | cutstring:false:divWidth:' ...'}} &nbsp; &nbsp; <small class="quantity-num">({{node.total}})</small>
   </div>
   <ol ui-tree-nodes="" ng-model="node.nodes" ng-class="{hidden: collapsed}">
     <li ng-repeat="node in node.nodes"
