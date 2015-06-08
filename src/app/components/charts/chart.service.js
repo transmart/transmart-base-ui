@@ -2,9 +2,29 @@
 
 angular.module('transmartBaseUi')
 
-  .factory('ChartService',['Restangular', function (Restangular) {
+  .factory('ChartService',['Restangular', '$q',  function (Restangular, $q) {
 
-    var chartService = {}, charts = [];
+    var chartService = {};
+
+
+    /**
+     * Chart data constructor
+     * @param idx
+     * @param label
+     * @param title
+     * @param dataType
+     * @param observations
+     * @returns {{id: *, label: *, title: *, type: *, observations: *}}
+     */
+    var newChartData = function (idx, label, title, dataType, observations) {
+      return {
+        id: idx,
+        label: label,
+        title: title,
+        type: dataType,
+        observations: observations
+      }
+    };
 
     /**
      * Create dc.js bar chart
@@ -14,6 +34,7 @@ angular.module('transmartBaseUi')
      * @private
      */
     var _barChart = function (cDimension, cGroup, el, min, max, nodeTitle) {
+
       var _barChart = dc.barChart(el);
       _barChart
         .width(270)
@@ -23,15 +44,9 @@ angular.module('transmartBaseUi')
         .group(cGroup)
         .elasticY(true)
         .centerBar(true)
-        .gap(0)
+        .gap(1)
         .x(d3.scale.linear().domain([min, max]))
         .renderHorizontalGridLines(true)
-        .filterPrinter(function (filters) {
-          var filter = filters[0], s = '';
-          // TODO number format
-          //s += numberFormat(filter[0]) + '% -> ' + numberFormat(filter[1]) + '%';
-          return s;
-        })
       ;
       _barChart.xAxis().tickFormat(
         function (v) { return v; });
@@ -66,58 +81,60 @@ angular.module('transmartBaseUi')
     };
 
     /**
+     * To find element in array based on object's key:value
+     * @param arr
+     * @param propName
+     * @param propValue
+     * @returns {*}
+     * @private
+     */
+    var _findElement = function (arr, propName, propValue) {
+      for (var i=0; i < arr.length; i++)
+        if (arr[i][propName] === propValue)
+          return arr[i];
+      // will return undefined if not found; you could return a default instead
+    };
+
+    /**
+     * Get the last token when requested model is a string path
+     * @param what
+     * @returns {*}
+     * @private
+     */
+    var _getLastToken = function (what) {
+      var _t = what.split('\\').slice(1);
+      return what.indexOf('\\') === -1 ? what : _t[_t.length-2];
+    };
+
+    /**
+     * get data type
+     * @param val
+     * @returns {string}
+     * @private
+     */
+    var _getDataType = function (val) {
+      var _type = typeof val;
+      if (_type === 'string' || _type === 'number') {
+        return _type;
+      }
+      return  'unknown';
+    };
+
+    /**
      * Group observations based on its labels
      * @param d
      * @returns {Array}
      * @private
      */
-    var _createGroupObservationsBasedOnLabel = function (d) {
+    var _createGroupBasedOnObservationsLabel = function (d) {
       var _d = [];
-
-      var _getDataType = function (val) {
-        return typeof val;
-      };
-
-      /**
-       * To find element in array based on object's key:value
-       * @param arr
-       * @param propName
-       * @param propValue
-       * @returns {*}
-       * @private
-       */
-      var _findElement = function (arr, propName, propValue) {
-        for (var i=0; i < arr.length; i++)
-          if (arr[i][propName] === propValue)
-            return arr[i];
-        // will return undefined if not found; you could return a default instead
-      };
-
-      /**
-       * Get the last token when requested model is a string path
-       * @param what
-       * @returns {*}
-       * @private
-       */
-      var _getLastToken = function (what) {
-        var _t = what.split('\\').slice(1);
-        return what.indexOf('\\') === -1 ? what : _t[_t.length-2];
-      };
 
       d.forEach(function (o, idx) {
         var _x = _findElement(_d, 'label', o.label);
-
+        var _dataType = _getDataType(o.value);
+        //console.log(_dataType);
         if (typeof _x === 'undefined') {
-          _d.push(
-            {
-              id: idx,
-              label: o.label,
-              title: _getLastToken(o.label),
-              type: _getDataType(o.value),
-              observations: [{
-                value : o.value
-              }]
-            });
+          _d.push(newChartData(idx, o.label, _getLastToken(o.label), _getDataType(o.value), [{value:o.value}]));
         } else {
           _x.observations.push({value : o.value});
         }
@@ -126,20 +143,36 @@ angular.module('transmartBaseUi')
       return _d;
     };
 
-    var _groupSubjectsBasedOnStudy = function (d) {
-      var returnVal = {
-        'obj': d._embedded.subjects,
-        'title': '',
-        'panel': {
-          isDisplayed: false
-        }
-      };
 
-      return returnVal;
-    };
+    var _createGroupBasedOnSubjectAttributes = function (d) {
+      var _d = [],
+        _keys=['trial', 'inTrialId', 'birthDate', 'deathDate', 'id'],
+        _subjects = d._embedded.subjects;
 
-    chartService.myCharts = function () {
-      return charts;
+      if (_subjects.length > 0) {
+
+        angular.forEach(_subjects, function (subject) { // iterate through subjects
+          var _idx = 0;
+          angular.forEach(subject, function (value, key) { // iterate through subject properties
+
+            var _x = _findElement(_d, 'label', key); // check if label is already existing
+            var _dataType = _getDataType(subject[key]);
+
+            // only for known data types and keys
+            if (_dataType !== 'unknown' && (_keys.indexOf(key) === -1)) {
+              if (typeof _x === 'undefined') { // create new data chart when key is not yet in the collection
+                _d.push(newChartData(_idx, key, key, _dataType, [{value:subject[key]}]));
+                _idx ++;
+              } else { // otherwise add the data to the existing key
+                _x.observations.push({value : subject[key]});
+              }
+            }
+
+          }); //end forEach subject properties
+        }); //end forEach subjects
+
+      }
+      return _d;
     };
 
     chartService.getObservations = function (node) {
@@ -150,7 +183,7 @@ angular.module('transmartBaseUi')
         Restangular.all(_path + '/observations').getList()
           .then(function (d) {
             // create categorical or numerical dimension based on observation data
-            _observationsList = _createGroupObservationsBasedOnLabel(d);
+            _observationsList = _createGroupBasedOnObservationsLabel(d);
             resolve(_observationsList);
           }, function (err) {
             reject('Cannot get data from the end-point.');
@@ -161,15 +194,14 @@ angular.module('transmartBaseUi')
     };
 
     chartService.getSubjects = function (node) {
-      var selectedStudy,
-        studyLink = node._links.self.href.slice(1),
-        studyId = node._embedded.ontologyTerm.name;
+      var selectedStudy = {},
+        studyLink = node._links.self.href.slice(1);
 
       var promise = new Promise( function (resolve, reject) {
         Restangular.one(studyLink + '/subjects').get()
           .then(function (d) {
-            selectedStudy = _groupSubjectsBasedOnStudy(d);
-            selectedStudy.title = studyId;
+            selectedStudy.subjects = d._embedded.subjects;
+            selectedStudy.chartData = _createGroupBasedOnSubjectAttributes(d);
             resolve(selectedStudy);
           }, function (err) {
             reject('Cannot get subjects from the end-point.');
@@ -179,42 +211,10 @@ angular.module('transmartBaseUi')
       return promise;
     };
 
-    chartService.generateSubjectCharts = function (subjects) {
-      var _charts = [];
+    chartService. generateCharts = function (nodes) {
+      var _charts = [], _deferred = $q.defer(), idx = 0;
 
-      var ndx = crossfilter(subjects),
-
-        sexDimension = ndx.dimension(function(d) {return d.sex;}),
-        sexGroup = sexDimension.group(),
-
-        raceDimension = ndx.dimension(function(d) {return d.race;}),
-        raceGroup = raceDimension.group(),
-
-        ageDimension = ndx.dimension(function(d) {return d.age;}),
-        ageGroup = ageDimension.group(),
-
-        maritalDimension = ndx.dimension(function(d) {return d.maritalStatus;}),
-        maritalGroup = maritalDimension.group();
-
-      var _max = Math.max.apply(Math, subjects.map(function(o){return o.age;})),
-        _min = Math.min.apply(Math, subjects.map(function(o){return o.age;}));
-
-      _charts.push(_pieChart(sexDimension, sexGroup, '#gender-pie-chart'));
-      _charts.push(_pieChart(raceDimension, raceGroup, '#race-pie-chart'));
-      _charts.push(_pieChart(maritalDimension, maritalGroup, '#marital-pie-chart'));
-      _charts.push(_barChart(ageDimension, ageGroup, '#numeric-age-chart', _min, _max, "Age"));
-
-      // now render all charts ..
-      _charts.forEach(function (c) {
-        c.render(); // TODO: still contains bug, somehow it can't render on the first invoke
-      });
-
-    };
-
-    chartService.generateCharts = function (nodes) {
-      var _charts = [];
-
-      nodes.forEach (function(node, idx){
+      angular.forEach(nodes, function (node) {
         var ndx = crossfilter(node.observations),
           tDimension = ndx.dimension(function(d) {return d.value;}),
           tGroup = tDimension.group();
@@ -223,49 +223,25 @@ angular.module('transmartBaseUi')
           _charts.push(_pieChart(tDimension, tGroup, '#chart_' + idx));
         } else if (node.type === 'number') {
           var _max = Math.max.apply(Math,node.observations.map(function(o){return o.value;})),
-              _min = Math.min.apply(Math,node.observations.map(function(o){return o.value;}));
+            _min = Math.min.apply(Math,node.observations.map(function(o){return o.value;}));
           _charts.push(_barChart(tDimension, tGroup, '#chart_' + idx, _min, _max, node.title));
+        }
+
+        idx++;
+
+        if (idx === nodes.length) {
+          _deferred.resolve(_charts);
         }
       });
 
-      // now render all charts ..
-      _charts.forEach(function (c) {
-        c.render(); // TODO: still contains bug, somehow it can't render on the first invoke
-      });
+      return _deferred.promise;
+
     };
 
-    /**
-     * Display summary statistics of a selected node
-     * @param node
-     */
-    chartService.displayStats = function (node) {
-
-      var _observationsList = [], _charts = [],
-        _path = node.link.slice(1);
-
-      var promise = new Promise( function (resolve, reject) {
-        Restangular.all(_path + '/observations').getList()
-          .then(function (d) {
-            // create categorical or numerical dimension based on observation data
-            _observationsList = _createGroupObservationsBasedOnLabel(d);
-
-            _observationsList.forEach (function(observation, idx){
-              //console.log(idx);
-              //console.log(observation);
-              var ndx = crossfilter(observation),
-                tDimension = ndx.dimension(function(_d) {return _d.value;}),
-                tGroup = tDimension.group();
-              _charts.push(_pieChart(tDimension, tGroup, '#chart_' + idx));
-            });
-            charts = _charts;
-            resolve(_charts);
-          }, function (err) {
-            //console.log('Error', err);
-            reject(err);
-          });
+    chartService.renderAll = function (charts) {
+      angular.forEach (charts, function (chart) {
+        chart.render();
       });
-
-      return promise;
     };
 
     return chartService;
