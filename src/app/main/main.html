@@ -60,7 +60,39 @@
             </tab-heading>
 
             <i class="glyphicon glyphicon-spin" ng-class="{'glyphicon-refresh': dataLoading}"></i>
-            <ts-chart ng-repeat="observation in observations"></ts-chart>
+            <!--<ts-chart ng-repeat="label in labels3.labels"></ts-chart>-->
+            <span>
+              <span id="data-count" style="font-size: x-large">
+                <span class="filter-count"></span>
+                selected out of
+                <span class="total-count"></span>
+              </span>
+            <div id="chart_0"></div>
+            <div id="chart_1"></div>
+            </span>
+            <div id="chart_2"></div>
+            <div id="chart_3"></div>
+            <div id="chart_4"></div>
+            <div id="chart_5"></div>
+            <div id="chart_6"></div>
+            <div id="chart_7"></div>
+            <div id="chart_8"></div>
+            <div id="chart_9"></div>
+
+          </tab>
+
+          <tab>
+            <tab-heading>
+              <span>Cohort</span>
+            </tab-heading>
+
+            <i class="glyphicon glyphicon-spin" ng-class="{'glyphicon-refresh': dataLoading}"></i>
+            <div id="chart-sex" style=""></div>
+            <div id="chart-age" style=""></div>
+            <div id="chart-diag" style=""></div>
+            <div id="chart-fev" style=""></div>
+            <button ng-click="filterM()">Filter Males</button>
+
 
           </tab>
 

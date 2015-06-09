@@ -2,7 +2,7 @@
 
 angular.module('transmartBaseUi')
 
-  .factory('ChartService',['Restangular', '$q',  function (Restangular, $q) {
+  .factory('ChartService',['Restangular', '$q', 'DataService',  function (Restangular, $q, DataService) {
 
     var chartService = {};
 
@@ -32,11 +32,13 @@ angular.module('transmartBaseUi')
      * @param el
      * @private
      */
-    var _barChart = function (cDimension, cGroup, el, min, max, nodeTitle) {
+    var _barChart = function (cDimension, cGroup, el, min, max, nodeTitle, width) {
+
+      width = width || 270;
 
       var _barChart = dc.barChart(el);
       _barChart
-        .width(270)
+        .width(width)
         .height(200)
         .margins({top: 5, right: 5, bottom: 30, left: 25})
         .dimension(cDimension)
@@ -239,9 +241,66 @@ angular.module('transmartBaseUi')
 
     chartService.renderAll = function (charts) {
       angular.forEach (charts, function (chart) {
-         // console.log(chart);
+        console.log(chart);
         chart.render();
       });
+    };
+
+    chartService.populateCharts = function(data, dcObj) {
+      var _charts = [], _deferred = $q.defer(), idx = 2;
+
+      // Create crossfilter or add data to it
+      if(true){
+        dcObj.data = crossfilter(data);
+      } else {
+        dcObj.add(data);
+      }
+
+      var allG = dcObj.data.groupAll();
+      _charts.push(dc.dataCount("#data-count")
+        .dimension(dcObj.data)
+        .group(allG));
+
+      dcObj.dim['age'] = dcObj.data.dimension(function(d) {return d.age;});
+      dcObj.gro['age'] = dcObj.dim['age'].group();
+      _charts.push(_barChart(dcObj.dim['age'], dcObj.gro['age'], '#chart_' + 1, 0, 100, 'Age', 600));
+
+
+      dcObj.dim['sex'] = dcObj.data.dimension(function(d) {return d.sex;});
+      dcObj.gro['sex'] = dcObj.dim['sex'].group();
+      _charts.push(_pieChart(dcObj.dim['sex'], dcObj.gro['sex'], '#chart_' + 0));
+
+      // Create plot for each label
+      var labels = DataService.getLabels();
+      console.log(labels);
+      labels.labels.forEach(function(label, index){
+
+        dcObj.dim[label] = dcObj.data.dimension(function(d) {return d.labels[label];});
+
+
+        if(labels.types[index] === 'string'){
+          dcObj.gro[label] = dcObj.dim[label].group();
+          _charts.push(_pieChart(dcObj.dim[label], dcObj.gro[label], '#chart_' + idx));
+        }else if(labels.types[index] === 'number'){
+          dcObj.gro[label] = dcObj.dim[label].group(function(total) { return Math.floor(total); });
+          var max = dcObj.dim[label].top(1)[0].labels[label];
+          var min = dcObj.dim[label].bottom(1)[0].labels[label];
+          _charts.push(_barChart(dcObj.dim[label], dcObj.gro[label], '#chart_' + idx, min, max, labels.names[index]));
+        }
+        console.log(idx);
+        idx++;
+
+
+        if (idx === labels.length) {
+
+        }
+      });
+
+      _deferred.resolve(_charts);
+
+
+      return _deferred.promise;
+
     };
 
     return chartService;
