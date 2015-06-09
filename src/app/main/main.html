@@ -40,47 +40,27 @@
       <div ng-include="'app/main/welcome.html'" ng-show="!selectedStudy.title"></div>
 
       <!--Selected Study-->
-      <div ng-show="selectedStudy.title">
+      <div >
         <h2>{{selectedStudy.title}}</h2>
 
-        <tabset ng-show="selectedStudy.panel.isDisplayed">
+        <tabset ng-show="selectedStudy.title">
 
           <!--Node Summary Tab-->
           <tab>
-          <tab-heading>Summary Statistics &nbsp; &nbsp;
-            <a href class="info info-icon glyphicon glyphicon-info-sign" ng-click="$event.stopPropagation()"
-               popover-template="'NodePopoverTemplate'"
-               popover-title="{{study._embedded.ontologyTerm.name}}">
-            </a>
-          </tab-heading>
+            <tab-heading>
+              <span ng-show="!selectedNode.title">Summary Statistics</span>
+              <span ng-show="selectedNode.title">
+                Selected node: <strong>{{selectedNode.title}}</strong> &nbsp;
+                <a href class="info info-icon glyphicon glyphicon-info-sign " ng-click="$event.stopPropagation()"
+                   popover-template="'NodePopoverTemplate'"
+                   popover-title="{{study._embedded.ontologyTerm.name}}" ng-show="selectedNode.title" style="float:right;">
 
-            <accordion close-others="oneAtATime">
-              <accordion-group is-open="true" style="background-color: powderblue;">
-                <accordion-heading>
-                  Demographics <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
-                </accordion-heading>
-                <div class="col-xs-6 col-sm-3 placeholder">
-                  <div id="gender-pie-chart" ng-show="!dataLoading"></div>
-                </div>
-                <div class="col-xs-6 col-sm-3 placeholder">
-                  <div id="race-pie-chart" ng-show="!dataLoading"></div>
-                </div>
-                <div class="col-xs-6 col-sm-3 placeholder">
-                  <div id="marital-pie-chart" ng-show="!dataLoading"></div>
-                </div>
-                <div class="col-xs-6 col-sm-3 placeholder">
-                  <div id="numeric-age-chart" ng-show="!dataLoading"></div>
-                </div>
-                <div class="col-md-1" ng-if="dataLoading">
-                  <img ng-show="dataLoading" class="loading-img"/>
-                </div>
-              </accordion-group>
+                </a>
+              </span>
+            </tab-heading>
 
-              <accordion-group heading="Statistics" is-open="true" is-disabled="false">
-                <i class="glyphicon glyphicon-spin" ng-class="{'glyphicon-refresh': dataLoading}"></i>
-                <div ng-repeat="observation in observations" ng-include="'app/components/charts/chart-template.html'" id="node-charts-container"></div>
-              </accordion-group>
-            </accordion>
+            <i class="glyphicon glyphicon-spin" ng-class="{'glyphicon-refresh': dataLoading}"></i>
+            <ts-chart ng-repeat="observation in observations"></ts-chart>
 
           </tab>
 
@@ -96,7 +76,7 @@
               }
             </style>
 
-            <table st-table="displayedCollection" st-safe-src="selectedStudy.obj" class="table table-striped">
+            <table st-table="displayedCollection" st-safe-src="selectedStudy.subjects" class="table table-striped">
               <thead>
               <tr>
                 <th st-sort="iD" st-sort-default="true">ID</th>
@@ -130,7 +110,6 @@
               </tr>
               </tfoot>
             </table>
-
 
           </tab>
         </tabset>
