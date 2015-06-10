@@ -246,7 +246,7 @@ angular.module('transmartBaseUi')
     };
 
     chartService.populateCharts = function(data, dcObj) {
-      var _charts = [], _deferred = $q.defer(), idx = 2;
+      var _charts = [], _deferred = $q.defer(), idx = 0;
 
       // Create crossfilter or add data to it
       if(true){
@@ -259,7 +259,7 @@ angular.module('transmartBaseUi')
       _charts.push(dc.dataCount("#data-count")
         .dimension(dcObj.data)
         .group(allG));
-
+/**
       dcObj.dim['age'] = dcObj.data.dimension(function(d) {return d.age;});
       dcObj.gro['age'] = dcObj.dim['age'].group();
       _charts.push(_barChart(dcObj.dim['age'], dcObj.gro['age'], '#chartc_' + 1, 0, 100, 'Age', 600));
@@ -268,7 +268,7 @@ angular.module('transmartBaseUi')
       dcObj.dim['sex'] = dcObj.data.dimension(function(d) {return d.sex;});
       dcObj.gro['sex'] = dcObj.dim['sex'].group();
       _charts.push(_pieChart(dcObj.dim['sex'], dcObj.gro['sex'], '#chartc_' + 0));
-
+**/
       // Create plot for each label
       var labels = DataService.getLabels();
       console.log(labels);

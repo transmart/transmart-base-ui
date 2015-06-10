@@ -4,6 +4,8 @@ angular.module('transmartBaseUi')
   .factory('DataService',['Restangular', '$q', function (Restangular, $q) {
     var service = {};
 
+    var subjects = [];
+
     var labels = [];
     var types = [];
     var names = [];
@@ -25,21 +27,24 @@ angular.module('transmartBaseUi')
       return {labels:labels, types:types, names:names};
     };
 
+    service.reset = function (){
+      subjects = [];
+      labels = [];
+      types = [];
+      names = [];
+    }
+
 
 
     service.getObservations = function (node) {
       var _path = node.link.slice(1);
-
-      labels = [];
-      types = [];
-      names = [];
 
       var deferred = $q.defer()
 
       Restangular.all(_path + '/observations').getList()
         .then(function (d) {
           // Group observation labels under common subject
-          var subjects = [];
+
           d.forEach(function(obs){
             _addLabel(obs.label, obs.value);
             var found = false;

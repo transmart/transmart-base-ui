@@ -21,7 +21,9 @@
 <!-- START Node template -->
 
 <script type="text/ng-template" id="nodes_renderer.html">
-  <div ui-tree-handle class="tree-node tree-node-content" ng-click="countChilds(node); naction()(node);">
+  <div ui-tree-handle class="tree-node tree-node-content" ng-click="countChilds(node);" data-drag="true"
+       jqyoui-draggable="{placeholder: 'keep'}"
+       data-jqyoui-options="{containment: 'document', appendTo: 'body', helper: 'clone'}" ng-model="node">
     <a data-nodrag ng-click="toggle(this)">
       <span class="typcn" ng-class="{'typcn-folder': collapsed && type.fol(node),
                                      'typcn-folder-open': !collapsed && type.fol(node),

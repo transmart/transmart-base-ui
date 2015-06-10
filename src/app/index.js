@@ -11,7 +11,8 @@ angular.module('transmartBaseUi', [
   'restangular',
   'ui.tree',
   'smart-table',
-  'angular-loading-bar'
+  'angular-loading-bar',
+  'ngDragDrop'
 ])
 
   .config( ['$stateProvider', 'RestangularProvider', '$tooltipProvider', 'cfpLoadingBarProvider',

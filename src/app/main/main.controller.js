@@ -23,6 +23,46 @@ angular.module('transmartBaseUi')
     $scope.observations = [];
     $scope.observationsC = [];
 
+    $scope.cohortSelected = 0;
+    $scope.cohortTotal = 0;
+
+    /*******************************************************************************************************************
+     * Drag and drop controls
+     */
+
+    /**
+     * Contains the active nodes after they are dropped
+     * @type {array}
+     */
+    $scope.activeNodeButtons = [];
+
+    /**
+     * Callback for node drop
+     * @param event jQuery drop event
+     * @param info
+     * @param node Dropped node
+     */
+    $scope.onNodeDropEvent = function(event, info, node){
+      $scope.activeNodeButtons.push(node);
+      $scope.displayNodeSummaryStatistics(node);
+    }
+
+    /**
+     * Reset the active nodes to empty
+     */
+    $scope.resetActiveNodes = function(){
+      $scope.activeNodeButtons = [];
+      for(var i =0; i < 10; i++){
+        angular.element('#chartc_'+i).empty();
+      }
+      $scope.cohortSelected = 0;
+      $scope.cohortTotal = 0;
+      DataService.reset();
+    };
+
+
+
+
     $scope.displayStudySummaryStatistics = function (study) {
 
       var _setLoadingAnim = function (data, chart) {
