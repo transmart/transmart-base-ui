@@ -60,24 +60,7 @@
             </tab-heading>
 
             <i class="glyphicon glyphicon-spin" ng-class="{'glyphicon-refresh': dataLoading}"></i>
-            <!--<ts-chart ng-repeat="label in labels3.labels"></ts-chart>-->
-            <span>
-              <span id="data-count" style="font-size: x-large">
-                <span class="filter-count"></span>
-                selected out of
-                <span class="total-count"></span>
-              </span>
-            <div id="chart_0"></div>
-            <div id="chart_1"></div>
-            </span>
-            <div id="chart_2"></div>
-            <div id="chart_3"></div>
-            <div id="chart_4"></div>
-            <div id="chart_5"></div>
-            <div id="chart_6"></div>
-            <div id="chart_7"></div>
-            <div id="chart_8"></div>
-            <div id="chart_9"></div>
+            <ts-chart ng-repeat="observation in observations"></ts-chart>
 
           </tab>
 
@@ -85,15 +68,24 @@
             <tab-heading>
               <span>Cohort</span>
             </tab-heading>
+            <div>
 
-            <i class="glyphicon glyphicon-spin" ng-class="{'glyphicon-refresh': dataLoading}"></i>
-            <div id="chart-sex" style=""></div>
-            <div id="chart-age" style=""></div>
-            <div id="chart-diag" style=""></div>
-            <div id="chart-fev" style=""></div>
-            <button ng-click="filterM()">Filter Males</button>
+              <progressbar max="100" value="cohortSelected/(cohortTotal/100)" class="progress active" animate="true">
+                <div class="data-count">{{cohortSelected}}/{{cohortTotal}}</div>
+              </progressbar>
 
-
+            <div id="chartc_0"></div>
+            <div id="chartc_1"></div>
+            </span>
+              <div id="chartc_2"></div>
+              <div id="chartc_3"></div>
+              <div id="chartc_4"></div>
+              <div id="chartc_5"></div>
+              <div id="chartc_6"></div>
+              <div id="chartc_7"></div>
+              <div id="chartc_8"></div>
+              <div id="chartc_9"></div>
+            </div>
           </tab>
 
           <tab heading="Subjects">

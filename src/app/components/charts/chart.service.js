@@ -241,7 +241,6 @@ angular.module('transmartBaseUi')
 
     chartService.renderAll = function (charts) {
       angular.forEach (charts, function (chart) {
-        console.log(chart);
         chart.render();
       });
     };
@@ -263,12 +262,12 @@ angular.module('transmartBaseUi')
 
       dcObj.dim['age'] = dcObj.data.dimension(function(d) {return d.age;});
       dcObj.gro['age'] = dcObj.dim['age'].group();
-      _charts.push(_barChart(dcObj.dim['age'], dcObj.gro['age'], '#chart_' + 1, 0, 100, 'Age', 600));
+      _charts.push(_barChart(dcObj.dim['age'], dcObj.gro['age'], '#chartc_' + 1, 0, 100, 'Age', 600));
 
 
       dcObj.dim['sex'] = dcObj.data.dimension(function(d) {return d.sex;});
       dcObj.gro['sex'] = dcObj.dim['sex'].group();
-      _charts.push(_pieChart(dcObj.dim['sex'], dcObj.gro['sex'], '#chart_' + 0));
+      _charts.push(_pieChart(dcObj.dim['sex'], dcObj.gro['sex'], '#chartc_' + 0));
 
       // Create plot for each label
       var labels = DataService.getLabels();
@@ -280,12 +279,12 @@ angular.module('transmartBaseUi')
 
         if(labels.types[index] === 'string'){
           dcObj.gro[label] = dcObj.dim[label].group();
-          _charts.push(_pieChart(dcObj.dim[label], dcObj.gro[label], '#chart_' + idx));
+          _charts.push(_pieChart(dcObj.dim[label], dcObj.gro[label], '#chartc_' + idx));
         }else if(labels.types[index] === 'number'){
           dcObj.gro[label] = dcObj.dim[label].group(function(total) { return Math.floor(total); });
           var max = dcObj.dim[label].top(1)[0].labels[label];
           var min = dcObj.dim[label].bottom(1)[0].labels[label];
-          _charts.push(_barChart(dcObj.dim[label], dcObj.gro[label], '#chart_' + idx, min, max, labels.names[index]));
+          _charts.push(_barChart(dcObj.dim[label], dcObj.gro[label], '#chartc_' + idx, min, max, labels.names[index]));
         }
         console.log(idx);
         idx++;

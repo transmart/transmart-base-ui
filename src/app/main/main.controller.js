@@ -21,6 +21,7 @@ angular.module('transmartBaseUi')
 
     $scope.selectedStudy = {};
     $scope.observations = [];
+    $scope.observationsC = [];
 
     $scope.displayStudySummaryStatistics = function (study) {
 
@@ -32,7 +33,8 @@ angular.module('transmartBaseUi')
       angular.element('#node-charts-container').empty();
       _setLoadingAnim(true, false);
       $scope.selectednode = study;
-/**
+      $scope.selectedStudy.title = study.id;
+
       ChartService.getSubjects(study).then(function(d) {
 
         $scope.$apply(function () {
@@ -60,139 +62,78 @@ angular.module('transmartBaseUi')
         }
       }).then (function () {
         _setLoadingAnim(false, false);
-      });**/
+      });
     };
 
     $scope.displayNodeSummaryStatistics = function (node) {
 
       $scope.selectedNode = node;
-      $scope.selectedStudy.title = "Tilte";
 
       var _setLoadingAnim = function (data, chart) {
         $scope.dataLoading = data;
         $scope.chartLoading = chart;
       };
 
+      angular.element('#node-charts-container').empty();
       for(var i =0; i < 10; i++){
-        angular.element('#chart_'+i).empty();
+        angular.element('#chartc_'+i).empty();
       }
-
 
       _setLoadingAnim(true, false);
       $scope.selectednode = node;
 
-      DataService.getObservations(node).then(function(d){
-
-
+      ChartService.getObservations(node).then(function (d) {
+        // at first, get the observation data for the selected node
+        $scope.$apply(function () {
           $scope.observations = d;
-          $scope.labels3 = DataService.getLabels();
-
           _setLoadingAnim(false, true);
+          return $scope.observations;
+        });
 
-
-
-        //
-
-        //dcData.data = crossfilter(d);
-        /**
-        dcData.dim.sex = dcData.data.dimension(function(d) {return d.sex;});
-        dcData.gro.sex = dcData.dim.sex.group();
-        dcData.dim.age = dcData.data.dimension(function(d) {return d.age;});
-        dcData.gro.age = dcData.dim.age.group();
-        dcData.dim.sexf = dcData.data.dimension(function(d) {return d.sex;});
-        dcData.gro.sexf = dcData.dim.sex.group();
-
-        dcData.dim.label = dcData.data.dimension(function(d) {return d.labels["\\Public Studies\\GSE8581\\Endpoints\\Diagnosis\\"];});
-        dcData.gro.label = dcData.dim.label.group();
-
-        dcData.dim.label1 = dcData.data.dimension(function(d) {return d.labels["\\Public Studies\\GSE8581\\Endpoints\\FEV1\\"];});
-        dcData.gro.label1 = dcData.dim.label1.group(function(total) { return Math.floor(total); });
-
-
-        tChart = dc.pieChart('#chart-sex');
-
-        tChart
-          .width(270)
-          .height(200)
-          .innerRadius(0)
-          .dimension(dcData.dim.sex)
-          .group(dcData.gro.sex)
-          .renderLabel(false)
-          .legend(dc.legend());
-
-        _barChart = dc.barChart('#chart-age');
-        _barChart
-          .width(270)
-          .height(200)
-          .margins({top: 5, right: 5, bottom: 30, left: 25})
-          .dimension(dcData.dim.age)
-          .group(dcData.gro.age)
-          .elasticY(true)
-          .centerBar(true)
-          .gap(1)
-          .x(d3.scale.linear().domain([0, 100]))
-          .renderHorizontalGridLines(true)
-        ;
-        _barChart.xAxis().tickFormat(
-          function (v) { return v; });
-        _barChart.yAxis().ticks(5);
-        _barChart.xAxisLabel('Age');
-        _barChart.yAxisLabel('# subjects');
-
-
-
-
-        tChart3 = dc.pieChart('#chart-diag');
-
-
-        tChart3
-          .width(300)
-          .height(300)
-          .innerRadius(0)
-          .dimension(dcData.dim.label)
-          .group(dcData.gro.label)
-          .renderLabel(false)
-          .legend(dc.legend());
-
-        _barChart2 = dc.barChart('#chart-fev');
-        _barChart2
-          .width(600)
-          .height(200)
-          .margins({top: 5, right: 5, bottom: 30, left: 25})
-          .dimension(dcData.dim.label1)
-          .group(dcData.gro.label1)
-          .elasticY(true)
-          .centerBar(true)
-          .gap(1)
-          .x(d3.scale.linear().domain([0, 10]))
-          .renderHorizontalGridLines(true)
-        ;
-        _barChart2.xAxis().tickFormat(
-          function (v) { return v; });
-        _barChart2.yAxis().ticks(5);
-        _barChart2.xAxisLabel('FEV');
-        _barChart2.yAxisLabel('# subjects');
-
-**/
-      }).then(function(){
-        //tChart.render();
-        //_barChart.render();
-        //tChart3.render();
-        //_barChart2.render();
-
+      }, function (err) {
+          AlertService.add('danger', err);
+        }
+      ).then(function () {
         // then generate charts out of it
         if (typeof $scope.observations !== 'undefined') {
-          ChartService.populateCharts($scope.observations, dcData).then(function (c) {
-            console.log(c);
-            console.log("Charts");
+          ChartService.generateCharts($scope.observations).then(function (c) {
             ChartService.renderAll(c);
           });
         }
+      })
+        .then (function () {
+        _setLoadingAnim(false, false);
+      });
 
+      DataService.getObservations(node).then(function(d){
+
+          $scope.observationsC = d;
+          $scope.labels3 = DataService.getLabels();
+          _setLoadingAnim(false, true);
+
+
+      }).then(function(){
+        // then generate charts out of it
+        if (typeof $scope.observationsC !== 'undefined') {
+          ChartService.populateCharts($scope.observationsC, dcData).then(function (c) {
+            c.forEach(function(chart){
+              $scope.cohortSelected = dcData.data.groupAll().value();
+              $scope.cohortTotal = dcData.data.size();
+              console.log($scope.cohortTotal)
+              chart.on('postRedraw', function(){
+                $scope.cohortSelected = dcData.data.groupAll().value();
+                $scope.cohortTotal = dcData.data.size();
+                $scope.$apply();
+              })
+            })
+            ChartService.renderAll(c);
+          });
+
+
+
+        }
       }).then (function () {
         _setLoadingAnim(false, false);
-      });;
-
-
+      });
     };
   }]);
