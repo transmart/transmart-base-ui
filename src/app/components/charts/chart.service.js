@@ -2,7 +2,7 @@
 
 angular.module('transmartBaseUi')
 
-  .factory('ChartService',['Restangular', '$q', 'DataService',  function (Restangular, $q, DataService) {
+  .factory('ChartService',['Restangular', '$q', 'CohortService',  function (Restangular, $q, CohortService) {
 
     var chartService = {};
 
@@ -259,18 +259,9 @@ angular.module('transmartBaseUi')
       _charts.push(dc.dataCount("#data-count")
         .dimension(dcObj.data)
         .group(allG));
-/**
-      dcObj.dim['age'] = dcObj.data.dimension(function(d) {return d.age;});
-      dcObj.gro['age'] = dcObj.dim['age'].group();
-      _charts.push(_barChart(dcObj.dim['age'], dcObj.gro['age'], '#chartc_' + 1, 0, 100, 'Age', 600));
 
-
-      dcObj.dim['sex'] = dcObj.data.dimension(function(d) {return d.sex;});
-      dcObj.gro['sex'] = dcObj.dim['sex'].group();
-      _charts.push(_pieChart(dcObj.dim['sex'], dcObj.gro['sex'], '#chartc_' + 0));
-**/
       // Create plot for each label
-      var labels = DataService.getLabels();
+      var labels = chartService.getLabels();
       console.log(labels);
       labels.labels.forEach(function(label, index){
 
@@ -300,6 +291,79 @@ angular.module('transmartBaseUi')
 
       return _deferred.promise;
 
+    };
+
+
+    var COHORT_SUBJECTS = [];
+
+    var labels = [];
+    var types = [];
+    var names = [];
+
+    var _getLastToken = function (what) {
+      var _t = what.split('\\').slice(1);
+      return what.indexOf('\\') === -1 ? what : _t[_t.length-2];
+    };
+
+    var _addLabel = function(label,value){
+      if(labels.indexOf(label) === -1) {
+        labels.push(label);
+        types.push(typeof value);
+        names.push(_getLastToken(label));
+      }
+    };
+
+    chartService.getLabels = function(){
+      return {labels:labels, types:types, names:names};
+    };
+
+    chartService.reset = function (){
+      COHORT_SUBJECTS = [];
+      labels = [];
+      types = [];
+      names = [];
+    }
+
+
+    /**
+     *
+     * @param node Node object to add to cohort selection
+     * @returns {promise resolving to subjects}
+     */
+    chartService.addNodeToActiveCohortSelection = function (node) {
+      var _deferred = $q.defer();
+      var _path = node.link.slice(1);
+
+      //Get all observations under the selected concept
+      Restangular.all(_path + '/observations').getList().then(function (d) {
+        var _found = false;
+        // Group observation labels under common subject
+        d.forEach(function(obs){
+          _found = false;
+          _addLabel(obs.label, obs.value);
+          // Check if subject is already present
+          COHORT_SUBJECTS.forEach(function(sub){
+            if(sub.id === obs._embedded.subject.id){
+              sub.labels[obs.label] = obs.value;
+              _found = true;
+              return;
+            }
+          });
+          // If new subject, push to cohort selection
+          if(!_found){
+            var newSub = obs._embedded.subject;
+            newSub.labels = {};
+            newSub.labels[obs.label] = obs.value;
+            COHORT_SUBJECTS.push(newSub);
+          }
+        });
+
+        _deferred.resolve(COHORT_SUBJECTS);
+      }, function (err) {
+        //TODO: add alert
+        _deferred.reject('Cannot get data from the end-point.');
+      });
+      return _deferred.promise;
     };
 
     return chartService;

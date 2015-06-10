@@ -2,7 +2,7 @@
 
 angular.module('transmartBaseUi')
   .controller('MainCtrl',
-  ['$scope', 'Restangular', 'ChartService', 'AlertService', 'DataService', function ($scope, Restangular, ChartService, AlertService, DataService) {
+  ['$scope', 'Restangular', 'ChartService', 'AlertService', function ($scope, Restangular, ChartService, AlertService) {
 
     $scope.dataLoading = false;
 
@@ -57,7 +57,7 @@ angular.module('transmartBaseUi')
       }
       $scope.cohortSelected = 0;
       $scope.cohortTotal = 0;
-      DataService.reset();
+      ChartService.reset();
     };
 
 
@@ -145,10 +145,9 @@ angular.module('transmartBaseUi')
         _setLoadingAnim(false, false);
       });
 
-      DataService.getObservations(node).then(function(d){
+      ChartService.addNodeToActiveCohortSelection(node).then(function(d){
 
           $scope.observationsC = d;
-          $scope.labels3 = DataService.getLabels();
           _setLoadingAnim(false, true);
 
 
