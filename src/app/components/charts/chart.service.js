@@ -245,90 +245,50 @@ angular.module('transmartBaseUi')
       });
     };
 
-    chartService.populateCharts = function(data, dcObj) {
-      var _charts = [], _deferred = $q.defer(), idx = 0;
-
-      // Create crossfilter or add data to it
-      if(true){
-        dcObj.data = crossfilter(data);
-      } else {
-        dcObj.add(data);
-      }
-
-      var allG = dcObj.data.groupAll();
-      _charts.push(dc.dataCount("#data-count")
-        .dimension(dcObj.data)
-        .group(allG));
-
-      // Create plot for each label
-      var labels = chartService.getLabels();
-      console.log(labels);
-      labels.labels.forEach(function(label, index){
-
-        dcObj.dim[label] = dcObj.data.dimension(function(d) {return d.labels[label];});
-
-
-        if(labels.types[index] === 'string'){
-          dcObj.gro[label] = dcObj.dim[label].group();
-          _charts.push(_pieChart(dcObj.dim[label], dcObj.gro[label], '#chartc_' + idx));
-        }else if(labels.types[index] === 'number'){
-          dcObj.gro[label] = dcObj.dim[label].group(function(total) { return Math.floor(total); });
-          var max = dcObj.dim[label].top(1)[0].labels[label];
-          var min = dcObj.dim[label].bottom(1)[0].labels[label];
-          _charts.push(_barChart(dcObj.dim[label], dcObj.gro[label], '#chartc_' + idx, min, max, labels.names[index]));
-        }
-        console.log(idx);
-        idx++;
-
-
-        if (idx === labels.length) {
-
-        }
-      });
-
-      _deferred.resolve(_charts);
-
-
-      return _deferred.promise;
-
-    };
 
 
     var COHORT_SUBJECTS = [];
+    var CROSSFILTER = null;
+    var DIMENSIONS = {};
+    var GROUPS = {};
+    var CHARTS = []
+    var CHART_IDS = 0;
 
-    var labels = [];
-    var types = [];
-    var names = [];
-
-    var _getLastToken = function (what) {
-      var _t = what.split('\\').slice(1);
-      return what.indexOf('\\') === -1 ? what : _t[_t.length-2];
-    };
+    var NEW_LABELS = [];
+    var NEW_TYPES = [];
+    var NEW_NAMES = [];
 
     var _addLabel = function(label,value){
-      if(labels.indexOf(label) === -1) {
-        labels.push(label);
-        types.push(typeof value);
-        names.push(_getLastToken(label));
+      if(NEW_LABELS.indexOf(label) === -1) {
+        NEW_LABELS.push(label);
+        NEW_TYPES.push(typeof value);
+        NEW_NAMES.push(_getLastToken(label));
       }
     };
 
-    chartService.getLabels = function(){
-      return {labels:labels, types:types, names:names};
-    };
 
     chartService.reset = function (){
       COHORT_SUBJECTS = [];
-      labels = [];
-      types = [];
-      names = [];
-    }
+      CROSSFILTER = null;
+      DIMENSIONS = {};
+      GROUPS = {};
+      CHARTS = []
+      CHART_IDS = 0;
+      NEW_LABELS = [];
+      NEW_TYPES = [];
+      NEW_NAMES = [];
 
+      for(var i =0; i < 15; i++){
+        angular.element('#cohort-chart-'+i).empty();
+      }
+
+    }
 
     /**
      *
-     * @param node Node object to add to cohort selection
-     * @returns {promise resolving to subjects}
+     * @param node
+     * @returns {*}
+     * @private
      */
     chartService.addNodeToActiveCohortSelection = function (node) {
       var _deferred = $q.defer();
@@ -358,13 +318,73 @@ angular.module('transmartBaseUi')
           }
         });
 
-        _deferred.resolve(COHORT_SUBJECTS);
+        _populateCrossfilter();
+        _createCharts();
+
+        _deferred.resolve(CHARTS);
       }, function (err) {
         //TODO: add alert
         _deferred.reject('Cannot get data from the end-point.');
       });
       return _deferred.promise;
+    }
+
+    /**
+     *
+     * @private
+     */
+    var _populateCrossfilter = function (){
+
+      // If not instance of crossfilter, create one
+      if(!CROSSFILTER){
+        CROSSFILTER = crossfilter(COHORT_SUBJECTS);
+      }else{
+        //TODO: Empty it instead, and readd
+        CROSSFILTER = crossfilter(COHORT_SUBJECTS);
+      }
+
     };
+
+    /**
+     *
+     * @private
+     */
+    var _createCharts = function () {
+      CHART_IDS == 0;
+      CHARTS = [];
+      for(var i =0; i < 15; i++){
+        angular.element('#cohort-chart-'+i).empty();
+      }
+      // Create plot for each label
+      NEW_LABELS.forEach(function(label, index){
+        //Create dimension and grouping for the new label
+        DIMENSIONS[label] = CROSSFILTER.dimension(function(d) {return d.labels[label];});
+        GROUPS[label] = DIMENSIONS[label].group();
+
+        if(NEW_TYPES[index] === 'string'){
+          CHARTS.push(_pieChart(DIMENSIONS[label], GROUPS[label], '#cohort-chart-' + CHART_IDS));
+        }else if(NEW_TYPES[index] === 'number'){
+          var max = DIMENSIONS[label].top(1)[0].labels[label];
+          var min = DIMENSIONS[label].bottom(1)[0].labels[label];
+          CHARTS.push(_barChart(DIMENSIONS[label], GROUPS[label], '#cohort-chart-' + CHART_IDS, min, max, NEW_NAMES[index]));
+        }
+        CHART_IDS++;
+      });
+      //NEW_LABELS = [];
+      //NEW_TYPES = [];
+      //NEW_NAMES = [];
+    };
+
+    /**
+     *
+     * @returns {{selected: (*|{returns the sum total of matching records, observes all dimension's filters}), total: *}}
+     */
+    chartService.getSelectionValues = function (){
+      return {
+        selected: CROSSFILTER.groupAll().value(),
+        total: CROSSFILTER.size()
+      }
+    }
 
     return chartService;
   }]);

@@ -44,7 +44,7 @@ angular.module('transmartBaseUi')
      */
     $scope.onNodeDropEvent = function(event, info, node){
       $scope.activeNodeButtons.push(node);
-      $scope.displayNodeSummaryStatistics(node);
+      $scope.addCohort(node);
     }
 
     /**
@@ -105,6 +105,11 @@ angular.module('transmartBaseUi')
       });
     };
 
+
+    /**
+     *
+     * @param node
+     */
     $scope.displayNodeSummaryStatistics = function (node) {
 
       $scope.selectedNode = node;
@@ -113,11 +118,6 @@ angular.module('transmartBaseUi')
         $scope.dataLoading = data;
         $scope.chartLoading = chart;
       };
-
-      angular.element('#node-charts-container').empty();
-      for(var i =0; i < 10; i++){
-        angular.element('#chartc_'+i).empty();
-      }
 
       _setLoadingAnim(true, false);
       $scope.selectednode = node;
@@ -145,34 +145,34 @@ angular.module('transmartBaseUi')
         _setLoadingAnim(false, false);
       });
 
-      ChartService.addNodeToActiveCohortSelection(node).then(function(d){
+    };
 
-          $scope.observationsC = d;
-          _setLoadingAnim(false, true);
+    $scope.addCohort = function (node) {
 
+      $scope.selectedNode = node;
 
-      }).then(function(){
-        // then generate charts out of it
-        if (typeof $scope.observationsC !== 'undefined') {
-          ChartService.populateCharts($scope.observationsC, dcData).then(function (c) {
-            c.forEach(function(chart){
-              $scope.cohortSelected = dcData.data.groupAll().value();
-              $scope.cohortTotal = dcData.data.size();
-              console.log($scope.cohortTotal)
-              chart.on('postRedraw', function(){
-                $scope.cohortSelected = dcData.data.groupAll().value();
-                $scope.cohortTotal = dcData.data.size();
-                $scope.$apply();
-              })
-            })
-            ChartService.renderAll(c);
+      var _setLoadingAnim = function (data, chart) {
+        $scope.dataLoading = data;
+        $scope.chartLoading = chart;
+      };
+
+      angular.element('#node-charts-container').empty();
+      for(var i =0; i < 10; i++){
+        angular.element('#cohort-chart-'+i).empty();
+      }
+
+      _setLoadingAnim(false, true);
+      ChartService.addNodeToActiveCohortSelection(node).then(function(charts){
+        charts.forEach(function(chart){
+          $scope.cohortSelected = ChartService.getSelectionValues().selected;
+          $scope.cohortTotal = ChartService.getSelectionValues().total;
+          chart.on('postRedraw', function (){
+            $scope.cohortSelected = ChartService.getSelectionValues().selected;
+            $scope.cohortTotal = ChartService.getSelectionValues().total;
+            $scope.$apply();
           });
-
-
-
-        }
-      }).then (function () {
-        _setLoadingAnim(false, false);
-      });
+        });
+        ChartService.renderAll(charts);
+      }).then(_setLoadingAnim(false, false));
     };
   }]);
