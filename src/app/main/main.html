@@ -81,22 +81,8 @@
                 <div class="data-count">{{cohortSelected}}/{{cohortTotal}}</div>
               </progressbar>
 
-            <div id="cohort-chart-0"></div>
-            <div id="cohort-chart-1"></div>
-              <div id="cohort-chart-2"></div>
-              <div id="cohort-chart-3"></div>
-              <div id="cohort-chart-4"></div>
-              <div id="cohort-chart-5"></div>
-              <div id="cohort-chart-6"></div>
-              <div id="cohort-chart-7"></div>
-              <div id="cohort-chart-8"></div>
-              <div id="cohort-chart-9"></div>
-              <div id="cohort-chart-10"></div>
-              <div id="cohort-chart-11"></div>
-              <div id="cohort-chart-12"></div>
-              <div id="cohort-chart-13"></div>
-              <div id="cohort-chart-14"></div>
-              <div id="cohort-chart-15"></div>
+              <ts-cohort-chart ng-repeat="name in cohortChartContainerNames" repeat-done></ts-cohort-chart>
+
 
 
             </div>

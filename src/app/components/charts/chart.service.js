@@ -2,7 +2,7 @@
 
 angular.module('transmartBaseUi')
 
-  .factory('ChartService',['Restangular', '$q', 'CohortService',  function (Restangular, $q, CohortService) {
+  .factory('ChartService',['Restangular', '$q', 'CohortService', '$rootScope', '$timeout', function (Restangular, $q, CohortService, $rootScope, $timeout) {
 
     var chartService = {};
 
@@ -278,9 +278,9 @@ angular.module('transmartBaseUi')
       NEW_TYPES = [];
       NEW_NAMES = [];
 
-      for(var i =0; i < 15; i++){
-        angular.element('#cohort-chart-'+i).empty();
-      }
+
+      $rootScope.$broadcast('prepareChartContainers', []);
+
 
     }
 
@@ -293,6 +293,8 @@ angular.module('transmartBaseUi')
     chartService.addNodeToActiveCohortSelection = function (node) {
       var _deferred = $q.defer();
       var _path = node.link.slice(1);
+
+      $rootScope.$broadcast('prepareChartContainers', []);
 
       //Get all observations under the selected concept
       Restangular.all(_path + '/observations').getList().then(function (d) {
@@ -318,10 +320,14 @@ angular.module('transmartBaseUi')
           }
         });
 
-        _populateCrossfilter();
-        _createCharts();
+        $rootScope.$broadcast('prepareChartContainers', NEW_NAMES);
+        $timeout(function(){
+            _populateCrossfilter();
+            _createCharts();
+            _deferred.resolve(CHARTS);
 
-        _deferred.resolve(CHARTS);
+        })
+
       }, function (err) {
         //TODO: add alert
         _deferred.reject('Cannot get data from the end-point.');
@@ -350,11 +356,10 @@ angular.module('transmartBaseUi')
      * @private
      */
     var _createCharts = function () {
-      CHART_IDS == 0;
+
+      CHART_IDS = 0;
       CHARTS = [];
-      for(var i =0; i < 15; i++){
-        angular.element('#cohort-chart-'+i).empty();
-      }
+
       // Create plot for each label
       NEW_LABELS.forEach(function(label, index){
         //Create dimension and grouping for the new label
