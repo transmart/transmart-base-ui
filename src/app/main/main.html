@@ -64,6 +64,33 @@
 
           </tab>
 
+          <tab >
+            <tab-heading>
+              <span>Cohort</span>
+            </tab-heading>
+
+            <div class="well well-lg cwell" data-drop="true" ng-model='droppedNode'
+                 jqyoui-droppable="{multiple:true, onDrop:'onNodeDropEvent(droppedNode)'}">
+              <span ng-if="activeNodeButtons.length == 0">Drag and drop some nodes here to add them.</span>
+              <button type="button" class="btn btn-primary" ng-repeat="node in activeNodeButtons">{{node.title}}</button>
+              <button ng-if="activeNodeButtons.length >= 1" class="btn btn-danger" ng-click="resetActiveNodes()">Reset</button>
+            </div>
+            <div>
+
+              <progressbar max="100"
+                           value="cohortSelected/(cohortTotal/100)"
+                           ng-class="{'progress-striped': cohortUpdating}"
+                           class="progress active"
+                           animate="true">
+                <div class="data-count">{{cohortSelected}}/{{cohortTotal}}</div>
+              </progressbar>
+
+              <ts-cohort-chart ng-repeat="name in cohortChartContainerNames" repeat-done></ts-cohort-chart>
+
+            </div>
+
+          </tab>
+
           <tab heading="Subjects">
             <!-- Selected Study Panel -->
             <img ng-show="dataLoading" class="loading-img"/>

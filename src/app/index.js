@@ -11,7 +11,8 @@ angular.module('transmartBaseUi', [
   'restangular',
   'ui.tree',
   'smart-table',
-  'angular-loading-bar'
+  'angular-loading-bar',
+  'ngDragDrop'
 ])
 
   .config( ['$stateProvider', 'RestangularProvider', '$tooltipProvider', 'cfpLoadingBarProvider',
@@ -41,6 +42,7 @@ angular.module('transmartBaseUi', [
       // when getting a list of resources
       RestangularProvider.setResponseInterceptor(function(data, operation, what) {
 
+        //console.log(data);
         /**
          * Get the last token when requested model is a string path
          * @param what

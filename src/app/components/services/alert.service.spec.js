@@ -1,6 +1,6 @@
 'use strict';
 
-describe("AlertService Unit Tests", function() {
+describe('AlertService Unit Tests', function() {
   var AlertService, $interval;
   //--------------------------------------------------------------------------------------------------------------------
   // Setup

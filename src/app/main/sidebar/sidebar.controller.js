@@ -41,10 +41,6 @@ angular.module('transmartBaseUi')
       $window.open(authorizationUrl, '_blank');
     };
 
-    //------------------------------------------------------------------------------------------------------------------
-    // Functionality
-    //------------------------------------------------------------------------------------------------------------------
-    loadStudies();
 
     //------------------------------------------------------------------------------------------------------------------
     // Helper functions
@@ -90,5 +86,7 @@ angular.module('transmartBaseUi')
       formData.requestToken = '';
       formData.endpointForm.$setPristine();
     }
+
+      loadStudies();
 
   }]);
