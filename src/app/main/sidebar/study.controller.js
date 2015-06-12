@@ -191,6 +191,12 @@ angular.module('transmartBaseUi')
         $scope.treeLoading = false;
       });
 
+      study.getList('concepts/ROOT').then(function (concepts) {
+        console.log(concepts);
+      }).then(function(){
+        $scope.treeLoading = false;
+      });
+
       return tree;
     };
 

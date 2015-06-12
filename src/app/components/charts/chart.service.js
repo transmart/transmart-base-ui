@@ -2,7 +2,8 @@
 
 angular.module('transmartBaseUi')
 
-  .factory('ChartService',['Restangular', '$q', '$rootScope', '$timeout', function (Restangular, $q, $rootScope, $timeout) {
+  .factory('ChartService',['Restangular', '$q', '$rootScope', '$timeout',
+    function (Restangular, $q, $rootScope, $timeout) {
 
     var chartService = {};
 
@@ -248,8 +249,30 @@ angular.module('transmartBaseUi')
     /*******************************************************************************************************************
      * Cohort chart service
      */
-    var COHORT_SUBJECTS = [], CROSSFILTER = null, DIMENSIONS = {}, GROUPS = {}, CHARTS = [], CHART_IDS = 0,
-      NEW_LABELS = [], NEW_TYPES = [], NEW_NAMES = [];
+    var cohortState = {};
+
+    /**
+     * Reset the cohort chart service to initial state
+     */
+    chartService.reset = function (){
+      cohortState = {
+        subjects: [],
+        chartId: 0,
+        charts: [],
+        data: {
+          cross: null,
+          dimensions: {},
+          groups: {}
+        },
+        concepts: {
+          labels: [],
+          types: [],
+          names: []
+        }
+      };
+    };
+
+    chartService.reset();
 
     /**
      * Add new label to list and check data type
@@ -258,20 +281,11 @@ angular.module('transmartBaseUi')
      * @private
      */
     var _addLabel = function(label,value){
-      if(NEW_LABELS.indexOf(label) === -1) {
-        NEW_LABELS.push(label);
-        NEW_TYPES.push(typeof value);
-        NEW_NAMES.push(_getLastToken(label));
+      if(cohortState.concepts.labels.indexOf(label) === -1) {
+        cohortState.concepts.labels.push(label);
+        cohortState.concepts.types.push(typeof value);
+        cohortState.concepts.names.push(_getLastToken(label));
       }
-    };
-
-    /**
-     * Reset the cohort chart service to initial state
-     */
-    chartService.reset = function (){
-      COHORT_SUBJECTS = []; CROSSFILTER = null; DIMENSIONS = {}; GROUPS = {}; CHARTS = []; CHART_IDS = 0;
-      NEW_LABELS = []; NEW_TYPES = []; NEW_NAMES = [];
-      $rootScope.$broadcast('prepareChartContainers', []);
     };
 
     /**
@@ -296,7 +310,7 @@ angular.module('transmartBaseUi')
           _found = false;
           _addLabel(obs.label, obs.value);
           // Check if subject is already present
-          COHORT_SUBJECTS.forEach(function(sub){
+          cohortState.subjects.forEach(function(sub){
             if(sub.id === obs._embedded.subject.id){
               sub.labels[obs.label] = obs.value;
               _found = true;
@@ -308,15 +322,15 @@ angular.module('transmartBaseUi')
             var newSub = obs._embedded.subject;
             newSub.labels = {};
             newSub.labels[obs.label] = obs.value;
-            COHORT_SUBJECTS.push(newSub);
+            cohortState.subjects.push(newSub);
           }
         });
 
-        $rootScope.$broadcast('prepareChartContainers', NEW_NAMES);
+        $rootScope.$broadcast('prepareChartContainers', cohortState.concepts.names);
         $timeout(function(){
             _populateCohortCrossfilter();
             _createCohortCharts();
-            _deferred.resolve(CHARTS);
+            _deferred.resolve(cohortState.charts);
         });
       }, function (err) {
         //TODO: add alert
@@ -330,7 +344,7 @@ angular.module('transmartBaseUi')
      * @private
      */
     var _populateCohortCrossfilter = function (){
-      CROSSFILTER = crossfilter(COHORT_SUBJECTS);
+      cohortState.data.cross = crossfilter(cohortState.subjects);
       //TODO: If already created, empty it instead, and readd with new and old data
     };
 
@@ -341,22 +355,24 @@ angular.module('transmartBaseUi')
      * @private
      */
     var _createCohortCharts = function () {
-      CHART_IDS = 0;
-      CHARTS = [];
+      cohortState.chartId = 0;
+      cohortState.charts = [];
 
-      NEW_LABELS.forEach(function(label, index){
+      cohortState.concepts.labels.forEach(function(label, index){
         //Create dimension and grouping for the new label
-        DIMENSIONS[label] = CROSSFILTER.dimension(function(d) {return d.labels[label];});
-        GROUPS[label] = DIMENSIONS[label].group();
+        cohortState.data.dimensions[label] = cohortState.data.cross.dimension(function(d) {return d.labels[label];});
+        cohortState.data.groups[label] = cohortState.data.dimensions[label].group();
 
-        if(NEW_TYPES[index] === 'string'){
-          CHARTS.push(_pieChart(DIMENSIONS[label], GROUPS[label], '#cohort-chart-' + CHART_IDS));
-        }else if(NEW_TYPES[index] === 'number'){
-          var max = DIMENSIONS[label].top(1)[0].labels[label];
-          var min = DIMENSIONS[label].bottom(1)[0].labels[label];
-          CHARTS.push(_barChart(DIMENSIONS[label], GROUPS[label], '#cohort-chart-' + CHART_IDS, min, max, NEW_NAMES[index]));
+        if(cohortState.concepts.types[index] === 'string'){
+          cohortState.charts.push(_pieChart(cohortState.data.dimensions[label], cohortState.data.groups[label],
+            '#cohort-chart-' + cohortState.chartId));
+        }else if(cohortState.concepts.types[index] === 'number'){
+          var max = cohortState.data.dimensions[label].top(1)[0].labels[label];
+          var min = cohortState.data.dimensions[label].bottom(1)[0].labels[label];
+          cohortState.charts.push(_barChart(cohortState.data.dimensions[label], cohortState.data.groups[label],
+            '#cohort-chart-' + cohortState.chartId, min, max, cohortState.concepts.names[index]));
         }
-        CHART_IDS++;
+        cohortState.chartId++;
       });
     };
 
@@ -366,8 +382,8 @@ angular.module('transmartBaseUi')
      */
     chartService.getSelectionValues = function (){
       return {
-        selected: CROSSFILTER.groupAll().value(),
-        total: CROSSFILTER.size()
+        selected: cohortState.data.cross.groupAll().value(),
+        total: cohortState.data.cross.size()
       };
     };
 
