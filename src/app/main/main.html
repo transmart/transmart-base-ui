@@ -77,16 +77,17 @@
             </div>
             <div>
 
-              <progressbar max="100" value="cohortSelected/(cohortTotal/100)" class="progress active" animate="true">
+              <progressbar max="100"
+                           value="cohortSelected/(cohortTotal/100)"
+                           ng-class="{'progress-striped': cohortUpdating}"
+                           class="progress active"
+                           animate="true">
                 <div class="data-count">{{cohortSelected}}/{{cohortTotal}}</div>
               </progressbar>
 
               <ts-cohort-chart ng-repeat="name in cohortChartContainerNames" repeat-done></ts-cohort-chart>
 
-
-
             </div>
-
 
           </tab>
 

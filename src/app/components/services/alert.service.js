@@ -30,7 +30,7 @@ angular.module('transmartBaseUi').factory('AlertService', ['$interval', function
 
   service.remove = function(id){
     var index = alerts.map(function(x) {return x.id; }).indexOf(id);
-    if(index !== -1) {alerts.splice(index, 1)};
+    if(index !== -1) {alerts.splice(index, 1);}
   };
 
   service.reset = function(){

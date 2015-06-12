@@ -2,13 +2,9 @@
 
 angular.module('transmartBaseUi')
   .controller('MainCtrl',
-  ['$scope', 'Restangular', 'ChartService', 'AlertService', '$timeout', function ($scope, Restangular, ChartService, AlertService, $timeout) {
+  ['$scope', 'Restangular', 'ChartService', 'AlertService', function ($scope, Restangular, ChartService, AlertService) {
 
     $scope.dataLoading = false;
-
-    var dcData = {};
-    dcData.dim = {};
-    dcData.gro = {}
 
     $scope.close = AlertService.remove;
     $scope.alerts = AlertService.get();
@@ -21,48 +17,6 @@ angular.module('transmartBaseUi')
 
     $scope.selectedStudy = {};
     $scope.observations = [];
-    $scope.observationsC = [];
-
-    $scope.cohortSelected = 0;
-    $scope.cohortTotal = 0;
-
-    $scope.$on('prepareChartContainers', function(event, names) {
-      $scope.cohortChartContainerNames = names;
-    });
-
-    /*******************************************************************************************************************
-     * Drag and drop controls
-     */
-
-    /**
-     * Contains the active nodes after they are dropped
-     * @type {array}
-     */
-    $scope.activeNodeButtons = [];
-
-    /**
-     * Callback for node drop
-     * @param event jQuery drop event
-     * @param info
-     * @param node Dropped node
-     */
-    $scope.onNodeDropEvent = function(event, info, node){
-      $scope.activeNodeButtons.push(node);
-      $scope.addCohort(node);
-    }
-
-    /**
-     * Reset the active nodes to empty
-     */
-    $scope.resetActiveNodes = function(){
-      $scope.activeNodeButtons = [];
-      $scope.cohortSelected = 0;
-      $scope.cohortTotal = 0;
-      ChartService.reset();
-    };
-
-
-
 
     $scope.displayStudySummaryStatistics = function (study) {
 
@@ -92,7 +46,7 @@ angular.module('transmartBaseUi')
         return $scope.observations;
 
       }, function (err) {
-        AlertService.add("danger", err, 10000);
+        AlertService.add('danger', err, 10000);
       }).then (function (observations) {
         //console.log(observations);
         // then generate charts out of it
@@ -124,55 +78,106 @@ angular.module('transmartBaseUi')
       $scope.selectednode = node;
 
       ChartService.getObservations(node).then(function (d) {
-        // at first, get the observation data for the selected node
-        $scope.$apply(function () {
-          $scope.observations = d;
-          _setLoadingAnim(false, true);
-          return $scope.observations;
-        });
+          // at first, get the observation data for the selected node
+          $scope.$apply(function () {
+            $scope.observations = d;
+            _setLoadingAnim(false, true);
+            return $scope.observations;
+          });
 
-      }, function (err) {
+        }, function (err) {
           AlertService.add('danger', err);
         }
       ).then(function () {
-        // then generate charts out of it
-        if (typeof $scope.observations !== 'undefined') {
-          ChartService.generateCharts($scope.observations).then(function (c) {
-            ChartService.renderAll(c);
-          });
-        }
-      })
+          // then generate charts out of it
+          if (typeof $scope.observations !== 'undefined') {
+            ChartService.generateCharts($scope.observations).then(function (c) {
+              ChartService.renderAll(c);
+            });
+          }
+        })
         .then (function () {
         _setLoadingAnim(false, false);
       });
 
     };
 
-    $scope.addCohort = function (node) {
+    /*******************************************************************************************************************
+     * Cohort selection
+     */
 
-      $scope.selectedNode = node;
+    /**
+     * Quantity of subjects remaining in cohort selection after filters are applied
+     * @type {number}
+     */
+    $scope.cohortSelected = 0;
 
-      var _setLoadingAnim = function (data, chart) {
-        $scope.dataLoading = data;
-        $scope.chartLoading = chart;
-      };
+    /**
+     * Initial quantity of subjects in selected nodes for cohort selection
+     * @type {number}
+     */
+    $scope.cohortTotal = 0;
 
-      _setLoadingAnim(false, true);
-      ChartService.addNodeToActiveCohortSelection(node).then(function(charts){
+    /**
+     * Contains the active nodes after they are dropped
+     * @type {array}
+     */
+    $scope.activeNodeButtons = [];
 
-        $timeout(function(){
+    /**
+     * Update quantity of containers necessary for displaying the graphs in cohort selection
+     */
+    $scope.$on('prepareChartContainers', function(event, names) {
+      $scope.cohortChartContainerNames = names;
+    });
+
+    /**
+     * Callback for node drop
+     * @param event drop event
+     * @param info
+     * @param node Dropped node
+     */
+    $scope.onNodeDropEvent = function(event, info, node){
+      _addCohort(node);
+    };
+
+    /**
+     * Reset the active nodes for cohort selection
+     */
+    $scope.resetActiveNodes = function(){
+      $scope.activeNodeButtons = [];
+      $scope.cohortSelected = 0;
+      $scope.cohortTotal = 0;
+      ChartService.reset();
+    };
+
+    /**
+     * Add node dropped from concept tree
+     * @param node
+     * @private
+     */
+    var _addCohort = function (node) {
+      if($scope.activeNodeButtons.indexOf(node) === -1){
+        $scope.activeNodeButtons.push(node);
+        $scope.cohortUpdating = true;
+
+        ChartService.addNodeToActiveCohortSelection(node).then(function(charts){
+          $scope.cohortSelected = ChartService.getSelectionValues().selected;
+          $scope.cohortTotal = ChartService.getSelectionValues().total;
+
+          // Update the selection value on filtering the charts
           charts.forEach(function(chart){
-            $scope.cohortSelected = ChartService.getSelectionValues().selected;
-            $scope.cohortTotal = ChartService.getSelectionValues().total;
             chart.on('postRedraw', function (){
               $scope.cohortSelected = ChartService.getSelectionValues().selected;
               $scope.cohortTotal = ChartService.getSelectionValues().total;
               $scope.$apply();
             });
-          });
-          ChartService.renderAll(charts);
-        });
 
-      }).then(_setLoadingAnim(false, false));
+            ChartService.renderAll(charts);
+            $scope.cohortUpdating = false;
+            //$scope.$apply();
+          });
+        });
+      }
     };
   }]);
