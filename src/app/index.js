@@ -42,7 +42,6 @@ angular.module('transmartBaseUi', [
       // when getting a list of resources
       RestangularProvider.setResponseInterceptor(function(data, operation, what) {
 
-        //console.log(data);
         /**
          * Get the last token when requested model is a string path
          * @param what
@@ -59,7 +58,9 @@ angular.module('transmartBaseUi', [
             if (what === 'concepts') {
               what = 'ontology_terms';
               resp =  data._embedded[what];
-            } else {
+            } else if (what === 'concepts/ROOT') {
+              resp = data;
+            }else {
               _what = _getLastToken(what);
               resp =  data._embedded[_what];
             }

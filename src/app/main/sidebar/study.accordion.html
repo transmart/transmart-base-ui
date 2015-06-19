@@ -21,7 +21,7 @@
 <!-- START Node template -->
 
 <script type="text/ng-template" id="nodes_renderer.html">
-  <div ui-tree-handle class="tree-node tree-node-content" ng-click="countChilds(node); naction()(node);" data-drag="true"
+  <div ui-tree-handle class="tree-node tree-node-content" ng-click="populateChilds(node); naction()(node);" data-drag="true"
        jqyoui-draggable="{placeholder: 'keep'}"
        data-jqyoui-options="{containment: 'document', appendTo: 'body', helper: 'clone'}" ng-model="node">
     <a data-nodrag ng-click="toggle(this)">
@@ -64,8 +64,8 @@
     </accordion-heading>
 
     <div ui-tree id="tree-root" data-drag-enabled="treeConfig.drag" data-drop-enabled="false">
-      <ol ui-tree-nodes="" ng-model="tree.nodes[0].nodes">
-        <li ng-repeat="node in tree.nodes[0].nodes" ui-tree-node ng-include="'nodes_renderer.html'"
+      <ol ui-tree-nodes="" ng-model="tree.nodes">
+        <li ng-repeat="node in tree.nodes" ui-tree-node ng-include="'nodes_renderer.html'"
           data-collapsed="treeConfig.collapsed"></li>
       </ol>
     </div>

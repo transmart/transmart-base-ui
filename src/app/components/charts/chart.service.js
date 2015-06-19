@@ -178,12 +178,12 @@ angular.module('transmartBaseUi')
     };
 
     chartService.getObservations = function (node) {
-      var _observationsList = [],
-        _path = node.link.slice(1);
+      var _observationsList = [];
 
       var promise = new Promise( function (resolve, reject) {
-        Restangular.all(_path + '/observations').getList()
+        node.restObj.one('observations').get()
           .then(function (d) {
+            d = d._embedded.observations;
             // create categorical or numerical dimension based on observation data
             _observationsList = _createGroupBasedOnObservationsLabel(d);
             resolve(_observationsList);
@@ -195,12 +195,11 @@ angular.module('transmartBaseUi')
       return promise;
     };
 
-    chartService.getSubjects = function (node) {
-      var selectedStudy = {},
-        studyLink = node._links.self.href.slice(1);
+    chartService.getSubjects = function (study) {
+      var selectedStudy = {};
 
       var promise = new Promise( function (resolve, reject) {
-        Restangular.one(studyLink + '/subjects').get()
+        study.one('subjects').get()
           .then(function (d) {
             selectedStudy.subjects = d._embedded.subjects;
             selectedStudy.chartData = _createGroupBasedOnSubjectAttributes(d);
@@ -213,7 +212,7 @@ angular.module('transmartBaseUi')
       return promise;
     };
 
-    chartService. generateCharts = function (nodes) {
+    chartService.generateCharts = function (nodes) {
       var _charts = [], _deferred = $q.defer(), idx = 0;
 
       angular.forEach(nodes, function (node) {
@@ -297,13 +296,13 @@ angular.module('transmartBaseUi')
      */
     chartService.addNodeToActiveCohortSelection = function (node) {
       var _deferred = $q.defer();
-      var _path = node.link.slice(1);
 
       //Clear all existing chart containers
       $rootScope.$broadcast('prepareChartContainers', []);
 
       //Get all observations under the selected concept
-      Restangular.all(_path + '/observations').getList().then(function (d) {
+      node.restObj.one('observations').get().then(function (d) {
+        d = d._embedded.observations;
         var _found = false;
         // Group observation labels under common subject
         d.forEach(function(obs){
@@ -363,7 +362,7 @@ angular.module('transmartBaseUi')
         cohortState.data.dimensions[label] = cohortState.data.cross.dimension(function(d) {return d.labels[label];});
         cohortState.data.groups[label] = cohortState.data.dimensions[label].group();
 
-        if(cohortState.concepts.types[index] === 'string'){
+        if(cohortState.concepts.types[index] === 'string' || cohortState.concepts.types[index] === 'object'){
           cohortState.charts.push(_pieChart(cohortState.data.dimensions[label], cohortState.data.groups[label],
             '#cohort-chart-' + cohortState.chartId));
         }else if(cohortState.concepts.types[index] === 'number'){
