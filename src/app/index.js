@@ -58,9 +58,7 @@ angular.module('transmartBaseUi', [
             if (what === 'concepts') {
               what = 'ontology_terms';
               resp =  data._embedded[what];
-            } else if (what === 'concepts/ROOT') {
-              resp = data;
-            }else {
+            } else {
               _what = _getLastToken(what);
               resp =  data._embedded[_what];
             }

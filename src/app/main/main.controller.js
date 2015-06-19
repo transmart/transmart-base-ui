@@ -149,6 +149,7 @@ angular.module('transmartBaseUi')
       $scope.cohortSelected = 0;
       $scope.cohortTotal = 0;
       ChartService.reset();
+      $scope.$apply();
     };
 
     /**

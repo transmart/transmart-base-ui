@@ -145,7 +145,7 @@ angular.module('transmartBaseUi')
   }]);
 
 /**
- 
+
  $scope.type = {
       fol: function(node){return node.type === 'FOLDER';},
       num: function(node){return node.type === 'NUMERICAL';},
