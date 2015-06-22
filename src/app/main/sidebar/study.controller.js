@@ -23,6 +23,13 @@ angular.module('transmartBaseUi')
       oneAtATime: true,
     };
 
+    $scope.type = {
+      fol: function(node){return node.type === 'FOLDER';},
+      num: function(node){return node.type === 'NUMERICAL';},
+      cat: function(node){return node.type === 'CATEGORICAL';},
+      hid: function(node){return node.type === 'HIGH_DIMENSIONAL';}
+    };
+
     /**
      * When a study is selected, get the tree
      * @param study
@@ -146,12 +153,7 @@ angular.module('transmartBaseUi')
 
 /**
 
- $scope.type = {
-      fol: function(node){return node.type === 'FOLDER';},
-      num: function(node){return node.type === 'NUMERICAL';},
-      cat: function(node){return node.type === 'CATEGORICAL';},
-      hid: function(node){return node.type === 'HIGH_DIMENSIONAL';}
-    };
+
 
  var orderTreeNodes = function (tree) {
   // Order the nodes by type with folders first

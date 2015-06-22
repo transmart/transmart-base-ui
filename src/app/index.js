@@ -33,7 +33,7 @@ angular.module('transmartBaseUi', [
       // =========================
       // Set restful api base url
       // =========================
-      RestangularProvider.setBaseUrl('http://localhost:8001/rest');
+      RestangularProvider.setBaseUrl('http://10.8.10.135:8001/rest');
       RestangularProvider.setDefaultHeaders(
         {'Accept': 'application/hal+json'}
       );
@@ -87,7 +87,7 @@ angular.module('transmartBaseUi', [
   .run(['$rootScope', '$location', '$cookieStore', '$http', 'EndpointService',
     function ($rootScope, $location, $cookieStore, $http, EndpointService) {
 
-      EndpointService.addEndpoint('Local', 'http://localhost:8080/transmart-rest-api');
+      EndpointService.addEndpoint('Local', 'http://10.8.10.135:8080/transmart-rest-api');
 
       // keep user logged in after page refresh
       $rootScope.globals = $cookieStore.get('globals') || {};
