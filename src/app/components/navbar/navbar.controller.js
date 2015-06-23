@@ -5,16 +5,16 @@ angular.module('transmartBaseUi')
     $scope.date = new Date();
 
     $scope.usermenus = [
-      {"label" : "Account Details", "action" : "accountDetails"},
-      {"label" : "Administrator Dashboard", "action" : "adminDashboard"},
-      {"label" : "Logout", "action" : "logout"},
+      {'label' : 'Account Details', 'action' : 'accountDetails'},
+      {'label' : 'Administrator Dashboard', 'action' : 'adminDashboard'},
+      {'label' : 'Logout', 'action' : 'logout'}
     ];
 
     $scope.status = {
       isopen: false
     };
 
-    $scope.toggled = function(open) {
+    $scope.toggled = function() {
 
     };
 
@@ -26,7 +26,7 @@ angular.module('transmartBaseUi')
 
     $scope.logout = function() {
       AuthenticationService.ClearCredentials();
-      $state.go('login')
-    }
+      $state.go('login');
+    };
 
   }]);

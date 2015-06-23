@@ -1,48 +1,50 @@
-<div class="col-sm-3 col-md-2 sidebar" ng-controller="SidebarCtrl">
-  <accordion close-others="oneAtATime">
+
+<div id="sidebardiv" class="col-sm-3 col-md-2 sidebar" ng-controller="SidebarCtrl">
+
+  <!-- START STUDIES -->
+  <accordion close-others="status.oneAtATime">
     <accordion-group heading=" Highlights" is-open="status.isFirstOpen" is-disabled="status.isFirstDisabled">
       Browse studies by clicking study header below.
     </accordion-group>
-    <accordion-group ng-repeat="study in studies"
-                     ng-click="getStudyConcepts('{{study._links.self.href}}', '{{study._embedded.ontologyTerm.name}}')">
-      <accordion-heading>
-        {{study._embedded.ontologyTerm.name}}
-      </accordion-heading>
-      <div>
-        {{study.id}} <br>
-        {{study._embedded.ontologyTerm.name | uppercase}} <br>
-        {{study._embedded.ontologyTerm.fullName}}
-      </div>
-    </accordion-group>
+
+    <study-accordion acc-studies="publicStudies" acc-title="'Public studies'" study-action="displayStudySummaryStatistics"
+                     node-action="displayNodeSummaryStatistics"></study-accordion>
+
+    <study-accordion acc-studies="privateStudies" acc-title="'Private studies'" study-action="displayStudySummaryStatistics"
+                     node-action="displayNodeSummaryStatistics"></study-accordion>
+
     <accordion-group>
       <accordion-heading>
-        Resources
+        Configure RESTFul Endpoint
       </accordion-heading>
 
       <ul>
-        <li><a href="http://localhost:8080/transmart-rest-api/" tooltip="http://localhost:8080/transmart-rest-api/">Local</a></li>
+        <li ng-repeat="endpoint in endpoints"><a href="{{endpoint.url}}" tooltip="{{endpoint.url}}">{{endpoint.title}}</a></li>
       </ul>
 
       <br>
 
-      <form name="form" ng-submit="login()" role="form">
+      <form name="formData.endpointForm" ng-submit="addResource()" role="form">
         <div class="form-group">
-          <input type="text" class="form-control input-sm" placeholder="Title">
-        </div>
-        <div class="input-group input-group form-group">
-          <span class="input-group-addon" id="sizing-addon1">http://</span>
-          <input type="text" class="form-control input-sm" placeholder="Resource" aria-describedby="sizing-addon1">
+          <input type="text" class="form-control input-sm" placeholder="Title" ng-model="formData.title">
         </div>
         <div class="form-group">
-          <input type="text" class="form-control input-sm" placeholder="Client ID">
+          <input type="text" class="form-control input-sm" placeholder="Endpoint url" ng-model="formData.url">
         </div>
         <div class="form-group">
-          <input type="text" class="form-control input-sm" placeholder="Client Secret">
+          <button type="button" class="form-control btn btn-default" ng-click="navigateToAuthorizationPage()">Get request token</button>
+        </div>
+        <div class="form-group">
+          <input type="text" class="form-control input-sm" placeholder="Request token" ng-model="formData.requestToken">
         </div>
         <div class="form-actions">
-          <button type="submit" class="btn btn-primary">Add Resource</button>
+          <button type="submit" class="btn btn-primary">Save</button>
         </div>
       </form>
     </accordion-group>
   </accordion>
+</div>
+  <!--end tree-->
+  <br>
+
 </div>
