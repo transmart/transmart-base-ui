@@ -78,7 +78,7 @@ http.createServer(function (req, res) {
   else {
     // Pass request to the application server
     request({
-      url: "http://10.8.10.135:3000" + req.url
+      url: "http://localhost:3000" + req.url
     }).on('error', function(e) {
       res.end(e.toString());
     }).pipe(res);
