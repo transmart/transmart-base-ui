@@ -127,8 +127,9 @@ angular.module('transmartBaseUi')
     /**
      * Update quantity of containers necessary for displaying the graphs in cohort selection
      */
-    $scope.$on('prepareChartContainers', function(event, names) {
+    $scope.$on('prepareChartContainers', function(event, names, ids) {
       $scope.cohortChartContainerNames = names;
+      $scope.cohortChartContainerIds = ids;
     });
 
     /**
@@ -141,6 +142,11 @@ angular.module('transmartBaseUi')
       _addCohort(node);
     };
 
+    $scope.removeNode = function (node){
+      ChartService.removeNode(node);
+      $scope.activeNodeButtons.splice($scope.activeNodeButtons.indexOf(node),1);
+    };
+
     /**
      * Reset the active nodes for cohort selection
      */
@@ -149,6 +155,7 @@ angular.module('transmartBaseUi')
       $scope.cohortSelected = 0;
       $scope.cohortTotal = 0;
       ChartService.reset();
+      //$scope.$apply();
     };
 
     /**

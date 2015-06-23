@@ -178,12 +178,12 @@ angular.module('transmartBaseUi')
     };
 
     chartService.getObservations = function (node) {
-      var _observationsList = [],
-        _path = node.link.slice(1);
+      var _observationsList = [];
 
       var promise = new Promise( function (resolve, reject) {
-        Restangular.all(_path + '/observations').getList()
+        node.restObj.one('observations').get()
           .then(function (d) {
+            d = d._embedded.observations;
             // create categorical or numerical dimension based on observation data
             _observationsList = _createGroupBasedOnObservationsLabel(d);
             resolve(_observationsList);
@@ -195,12 +195,11 @@ angular.module('transmartBaseUi')
       return promise;
     };
 
-    chartService.getSubjects = function (node) {
-      var selectedStudy = {},
-        studyLink = node._links.self.href.slice(1);
+    chartService.getSubjects = function (study) {
+      var selectedStudy = {};
 
       var promise = new Promise( function (resolve, reject) {
-        Restangular.one(studyLink + '/subjects').get()
+        study.one('subjects').get()
           .then(function (d) {
             selectedStudy.subjects = d._embedded.subjects;
             selectedStudy.chartData = _createGroupBasedOnSubjectAttributes(d);
@@ -213,7 +212,7 @@ angular.module('transmartBaseUi')
       return promise;
     };
 
-    chartService. generateCharts = function (nodes) {
+    chartService.generateCharts = function (nodes) {
       var _charts = [], _deferred = $q.defer(), idx = 0;
 
       angular.forEach(nodes, function (node) {
@@ -260,16 +259,22 @@ angular.module('transmartBaseUi')
         chartId: 0,
         charts: [],
         data: {
-          cross: null,
+          cross: crossfilter(),
           dimensions: {},
           groups: {}
         },
         concepts: {
           labels: [],
           types: [],
-          names: []
+          names: [],
+          ids:[],
+          node:[]
         }
       };
+
+      cohortState.labelDim = cohortState.data.cross.dimension(function(d) {return d.nodes;});
+
+      $rootScope.$broadcast('prepareChartContainers', cohortState.concepts.names, cohortState.concepts.ids);
     };
 
     chartService.reset();
@@ -280,13 +285,79 @@ angular.module('transmartBaseUi')
      * @param value
      * @private
      */
-    var _addLabel = function(label,value){
+    var _addLabel = function(label,value,node){
       if(cohortState.concepts.labels.indexOf(label) === -1) {
         cohortState.concepts.labels.push(label);
         cohortState.concepts.types.push(typeof value);
         cohortState.concepts.names.push(_getLastToken(label));
+        cohortState.concepts.ids.push(cohortState.chartId++);
+        console.log(node);
+        cohortState.concepts.node.push(node);
+        console.log(cohortState.concepts.node);
       }
     };
+
+    var _addNode = function(subject, node){
+      if(subject.nodes.indexOf(node) === -1) {
+        subject.nodes.push(node);
+      }
+    };
+
+    var _removeNodeConcepts = function(dNode){
+      console.log(cohortState.concepts.node);
+      for (var i = 0; i < cohortState.concepts.node.length; ++i) {
+        if (cohortState.concepts.node[i] === dNode) {
+          cohortState.data.dimensions[cohortState.concepts.labels[i]].dispose();
+          cohortState.data.groups[cohortState.concepts.labels[i]].dispose();
+          delete cohortState.data.dimensions[cohortState.concepts.labels[i]];
+
+          cohortState.concepts.node.splice(i, 1);
+          cohortState.concepts.labels.splice(i, 1);
+          cohortState.concepts.types.splice(i, 1);
+          cohortState.concepts.names.splice(i, 1);
+          cohortState.concepts.ids.splice(i, 1);
+          i--;
+
+        }
+      }
+    };
+
+    var _removeAllFilters = function() {
+      for (var key in cohortState.dimensions) {
+        cohortState.dimensions[key].filterAll();
+      }
+    };
+
+    var _applyLabelFilter = function(){
+      cohortState.labelFilter = cohortState.labelDim.filterFunction(function(d){
+        return d.length === 0;
+      });
+    };
+
+    var _removeLabelFilter = function(){
+      cohortState.labelDim.filterAll();
+    };
+
+    chartService.removeNode = function (node){
+      cohortState.subjects.forEach(function(sub){
+        var index = sub.nodes.indexOf(node);
+        if(index > -1){
+          sub.nodes.splice(index, 1);
+        }
+      });
+      _removeAllFilters();
+      _applyLabelFilter();
+      cohortState.data.cross.remove();
+
+      _removeLabelFilter();
+      console.log(cohortState.concepts.names);
+      _removeNodeConcepts(node);
+      console.log(cohortState.concepts.names);
+      $rootScope.$broadcast('prepareChartContainers', cohortState.concepts.names, cohortState.concepts.ids);
+      cohortState.subjects = cohortState.labelDim.top(Infinity);
+      dc.redrawAll();
+    };
+
 
     /**
      * Fetch the data for the selected node
@@ -297,36 +368,46 @@ angular.module('transmartBaseUi')
      */
     chartService.addNodeToActiveCohortSelection = function (node) {
       var _deferred = $q.defer();
-      var _path = node.link.slice(1);
+
 
       //Clear all existing chart containers
-      $rootScope.$broadcast('prepareChartContainers', []);
+      //$rootScope.$broadcast('prepareChartContainers', []);
 
       //Get all observations under the selected concept
-      Restangular.all(_path + '/observations').getList().then(function (d) {
+      node.restObj.one('observations').get().then(function (d) {
+        d = d._embedded.observations;
         var _found = false;
+
         // Group observation labels under common subject
         d.forEach(function(obs){
           _found = false;
-          _addLabel(obs.label, obs.value);
-          // Check if subject is already present
-          cohortState.subjects.forEach(function(sub){
-            if(sub.id === obs._embedded.subject.id){
-              sub.labels[obs.label] = obs.value;
-              _found = true;
-              return;
-            }
-          });
+          if(obs.value != null) {
+            _addLabel(obs.label, obs.value, node);
+            // Check if subject is already present
+            cohortState.subjects.forEach(function (sub) {
+              if (sub.id === obs._embedded.subject.id) {
+                sub.labels[obs.label] = obs.value;
+                _addNode(sub, node);
+                _found = true;
+                return;
+              }
+            });
+          } else {
+            _found = true;
+          }
           // If new subject, push to cohort selection
           if(!_found){
             var newSub = obs._embedded.subject;
             newSub.labels = {};
             newSub.labels[obs.label] = obs.value;
+            newSub.nodes = [];
+            newSub.nodes.push(node);
             cohortState.subjects.push(newSub);
+
           }
         });
 
-        $rootScope.$broadcast('prepareChartContainers', cohortState.concepts.names);
+        $rootScope.$broadcast('prepareChartContainers', cohortState.concepts.names, cohortState.concepts.ids);
         $timeout(function(){
             _populateCohortCrossfilter();
             _createCohortCharts();
@@ -344,8 +425,9 @@ angular.module('transmartBaseUi')
      * @private
      */
     var _populateCohortCrossfilter = function (){
-      cohortState.data.cross = crossfilter(cohortState.subjects);
-      //TODO: If already created, empty it instead, and readd with new and old data
+      _removeAllFilters();
+      cohortState.data.cross.remove();
+      cohortState.data.cross.add(cohortState.subjects);
     };
 
     /**
@@ -360,17 +442,17 @@ angular.module('transmartBaseUi')
 
       cohortState.concepts.labels.forEach(function(label, index){
         //Create dimension and grouping for the new label
-        cohortState.data.dimensions[label] = cohortState.data.cross.dimension(function(d) {return d.labels[label];});
+        cohortState.data.dimensions[label] = cohortState.data.cross.dimension(function(d) {return d.labels[label] === undefined ? 'UnDef' : d.labels[label];});
         cohortState.data.groups[label] = cohortState.data.dimensions[label].group();
 
-        if(cohortState.concepts.types[index] === 'string'){
+        if(cohortState.concepts.types[index] === 'string' || cohortState.concepts.types[index] === 'object'){
           cohortState.charts.push(_pieChart(cohortState.data.dimensions[label], cohortState.data.groups[label],
-            '#cohort-chart-' + cohortState.chartId));
+            '#cohort-chart-' + cohortState.concepts.ids[index]));
         }else if(cohortState.concepts.types[index] === 'number'){
           var max = cohortState.data.dimensions[label].top(1)[0].labels[label];
           var min = cohortState.data.dimensions[label].bottom(1)[0].labels[label];
           cohortState.charts.push(_barChart(cohortState.data.dimensions[label], cohortState.data.groups[label],
-            '#cohort-chart-' + cohortState.chartId, min, max, cohortState.concepts.names[index]));
+            '#cohort-chart-' + cohortState.concepts.ids[index], min, max, cohortState.concepts.names[index]));
         }
         cohortState.chartId++;
       });
