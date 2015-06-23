@@ -127,9 +127,9 @@ angular.module('transmartBaseUi')
     /**
      * Update quantity of containers necessary for displaying the graphs in cohort selection
      */
-    $scope.$on('prepareChartContainers', function(event, names, ids) {
-      $scope.cohortChartContainerNames = names;
-      $scope.cohortChartContainerIds = ids;
+    $scope.$on('prepareChartContainers', function(event, labels) {
+      $scope.cohortChartContainerLabels = labels;
+      $scope.activeNodeButtons = labels;
     });
 
     /**
