@@ -71,9 +71,11 @@
 
             <div class="well well-lg cwell" data-drop="true" ng-model='droppedNode'
                  jqyoui-droppable="{multiple:true, onDrop:'onNodeDropEvent(droppedNode)'}">
-              <span ng-if="activeNodeButtons.length == 0">Drag and drop some nodes here to add them.</span>
-              <button type="button" class="btn btn-primary" ng-repeat="node in activeNodeButtons" ng-click="removeNode(node)">{{node.title}}</button>
-              <button ng-if="activeNodeButtons.length >= 1" class="btn btn-danger" ng-click="resetActiveNodes()">Reset</button>
+              <span ng-if="cohortChartContainerLabels.length == 0">Drag and drop some nodes here to add them.</span>
+              <button type="button" class="btn btn-primary"
+                      ng-repeat="label in cohortChartContainerLabels"
+                      ng-click="removeLabel(label)">{{label.name}}</button>
+              <button ng-if="cohortChartContainerLabels.length >= 1" class="btn btn-danger" ng-click="resetActiveLabels()">Reset</button>
             </div>
             <div>
 
@@ -85,7 +87,8 @@
                 <div class="data-count">{{cohortSelected}}/{{cohortTotal}}</div>
               </progressbar>
 
-              <ts-cohort-chart ng-repeat="name in cohortChartContainerNames" repeat-done></ts-cohort-chart>
+              <ts-cohort-chart ng-repeat="label in cohortChartContainerLabels"
+                               repeat-done></ts-cohort-chart>
 
             </div>
 
