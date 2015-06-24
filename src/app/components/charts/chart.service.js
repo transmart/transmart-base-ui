@@ -275,7 +275,7 @@ angular.module('transmartBaseUi')
                 };
 
                cs.mainDim = cs.cross.dimension(function (d) {
-                    return d.nodes;
+                    return d.labels;
                 });
 
                 $rootScope.$broadcast('prepareChartContainers',cs.labels);
@@ -303,54 +303,14 @@ angular.module('transmartBaseUi')
                     })
                 }
             };
-/**
-            var _removeNodeConcepts = function (dNode) {
-                console.log(cs.concepts.node);
-                for (var i = 0; i <cs.concepts.node.length; ++i) {
-                    if (cs.concepts.node[i] === dNode) {
-                       cs.dims[cs.concepts.labels[i]].dispose();
-                       cs.grps[cs.concepts.labels[i]].dispose();
-                        delete cs.dims[cs.concepts.labels[i]];
 
-                       cs.concepts.node.splice(i, 1);
-                       cs.concepts.labels.splice(i, 1);
-                       cs.concepts.types.splice(i, 1);
-                       cs.concepts.names.splice(i, 1);
-                       cs.concepts.ids.splice(i, 1);
-                        i--;
-
-                    }
-                }
-            };
-**/
             /**
              * Remove all the filters applied to the label dimensions
              * TODO: Add the possibility to reapply removed filters
              * @private
              */
             var _removeAllLabelFilters = function () {
-                for (var key in cs.dimensions) {
-                   cs.dimensions[key].filterAll();
-                }
-            };
-
-            /**
-             * Filters out the subjects than are no longer associated to any
-             * label
-             * @private
-             */
-            var _applyMainFilter = function () {
-               cs.mainFilter = cs.mainDim.filterFunction(function (d) {
-                    return d.length === 0;
-                });
-            };
-
-            /**
-             * Removes the main filter
-             * @private
-             */
-            var _removeMainFilter = function () {
-                cs.mainDim.filterAll();
+                for (var key in cs.dims) {cs.dims[key].filterAll();}
             };
 
             /**
@@ -362,25 +322,26 @@ angular.module('transmartBaseUi')
              */
             chartService.addNodeToActiveCohortSelection = function (node){
                 var _deferred = $q.defer();
-
                 //Get all observations under the selected concept
                 node.restObj.one('observations').get().then(function (observations){
                     observations = observations._embedded.observations;
                     observations.forEach(function (obs){
-                        _addLabel(obs, node);
-                        var found = _.findWhere(cs.subjects, {id: obs._embedded.subject.id});
-                        if (found){
-                            found.labels[obs.label] = obs.value;
-                        } else {
-                            obs._embedded.subject.labels = {};
-                            obs._embedded.subject.labels[obs.label] = obs.value;
-                            console.log(obs._embedded.subject);
-                            cs.subjects.push(obs._embedded.subject);
+                        if(obs.value != null) {
+                            _addLabel(obs);
+                            var found = _.findWhere(cs.subjects, {id: obs._embedded.subject.id});
+                            if (found){
+                              found.labels[obs.label] = obs.value;
+                            } else {
+                              obs._embedded.subject.labels = {};
+                              obs._embedded.subject.labels[obs.label] = obs.value;
+                              cs.subjects.push(obs._embedded.subject);
+                            }
                         }
                     });
 
                     $rootScope.$broadcast('prepareChartContainers', cs.labels);
                     $timeout(function () {
+                        _removeAllLabelFilters;
                         _populateCohortCrossfilter();
                         _createCohortCharts();
                         _deferred.resolve(cs.charts);
@@ -392,27 +353,28 @@ angular.module('transmartBaseUi')
                 return _deferred.promise;
             };
 
-
+          /**
+           * Remove specified label
+           * @param label
+           */
             chartService.removeLabel = function (label) {
-                /**
-                cs.subjects.forEach(function (sub) {
-                    var index = sub.nodes.indexOf(node);
-                    if (index > -1) {
-                        sub.nodes.splice(index, 1);
-                    }
-                });
+                //Remove label from subjects and remove subjects no longer associated with any label
+                for (var i = 0; i < cs.subjects.length; i++) {
+                  cs.subjects[i].labels[label.label] = undefined;
+                  if (_.size(cs.subjects[i].labels) === 0) cs.subjects(i--, 1);
+                }
+                //Update crossfilter instance
                 _removeAllLabelFilters();
-                _applyMainFilter();
-                cs.cross.remove();
-
-                _removeMainFilter();
-                console.log(cs.concepts.names);
-                _removeNodeConcepts(node);
-                console.log(cs.concepts.names);
+                _populateCohortCrossfilter;
+                //Remove dimension and group associated with the label
+                cs.dims[label.label].dispose();
+                cs.grps[label.label].dispose();
+                //Finally remove label
+                cs.labels = _.reject(cs.labels, function(el) { return el.label === label.label; });
+                //Update charts
                 $rootScope.$broadcast('prepareChartContainers',cs.labels);
-                cs.subjects =cs.mainDim.top(Infinity);
+                dc.filterAll();
                 dc.redrawAll();
-                **/
             };
 
             /**
@@ -420,10 +382,8 @@ angular.module('transmartBaseUi')
              * @private
              */
             var _populateCohortCrossfilter = function () {
-                _removeAllLabelFilters();
                 cs.cross.remove();
                 cs.cross.add(cs.subjects);
-                //TODO: reapply label filters
             };
 
             /**
@@ -433,27 +393,21 @@ angular.module('transmartBaseUi')
              * @private
              */
             var _createCohortCharts = function () {
-                //cs.chartId = 0;
-                cs.charts = [];
-
-                cs.labels.forEach(function (label, index) {
-                    //Create dimension and grouping for the new label
-                    cs.dims[label] = cs.cross.dimension(function (d) {
-                        console.log(d.labels[label] === undefined ? 'UnDef' : d.labels[label])
-                        return d.labels[label] === undefined ? 'UnDef' : d.labels[label];
+                cs.labels.forEach(function (label) {
+                    cs.dims[label.label] = cs.cross.dimension(function (d) {
+                        return d.labels[label.label] === undefined ? 'UnDef' : d.labels[label.label];
                     });
-                    cs.grps[label] = cs.dims[label].group();
+                    cs.grps[label.label] = cs.dims[label.label].group();
 
                     if (label.type === 'string' || label.type === 'object') {
-                        cs.charts.push(_pieChart(cs.dims[label], cs.grps[label],
+                        cs.charts.push(_pieChart(cs.dims[label.label], cs.grps[label.label],
                             '#cohort-chart-' + label.ids));
                     } else if (label.type === 'number') {
-                        var max = cs.dims[label].top(1)[0].labels[label];
-                        var min = cs.dims[label].bottom(1)[0].labels[label];
-                        cs.charts.push(_barChart(cs.dims[label], cs.grps[label],
+                        var max = cs.dims[label.label].top(1)[0].labels[label.label];
+                        var min = cs.dims[label.label].bottom(1)[0].labels[label.label];
+                        cs.charts.push(_barChart(cs.dims[label.label], cs.grps[label.label],
                             '#cohort-chart-' + label.ids, min, max, label.name));
                     }
-                    //cs.chartId++;
                 });
             };
 
