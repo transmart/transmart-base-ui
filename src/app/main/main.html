@@ -23,111 +23,103 @@
 
     <!--Main-->
     <div class="col-sm-10 col-sm-offset-3 col-md-10 col-md-offset-2 main" >
+      <!-- Alert ------------------------------------------------------------------------------------------------------>
+      <alert class="alert-div" ng-repeat="alert in alerts" type="{{alert.type}}" close="close(alert.id)">
+        {{alert.message}}
+      </alert>
 
-      <!-- Alert -->
-      <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="close(alert.id)">{{alert.message}}</alert>
-
-      <!--Welcome-->
+      <!-- Welcome ---------------------------------------------------------------------------------------------------->
       <div ng-include="'app/main/welcome.html'" ng-show="!selectedStudy.title"></div>
 
-        <tabset ng-show="selectedStudy.title">
+      <!-- Summary statistics ----------------------------------------------------------------------------------------->
+      <accordion close-others="false" ng-show="selectedStudy.title">
+        <accordion-group is-open="summaryOpen" is-disabled="summaryLoading">
+          <accordion-heading>
+            {{selectedStudy.title}} Summary Statistics
+            <span class="glyphicon glyphicon-spin" ng-class="{'glyphicon-refresh': summaryLoading}"></span>
+            <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.open,
+                                                        'glyphicon-chevron-right': !status.open}"></i>
+          </accordion-heading>
 
-          <!--Node Summary Tab-->
+          <div class="summarydiv">
+            <span ng-repeat="concept in magicConcepts" id="summary-chart-{{concept}}">
+              <h6>{{titles[$index]}}</h6>
+            </span>
+          </div>
+        </accordion-group>
+      </accordion>
 
-          <tab >
-            <tab-heading>
-              <span>Cohort</span>
-            </tab-heading>
+      <!-- Cohort selection ------------------------------------------------------------------------------------------->
+      <tabset ng-show="selectedStudy.title">
 
-            <accordion close-others="false">
-              <accordion-group is-open="summaryOpen" is-disabled="summaryLoading">
-                <accordion-heading>
-                  {{selectedStudy.title}} Summary Statistics
-                  <span class="glyphicon glyphicon-spin" ng-class="{'glyphicon-refresh': summaryLoading}"></span>
-                  <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
-                </accordion-heading>
-                <div class="summarydiv">
-                  <span ng-repeat="concept in magicConcepts" id="summary-chart-{{concept}}">
-                    <h6>{{titles[$index]}}</h6>
-                  </span>
-                </div>
+        <!-- Cohort selection tab ------------------------------------------------------------------------------------->
+        <tab>
+          <tab-heading>
+            <span>Cohort selection</span>
+          </tab-heading>
+          <div class="well well-lg cwell" data-drop="true" ng-model='droppedNode'
+               jqyoui-droppable="{multiple:true, onDrop:'onNodeDropEvent(droppedNode)'}">
+            <span ng-if="cohortChartContainerLabels.length == 0">Drag and drop some nodes here to add them.</span>
+            <button type="button" class="btn btn-primary" ng-repeat="label in cohortChartContainerLabels"
+                    ng-click="removeLabel(label)">
+              {{label.name}}
+            </button>
+            <button ng-if="cohortChartContainerLabels.length >= 1" class="btn btn-danger"
+                    ng-click="resetActiveLabels()">
+              Reset
+            </button>
+          </div>
+          <div id="main-chart-container">
+            <progressbar max="100" value="cohortVal.selected/(cohortVal.total/100)"
+                         ng-class="{'progress-striped': cohortUpdating}" class="progress active" animate="true">
+              <div class="data-count">{{cohortVal.selected}}/{{cohortVal.total}}</div>
+            </progressbar>
 
-              </accordion-group>
+            <ts-cohort-chart ng-repeat="label in cohortChartContainerLabels" repeat-done></ts-cohort-chart>
+          </div>
+        </tab>
 
+        <!-- Cohort subjects tab -------------------------------------------------------------------------------------->
+        <tab heading="Cohort subjects">
+          <img ng-show="dataLoading" class="loading-img"/>
+          <table st-table="displayedCollection" st-safe-src="cohortVal.subjects" class="table table-striped">
+            <thead>
+            <tr>
+              <th st-sort="iD" st-sort-default="true">ID</th>
+              <th st-sort="sex">Sex</th>
+              <th st-sort="age">Age</th>
+              <th st-sort="race">Race</th>
+              <th st-sort="inTrialId">Trial ID</th>
+            </tr>
+            <tr>
+              <th colspan="1"><input st-search="" class="form-control" placeholder="ID search ..." type="text"/></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th colspan="1"><input st-search="" class="form-control" placeholder="Trial ID search ..." type="text"/></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="row in displayedCollection">
+              <td>{{row.id}}</td>
+              <td>{{row.sex}}</td>
+              <td>{{row.age}}</td>
+              <td>{{row.race}}</td>
+              <td>{{row.inTrialId}}</td>
+            </tr>
+            </tbody>
+            <tfoot>
+            <tr>
+              <td colspan="5" class="text-center">
+                <div st-pagination="" st-items-by-page="15" ></div>
+              </td>
+            </tr>
+            </tfoot>
+          </table>
 
-              <accordion-group heading="Cohort selection" is-open="true" is-disabled="true">
-                <div class="well well-lg cwell" data-drop="true" ng-model='droppedNode'
-                     jqyoui-droppable="{multiple:true, onDrop:'onNodeDropEvent(droppedNode)'}">
-                  <span ng-if="cohortChartContainerLabels.length == 0">Drag and drop some nodes here to add them.</span>
-                  <button type="button" class="btn btn-primary"
-                          ng-repeat="label in cohortChartContainerLabels"
-                          ng-click="removeLabel(label)">{{label.name}}</button>
-                  <button ng-if="cohortChartContainerLabels.length >= 1" class="btn btn-danger" ng-click="resetActiveLabels()">Reset</button>
-                </div>
-                <div id="main-chart-container">
-
-                  <progressbar max="100"
-                               value="cohortVal.selected/(cohortVal.total/100)"
-                               ng-class="{'progress-striped': cohortUpdating}"
-                               class="progress active"
-                               animate="true">
-                    <div class="data-count">{{cohortVal.selected}}/{{cohortVal.total}}</div>
-                  </progressbar>
-
-                  <ts-cohort-chart ng-repeat="label in cohortChartContainerLabels"
-                                   repeat-done></ts-cohort-chart>
-
-                </div>
-              </accordion-group>
-
-
-            </accordion>
-
-
-          </tab>
-
-          <tab heading="Subjects">
-            <!-- Selected Study Panel -->
-            <img ng-show="dataLoading" class="loading-img"/>
-            <table st-table="displayedCollection" st-safe-src="cohortVal.subjects" class="table table-striped">
-              <thead>
-              <tr>
-                <th st-sort="iD" st-sort-default="true">ID</th>
-                <th st-sort="sex">Sex</th>
-                <th st-sort="age">Age</th>
-                <th st-sort="race">Race</th>
-                <th st-sort="inTrialId">Trial ID</th>
-              </tr>
-              <tr>
-                <th colspan="1"><input st-search="" class="form-control" placeholder="ID search ..." type="text"/></th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th colspan="1"><input st-search="" class="form-control" placeholder="Trial ID search ..." type="text"/></th>
-              </tr>
-              </thead>
-              <tbody>
-              <tr ng-repeat="row in displayedCollection">
-                <td>{{row.id}}</td>
-                <td>{{row.sex}}</td>
-                <td>{{row.age}}</td>
-                <td>{{row.race}}</td>
-                <td>{{row.inTrialId}}</td>
-              </tr>
-              </tbody>
-              <tfoot>
-              <tr>
-                <td colspan="5" class="text-center">
-                  <div st-pagination="" st-items-by-page="15" ></div>
-                </td>
-              </tr>
-              </tfoot>
-            </table>
-
-          </tab>
-        </tabset>
+        </tab>
+      </tabset>
       </div>
-  </div> <!--end main-->
-  </div> <!--end row-->
-
+  </div>
 </div>
+
