@@ -49,9 +49,11 @@
             </tab-heading>
 
             <accordion close-others="false">
-              <accordion-group is-open="true">
+              <accordion-group is-open="summaryOpen" is-disabled="summaryLoading">
                 <accordion-heading>
-                  {{selectedStudy.title}} Summary Statistics<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
+                  {{selectedStudy.title}} Summary Statistics
+                  <span class="glyphicon glyphicon-spin" ng-class="{'glyphicon-refresh': summaryLoading}"></span>
+                  <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
                 </accordion-heading>
                 <div class="summarydiv">
                   <span ng-repeat="concept in magicConcepts" id="summary-chart-{{concept}}">
@@ -62,7 +64,7 @@
               </accordion-group>
 
 
-              <accordion-group heading="Cohort selection" is-open="true">
+              <accordion-group heading="Cohort selection" is-open="true" is-disabled="true">
                 <div class="well well-lg cwell" data-drop="true" ng-model='droppedNode'
                      jqyoui-droppable="{multiple:true, onDrop:'onNodeDropEvent(droppedNode)'}">
                   <span ng-if="cohortChartContainerLabels.length == 0">Drag and drop some nodes here to add them.</span>
@@ -74,11 +76,11 @@
                 <div id="main-chart-container">
 
                   <progressbar max="100"
-                               value="cohortSelected/(cohortTotal/100)"
+                               value="cohortVal.selected/(cohortVal.total/100)"
                                ng-class="{'progress-striped': cohortUpdating}"
                                class="progress active"
                                animate="true">
-                    <div class="data-count">{{cohortSelected}}/{{cohortTotal}}</div>
+                    <div class="data-count">{{cohortVal.selected}}/{{cohortVal.total}}</div>
                   </progressbar>
 
                   <ts-cohort-chart ng-repeat="label in cohortChartContainerLabels"
@@ -96,16 +98,7 @@
           <tab heading="Subjects">
             <!-- Selected Study Panel -->
             <img ng-show="dataLoading" class="loading-img"/>
-            <style>
-              .st-sort-ascent:before{
-                content: '\25B2';
-              }
-              .st-sort-descent:before{
-                content: '\25BC';
-              }
-            </style>
-
-            <table st-table="displayedCollection" st-safe-src="selectedStudy.subjects" class="table table-striped">
+            <table st-table="displayedCollection" st-safe-src="cohortVal.subjects" class="table table-striped">
               <thead>
               <tr>
                 <th st-sort="iD" st-sort-default="true">ID</th>
@@ -134,7 +127,7 @@
               <tfoot>
               <tr>
                 <td colspan="5" class="text-center">
-                  <div st-pagination="" st-items-by-page="8" ></div>
+                  <div st-pagination="" st-items-by-page="15" ></div>
                 </td>
               </tr>
               </tfoot>
