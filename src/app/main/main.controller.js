@@ -30,9 +30,6 @@ angular.module('transmartBaseUi')
       };
 
       _setLoadingAnim(true, false);
-
-
-
       _setLoadingAnim(false, false);
     };
 
