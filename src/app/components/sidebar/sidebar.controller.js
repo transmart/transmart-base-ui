@@ -61,10 +61,16 @@ angular.module('transmartBaseUi')
 
             $scope.studies = studies;
 
-            // Check if studies are public or private
+            // Checking if studies are public or private
             // TODO: other cases not public or private
             $scope.studies.forEach(function(study){
+
               study.endpoint = endpoint; // Keep reference to endpoint
+              study.popover = {
+                title: study._embedded.ontologyTerm.name,
+                template: '/app/components/popover/tree-popover.html'
+              };
+
               if(study._embedded.ontologyTerm.fullName.split('\\')[1] ===
                 'Public Studies') {
                 $scope.publicStudies.push(study);
