@@ -55,6 +55,9 @@ angular.module('transmartBaseUi')
         $http({
           url: url + '/oauth/token',
           method: 'POST',
+          headers: {
+            'Content-Type': undefined
+          },
           data: {
             grant_type: 'authorization_code',
             client_id: 'api-client',
