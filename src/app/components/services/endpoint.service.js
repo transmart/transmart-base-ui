@@ -51,6 +51,15 @@ angular.module('transmartBaseUi')
           url = url.substring(0, url.length-1);
         }
 
+        var data = {
+          grant_type: 'authorization_code',
+            client_id: 'api-client',
+            client_secret: 'api-client',
+            code: requestToken,
+            redirect_uri: url + '/oauth/verify'
+        };
+        data = encodeURIComponent(JSON.stringify(data));
+        
         // Get the access_token using the request token (code)
         $http({
           url: url + '/oauth/token',
@@ -58,12 +67,7 @@ angular.module('transmartBaseUi')
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
           },
-          data: {
-            grant_type: 'authorization_code',
-            client_id: 'api-client',
-            client_secret: 'api-client',
-            code: requestToken
-          }
+          data: data
         })
           .success(function (response) {
             var accessToken = response.access_token;
