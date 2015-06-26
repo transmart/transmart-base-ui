@@ -99,6 +99,8 @@ angular.module('transmartBaseUi')
             var ss = {};
 
             chartService.displaySummaryStatistics = function(study, magicConcepts){
+                var _deferred = $q.defer();
+
                 study.one('subjects').get().then(function (d) {
                     var sub = d._embedded.subjects;
 
@@ -123,9 +125,12 @@ angular.module('transmartBaseUi')
                     });
                     chartService.renderAll(ss.charts);
 
+                    _deferred.resolve();
+
                 }, function (err) {
-                    reject('Cannot get subjects from the end-point.' + err);
+                    _deferred.reject('Cannot get data from the end-point.' + err);
                 });
+                return _deferred.promise;
             };
 
             /***********************************************************************************************************
@@ -290,8 +295,9 @@ angular.module('transmartBaseUi')
              */
             chartService.getSelectionValues = function () {
                 return {
-                    selected:cs.cross.groupAll().value(),
-                    total:cs.cross.size()
+                    selected: cs.cross.groupAll().value(),
+                    total: cs.cross.size(),
+                    subjects: cs.mainDim.top(Infinity)
                 };
             };
 

@@ -4,7 +4,8 @@ angular.module('transmartBaseUi')
   .controller('MainCtrl',
   ['$scope', 'Restangular', 'ChartService', 'AlertService', function ($scope, Restangular, ChartService, AlertService) {
 
-    $scope.dataLoading = false;
+    $scope.summaryLoading = false;
+    $scope.summaryOpen = false;
 
     $scope.close = AlertService.remove;
     $scope.alerts = AlertService.get();
@@ -15,22 +16,32 @@ angular.module('transmartBaseUi')
       Description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris faucibus ut nisl quis ullamcorper. Quisque in orci vitae nibh rhoncus blandit. Integer tincidunt nunc sit amet magna faucibus, eget pellentesque libero finibus. Sed eu cursus risus, ac pretium felis. In non turpis eros. Nam nec tellus venenatis, consectetur dui a, posuere dui. In id pellentesque elit, ac mattis orci. Donec aliquam feugiat neque nec efficitur. Donec fermentum posuere diam, quis semper felis aliquam vel. Praesent sit amet dapibus tortor. Aliquam sed quam non augue imperdiet scelerisque. Vivamus pretium pretium eros. Nullam finibus accumsan tempor. Duis mollis, ex nec maximus bibendum.'
     };
 
-    $scope.magicConcepts = ['sex', 'race','age',  'religion', 'maritalStatus'];
-    $scope.titles = ['Sex', 'Race','Age',  'Religion', 'Marital Status'];
+    $scope.magicConcepts = ['sex', 'race', 'age', 'religion', 'maritalStatus'];
+    $scope.titles = ['Sex', 'Race', 'Age', 'Religion', 'Marital Status'];
 
+    /*******************************************************************************************************************
+     * Summary statistics
+     */
+    /**
+     * Selected study
+     * @type {{}}
+     */
     $scope.selectedStudy = {};
 
+    /**
+     * Display summary statisctics for the selected study
+     * @param study
+     */
     $scope.displayStudySummaryStatistics = function (study) {
-      ChartService.displaySummaryStatistics(study, $scope.magicConcepts);
+      $scope.summaryLoading = true;
+      $scope.summaryOpen = false;
+
       $scope.selectedStudy.title = study.id;
-
-      var _setLoadingAnim = function (data, chart) {
-        $scope.dataLoading = data;
-        $scope.chartLoading = chart;
-      };
-
-      _setLoadingAnim(true, false);
-      _setLoadingAnim(false, false);
+      ChartService.displaySummaryStatistics(study, $scope.magicConcepts).then(function(){
+        $scope.summaryLoading = false;
+        $scope.summaryOpen = true;
+        //$scope.$apply();
+      });
     };
 
     /*******************************************************************************************************************
@@ -41,13 +52,7 @@ angular.module('transmartBaseUi')
      * Quantity of subjects remaining in cohort selection after filters are applied
      * @type {number}
      */
-    $scope.cohortSelected = 0;
-
-    /**
-     * Initial quantity of subjects in selected nodes for cohort selection
-     * @type {number}
-     */
-    $scope.cohortTotal = 0;
+    $scope.cohortVal = {selected: 0, total: 0, subjects: []};
 
     /**
      *
@@ -58,7 +63,7 @@ angular.module('transmartBaseUi')
     /**
      * Update quantity of containers necessary for displaying the graphs in cohort selection
      */
-    $scope.$on('prepareChartContainers', function(event, labels) {
+    $scope.$on('prepareChartContainers', function (event, labels) {
       $scope.cohortChartContainerLabels = labels;
     });
 
@@ -68,22 +73,34 @@ angular.module('transmartBaseUi')
      * @param info
      * @param node Dropped node
      */
-    $scope.onNodeDropEvent = function(event, info, node){
+    $scope.onNodeDropEvent = function (event, info, node) {
       _addCohort(node);
     };
 
-    $scope.removeLabel = function (label){
+    /**
+     *
+     * @param label
+     */
+    $scope.removeLabel = function (label) {
       ChartService.removeLabel(label);
     };
 
     /**
      * Reset the active nodes for cohort selection
      */
-    $scope.resetActiveLabels = function(){
-      $scope.cohortSelected = 0;
-      $scope.cohortTotal = 0;
+    $scope.resetActiveLabels = function () {
       ChartService.reset();
+      _updateCohortDisplay();
     };
+
+    /**
+     *
+     * @private
+     */
+    var _updateCohortDisplay = function(){
+      $scope.cohortVal = ChartService.getSelectionValues();
+      $scope.displayedCollection = [].concat($scope.cohortVal.subjects);
+    }
 
     /**
      * Add node dropped from concept tree
@@ -94,21 +111,18 @@ angular.module('transmartBaseUi')
 
       $scope.cohortUpdating = true;
 
-      ChartService.addNodeToActiveCohortSelection(node).then(function(charts){
-        $scope.cohortSelected = ChartService.getSelectionValues().selected;
-        $scope.cohortTotal = ChartService.getSelectionValues().total;
+      ChartService.addNodeToActiveCohortSelection(node).then(function (charts) {
+        _updateCohortDisplay();
 
         // Update the selection value on filtering the charts
-        charts.forEach(function(chart){
-          chart.on('postRedraw', function (){
-            $scope.cohortSelected = ChartService.getSelectionValues().selected;
-            $scope.cohortTotal = ChartService.getSelectionValues().total;
+        charts.forEach(function (chart) {
+          chart.on('postRedraw', function () {
+            _updateCohortDisplay();
             $scope.$apply();
           });
 
           ChartService.renderAll(charts);
           $scope.cohortUpdating = false;
-          //$scope.$apply();
         });
       });
     }
