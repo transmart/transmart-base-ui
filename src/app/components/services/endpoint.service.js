@@ -26,7 +26,7 @@ angular.module('transmartBaseUi')
         var newRestangular = Restangular;
         Restangular.setBaseUrl(url);
         Restangular.setDefaultHeaders({
-          'Authorization': '',
+          //'Authorization': '',
           'Accept': 'application/hal+json'
           //'Endpoint': url
         });
