@@ -24,10 +24,11 @@ angular.module('transmartBaseUi')
 
         // Create new restangular instance
         var newRestangular = Restangular;
+        Restangular.setBaseUrl(url);
         Restangular.setDefaultHeaders({
           'Authorization': '',
-          'Accept': 'application/hal+json',
-          'Endpoint': url
+          'Accept': 'application/hal+json'
+          //'Endpoint': url
         });
 
         // Store meta data and restangular instance in object
@@ -52,11 +53,11 @@ angular.module('transmartBaseUi')
 
         // Get the access_token using the request token (code)
         $http({
-          url: proxyUrl + 'oauth/token',
+          url: url + 'oauth/token',
           method: 'GET',
-          headers: {
-            'Endpoint': url
-          },
+          //headers: {
+          //  'Endpoint': url
+          //},
           params: {
             code: requestToken
           }
@@ -66,10 +67,11 @@ angular.module('transmartBaseUi')
 
             // Create new restangular instance
             var newRestangular = Restangular;
+            Restangular.setBaseUrl(url)
             Restangular.setDefaultHeaders({
               'Authorization': 'Bearer ' + accessToken,
-              'Accept': 'application/hal+json',
-              'Endpoint': url
+              'Accept': 'application/hal+json'
+              //'Endpoint': url
             });
 
             // Store meta data and restangular instance in object
