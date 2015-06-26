@@ -2,7 +2,7 @@
 
 angular.module('transmartBaseUi')
   .controller('MainCtrl',
-  ['$scope', 'Restangular', 'ChartService', 'AlertService', function ($scope, Restangular, ChartService, AlertService) {
+  ['$scope', 'Restangular', 'ChartService', 'AlertService', '$location', function ($scope, Restangular, ChartService, AlertService, $location) {
 
     $scope.summaryLoading = false;
     $scope.summaryOpen = false;
@@ -53,6 +53,8 @@ angular.module('transmartBaseUi')
      * @type {number}
      */
     $scope.cohortVal = {selected: 0, total: 0, subjects: []};
+
+    console.log();
 
     /**
      *
