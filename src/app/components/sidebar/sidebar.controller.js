@@ -68,7 +68,7 @@ angular.module('transmartBaseUi')
               study.endpoint = endpoint; // Keep reference to endpoint
               study.popover = {
                 title: study._embedded.ontologyTerm.name,
-                template: '/app/components/popover/tree-popover.html'
+                template: 'app/components/popover/tree-popover.html'
               };
 
               if(study._embedded.ontologyTerm.fullName.split('\\')[1] ===
