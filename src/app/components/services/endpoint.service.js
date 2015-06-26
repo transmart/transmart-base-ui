@@ -26,7 +26,7 @@ angular.module('transmartBaseUi')
         var newRestangular = Restangular;
         Restangular.setBaseUrl(url);
         Restangular.setDefaultHeaders({
-          //'Authorization': '',
+          'Authorization': '',
           'Accept': 'application/hal+json'
           //'Endpoint': url
         });
@@ -54,7 +54,7 @@ angular.module('transmartBaseUi')
         // Get the access_token using the request token (code)
         $http({
           url: url + '/oauth/token',
-          method: 'GET',
+          method: 'POST',
           params: {
             grant_type: 'authorization_code',
             client_id: 'api-client',
