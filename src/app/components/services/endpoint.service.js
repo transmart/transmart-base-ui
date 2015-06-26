@@ -58,7 +58,7 @@ angular.module('transmartBaseUi')
             code: requestToken,
             redirect_uri: url + '/oauth/verify'
         };
-        data = encodeURIComponent(JSON.stringify(data));
+        data = $.param(data);
         
         // Get the access_token using the request token (code)
         $http({
