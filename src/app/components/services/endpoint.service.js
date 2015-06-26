@@ -62,8 +62,7 @@ angular.module('transmartBaseUi')
             grant_type: 'authorization_code',
             client_id: 'api-client',
             client_secret: 'api-client',
-            code: requestToken,
-            redirect_uri: url + '/oauth/verify'
+            code: requestToken
           }
         })
           .success(function (response) {
