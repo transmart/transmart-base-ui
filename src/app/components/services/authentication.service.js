@@ -46,7 +46,7 @@ angular.module('transmartBaseUi')
       service.ClearCredentials = function () {
         $rootScope.globals = {};
         $cookieStore.remove('globals');
-        $http.defaults.headers.common.Authorization = 'Basic ';
+        //$http.defaults.headers.common.Authorization = 'Basic ';
       };
 
       return service;

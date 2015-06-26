@@ -41,7 +41,7 @@ angular.module('transmartBaseUi', [
       // Set an interceptor in order to parse the API response
       // when getting a list of resources
       RestangularProvider.setResponseInterceptor(function(data, operation, what) {
-
+        console.log(data);
         /**
          * Get the last token when requested model is a string path
          * @param what
@@ -93,7 +93,7 @@ angular.module('transmartBaseUi', [
       $rootScope.globals = $cookieStore.get('globals') || {};
 
       if ($rootScope.globals.currentUser) {
-        $http.defaults.headers.common.Authorization = 'Basic ' + $rootScope.globals.currentUser.authdata;
+        //$http.defaults.headers.common.Authorization = 'Basic ' + $rootScope.globals.currentUser.authdata;
       }
 
       $rootScope.$on('$locationChangeStart', function () {
