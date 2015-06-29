@@ -11,11 +11,7 @@ angular.module('transmartBaseUi')
     $scope.formData = {};
 
     $scope.publicStudies = [];
-    $scope.ifPublicStudies = function(){return $scope.publicStudies.length > 0;};
     $scope.privateStudies = [];
-    $scope.ifPrivateStudies = function(){return $scope.privateStudies.length > 0;};
-
-    $scope.ifSomeStudies = function(){return $scope.ifPublicStudies() && $scope.ifPrivateStudies();};
 
     $scope.addResource = function() {
       var formData = $scope.formData;
