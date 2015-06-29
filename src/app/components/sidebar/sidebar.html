@@ -36,13 +36,13 @@
 
       <ul>
         <li ng-repeat="endpoint in endpoints">
-          <a href="{{endpoint.url}}" tooltip="{{endpoint.url}}">
+          <a tooltip="{{endpoint.url}}">
             {{endpoint.title}}
           </a>
         </li>
       </ul>
 
-      <br>
+      <div class="form-actions">
 
       <form name="formData.endpointForm"
             ng-submit="addResource()"
@@ -72,10 +72,21 @@
                   placeholder="Request token"
                   ng-model="formData.requestToken">
         </div>
-        <div class="form-actions">
-          <button type="submit" class="btn btn-primary">
-            Save
+
+        <div class="btn-group dropup" dropdown>
+          <button type="button" class="btn btn-primary dropdown-toggle" dropdown-toggle>
+            Defaults <span class="caret"></span>
           </button>
+
+          <ul class="dropdown-menu" role="menu">
+            <li><a href="#" ng-click="populateDefaultApi('transmart-demo', 'http://transmart-demo.thehyve.net/transmart')">transmart-demo</a></li>
+          </ul>
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+          Save
+        </button>
+
         </div>
       </form>
     </accordion-group>
