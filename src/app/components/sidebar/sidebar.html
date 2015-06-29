@@ -8,10 +8,8 @@
 
     <accordion-group  heading="Highlights"
                       is-open="true">
-      <span ng-if="publcStudies.length == 0 && privateStudies.length == 0">
+      <span ng-if="publicStudies.length == 0 && privateStudies.length == 0">
         No studies loaded.
-        <br>
-        Please connect to an API by adding an endpoint below.
       </span>
       <span ng-if="publicStudies.length > 0 || privateStudies.length > 0">
         Browse studies by clicking the study headers below.

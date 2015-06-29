@@ -55,7 +55,6 @@ angular.module('transmartBaseUi')
       endpoints.forEach(function(endpoint) {
         endpoint.restangular.all('studies').getList()
           .then(function (studies) {
-
             // alert user that it successfully connects to the rest-api
             AlertService.add('success', 'Loaded studies from: ' + endpoint.url, 3000);
 
@@ -81,13 +80,9 @@ angular.module('transmartBaseUi')
           }, function (err) {
             AlertService.add('danger', 'Could not load studies from API: ' +
               endpoint.url, 3000);
+              });
           });
-      });
-    } catch (err) {
-
-    }
-
-    }
+        }
 
     function resetEndpointForm() {
       var formData = $scope.formData;
