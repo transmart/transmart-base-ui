@@ -26,24 +26,24 @@
 <!--------------------------------------------------------------------------------------------------------------------->
 <!-- END Node template -->
 
+<script type="text/ng-template" id="study-tooltip.html">
+ <span>Summary <a class="glyphicon glyphicon-info-sign" ng-click="openMetadata(concept);"></a></span>
+</script>
+
 <hr>
 <span><h4>{{title}}</h4></span>
 
 <div ng-repeat="study in studies" ng-controller="StudyCtrl">
-
-  <accordion-group>
-
+  <accordion-group  is-open="study.open">
+    <!--heading-->
     <accordion-heading >
-      <span ng-click="getTree(study); saction()(study);">
-        {{study._embedded.ontologyTerm.name}}
+      <span>
+        <a href="#" class="glyphicon glyphicon-folder-close" ng-click="getTree(study); saction()(study);"></a>&nbsp;
       </span>
+      <b tooltip-template="'study-tooltip.html'" tooltip-trigger="click" tooltip-placement="right" ng-click="displayToolTip($event, study)">{{study._embedded.ontologyTerm.name}}</b>
       <span class="glyphicon glyphicon-spin" ng-class="{'glyphicon-refresh': treeLoading}"></span>
-      <a href class="info info-icon glyphicon glyphicon-info-sign" ng-click="$event.stopPropagation()"
-         popover-template="'{{study.popover.template}}'"
-         popover-title="{{study.popover.title}}">
-      </a>
     </accordion-heading>
-
+    <!--content-->
     <div ui-tree id="tree-root" data-drag-enabled="treeConfig.drag" data-drop-enabled="false">
       <ol ui-tree-nodes="" ng-model="tree.nodes">
         <li ng-repeat="node in tree.nodes" ui-tree-node ng-include="'nodes_renderer.html'"
@@ -52,4 +52,5 @@
     </div>
 
   </accordion-group>
+
 </div>

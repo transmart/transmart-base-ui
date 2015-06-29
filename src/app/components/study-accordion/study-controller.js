@@ -2,7 +2,7 @@
 
 angular.module('transmartBaseUi')
   .controller('StudyCtrl',
-  ['$scope', function ($scope) {
+  ['$scope', '$modal', function ($scope, $modal) {
     //------------------------------------------------------------------------------------------------------------------
     // Scope
     //------------------------------------------------------------------------------------------------------------------
@@ -20,7 +20,7 @@ angular.module('transmartBaseUi')
     $scope.status = {
       isFirstOpen: false,
       isFirstDisabled: false,
-      oneAtATime: true,
+      oneAtATime: true
     };
 
     $scope.type = {
@@ -139,6 +139,27 @@ angular.module('transmartBaseUi')
       _getNodeChildren(tree, false, 'concepts/');
       return tree;
     };
+
+    $scope.displayToolTip = function (e, node) {
+        e.stopPropagation(); // preventing selected accordion to expand.
+        $scope.concept = node;
+    };
+
+    $scope.openMetadata = function (node) {
+        if (node._embedded.ontologyTerm.hasOwnProperty('metadata')) {
+            var modalInstance = $modal.open({
+                animation: true,
+                controller: 'ModalInstanceCtrl',
+                templateUrl: 'app/components/metadata/metadata.html',
+                resolve: {
+                  selectedNode: function () {
+                    return node;
+                  }
+                }
+            });
+        }
+    }
+
 
   }]);
 
