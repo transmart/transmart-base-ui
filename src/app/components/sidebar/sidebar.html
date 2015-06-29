@@ -8,12 +8,12 @@
 
     <accordion-group  heading="Highlights"
                       is-open="true">
-      <span ng-if="!someStudies">
+      <span ng-if="publcStudies.length == 0 && privateStudies.length == 0">
         No studies loaded.
         <br>
         Please connect to an API by adding an endpoint below.
       </span>
-      <span ng-if="someStudies">
+      <span ng-if="publicStudies.length > 0 || privateStudies.length > 0">
         Browse studies by clicking the study headers below.
       </span>
     </accordion-group>
@@ -22,14 +22,14 @@
                       acc-title="'Public studies'"
                       study-action="displayStudySummaryStatistics"
                       node-action="displayNodeSummaryStatistics"
-                      ng-if="ifPublicStudies()">
+                      ng-if="publicStudies.length > 0">
     </study-accordion>
 
     <study-accordion  acc-studies="privateStudies"
                       acc-title="'Private studies'"
                       study-action="displayStudySummaryStatistics"
                       node-action="displayNodeSummaryStatistics"
-                      ng-if="ifPrivateStudies()">
+                      ng-if="privateStudies.length > 0">
     </study-accordion>
 
     <hr>
