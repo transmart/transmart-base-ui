@@ -51,42 +51,41 @@ angular.module('transmartBaseUi')
       $scope.publicStudies = [];
       $scope.privateStudies = [];
 
-      try{
-        // Load studies for each endpoint
-        endpoints.forEach(function(endpoint) {
-          endpoint.restangular.all('studies').getList()
-            .then(function (studies) {
+      // Load studies for each endpoint
+      endpoints.forEach(function(endpoint) {
+        endpoint.restangular.all('studies').getList()
+          .then(function (studies) {
 
-              // alert user that it successfully connects to the rest-api
-              AlertService.add('success', 'Loaded studies from: ' + endpoint.url, 3000);
+            // alert user that it successfully connects to the rest-api
+            AlertService.add('success', 'Loaded studies from: ' + endpoint.url, 3000);
 
-              $scope.studies = studies;
+            $scope.studies = studies;
 
-              // Checking if studies are public or private
-              // TODO: other cases not public or private
-              $scope.studies.forEach(function(study){
+            // Checking if studies are public or private
+            // TODO: other cases not public or private
+            $scope.studies.forEach(function(study){
 
-                study.endpoint = endpoint; // Keep reference to endpoint
-                study.popover = {
-                  title: study._embedded.ontologyTerm.name,
-                  template: 'app/components/popover/tree-popover.html'
-                };
+              study.endpoint = endpoint; // Keep reference to endpoint
+              study.popover = {
+                title: study._embedded.ontologyTerm.name,
+                template: 'app/components/popover/tree-popover.html'
+              };
 
-                if(study._embedded.ontologyTerm.fullName.split('\\')[1] ===
-                  'Public Studies') {
-                  $scope.publicStudies.push(study);
-                } else {
-                  $scope.privateStudies.push(study);
-                }
-              });
-            }, function (err) {
-              AlertService.add('danger', 'Could not load studies from API: ' +
-                endpoint.url, 3000);
+              if(study._embedded.ontologyTerm.fullName.split('\\')[1] ===
+                'Public Studies') {
+                $scope.publicStudies.push(study);
+              } else {
+                $scope.privateStudies.push(study);
+              }
             });
-        });
-      } catch (err) {
+          }, function (err) {
+            AlertService.add('danger', 'Could not load studies from API: ' +
+              endpoint.url, 3000);
+          });
+      });
+    } catch (err) {
 
-      }
+    }
 
     }
 
