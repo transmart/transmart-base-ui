@@ -1,50 +1,85 @@
 
-<div id="sidebardiv" class="col-sm-3 col-md-2 sidebar" ng-controller="SidebarCtrl">
+<div  id="sidebardiv"
+      class="col-sm-3 col-md-2 sidebar"
+      ng-controller="SidebarCtrl">
 
   <!-- START STUDIES -->
   <accordion close-others="status.oneAtATime">
-    <accordion-group heading=" Highlights" is-open="status.isFirstOpen" is-disabled="status.isFirstDisabled">
-      Browse studies by clicking study header below.
+
+    <accordion-group  heading="Highlights"
+                      is-open="true">
+      <span ng-if="publicStudies.length == 0 && privateStudies.length == 0">
+        No studies loaded.
+      </span>
+      <span ng-if="publicStudies.length > 0 || privateStudies.length > 0">
+        Browse studies by clicking the study headers below.
+      </span>
     </accordion-group>
 
-    <study-accordion acc-studies="publicStudies" acc-title="'Public studies'" study-action="displayStudySummaryStatistics"
-                     node-action="displayNodeSummaryStatistics"></study-accordion>
+    <study-accordion  acc-studies="publicStudies"
+                      acc-title="'Public studies'"
+                      study-action="displayStudySummaryStatistics"
+                      node-action="displayNodeSummaryStatistics"
+                      ng-if="publicStudies.length > 0">
+    </study-accordion>
 
-    <study-accordion acc-studies="privateStudies" acc-title="'Private studies'" study-action="displayStudySummaryStatistics"
-                     node-action="displayNodeSummaryStatistics"></study-accordion>
+    <study-accordion  acc-studies="privateStudies"
+                      acc-title="'Private studies'"
+                      study-action="displayStudySummaryStatistics"
+                      node-action="displayNodeSummaryStatistics"
+                      ng-if="privateStudies.length > 0">
+    </study-accordion>
 
-    <accordion-group>
-      <accordion-heading>
-        Configure RESTFul Endpoint
-      </accordion-heading>
+    <hr>
+
+    <accordion-group  heading="Add Endpoint" is-open="endpointTabOpen">
 
       <ul>
-        <li ng-repeat="endpoint in endpoints"><a href="{{endpoint.url}}" tooltip="{{endpoint.url}}">{{endpoint.title}}</a></li>
+        <li ng-repeat="endpoint in endpoints">
+          <a href="{{endpoint.url}}" tooltip="{{endpoint.url}}">
+            {{endpoint.title}}
+          </a>
+        </li>
       </ul>
 
       <br>
 
-      <form name="formData.endpointForm" ng-submit="addResource()" role="form">
+      <form name="formData.endpointForm"
+            ng-submit="addResource()"
+            role="form">
         <div class="form-group">
-          <input type="text" class="form-control input-sm" placeholder="Title" ng-model="formData.title">
+          <input  type="text"
+                  class="form-control input-sm"
+                  placeholder="Title"
+                  ng-model="formData.title">
         </div>
         <div class="form-group">
-          <input type="text" class="form-control input-sm" placeholder="Endpoint url" ng-model="formData.url">
+          <input  type="text"
+                  class="form-control input-sm"
+                  placeholder="Endpoint url"
+                  ng-model="formData.url">
         </div>
         <div class="form-group">
-          <button type="button" class="form-control btn btn-default" ng-click="navigateToAuthorizationPage()">Get request token</button>
+          <button type="button"
+                  class="form-control btn btn-default"
+                  ng-click="navigateToAuthorizationPage()">
+                  Get request token
+          </button>
         </div>
         <div class="form-group">
-          <input type="text" class="form-control input-sm" placeholder="Request token" ng-model="formData.requestToken">
+          <input  type="text"
+                  class="form-control input-sm"
+                  placeholder="Request token"
+                  ng-model="formData.requestToken">
         </div>
         <div class="form-actions">
-          <button type="submit" class="btn btn-primary">Save</button>
+          <button type="submit" class="btn btn-primary">
+            Save
+          </button>
         </div>
       </form>
     </accordion-group>
   </accordion>
 </div>
   <!--end tree-->
-  <br>
-
-</div>
+<br>

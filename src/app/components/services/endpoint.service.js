@@ -51,17 +51,23 @@ angular.module('transmartBaseUi')
           url = url.substring(0, url.length-1);
         }
 
-        // Get the access_token using the request token (code)
-        $http({
-          url: url + '/oauth/token',
-          method: 'POST',
-          params: {
-            grant_type: 'authorization_code',
+        var data = {
+          grant_type: 'authorization_code',
             client_id: 'api-client',
             client_secret: 'api-client',
             code: requestToken,
             redirect_uri: url + '/oauth/verify'
-          }
+        };
+        data = $.param(data);
+        
+        // Get the access_token using the request token (code)
+        $http({
+          url: url + '/oauth/token',
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          data: data
         })
           .success(function (response) {
             var accessToken = response.access_token;

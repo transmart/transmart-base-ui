@@ -6,12 +6,13 @@
        jqyoui-draggable="{placeholder: 'keep'}"
        data-jqyoui-options="{containment: 'document', appendTo: 'body', helper: 'clone'}" ng-model="node">
     <a data-nodrag ng-click="toggle(this)">
-      <i class="glyphicon" ng-class="{'glyphicon-folder-close': collapsed && type.fol(node),
+      <i class="glyphicon ts-node-icon" ng-class="{'glyphicon-folder-close': collapsed && type.fol(node),
                                      'glyphicon-folder-open': !collapsed && type.fol(node),
-                                     'glyphicon-sound-5-1': type.num(node),
-                                     'glyphicon-font': type.cat(node),
-                                     'glyphicon-stats': type.hid(node)}">
-        </i> &nbsp;
+                                     'glyphicon-equalizer': type.num(node),
+                                     '': type.cat(node),
+                                     '': type.hid(node)}">
+      </i> &nbsp;
+
     </a>
      {{node.title | cutstring:false:divWidth:' ...'}} &nbsp; &nbsp; <small class="quantity-num">({{node.total}})</small>
   </div>
