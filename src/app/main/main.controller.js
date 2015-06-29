@@ -100,7 +100,31 @@ angular.module('transmartBaseUi')
     var _updateCohortDisplay = function(){
       $scope.cohortVal = ChartService.getSelectionValues();
       $scope.displayedCollection = [].concat($scope.cohortVal.subjects);
+      console.log($scope.displayedCollection);
     }
+
+    /**
+    * Get the cohort selection in a formatted form for csv export
+    */
+    $scope.getCsvFormatted = function(){
+      var formatted = [];
+      $scope.cohortVal.subjects.forEach(function(subject){
+        var cleanSubject = jQuery.extend(true, {}, subject);
+        delete cleanSubject._links;
+        delete cleanSubject.labels;
+        delete cleanSubject.$$hashKey;
+        formatted.push(cleanSubject);
+      })
+      if(formatted.length > 0) $scope.csvHeaders = Object.keys(formatted[0]);
+      else $scope.csvHeaders = [];
+      return formatted;
+    }
+    
+    /**
+    * Headers for csv export
+    */
+    $scope.csvHeaders = [];
+
 
     /**
      * Add node dropped from concept tree

@@ -82,12 +82,12 @@
         <!-- Cohort subjects tab -------------------------------------------------------------------------------------->
         <tab heading="Cohort subjects">
           <div class="btn-group ts-export-btn" dropdown>
-            <button type="button" class="btn btn-primary dropdown-toggle" dropdown-toggle>
+            <button type="button" class="btn btn-primary dropdown-toggle" dropdown-toggle ng-disabled="!cohortVal.selected">
               Export cohort <span class="caret"></span>
             </button>
             <ul class="dropdown-menu" role="menu">
-              <li ng-csv="cohortVal.subjects" filename="cohort.csv"><a href="#">Csv</a></li>
-              <li ng-csv="cohortVal.subjects" filename="cohort.txt"><a href="#">Text</a></li>
+              <li ng-csv="getCsvFormatted()" filename="cohort.csv" csv-header="csvHeaders"><a href="#">Csv</a></li>
+              <li ng-csv="getCsvFormatted()" filename="cohort.txt" csv-header="csvHeaders"><a href="#">Text</a></li>
             </ul>
           </div>
 
@@ -121,7 +121,7 @@
             <tfoot>
             <tr>
               <td colspan="5" class="text-center">
-                <div st-pagination="" st-items-by-page="15" ></div>
+                <div st-pagination="" st-items-by-page="15"></div>
 
               </td>
             </tr>
@@ -133,4 +133,3 @@
       </div>
   </div>
 </div>
-
