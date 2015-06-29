@@ -100,7 +100,6 @@ angular.module('transmartBaseUi')
     var _updateCohortDisplay = function(){
       $scope.cohortVal = ChartService.getSelectionValues();
       $scope.displayedCollection = [].concat($scope.cohortVal.subjects);
-      console.log($scope.displayedCollection);
     }
 
     /**
@@ -119,7 +118,7 @@ angular.module('transmartBaseUi')
       else $scope.csvHeaders = [];
       return formatted;
     }
-    
+
     /**
     * Headers for csv export
     */
