@@ -10,6 +10,8 @@ angular.module('transmartBaseUi')
     $scope.endpoints = [];
     $scope.formData = {};
 
+    $scope.endpointTabOpen = false;
+
     $scope.publicStudies = [];
     $scope.privateStudies = [];
 
@@ -27,6 +29,7 @@ angular.module('transmartBaseUi')
         resetEndpointForm();
         loadStudies();
       }
+      $scope.endpointTabOpen = false;
     };
 
     $scope.navigateToAuthorizationPage = function() {
