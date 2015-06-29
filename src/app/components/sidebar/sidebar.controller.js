@@ -88,7 +88,6 @@ angular.module('transmartBaseUi')
         }
 
     $scope.populateDefaultApi = function(name, link) {
-      console.log(name)
       $scope.formData.title = name;
       $scope.formData.url = link;
       $scope.formData.requestToken = '';
