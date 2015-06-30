@@ -83,8 +83,8 @@ angular.module('transmartBaseUi', [
       cfpLoadingBarProvider.includeSpinner = false;
   }])
 
-  .run(['$rootScope', '$location', '$cookieStore', '$http', 'EndpointService',
-    function ($rootScope, $location, $cookieStore, $http, EndpointService) {
+  .run(['$rootScope', '$location', '$cookieStore', '$http', 'EndpointService', '$cookies',
+    function ($rootScope, $location, $cookieStore, $http, EndpointService, $cookies) {
 
       EndpointService.addEndpoint('Local', 'http://localhost:8080/transmart-rest-api');
 
@@ -94,6 +94,8 @@ angular.module('transmartBaseUi', [
       if ($rootScope.globals.currentUser) {
         //$http.defaults.headers.common.Authorization = 'Basic ' + $rootScope.globals.currentUser.authdata;
       }
+
+      EndpointService.retrieveStoredEndpoints();
 
       $rootScope.$on('$locationChangeStart', function () {
         // redirect to login page if not logged in
