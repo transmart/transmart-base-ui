@@ -52,7 +52,7 @@ angular.module('transmartBaseUi')
     $scope.populateChilds = function (node) {
       node.nodes.forEach(function(child){
         _getNodeChildren(child, false, '');
-      })
+      });
     };
 
     //------------------------------------------------------------------------------------------------------------------
@@ -94,7 +94,7 @@ angular.module('transmartBaseUi')
     var _getNodeChildren = function(node, end, prefix){
       prefix = prefix || '';
       var children = node.restObj._links.children;
-      console.log(node);
+      //console.log(node);
 
       if(!node.loaded){
 
@@ -133,7 +133,9 @@ angular.module('transmartBaseUi')
         }
       }
 
-      if(!end) node.loaded = true;
+      if (!end) {
+        node.loaded = true;
+      }
     };
 
     /**
@@ -182,7 +184,7 @@ angular.module('transmartBaseUi')
             }
           }
         });
-    }
+    };
 
 
   }]);
