@@ -38,6 +38,11 @@
         <li ng-repeat="endpoint in endpoints">
           <a tooltip="{{endpoint.url}}">
             {{endpoint.title}}
+            <span class="label label-default"
+                  ng-class="{'label-primary': endpoint.status == 'local',
+                              'label-success': endpoint.status == 'active'}">
+              {{endpoint.status}}
+            </span>
           </a>
         </li>
       </ul>
@@ -45,9 +50,19 @@
       <div class="form-actions">
 
       <form name="formData.endpointForm"
-            ng-submit="addResource()"
             role="form">
-        <div class="form-group">
+        <div class="input-group form-group">
+          <div class="input-group-btn drodown" dropdown>
+            <button type="button"
+                    class="btn btn-default dropdown-toggle btn-sm"
+                    dropdown-toggle>
+                Defaults
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+              <li><a href="#" ng-click="populateDefaultApi('transmart-demo', 'http://transmart-demo.thehyve.net/transmart')">transmart-demo</a></li>
+            </ul>
+          </div>
           <input  type="text"
                   class="form-control input-sm"
                   placeholder="Title"
@@ -73,22 +88,16 @@
                   ng-model="formData.requestToken">
         </div>
 
-        <div class="btn-group dropup" dropdown>
-          <button type="button" class="btn btn-primary dropdown-toggle" dropdown-toggle>
-            Defaults <span class="caret"></span>
-          </button>
-
-          <ul class="dropdown-menu" role="menu">
-            <li><a href="#" ng-click="populateDefaultApi('transmart-demo', 'http://transmart-demo.thehyve.net/transmart')">transmart-demo</a></li>
-          </ul>
-        </div>
-
-        <button type="submit" class="btn btn-primary">
+        <button type="submit" class="btn btn-primary btn-sm" ng-click="addResource()">
           Save
+        </button>
+        <button class="btn btn-default btn-sm" ng-click="clearSavedEndpoints()">
+          Clear saved
         </button>
 
         </div>
       </form>
+
     </accordion-group>
   </accordion>
 </div>

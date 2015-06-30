@@ -15,6 +15,12 @@ angular.module('transmartBaseUi')
     $scope.publicStudies = [];
     $scope.privateStudies = [];
 
+    $scope.clearSavedEndpoints = function () {
+      EndpointService.clearStoredEnpoints();
+      $scope.endpoints = EndpointService.getEndpoints();
+      loadStudies();
+    };
+
     $scope.addResource = function() {
       var formData = $scope.formData;
       if (formData.requestToken) {
