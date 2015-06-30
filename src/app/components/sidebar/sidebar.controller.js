@@ -10,6 +10,8 @@ angular.module('transmartBaseUi')
     $scope.endpoints = [];
     $scope.formData = {};
 
+    $scope.endpointTabOpen = false;
+
     $scope.publicStudies = [];
     $scope.privateStudies = [];
 
@@ -27,6 +29,7 @@ angular.module('transmartBaseUi')
         resetEndpointForm();
         _loadStudies();
       }
+      $scope.endpointTabOpen = false;
     };
 
     $scope.navigateToAuthorizationPage = function() {
@@ -58,9 +61,8 @@ angular.module('transmartBaseUi')
       endpoints.forEach(function(endpoint) {
         endpoint.restangular.all('studies').getList()
           .then(function (studies) {
-
             // alert user that it successfully connects to the rest-api
-            AlertService.add('success', 'Successfully connected to rest-api', 3000);
+            AlertService.add('success', 'Loaded studies from: ' + endpoint.url, 3000);
 
             $scope.studies = studies;
 
@@ -79,10 +81,16 @@ angular.module('transmartBaseUi')
 
             });
           }, function (err) {
-            AlertService.add('danger', 'Oops! Cannot connect to rest-api.');
-            console.error(err);
+            AlertService.add('danger', 'Could not load studies from API: ' +
+              endpoint.url, 3000);
+              });
           });
-      });
+        }
+
+    $scope.populateDefaultApi = function(name, link) {
+      $scope.formData.title = name;
+      $scope.formData.url = link;
+      $scope.formData.requestToken = '';
     }
 
     function resetEndpointForm() {
