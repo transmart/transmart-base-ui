@@ -32,62 +32,71 @@
 
     <accordion-group  heading="Add Endpoint" is-open="endpointTabOpen">
 
-      <ul>
-        <li ng-repeat="endpoint in endpoints">
-          <a tooltip="{{endpoint.url}}">
-            {{endpoint.title}}
-          </a>
-        </li>
-      </ul>
+      <h5 ng-repeat="endpoint in endpoints">
+        <i class="glyphicon"
+              ng-class="{'glyphicon-ok': endpoint.status == 'local',
+                          'glyphicon-ok success-color': endpoint.status == 'success',
+                          'glyphicon-remove': endpoint.status == 'error'}">
+        </i>
+        <a tooltip="{{endpoint.url}}" >
+          {{endpoint.title}}
+        </a>
+      </h5>
 
       <div class="form-actions">
         <form name="formData.endpointForm"
               ng-submit="addResource()"
               role="form">
 
-          <div class="form-group">
-            <input  type="text"
-                    class="form-control input-sm"
-                    placeholder="Title"
-                    ng-model="formData.title">
-          </div>
-          <div class="form-group">
-            <input  type="text"
-                    class="form-control input-sm"
-                    placeholder="Endpoint url"
-                    ng-model="formData.url">
-          </div>
-          <div class="form-group">
+      <form name="formData.endpointForm"
+            role="form">
+        <div class="input-group form-group">
+          <div class="input-group-btn dropdown" dropdown>
             <button type="button"
-                    class="form-control btn btn-default"
-                    ng-click="navigateToAuthorizationPage()">
-                    Get request token
+                    class="btn btn-default dropdown-toggle btn-sm"
+                    dropdown-toggle>
+                Defaults
+                <span class="caret"></span>
             </button>
-          </div>
-          <div class="form-group">
-            <input  type="text"
-                    class="form-control input-sm"
-                    placeholder="Request token"
-                    ng-model="formData.requestToken">
-          </div>
-
-          <div class="btn-group dropup" dropdown>
-            <button type="button" class="btn btn-primary dropdown-toggle" dropdown-toggle>
-              Defaults <span class="caret"></span>
-            </button>
-
             <ul class="dropdown-menu" role="menu">
               <li><a href="#" ng-click="populateDefaultApi('transmart-demo', 'http://transmart-demo.thehyve.net/transmart')">transmart-demo</a></li>
             </ul>
           </div>
-
-          <button type="submit" class="btn btn-primary">
-            Save
+          <input  type="text"
+                  class="form-control input-sm"
+                  placeholder="Title"
+                  ng-model="formData.title">
+        </div>
+        <div class="form-group">
+          <input  type="text"
+                  class="form-control input-sm"
+                  placeholder="Endpoint url"
+                  ng-model="formData.url">
+        </div>
+        <div class="form-group">
+          <button type="button"
+                  class="form-control btn btn-default"
+                  ng-click="navigateToAuthorizationPage()">
+                  Get request token
           </button>
+        </div>
+        <div class="form-group">
+          <input  type="text"
+                  class="form-control input-sm"
+                  placeholder="Request token"
+                  ng-model="formData.requestToken">
+        </div>
 
+        <button type="submit" class="btn btn-primary btn-sm" ng-click="addResource()">
+          Save
+        </button>
+        <button class="btn btn-default btn-sm" ng-click="clearSavedEndpoints()">
+          Clear saved
+        </button>
 
-        </form>
-      </div>
+        </div>
+      </form>
+
     </accordion-group>
   </accordion>
 </div>
