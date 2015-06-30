@@ -19,14 +19,12 @@
     <study-accordion  acc-studies="publicStudies"
                       acc-title="'Public studies'"
                       study-action="displayStudySummaryStatistics"
-                      node-action="displayNodeSummaryStatistics"
                       ng-if="publicStudies.length > 0">
     </study-accordion>
 
     <study-accordion  acc-studies="privateStudies"
                       acc-title="'Private studies'"
                       study-action="displayStudySummaryStatistics"
-                      node-action="displayNodeSummaryStatistics"
                       ng-if="privateStudies.length > 0">
     </study-accordion>
 
@@ -46,11 +44,14 @@
       </h5>
 
       <div class="form-actions">
+        <form name="formData.endpointForm"
+              ng-submit="addResource()"
+              role="form">
 
       <form name="formData.endpointForm"
             role="form">
         <div class="input-group form-group">
-          <div class="input-group-btn drodown" dropdown>
+          <div class="input-group-btn dropdown" dropdown>
             <button type="button"
                     class="btn btn-default dropdown-toggle btn-sm"
                     dropdown-toggle>

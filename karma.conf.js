@@ -7,6 +7,23 @@ module.exports = function(config) {
 
     frameworks: ['jasmine'],
 
+    // list of files / patterns to load in the browser
+    files: [
+      // libraries
+      'bower_components/dist/jquery.js',
+      'bower_components/angular/angular.js',
+      'bower_components/angular-mock/sangular-mocks.js',
+
+      // our app
+      'src/**/*.js',
+
+      // tests
+      'src/**/*.spec.js',
+
+      // templates
+      'src/**/*.tpl.html'
+    ],
+
     ngHtml2JsPreprocessor: {
       stripPrefix: 'src/',
       moduleName: 'gulpAngular'
@@ -21,7 +38,7 @@ module.exports = function(config) {
     ],
 
     preprocessors: {
-      'src/**/*.html': ['ng-html2js']
+      'src/**/*.tpl.html': ['ng-html2js']
     }
   };
 
