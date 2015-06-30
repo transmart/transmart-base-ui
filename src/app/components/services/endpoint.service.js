@@ -86,7 +86,7 @@ angular.module('transmartBaseUi')
             endpoint.restangular = _newRestangularConfig(endpoint);
             _endpoints.push(endpoint);
           });
-        }
+        };
       };
 
       service.clearStoredEnpoints = function(){
