@@ -3,6 +3,7 @@
 angular.module('transmartBaseUi')
   .controller('StudyCtrl',
   ['$scope', '$modal', function ($scope, $modal) {
+
     //------------------------------------------------------------------------------------------------------------------
     // Scope
     //------------------------------------------------------------------------------------------------------------------
@@ -39,6 +40,8 @@ angular.module('transmartBaseUi')
       if(!$scope.opened){
         $scope.tree = _getSingleTree(study);
         $scope.opened = true;
+      } else {
+        $scope.opened = false;
       }
     };
 
@@ -170,7 +173,7 @@ angular.module('transmartBaseUi')
         }
 
         var modalInstance = $modal.open({
-          animation: false, // IMPORTANT: Cannot use animation in angular 1.4.0
+          animation: false, // IMPORTANT: Cannot use animation in angular 1.4.x
           controller: 'MetadataCtrl',
           templateUrl: 'app/components/metadata/metadata.html',
           resolve: {

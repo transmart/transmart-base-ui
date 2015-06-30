@@ -37,13 +37,19 @@
 <hr>
 <span><h4>{{title}}</h4></span>
 
-<div ng-repeat="study in studies" ng-controller="StudyCtrl">
-  <accordion-group  is-open="study.open">
+<div ng-repeat="study in studies" ng-controller="StudyCtrl" class="ts-study-accordion">
+  <accordion-group  is-open="study.open" >
     <!--heading-->
     <accordion-heading >
-      <span>
-        <a href="#" class="glyphicon glyphicon-folder-close" ng-click="getTree(study); saction()(study);"></a>&nbsp;
-      </span>
+
+      <a href="#" class="glyphicon glyphicon-folder-close"
+           ng-class="{
+             'glyphicon-folder-close' : !opened,
+             'glyphicon-folder-open' : opened
+           }"
+           ng-click="getTree(study); saction()(study);" >
+      </a>
+      &nbsp;
       <a popover-template="'study-tooltip.html'" popover-placement="right"
          ng-click="displayToolTip($event, study)">{{study._embedded.ontologyTerm.name}}</a>
       <span class="glyphicon glyphicon-spin" ng-class="{'glyphicon-refresh': treeLoading}"></span>
@@ -55,7 +61,5 @@
           data-collapsed="treeConfig.collapsed"></li>
       </ol>
     </div>
-
   </accordion-group>
-
 </div>
