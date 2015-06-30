@@ -66,6 +66,7 @@ angular.module('transmartBaseUi')
           .then(function (studies) {
             // alert user that it successfully connects to the rest-api
             AlertService.add('success', 'Loaded studies from: ' + endpoint.url, 3000);
+            endpoint.status = 'success';
 
             $scope.studies = studies;
 
@@ -90,6 +91,7 @@ angular.module('transmartBaseUi')
             AlertService.add('danger', 'Could not load studies from API: ' +
               endpoint.url, 3000);
               });
+            endpoint.status = 'error';
           });
         }
 

@@ -34,18 +34,16 @@
 
     <accordion-group  heading="Add Endpoint" is-open="endpointTabOpen">
 
-      <ul>
-        <li ng-repeat="endpoint in endpoints">
-          <a tooltip="{{endpoint.url}}">
-            {{endpoint.title}}
-            <span class="label label-default"
-                  ng-class="{'label-primary': endpoint.status == 'local',
-                              'label-success': endpoint.status == 'active'}">
-              {{endpoint.status}}
-            </span>
-          </a>
-        </li>
-      </ul>
+      <h5 ng-repeat="endpoint in endpoints">
+        <i class="glyphicon"
+              ng-class="{'glyphicon-ok': endpoint.status == 'local',
+                          'glyphicon-ok success-color': endpoint.status == 'success',
+                          'glyphicon-remove': endpoint.status == 'error'}">
+        </i>
+        <a tooltip="{{endpoint.url}}" >
+          {{endpoint.title}}
+        </a>
+      </h5>
 
       <div class="form-actions">
 
