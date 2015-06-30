@@ -79,12 +79,14 @@ angular.module('transmartBaseUi')
       };
 
       service.retrieveStoredEndpoints = function() {
-        var storedEnpoints = $cookies.getObject('endpoints' + $rootScope.globals.currentUser.authdata) || [];
+        if($rootScope.globals.currentUser){
+          var storedEnpoints = $cookies.getObject('endpoints' + $rootScope.globals.currentUser.authdata) || [];
 
-        storedEnpoints.forEach(function (endpoint) {
-          endpoint.restangular = _newRestangularConfig(endpoint);
-          _endpoints.push(endpoint);
-        });
+          storedEnpoints.forEach(function (endpoint) {
+            endpoint.restangular = _newRestangularConfig(endpoint);
+            _endpoints.push(endpoint);
+          });
+        }
       };
 
       service.clearStoredEnpoints = function(){

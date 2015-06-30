@@ -94,7 +94,7 @@ angular.module('transmartBaseUi', [
       if ($rootScope.globals.currentUser) {
         //$http.defaults.headers.common.Authorization = 'Basic ' + $rootScope.globals.currentUser.authdata;
       }
-      console.log($cookies.getObject('endpoints' + $rootScope.globals.currentUser.authdata));
+
       EndpointService.retrieveStoredEndpoints();
 
       $rootScope.$on('$locationChangeStart', function () {
