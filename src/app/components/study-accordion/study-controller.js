@@ -91,6 +91,7 @@ angular.module('transmartBaseUi')
     var _getNodeChildren = function(node, end, prefix){
       prefix = prefix || '';
       var children = node.restObj._links.children;
+      console.log(node);
 
       if(!node.loaded){
 
@@ -107,11 +108,21 @@ angular.module('transmartBaseUi')
             };
 
             node.restObj.one(prefix + child.title).get().then(function(childObj){
+
               newNode.restObj = childObj;
-              if(childObj._links.children) newNode.type = 'FOLDER';
+
+              if (childObj._links.children) {
+                newNode.type = 'FOLDER';
+              }
+
               node.nodes.push(newNode);
-              if(!end) _getNodeChildren(newNode, true);
-              else $scope.treeLoading = false;
+
+              if (!end) {
+                _getNodeChildren(newNode, true);
+              } else {
+                $scope.treeLoading = false;
+              }
+
             });
           });
         } else {
@@ -145,46 +156,30 @@ angular.module('transmartBaseUi')
         $scope.concept = node;
     };
 
-    $scope.openMetadata = function (node) {
-        if (node._embedded.ontologyTerm.hasOwnProperty('metadata')) {
-            var modalInstance = $modal.open({
-                animation: true,
-                controller: 'ModalInstanceCtrl',
-                templateUrl: 'app/components/metadata/metadata.html',
-                resolve: {
-                  selectedNode: function () {
-                    return node;
-                  }
-                }
-            });
+    $scope.displayMetadata = function (node) {
+        var _metadataObj = {};
+
+        if (node.hasOwnProperty('restObj')) {
+          _metadataObj.title = node.title;
+          _metadataObj.fullname = node.restObj.fullName;
+          _metadataObj.body = node.restObj.metadata;
+        } else if (node.hasOwnProperty('_embedded')) {
+          _metadataObj.title = node._embedded.ontologyTerm.name;
+          _metadataObj.fullname = node._embedded.ontologyTerm.fullName;
+          _metadataObj.body = node._embedded.ontologyTerm.metadata;
         }
+
+        var modalInstance = $modal.open({
+          animation: false, // IMPORTANT: Cannot use animation in angular 1.4.0
+          controller: 'MetadataCtrl',
+          templateUrl: 'app/components/metadata/metadata.html',
+          resolve: {
+            metadata: function () {
+              return _metadataObj;
+            }
+          }
+        });
     }
 
 
   }]);
-
-/**
-
-
-
- var orderTreeNodes = function (tree) {
-  // Order the nodes by type with folders first
-  var folders = [];
-  var numerical = [];
-  var catego = [];
-  var high = [];
-
-  if(tree.hasOwnProperty('nodes')){
-    tree.nodes.forEach(function (node){
-      if(node.type === 'FOLDER') {folders.push(node);}
-      if(node.type === 'NUMERICAL') {numerical.push(node);}
-      if(node.type === 'CATEGORICAL') {catego.push(node);}
-      if(node.type === 'HIGH_DIMENSIONAL') {high.push(node);}
-    });
-    tree.nodes = folders.concat(numerical).concat(catego).concat(high);
-
-    // Traverse the tree
-    tree.nodes.forEach(orderTreeNodes);
-  }
-};
- **/

@@ -1,12 +1,13 @@
 'use strict';
 
 angular.module('transmartBaseUi')
-  .controller('ModalInstanceCtrl', ['$scope', 'selectedNode', '$modalInstance', function ($scope, selectedNode, $modalInstance) {
-    $scope.metadata = selectedNode._embedded.ontologyTerm.metadata;
-    $scope.title = selectedNode._embedded.ontologyTerm.name;
+  .controller('MetadataCtrl', ['$scope', 'metadata', '$modalInstance',
+    function ($scope, metadata, $modalInstance) {
 
-    $scope.close = function () {
-      $modalInstance.close();
-    };
+        $scope.metadata = metadata;
+
+        $scope.close = function () {
+          $modalInstance.dismiss('close');
+        };
 
 }]);
