@@ -85,13 +85,13 @@ angular.module('transmartBaseUi')
               endpoint.url, 3000);
               });
           });
-        }
+     };
 
     $scope.populateDefaultApi = function(name, link) {
       $scope.formData.title = name;
       $scope.formData.url = link;
       $scope.formData.requestToken = '';
-    }
+    };
 
     function resetEndpointForm() {
       var formData = $scope.formData;
