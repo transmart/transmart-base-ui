@@ -18,7 +18,7 @@ angular.module('transmartBaseUi')
     $scope.clearSavedEndpoints = function () {
       EndpointService.clearStoredEnpoints();
       $scope.endpoints = EndpointService.getEndpoints();
-      loadStudies();
+      _loadStudies();
     };
 
     $scope.addResource = function() {
@@ -106,10 +106,7 @@ angular.module('transmartBaseUi')
       formData.endpointForm.$setPristine();
     }
 
-<<<<<<< HEAD
-    loadStudies();
-=======
       _loadStudies();
->>>>>>> dev
+
 
   }]);
