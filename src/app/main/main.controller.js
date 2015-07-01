@@ -4,14 +4,10 @@ angular.module('transmartBaseUi')
   .controller('MainCtrl',
   ['$scope', '$rootScope', 'Restangular', 'ChartService', 'AlertService', function ($scope, $rootScope, Restangular, ChartService, AlertService) {
 
-    $scope.openStep1 = true;
-    $scope.disbleStep1 = false;
-    $scope.openStep2 = false;
+    $scope.tuto = {openStep1: true, disableStep1: false, openStep2: false};
 
     $scope.$on('howManyStudiesLoaded', function(e, val){
-      $scope.openStep1 = !val;
-      $scope.disbleStep1 = val;
-      $scope.openStep2 = val;
+      $scope.tuto = {openStep1: !val, disableStep1: val, openStep2: val};
     })
 
     $scope.summaryLoading = false;
