@@ -119,11 +119,11 @@ angular.module('transmartBaseUi')
         delete cleanSubject.labels;
         delete cleanSubject.$$hashKey;
         formatted.push(cleanSubject);
-      })
+      });
       if(formatted.length > 0) $scope.csvHeaders = Object.keys(formatted[0]);
       else $scope.csvHeaders = [];
       return formatted;
-    }
+    };
 
     /**
     * Headers for csv export
