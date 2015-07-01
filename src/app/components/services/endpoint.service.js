@@ -51,9 +51,7 @@ angular.module('transmartBaseUi')
           .success(function (response) {
             //Calculate expriation time for the token
             var time = new Date();
-            time.setSeconds(time.getSeconds() + response.expires_in);
-            time = Date(time);
-
+            time = time.setSeconds(time.getSeconds() + response.expires_in);
             // Store meta data and restangular instance in object
             var endpoint = {
               title: title,

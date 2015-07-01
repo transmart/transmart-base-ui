@@ -1,23 +1,39 @@
 <p ng-show="!selectedStudy.title">
+
+
+
   <img href="/#/" ng-src="/assets/images/transmart-logo-long.png">
   <span>2.0</span>
   <hr>
   <h3>Welcome</h3>
-  <h4>To connect to an API:</h4>
-  <ol>
-    <li>
-      Enter its URL in the sidebar and choose a name for it.
-    </li>
-    <li>
-      Request token and paste in the designated area.
-    </li>
-    <li>
-      Click save.
-    </li>
-  </ol>
-  <h4>Available demo APIs are:</h4>
-  <ul>
-    <li>http://transmart-demo.thehyve.net/transmart</li>
-  </ul>
+
+  <accordion close-others="true">
+    <accordion-group heading="1. Connect to an Endpoint to load studies" is-open="openStep1" is-disabled="disbleStep1">
+      <h4>No studies are currently loaded. </h4>
+      To load studies, connect to an API using the "Add Endpoint" form in the sidebar.
+      <ol>
+        <li>
+          Select and endpoint from the defaults or enter its URL and choose a name for it.
+        </li>
+        <li>
+          Request a token. You will be redirected to a login page for the chosen endpoint. Once the token is obtained, paste in the designated area.
+        </li>
+        <li>
+          Click save.
+        </li>
+      </ol>
+    </accordion-group>
+    <accordion-group heading="2. Browse studies" is-open="openStep2">
+      <ol>
+        <li>
+          To browse studies, click on the folder icon next to one.
+        </li>
+        <li>
+          Child concepts can then be dragged into the cohort selection tab.
+        </li>
+      </ol>
+
+    </accordion-group>
+  </accordion>
 
 </p>
