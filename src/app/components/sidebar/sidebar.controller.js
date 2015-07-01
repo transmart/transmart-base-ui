@@ -70,7 +70,7 @@ angular.module('transmartBaseUi')
             AlertService.add('success', 'Loaded studies from: ' + endpoint.url, 3000);
             endpoint.status = 'success';
             $scope.studies = studies;
-            $rootScope.$broadcast('howManyStudiesLoaded', $scope.studies.length);
+            $scope.$emit('howManyStudiesLoaded', $scope.studies.length);
             if(studies.length > 0) $scope.endpointTabOpen = true;
             // Checking if studies are public or private
             $scope.studies.forEach(function(study){
