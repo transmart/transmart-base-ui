@@ -27,13 +27,13 @@ angular.module('transmartBaseUi')
         EndpointService.addOAuthEndpoint(formData.title, formData.url, formData.requestToken)
           .then(function() {
             resetEndpointForm();
-            loadStudies();
+            _loadStudies();
           });
       }
       else {
         EndpointService.addEndpoint(formData.title, formData.url);
         resetEndpointForm();
-        loadStudies();
+        _loadStudies();
       }
       $scope.endpointTabOpen = false;
     };
@@ -46,7 +46,10 @@ angular.module('transmartBaseUi')
         url = url.substring(0, url.length-1);
       }
 
-      var authorizationUrl = url + '/oauth/authorize?response_type=code&client_id=api-client&client_secret=api-client&redirect_uri=' + url + '/oauth/verify';
+      var authorizationUrl = url +
+        '/oauth/authorize?response_type=code&client_id=api-client&client_secret=api-client&redirect_uri=' +
+        url + '/oauth/verify';
+
       $window.open(authorizationUrl, '_blank');
     };
 
@@ -54,7 +57,7 @@ angular.module('transmartBaseUi')
     //------------------------------------------------------------------------------------------------------------------
     // Helper functions
     //------------------------------------------------------------------------------------------------------------------
-    function loadStudies() {
+    var _loadStudies = function () {
       var endpoints = EndpointService.getEndpoints();
       $scope.endpoints = endpoints;
       $scope.publicStudies = [];
@@ -72,17 +75,14 @@ angular.module('transmartBaseUi')
             // Checking if studies are public or private
             $scope.studies.forEach(function(study){
               study.endpoint = endpoint; // Keep reference to endpoint
-              study.popover = {
-                title: study._embedded.ontologyTerm.name,
-                template: 'app/components/popover/tree-popover.html'
-              };
 
-              if(study._embedded.ontologyTerm.fullName.split('\\')[1] ===
+              if (study._embedded.ontologyTerm.fullName.split('\\')[1] ===
                 'Public Studies') {
                 $scope.publicStudies.push(study);
               } else {
                 $scope.privateStudies.push(study);
               }
+
             });
           }, function () {
             AlertService.add('danger', 'Could not load studies from API: ' +
@@ -90,7 +90,7 @@ angular.module('transmartBaseUi')
               });
             endpoint.status = 'error';
           });
-        }
+     };
 
     $scope.populateDefaultApi = function(name, link) {
       $scope.formData.title = name;
@@ -106,6 +106,10 @@ angular.module('transmartBaseUi')
       formData.endpointForm.$setPristine();
     }
 
+<<<<<<< HEAD
     loadStudies();
+=======
+      _loadStudies();
+>>>>>>> dev
 
   }]);

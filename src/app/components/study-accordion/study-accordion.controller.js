@@ -2,7 +2,8 @@
 
 angular.module('transmartBaseUi')
   .controller('StudyCtrl',
-  ['$scope', function ($scope) {
+  ['$scope', '$modal', function ($scope, $modal) {
+
     //------------------------------------------------------------------------------------------------------------------
     // Scope
     //------------------------------------------------------------------------------------------------------------------
@@ -20,7 +21,7 @@ angular.module('transmartBaseUi')
     $scope.status = {
       isFirstOpen: false,
       isFirstDisabled: false,
-      oneAtATime: true,
+      oneAtATime: true
     };
 
     $scope.type = {
@@ -39,6 +40,8 @@ angular.module('transmartBaseUi')
       if(!$scope.opened){
         $scope.tree = _getSingleTree(study);
         $scope.opened = true;
+      } else {
+        $scope.opened = false;
       }
     };
 
@@ -49,7 +52,7 @@ angular.module('transmartBaseUi')
     $scope.populateChilds = function (node) {
       node.nodes.forEach(function(child){
         _getNodeChildren(child, false, '');
-      })
+      });
     };
 
     //------------------------------------------------------------------------------------------------------------------
@@ -91,6 +94,7 @@ angular.module('transmartBaseUi')
     var _getNodeChildren = function(node, end, prefix){
       prefix = prefix || '';
       var children = node.restObj._links.children;
+      //console.log(node);
 
       if(!node.loaded){
 
@@ -107,11 +111,21 @@ angular.module('transmartBaseUi')
             };
 
             node.restObj.one(prefix + child.title).get().then(function(childObj){
+
               newNode.restObj = childObj;
-              if(childObj._links.children) newNode.type = 'FOLDER';
+
+              if (childObj._links.children) {
+                newNode.type = 'FOLDER';
+              }
+
               node.nodes.push(newNode);
-              if(!end) _getNodeChildren(newNode, true);
-              else $scope.treeLoading = false;
+
+              if (!end) {
+                _getNodeChildren(newNode, true);
+              } else {
+                $scope.treeLoading = false;
+              }
+
             });
           });
         } else {
@@ -119,7 +133,9 @@ angular.module('transmartBaseUi')
         }
       }
 
-      if(!end) node.loaded = true;
+      if (!end) {
+        node.loaded = true;
+      }
     };
 
     /**
@@ -140,30 +156,35 @@ angular.module('transmartBaseUi')
       return tree;
     };
 
+    $scope.displayToolTip = function (e, node) {
+        e.stopPropagation(); // preventing selected accordion to expand.
+        $scope.concept = node;
+    };
+
+    $scope.displayMetadata = function (node) {
+        var _metadataObj = {};
+
+        if (node.hasOwnProperty('restObj')) {
+          _metadataObj.title = node.title;
+          _metadataObj.fullname = node.restObj.fullName;
+          _metadataObj.body = node.restObj.metadata;
+        } else if (node.hasOwnProperty('_embedded')) {
+          _metadataObj.title = node._embedded.ontologyTerm.name;
+          _metadataObj.fullname = node._embedded.ontologyTerm.fullName;
+          _metadataObj.body = node._embedded.ontologyTerm.metadata;
+        }
+
+        var modalInstance = $modal.open({
+          animation: false, // IMPORTANT: Cannot use animation in angular 1.4.x
+          controller: 'MetadataCtrl',
+          templateUrl: 'app/components/metadata/metadata.html',
+          resolve: {
+            metadata: function () {
+              return _metadataObj;
+            }
+          }
+        });
+    };
+
+
   }]);
-
-/**
-
-
-
- var orderTreeNodes = function (tree) {
-  // Order the nodes by type with folders first
-  var folders = [];
-  var numerical = [];
-  var catego = [];
-  var high = [];
-
-  if(tree.hasOwnProperty('nodes')){
-    tree.nodes.forEach(function (node){
-      if(node.type === 'FOLDER') {folders.push(node);}
-      if(node.type === 'NUMERICAL') {numerical.push(node);}
-      if(node.type === 'CATEGORICAL') {catego.push(node);}
-      if(node.type === 'HIGH_DIMENSIONAL') {high.push(node);}
-    });
-    tree.nodes = folders.concat(numerical).concat(catego).concat(high);
-
-    // Traverse the tree
-    tree.nodes.forEach(orderTreeNodes);
-  }
-};
- **/
