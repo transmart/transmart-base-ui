@@ -16,6 +16,8 @@ angular.module('transmartBaseUi')
       collapsed: true
     };
 
+    $scope.callFailure = false;
+
     $scope.divWidth = 100;
 
     $scope.status = {
@@ -94,7 +96,6 @@ angular.module('transmartBaseUi')
     var _getNodeChildren = function(node, end, prefix){
       prefix = prefix || '';
       var children = node.restObj._links.children;
-      //console.log(node);
 
       if(!node.loaded){
 
@@ -126,6 +127,10 @@ angular.module('transmartBaseUi')
                 $scope.treeLoading = false;
               }
 
+            }, function(err){
+              $scope.callFailure = true;
+              $scope.treeLoading = false;
+              node.loaded = true;
             });
           });
         } else {

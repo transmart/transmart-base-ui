@@ -2,7 +2,13 @@
 
 angular.module('transmartBaseUi')
   .controller('MainCtrl',
-  ['$scope', 'Restangular', 'ChartService', 'AlertService', function ($scope, Restangular, ChartService, AlertService) {
+  ['$scope', '$rootScope', 'Restangular', 'ChartService', 'AlertService', function ($scope, $rootScope, Restangular, ChartService, AlertService) {
+
+    $scope.tuto = {openStep1: true, disableStep1: false, openStep2: false};
+
+    $scope.$on('howManyStudiesLoaded', function(e, val){
+      $scope.tuto = {openStep1: !val, disableStep1: val, openStep2: val};
+    })
 
     $scope.summaryLoading = false;
     $scope.summaryOpen = false;
@@ -34,12 +40,12 @@ angular.module('transmartBaseUi')
      */
     $scope.displayStudySummaryStatistics = function (study) {
       $scope.summaryLoading = true;
-      $scope.summaryOpen = false;
+      //$scope.summaryOpen = false;
 
       $scope.selectedStudy.title = study.id;
       ChartService.displaySummaryStatistics(study, $scope.magicConcepts).then(function(){
         $scope.summaryLoading = false;
-        $scope.summaryOpen = true;
+        //$scope.summaryOpen = false;
         //$scope.$apply();
       });
     };

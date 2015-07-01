@@ -51,8 +51,7 @@ angular.module('transmartBaseUi')
           .success(function (response) {
             //Calculate expriation time for the token
             var time = new Date();
-            time.setSeconds(time.getSeconds() + response.expires_in);
-
+            time = time.setSeconds(time.getSeconds() + response.expires_in);
             // Store meta data and restangular instance in object
             var endpoint = {
               title: title,
@@ -81,7 +80,6 @@ angular.module('transmartBaseUi')
       service.retrieveStoredEndpoints = function() {
         if($rootScope.globals.currentUser){
           var storedEnpoints = $cookies.getObject('endpoints' + $rootScope.globals.currentUser.authdata) || [];
-
           storedEnpoints.forEach(function (endpoint) {
             endpoint.restangular = _newRestangularConfig(endpoint);
             _endpoints.push(endpoint);

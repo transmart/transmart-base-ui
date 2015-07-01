@@ -33,8 +33,6 @@
 <!--------------------------------------------------------------------------------------------------------------------->
 <!-- END Node template -->
 
-
-<hr>
 <span><h4>{{title}}</h4></span>
 
 <div ng-repeat="study in studies" ng-controller="StudyCtrl" class="ts-study-accordion">
@@ -42,7 +40,7 @@
     <!--heading-->
     <accordion-heading >
 
-      <a href="#" class="glyphicon glyphicon-folder-close"
+      <a href="#" class="glyphicon glyphicon-folder-close ts-node-icon"
            ng-class="{
              'glyphicon-folder-close' : !opened,
              'glyphicon-folder-open' : opened
@@ -55,11 +53,15 @@
       <span class="glyphicon glyphicon-spin" ng-class="{'glyphicon-refresh': treeLoading}"></span>
     </accordion-heading>
     <!--content-->
-    <div ui-tree id="tree-root" data-drag-enabled="treeConfig.drag" data-drop-enabled="false">
+    <div ui-tree id="tree-root" data-drag-enabled="treeConfig.drag" data-drop-enabled="false" ng-if="!callFailure">
       <ol ui-tree-nodes="" ng-model="tree.nodes">
         <li ng-repeat="node in tree.nodes" ui-tree-node ng-include="'nodes_renderer.html'"
           data-collapsed="treeConfig.collapsed"></li>
       </ol>
     </div>
+    <div ng-if="callFailure">
+      <small>Data could not be loaded.</small>
+    </div>
   </accordion-group>
 </div>
+    <hr>
