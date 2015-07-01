@@ -67,13 +67,10 @@ angular.module('transmartBaseUi')
             // alert user that it successfully connects to the rest-api
             AlertService.add('success', 'Loaded studies from: ' + endpoint.url, 3000);
             endpoint.status = 'success';
-
             $scope.studies = studies;
 
             // Checking if studies are public or private
-            // TODO: other cases not public or private
             $scope.studies.forEach(function(study){
-
               study.endpoint = endpoint; // Keep reference to endpoint
               study.popover = {
                 title: study._embedded.ontologyTerm.name,
@@ -87,7 +84,7 @@ angular.module('transmartBaseUi')
                 $scope.privateStudies.push(study);
               }
             });
-          }, function (err) {
+          }, function () {
             AlertService.add('danger', 'Could not load studies from API: ' +
               endpoint.url, 3000);
               });
@@ -99,7 +96,7 @@ angular.module('transmartBaseUi')
       $scope.formData.title = name;
       $scope.formData.url = link;
       $scope.formData.requestToken = '';
-    }
+    };
 
     function resetEndpointForm() {
       var formData = $scope.formData;
@@ -109,6 +106,6 @@ angular.module('transmartBaseUi')
       formData.endpointForm.$setPristine();
     }
 
-      loadStudies();
+    loadStudies();
 
   }]);
