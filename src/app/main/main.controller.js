@@ -34,12 +34,12 @@ angular.module('transmartBaseUi')
      */
     $scope.displayStudySummaryStatistics = function (study) {
       $scope.summaryLoading = true;
-      $scope.summaryOpen = false;
+      //$scope.summaryOpen = false;
 
       $scope.selectedStudy.title = study.id;
       ChartService.displaySummaryStatistics(study, $scope.magicConcepts).then(function(){
         $scope.summaryLoading = false;
-        $scope.summaryOpen = true;
+        //$scope.summaryOpen = false;
         //$scope.$apply();
       });
     };
