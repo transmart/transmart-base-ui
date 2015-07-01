@@ -31,10 +31,10 @@ angular.module('transmartBaseUi')
 
         var data = {
           grant_type: 'authorization_code',
-            client_id: 'api-client',
-            client_secret: 'api-client',
-            code: requestToken,
-            redirect_uri: url + '/oauth/verify'
+          client_id: 'api-client',
+          client_secret: 'api-client',
+          code: requestToken,
+          redirect_uri: url + '/oauth/verify'
         };
         //data must be URL encoded to be passed to the POST body
         data = $.param(data);

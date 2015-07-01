@@ -18,7 +18,7 @@ angular.module('transmartBaseUi')
     $scope.clearSavedEndpoints = function () {
       EndpointService.clearStoredEnpoints();
       $scope.endpoints = EndpointService.getEndpoints();
-      loadStudies();
+      _loadStudies();
     };
 
     $scope.addResource = function() {
@@ -70,13 +70,10 @@ angular.module('transmartBaseUi')
             // alert user that it successfully connects to the rest-api
             AlertService.add('success', 'Loaded studies from: ' + endpoint.url, 3000);
             endpoint.status = 'success';
-
             $scope.studies = studies;
 
             // Checking if studies are public or private
-            // TODO: other cases not public or private
-            $scope.studies.forEach( function(study){
-
+            $scope.studies.forEach(function(study){
               study.endpoint = endpoint; // Keep reference to endpoint
 
               if (study._embedded.ontologyTerm.fullName.split('\\')[1] ===
@@ -87,7 +84,7 @@ angular.module('transmartBaseUi')
               }
 
             });
-          }, function (err) {
+          }, function () {
             AlertService.add('danger', 'Could not load studies from API: ' +
               endpoint.url, 3000);
               });
@@ -110,5 +107,6 @@ angular.module('transmartBaseUi')
     }
 
       _loadStudies();
+
 
   }]);
