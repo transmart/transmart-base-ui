@@ -39,7 +39,7 @@
                           'glyphicon-remove': endpoint.status == 'error'}">
         </i>
         <a tooltip="{{endpoint.url}}" >
-          {{endpoint.title}}
+          {{endpoint.title}} <small>{{endpoint.expiresAt | date:'HH:mm dd-MM '}}</small>
         </a>
       </h5>
 
