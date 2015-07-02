@@ -108,7 +108,8 @@ angular.module('transmartBaseUi')
               'title': child.title,
               'nodes': [],
               'type': 'NUMERICAL',
-              'loaded': false
+              'loaded': false,
+              'study': node.study
             };
 
             node.restObj.one(prefix + child.title).get().then(function(childObj){
@@ -155,7 +156,8 @@ angular.module('transmartBaseUi')
         'title': 'ROOT',
         'nodes': [],
         'restObj': study,
-        'loaded': false
+        'loaded': false,
+        'study': study
       };
       _getNodeChildren(tree, false, 'concepts/');
       return tree;

@@ -167,7 +167,7 @@ angular.module('transmartBaseUi')
              * @param value
              * @private
              */
-            var _addLabel = function (obs) {
+            var _addLabel = function (obs, node) {
                 var present = false;
                 cs.labels.forEach(function(label){
                     present = label.label === obs.label ? true : present;
@@ -178,6 +178,7 @@ angular.module('transmartBaseUi')
                         type: typeof obs.value,
                         name: _getLastToken(obs.label),
                         ids: cs.chartId++,
+                        study: node.study
                     });
                 }
             };
@@ -200,12 +201,13 @@ angular.module('transmartBaseUi')
              */
             chartService.addNodeToActiveCohortSelection = function (node){
                 var _deferred = $q.defer();
+                console.log(node)
                 //Get all observations under the selected concept
                 node.restObj.one('observations').get().then(function (observations){
                     observations = observations._embedded.observations;
                     observations.forEach(function (obs){
                         if(obs.value !== null) {
-                            _addLabel(obs);
+                            _addLabel(obs, node);
                             var found = _.findWhere(cs.subjects, {id: obs._embedded.subject.id});
                             if (found){
                               found.labels[obs.label] = obs.value;
