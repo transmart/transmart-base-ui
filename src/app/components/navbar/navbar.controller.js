@@ -4,15 +4,24 @@ angular.module('transmartBaseUi')
   .controller('NavbarCtrl', ['$scope', 'AuthenticationService', '$state', function ($scope, AuthenticationService, $state) {
     $scope.date = new Date();
 
+    $scope.navigations = [
+      {
+        label : 'Home',
+        path : 'home',
+        isActive : false
+      },
+      {
+        label : 'Workspace',
+        path : 'workspace',
+        isActive : false
+      }
+    ];
+
     $scope.usermenus = [
       {'label' : 'Account Details', 'action' : 'accountDetails'},
       {'label' : 'Administrator Dashboard', 'action' : 'adminDashboard'},
       {'label' : 'Logout', 'action' : 'logout'}
     ];
-
-    $scope.status = {
-      isopen: false
-    };
 
     $scope.toggled = function() {
 

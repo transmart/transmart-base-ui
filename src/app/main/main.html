@@ -11,36 +11,16 @@
         {{alert.message}}
       </alert>
 
-      <!-- Welcome ---------------------------------------------------------------------------------------------------->
-      <div ng-include="'app/main/welcome.html'" ng-show="!selectedStudy.title"></div>
-
-      <!-- Summary statistics ----------------------------------------------------------------------------------------->
-      <accordion close-others="false" ng-show="selectedStudy.title">
-        <accordion-group is-open="summaryOpen" is-disabled="summaryLoading">
-          <accordion-heading>
-            {{selectedStudy.title}} Summary Statistics
-            <span class="glyphicon glyphicon-spin" ng-class="{'glyphicon-refresh': summaryLoading}"></span>
-            <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.open,
-                                                        'glyphicon-chevron-right': !status.open}"></i>
-          </accordion-heading>
-
-          <div class="summary-div">
-            <span ng-repeat="concept in magicConcepts" id="summary-chart-{{concept}}">
-              <h6>{{titles[$index]}}</h6>
-            </span>
-          </div>
-        </accordion-group>
-      </accordion>
-
-      <!-- Cohort selection ------------------------------------------------------------------------------------------->
-      <tabset ng-show="selectedStudy.title">
+      <h3>Workspace</h3>
+      <tabset>
 
         <!-- Cohort selection tab ------------------------------------------------------------------------------------->
         <tab>
           <tab-heading>
             <span>Cohort selection</span>
           </tab-heading>
-          <div class="well well-lg ts-node-well cwell" data-drop="true" ng-model='droppedNode'
+
+          <div class="well well-lg ts-node-well" data-drop="true" ng-model='droppedNode'
                jqyoui-droppable="{multiple:true, onDrop:'onNodeDropEvent(droppedNode)'}">
             <h5 ng-if="cohortChartContainerLabels.length == 0"><small>  Drag and drop some nodes here to add them.</small></h5>
             <button type="button" class="btn btn-primary btn-sm ts-btn-node" ng-repeat="label in cohortChartContainerLabels"
@@ -117,6 +97,16 @@
           </table>
 
         </tab>
+
+        <tab>
+          <tab-heading>Summary Statistics</tab-heading>
+          <div class="summary-div">
+            <span ng-repeat="concept in summaryStatistics.magicConcepts" id="summary-chart-{{concept}}">
+              <h6>{{summaryStatistics.titles[$index]}}</h6>
+            </span>
+          </div>
+        </tab>
+
       </tabset>
       </div>
   </div>

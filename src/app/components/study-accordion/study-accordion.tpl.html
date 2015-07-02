@@ -10,7 +10,7 @@
   <div ui-tree-handle class="tree-node tree-node-content" ng-click="populateChilds(node); naction()(node);"
        data-drag="true" jqyoui-draggable="{placeholder: 'keep'}"
        data-jqyoui-options="{containment: 'document', appendTo: 'body', helper: 'clone'}" ng-model="node">
-    <a data-nodrag ng-click="toggle(this)">
+    <i data-nodrag ng-click="toggle(this)">
       <i class="glyphicon ts-node-icon" ng-class="{'glyphicon-folder-close': collapsed && type.fol(node),
                                      'glyphicon-folder-open': !collapsed && type.fol(node),
                                      'glyphicon-equalizer': type.num(node),
@@ -18,7 +18,7 @@
                                      '': type.hid(node)}">
       </i> &nbsp;
 
-    </a>
+    </i>
      <a popover-template="'study-tooltip.html'" popover-placement="right"
         ng-click="displayToolTip($event, node)"> {{node.title | cutstring:false:divWidth:' ...'}}</a> &nbsp; &nbsp; <span class="quantity-num">({{node.total}})</span>
   </div>
@@ -40,13 +40,13 @@
     <!--heading-->
     <accordion-heading >
 
-      <a href="#" class="glyphicon glyphicon-folder-close ts-node-icon"
+      <i class="glyphicon glyphicon-folder-close ts-node-icon"
            ng-class="{
              'glyphicon-folder-close' : !opened,
              'glyphicon-folder-open' : opened
            }"
            ng-click="getTree(study); saction()(study);" >
-      </a>
+      </i>
       &nbsp;
       <a popover-template="'study-tooltip.html'" popover-placement="right"
          ng-click="displayToolTip($event, study)">{{study._embedded.ontologyTerm.name}}</a>

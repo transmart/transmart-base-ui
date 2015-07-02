@@ -2,28 +2,30 @@
 
 angular.module('transmartBaseUi')
   .controller('MainCtrl',
-  ['$scope', '$rootScope', 'Restangular', 'ChartService', 'AlertService', function ($scope, $rootScope, Restangular, ChartService, AlertService) {
+  ['$scope', '$rootScope', 'Restangular', 'ChartService', 'AlertService', '$location',
+    function ($scope, $rootScope, Restangular, ChartService, AlertService, $location) {
 
-    $scope.tuto = {openStep1: true, disableStep1: false, openStep2: false};
+    $scope.summaryStatistics = {
+      isLoading : false,
+      magicConcepts : ['sex', 'race', 'age', 'religion', 'maritalStatus'],
+      titles : ['Sex', 'Race', 'Age', 'Religion', 'Marital Status']
+    };
 
-    $scope.$on('howManyStudiesLoaded', function(e, val){
-      $scope.tuto = {openStep1: !val, disableStep1: val, openStep2: val};
-    })
+    $scope.tutorial = {
+      openStep1: true,
+      disableStep1: false,
+      openStep2: false
+    };
 
-    $scope.summaryLoading = false;
-    $scope.summaryOpen = false;
+    $scope.$on('howManyStudiesLoaded', function(e, val) {
+      $scope.tutorial.openStep1 = !val;
+      $scope.tutorial.disableStep1 = val;
+      $scope.tutorial.openStep2 = val;
+    });
 
     $scope.close = AlertService.remove;
     $scope.alerts = AlertService.get();
 
-    $scope.metadata = {
-      Title: 'Node title',
-      Organism: 'Homo sapiens',
-      Description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris faucibus ut nisl quis ullamcorper. Quisque in orci vitae nibh rhoncus blandit. Integer tincidunt nunc sit amet magna faucibus, eget pellentesque libero finibus. Sed eu cursus risus, ac pretium felis. In non turpis eros. Nam nec tellus venenatis, consectetur dui a, posuere dui. In id pellentesque elit, ac mattis orci. Donec aliquam feugiat neque nec efficitur. Donec fermentum posuere diam, quis semper felis aliquam vel. Praesent sit amet dapibus tortor. Aliquam sed quam non augue imperdiet scelerisque. Vivamus pretium pretium eros. Nullam finibus accumsan tempor. Duis mollis, ex nec maximus bibendum.'
-    };
-
-    $scope.magicConcepts = ['sex', 'race', 'age', 'religion', 'maritalStatus'];
-    $scope.titles = ['Sex', 'Race', 'Age', 'Religion', 'Marital Status'];
 
     /*******************************************************************************************************************
      * Summary statistics
@@ -39,14 +41,11 @@ angular.module('transmartBaseUi')
      * @param study
      */
     $scope.displayStudySummaryStatistics = function (study) {
-      $scope.summaryLoading = true;
-      //$scope.summaryOpen = false;
+      $scope.summaryStatistics.isLoading = true;
 
       $scope.selectedStudy.title = study.id;
-      ChartService.displaySummaryStatistics(study, $scope.magicConcepts).then(function(){
-        $scope.summaryLoading = false;
-        //$scope.summaryOpen = false;
-        //$scope.$apply();
+      ChartService.displaySummaryStatistics(study, $scope.summaryStatistics.magicConcepts).then(function(){
+        $scope.summaryStatistics.isLoading = false;
       });
     };
 
@@ -80,6 +79,8 @@ angular.module('transmartBaseUi')
      * @param node Dropped node
      */
     $scope.onNodeDropEvent = function (event, info, node) {
+      console.log("as", node);
+      $location.search('cohorts',node.title);
       _addCohort(node);
     };
 
