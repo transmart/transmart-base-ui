@@ -59,7 +59,7 @@
           </tab-heading>
           <div class="well well-lg ts-node-well cwell" data-drop="true" ng-model='droppedNode'
                jqyoui-droppable="{multiple:true, onDrop:'onNodeDropEvent(droppedNode)'}">
-            <span ng-if="cohortChartContainerLabels.length == 0">Drag and drop some nodes here to add them.</span>
+            <h5 ng-if="cohortChartContainerLabels.length == 0"><small>  Drag and drop some nodes here to add them.</small></h5>
             <button type="button" class="btn btn-primary btn-sm ts-btn-node" ng-repeat="label in cohortChartContainerLabels"
                     ng-click="removeLabel(label)">
               <div class="ts-node-name">
