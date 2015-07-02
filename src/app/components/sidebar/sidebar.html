@@ -35,7 +35,7 @@
 
     <accordion-group  heading="Add Endpoint" is-open="endpointTabOpen">
 
-      <h5 ng-repeat="endpoint in endpoints">
+      <h6 ng-repeat="endpoint in endpoints">
         <i class="glyphicon"
               ng-class="{'glyphicon-ok': endpoint.status == 'local',
                           'glyphicon-ok success-color': endpoint.status == 'success',
@@ -44,7 +44,7 @@
         <a tooltip="{{endpoint.url}}" >
           {{endpoint.title}} <small>{{endpoint.expiresAt | date:'dd-M H:mm'}}</small>
         </a>
-      </h5>
+      </h6>
 
       <div class="form-actions">
         <form name="formData.endpointForm"

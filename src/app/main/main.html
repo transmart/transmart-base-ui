@@ -57,14 +57,19 @@
           <tab-heading>
             <span>Cohort selection</span>
           </tab-heading>
-          <div class="well well-lg cwell" data-drop="true" ng-model='droppedNode'
+          <div class="well well-lg ts-node-well cwell" data-drop="true" ng-model='droppedNode'
                jqyoui-droppable="{multiple:true, onDrop:'onNodeDropEvent(droppedNode)'}">
             <span ng-if="cohortChartContainerLabels.length == 0">Drag and drop some nodes here to add them.</span>
-            <button type="button" class="btn btn-primary" ng-repeat="label in cohortChartContainerLabels"
+            <button type="button" class="btn btn-primary btn-sm ts-btn-node" ng-repeat="label in cohortChartContainerLabels"
                     ng-click="removeLabel(label)">
-              {{label.name}}
+              <div class="ts-node-name">
+                {{label.name}}<br><span class="ts-smaller-font">{{label.study._embedded.ontologyTerm.name}}</span>
+
+              </div>
+
+              <div class="ts-node-close-x" aria-hidden="true">&times;</div>
             </button>
-            <button ng-if="cohortChartContainerLabels.length >= 1" class="btn btn-danger"
+            <button ng-if="cohortChartContainerLabels.length >= 1" class="btn btn-danger ts-btn-node-reset"
                     ng-click="resetActiveLabels()">
               Reset
             </button>
