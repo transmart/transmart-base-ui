@@ -20,7 +20,7 @@
 
     </a>
      <a popover-template="'study-tooltip.html'" popover-placement="right"
-        ng-click="displayToolTip($event, node)"> {{node.title | cutstring:false:divWidth:' ...'}}</a> &nbsp; &nbsp; <small class="quantity-num">({{node.total}})</small>
+        ng-click="displayToolTip($event, node)"> {{node.title | cutstring:false:divWidth:' ...'}}</a> &nbsp; &nbsp; <span class="quantity-num">({{node.total}})</span>
   </div>
   <ol ui-tree-nodes="" ng-model="node.nodes" ng-class="{hidden: collapsed}">
     <li ng-repeat="node in node.nodes"
