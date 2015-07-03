@@ -201,7 +201,6 @@ angular.module('transmartBaseUi')
              */
             chartService.addNodeToActiveCohortSelection = function (node){
                 var _deferred = $q.defer();
-                console.log(node)
                 //Get all observations under the selected concept
                 node.restObj.one('observations').get().then(function (observations){
                     observations = observations._embedded.observations;
@@ -280,16 +279,27 @@ angular.module('transmartBaseUi')
                     cs.grps[label.label] = cs.dims[label.label].group();
 
                     if (label.type === 'string' || label.type === 'object') {
-                        cs.charts.push(_pieChart(cs.dims[label.label], cs.grps[label.label],
-                            '#cohort-chart-' + label.ids));
+                        var chart = _pieChart(cs.dims[label.label], cs.grps[label.label], '#cohort-chart-' + label.ids);
+                        chart.id = label.ids;
+                        cs.charts.push(chart);
                     } else if (label.type === 'number') {
                         var max = cs.dims[label.label].top(1)[0].labels[label.label];
                         var min = cs.dims[label.label].bottom(1)[0].labels[label.label];
-                        cs.charts.push(_barChart(cs.dims[label.label], cs.grps[label.label],
-                            '#cohort-chart-' + label.ids, min, max, label.name));
+                        var chart = _barChart(cs.dims[label.label], cs.grps[label.label], '#cohort-chart-' + label.ids, min, max, label.name);
+                        chart.id = label.ids;
+                        cs.charts.push(chart);
                     }
                 });
             };
+
+            chartService.doResizeChart = function (id, height, width) {
+              var chart = _.findWhere(cs.charts, {id: id});
+              if(chart) {
+                chart.width(width).height(height);
+                console.log(chart)
+                chart.render();
+              }
+            }
 
             /**
              * Return the values for the current selection in cohort

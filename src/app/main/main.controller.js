@@ -2,7 +2,7 @@
 
 angular.module('transmartBaseUi')
   .controller('MainCtrl',
-  ['$scope', '$rootScope', 'Restangular', 'ChartService', 'AlertService', function ($scope, $rootScope, Restangular, ChartService, AlertService) {
+  ['$scope', '$rootScope', 'Restangular', 'ChartService', 'AlertService', '$timeout', function ($scope, $rootScope, Restangular, ChartService, AlertService, $timeout) {
 
     $scope.tuto = {openStep1: true, disableStep1: false, openStep2: false};
 
@@ -80,8 +80,10 @@ angular.module('transmartBaseUi')
         enabled: true,
         handles: ['n', 'e', 's', 'w', 'ne', 'se', 'sw', 'nw'],
         start: function(event, $element, widget) {}, // optional callback fired when resize is started,
-        resize: function(event, $element, widget) {}, // optional callback fired when item is resized,
-        stop: function(event, $element, widget) {} // optional callback fired when item is finished resizing
+        resize: function(event, $element, widget) {
+        }, // optional callback fired when item is resized,
+        stop: function(event, $element, widget) {
+        } // optional callback fired when item is finished resizing
       },
       draggable: {
         enabled: true, // whether dragging items is supported
@@ -119,9 +121,7 @@ angular.module('transmartBaseUi')
         label.sizeX = 2;
         label.sizeY = 2;
         label.col = (index*label.sizeX)%_gridsterCols;
-        console.log(label.col)
         label.row = Math.floor(index*label.sizeY/_gridsterCols);
-        console.log(label.row)
       })
       $scope.cohortChartContainerLabels = labels;
     });
