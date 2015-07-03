@@ -1,6 +1,9 @@
 
-<script type="text/ng-template" id="study-tooltip.html">
-  <span>Metadata <i class="glyphicon glyphicon-info-sign" ng-click="displayMetadata(concept);"></i></span>
+<script type="text/ng-template" id="tree-tooltip.html">
+  <ul id="tree-tooltip">
+    <li><a ng-click="displayMetadata(treeNode);"><i class="glyphicon glyphicon-info-sign"></i> &nbsp; Metadata </a></li>
+    <li ng-if="treeNode.isStudy"><a ng-click="displayMetadata(node);" ><i class="glyphicon glyphicon-stats" ng-click="displayMetadata(treeNode);"></i>  &nbsp; Summary Statistic</a></li>
+  </ul>
 </script>
 
 <!--------------------------------------------------------------------------------------------------------------------->
@@ -19,7 +22,7 @@
       </i> &nbsp;
 
     </i>
-     <a popover-template="'study-tooltip.html'" popover-placement="right"
+     <a popover-template="'tree-tooltip.html'" popover-placement="right"
         ng-click="displayToolTip($event, node)"> {{node.title | cutstring:false:divWidth:' ...'}}</a> &nbsp; &nbsp; <span class="quantity-num">({{node.total}})</span>
   </div>
   <ol ui-tree-nodes="" ng-model="node.nodes" ng-class="{hidden: collapsed}">
@@ -48,7 +51,7 @@
            ng-click="getTree(study); saction()(study);" >
       </i>
       &nbsp;
-      <a popover-template="'study-tooltip.html'" popover-placement="right"
+      <a popover-template="'tree-tooltip.html'" popover-placement="right"
          ng-click="displayToolTip($event, study)">{{study._embedded.ontologyTerm.name}}</a>
       <span class="glyphicon glyphicon-spin" ng-class="{'glyphicon-refresh': treeLoading}"></span>
     </accordion-heading>

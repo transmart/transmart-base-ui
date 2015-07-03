@@ -8,7 +8,7 @@ angular.module('transmartBaseUi')
       {
         label : 'Home',
         path : 'home',
-        isActive : false
+        isActive : true
       },
       {
         label : 'Workspace',
@@ -22,6 +22,14 @@ angular.module('transmartBaseUi')
       {'label' : 'Administrator Dashboard', 'action' : 'adminDashboard'},
       {'label' : 'Logout', 'action' : 'logout'}
     ];
+
+    $scope.setActiveNavItem = function (idx) {
+      for (var i = 0; i<$scope.navigations.length; i++) {
+        $scope.navigations[i].isActive = false;
+      }
+      $scope.navigations[idx].isActive = true;
+    };
+
 
     $scope.toggled = function() {
 

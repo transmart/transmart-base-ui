@@ -41,7 +41,7 @@ angular.module('transmartBaseUi')
       $scope.selectedStudy = study;
       if(!$scope.opened){
         $scope.tree = _getSingleTree(study);
-        $scope.opened = true;
+        $scope.opened = true;ho
       } else {
         $scope.opened = false;
       }
@@ -165,7 +165,10 @@ angular.module('transmartBaseUi')
 
     $scope.displayToolTip = function (e, node) {
         e.stopPropagation(); // preventing selected accordion to expand.
-        $scope.concept = node;
+        $scope.treeNode = node;
+        if ($scope.treeNode.hasOwnProperty('_embedded')) {
+          $scope.treeNode.isStudy = true;
+        }
     };
 
     $scope.displayMetadata = function (node) {

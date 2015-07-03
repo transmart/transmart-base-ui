@@ -8,8 +8,8 @@
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-6">
 
       <ul class="nav navbar-nav">
-        <li ng-repeat="nav in navigations" ng-class="{'active' : nav.isActive}">
-          <a ui-sref="{{nav.path}}">{{nav.label}}</a>
+        <li ng-repeat="nav in navigations track by $index" ng-class="{'active' : nav.isActive}">
+          <a ui-sref="{{nav.path}}" ng-click="setActiveNavItem($index)">{{nav.label}}</a>
         </li>
       </ul>
 
