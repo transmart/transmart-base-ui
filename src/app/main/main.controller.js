@@ -2,7 +2,7 @@
 
 angular.module('transmartBaseUi')
   .controller('MainCtrl',
-  ['$scope', '$rootScope', 'Restangular', 'ChartService', 'AlertService', '$timeout', function ($scope, $rootScope, Restangular, ChartService, AlertService, $timeout) {
+  ['$scope', '$rootScope', 'Restangular', 'ChartService', 'AlertService', function ($scope, $rootScope, Restangular, ChartService, AlertService) {
 
     $scope.tuto = {openStep1: true, disableStep1: false, openStep2: false};
 
@@ -81,6 +81,9 @@ angular.module('transmartBaseUi')
         handles: ['n', 'e', 's', 'w', 'ne', 'se', 'sw', 'nw'],
         start: function(event, $element, widget) {}, // optional callback fired when resize is started,
         resize: function(event, $element, widget) {
+          angular.element("#cohort-chart-panel-" + widget.ids)
+            .width($element[0].clientWidth)
+            .height($element[0].clientHeight);
         }, // optional callback fired when item is resized,
         stop: function(event, $element, widget) {
         } // optional callback fired when item is finished resizing
@@ -124,6 +127,7 @@ angular.module('transmartBaseUi')
         label.row = Math.floor(index*label.sizeY/_gridsterCols);
       })
       $scope.cohortChartContainerLabels = labels;
+
     });
 
     /**
@@ -202,7 +206,7 @@ angular.module('transmartBaseUi')
             _updateCohortDisplay();
             $scope.$apply();
           });
-
+          $scope.$broadcast('gridster-item-resized');
           ChartService.renderAll(charts);
           $scope.cohortUpdating = false;
         });

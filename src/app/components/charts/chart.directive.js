@@ -7,8 +7,8 @@ angular.module('transmartBaseUi')
       link: function(scope, el, attr) {
         scope.$on('gridster-item-resized', function(e, item) {
           ChartService.doResizeChart(scope.label.ids,
-                                      item.sizeY*item.gridster.curRowHeight - 50,
-                                      item.sizeX*item.gridster.curColWidth - 50);
+                                      scope.gridsterItem.sizeY*scope.gridster.curRowHeight - 80,
+                                      scope.gridsterItem.sizeX*scope.gridster.curColWidth - 50);
         });
       }
     };

@@ -27,6 +27,7 @@ angular.module('transmartBaseUi')
                     .dimension(cDimension)
                     .group(cGroup)
                     .elasticY(true)
+                    .elasticX(true)
                     .centerBar(true)
                     .gap(1)
                     .x(d3.scale.linear().domain([min, max]))
@@ -296,7 +297,7 @@ angular.module('transmartBaseUi')
               var chart = _.findWhere(cs.charts, {id: id});
               if(chart) {
                 chart.width(width).height(height);
-                console.log(chart)
+                if(chart.radius)chart.radius(((width > height ? height : width))/2*0.85);
                 chart.render();
               }
             }
