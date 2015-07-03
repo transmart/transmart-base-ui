@@ -80,7 +80,13 @@
               <div class="data-count">{{cohortVal.selected}}/{{cohortVal.total}}</div>
             </progressbar>
 
-            <ts-cohort-chart ng-repeat="label in cohortChartContainerLabels" repeat-done></ts-cohort-chart>
+            <div gridster="gridsterOpts" id="ts-gridster-box">
+              <ul>
+                  <li gridster-item="label" ng-repeat="label in cohortChartContainerLabels">
+                    <ts-cohort-chart repeat-done class="chart-container"></ts-cohort-chart>
+                  </li>
+              </ul>
+            </div>
           </div>
         </tab>
 
