@@ -2,7 +2,7 @@
 
 angular.module('transmartBaseUi')
   .controller('MainCtrl',
-  ['$scope', '$rootScope', 'Restangular', 'ChartService', 'AlertService', '$timeout', function ($scope, $rootScope, Restangular, ChartService, AlertService, $timeout) {
+  ['$scope', '$rootScope', 'Restangular', 'ChartService', 'AlertService', function ($scope, $rootScope, Restangular, ChartService, AlertService) {
 
     $scope.tuto = {openStep1: true, disableStep1: false, openStep2: false};
 
