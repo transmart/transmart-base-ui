@@ -296,7 +296,6 @@ angular.module('transmartBaseUi')
               var chart = _.findWhere(cs.charts, {id: id});
               if(chart) {
                 chart.width(width).height(height);
-                console.log(chart)
                 chart.render();
               }
             }
