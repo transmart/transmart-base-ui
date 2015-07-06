@@ -14,7 +14,7 @@ angular.module('transmartBaseUi')
              * @private
              */
             var _barChart = function (cDimension, cGroup, el, min, max, nodeTitle, width, height, btmMarg) {
-
+                var precision = (min + "").split(".");
                 width = width || 270;
                 height = height || 210;
                 btmMarg = btmMarg || 30;
@@ -27,18 +27,26 @@ angular.module('transmartBaseUi')
                     .dimension(cDimension)
                     .group(cGroup)
                     .elasticY(true)
-                    .elasticX(true)
+                    .elasticY(true)
+                    .xAxisPadding('10%')
+                    .yAxisPadding('10%')
                     .centerBar(true)
                     .gap(1)
-                    .x(d3.scale.linear().domain([min, max]))
+                    .x(d3.scale.linear().domain([min-0.05*min, max+0.05*max]))
                     .renderHorizontalGridLines(true)
                 ;
-                _barChart.xAxis().tickFormat(
-                    function (v) {
-                        return v;
-                    });
+                // Correction for unusual chart behavior with floating point
+                // Numbers.
+                // Check the precision of floating point numbers and adjust
+                // the scale of x units accordingly
+                if(precision[1]){
+                  _barChart.xUnits(dc.units.fp.precision(Math.pow(0.01, precision[1].length)));
+                } else {
+                  _barChart.xUnits();
+                }
+                _barChart.xAxis().ticks(5);
                 _barChart.yAxis().ticks(5);
-                _barChart.xAxisLabel(nodeTitle);
+                //_barChart.xAxisLabel(nodeTitle);
                 _barChart.yAxisLabel('# subjects');
 
                 return _barChart;
@@ -64,7 +72,8 @@ angular.module('transmartBaseUi')
                     .innerRadius(0)
                     .dimension(cDimension)
                     .group(cGroup)
-                    .renderLabel(false);
+                    .renderLabel(false)
+                    .colors(d3.scale.category20b());
 
                 if(!nolegend){
                     tChart.legend(dc.legend());
@@ -296,8 +305,38 @@ angular.module('transmartBaseUi')
             chartService.doResizeChart = function (id, height, width) {
               var chart = _.findWhere(cs.charts, {id: id});
               if(chart) {
+                var set = {
+                  rad: 0.9, // Percentage to adjust the radius of the chart
+                  legH: 0.05,// Percentage to adjust legend position in Y
+                  legW: 0, // Percentage to adjust legend position in X
+                  min: (width > height ? height : width), // Smallest of width or heigth
+                  xt: 30, // Pixels per tick in x
+                  yt: 30, // Pixels per tick in y
+                  ps: 20, // Pixels per slice for pie charts
+                }
+                // Adjust width and height
                 chart.width(width).height(height);
-                if(chart.radius)chart.radius(((width > height ? height : width))/2*0.85);
+
+                // If the chart has a radius (ie. pie chart)
+                if(chart.radius){
+                  //  set the radius to half the shortest dimension
+                  chart.radius((set.min) / 2 * set.rad)
+                  // Limit the number of slices in the chart
+                  .slicesCap(Math.floor(set.min/20))
+                  //
+                  .legend(dc.legend()
+                    .x(width * set.legW)
+                    .y(height * set.legH)
+                    .itemHeight(4 + 6 * set.min/300)
+                    .gap(4 + height/100));
+                } else {
+                  // Adjust number of ticks to not overlap
+                  // Number of ticks per pixel
+                  chart.xAxis().ticks(Math.floor(width/set.xt));
+                  chart.yAxis().ticks(Math.floor(height/set.yt));
+                  chart.rescale();
+                }
+
                 chart.render();
               }
             }
