@@ -208,7 +208,7 @@ angular.module('transmartBaseUi')
           });
         });
         $scope.$broadcast('gridster-item-resized');
-        ChartService.renderAll(charts);
+        ChartService.renderAll();
         $scope.cohortUpdating = false;
       });
     }

@@ -74,7 +74,7 @@ angular.module('transmartBaseUi')
                     .dimension(cDimension)
                     .group(cGroup)
                     .renderLabel(false)
-                    .colors(d3.scale.category20b());
+                    .colors(d3.scale.category20());
 
                 if(!nolegend){
                     tChart.legend(dc.legend());
@@ -99,9 +99,13 @@ angular.module('transmartBaseUi')
             * @param charts
             */
             chartService.renderAll = function (charts) {
-                angular.forEach(charts, function (chart) {
-                  chart.render();
-                });
+              if(!charts){
+                charts = cs.charts
+              }
+              angular.forEach(charts, function (chart) {
+
+                chart.render();
+              });
             };
 
             /***********************************************************************************************************
@@ -283,6 +287,7 @@ angular.module('transmartBaseUi')
              * @private
              */
             var _createCohortCharts = function () {
+              cs.charts = [];
                 cs.labels.forEach(function (label) {
                     cs.dims[label.label] = cs.cross.dimension(function (d) {
                         return d.labels[label.label] === undefined ? 'UnDef' : d.labels[label.label];
