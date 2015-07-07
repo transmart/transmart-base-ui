@@ -15,7 +15,7 @@ angular.module('transmartBaseUi')
              */
             var _barChart = function (cDimension, cGroup, el, min, max, nodeTitle, width, height, btmMarg) {
                 //Determine if the number is floating point and it's precision
-                var precision = (min + "").split(".");
+                var precision = (min + '').split('.');
 
                 width = width || 270;
                 height = height || 210;
@@ -100,7 +100,7 @@ angular.module('transmartBaseUi')
             */
             chartService.renderAll = function (charts) {
               if(!charts){
-                charts = cs.charts
+                charts = cs.charts;
               }
               angular.forEach(charts, function (chart) {
 
@@ -318,8 +318,8 @@ angular.module('transmartBaseUi')
                   min: (width > height ? height : width), // Smallest of width or heigth
                   xt: 30, // Pixels per tick in x
                   yt: 30, // Pixels per tick in y
-                  ps: 20, // Pixels per slice for pie charts
-                }
+                  ps: 20 // Pixels per slice for pie charts
+                };
                 // Adjust width and height
                 chart.width(width).height(height);
 

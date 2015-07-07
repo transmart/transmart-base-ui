@@ -7,7 +7,7 @@ angular.module('transmartBaseUi')
       link: function(scope, el, attr) {
         //Title for the chart panel
         scope.title = scope.label.name +
-                      " - " +
+                      ' - ' +
                       scope.label.study._embedded.ontologyTerm.name;
 
         //When the gridster element that contains the panel is resized
