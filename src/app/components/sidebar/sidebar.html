@@ -33,7 +33,7 @@
 
 
 
-    <accordion-group  heading="Add Endpoint" is-open="endpointTabOpen">
+    <accordion-group  heading="Add Data Source" is-open="endpointTabOpen">
 
       <h6 ng-repeat="endpoint in endpoints">
         <i class="glyphicon"
@@ -74,20 +74,20 @@
         <div class="form-group">
           <input  type="text"
                   class="form-control input-sm"
-                  placeholder="Endpoint url"
+                  placeholder="Data source URL address"
                   ng-model="formData.url">
         </div>
         <div class="form-group">
           <button type="button"
                   class="form-control btn btn-default btn-sm"
                   ng-click="navigateToAuthorizationPage()">
-                  Get request token
+                  Get authorization code
           </button>
         </div>
         <div class="form-group">
           <input  type="text"
                   class="form-control input-sm"
-                  placeholder="Request token"
+                  placeholder="Authorization code"
                   ng-model="formData.requestToken">
         </div>
 

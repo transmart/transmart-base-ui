@@ -1,7 +1,10 @@
-  <div class="panel panel-default cohort-chart chart-container" id="cohort-chart-panel-{{label.ids}}">
-    <div class="panel-heading chart-drag-handle">{{label.name}} - <small>{{label.study._embedded.ontologyTerm.name}}</small></div>
-    <div class="panel-body">
-      <i class="glyphicon glyphicon-spin" ng-class="{'glyphicon-refresh': chartLoading}"></i>
-      <div class="inner-chart" id="cohort-chart-{{label.ids}}" style=""></div>
+  <div class="panel
+              panel-default
+              chart-container"
+        id="cohort-chart-panel-{{label.ids}}">
+    <div class="panel-heading
+                chart-drag-handle">
+      {{title | cutstring:false:cutOff:' ...'}}
     </div>
+    <div class="panel-body inner-chart" id="cohort-chart-{{label.ids}}"></div>
   </div>
