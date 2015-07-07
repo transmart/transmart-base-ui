@@ -14,7 +14,9 @@ angular.module('transmartBaseUi')
              * @private
              */
             var _barChart = function (cDimension, cGroup, el, min, max, nodeTitle, width, height, btmMarg) {
+                //Determine if the number is floating point and it's precision
                 var precision = (min + "").split(".");
+
                 width = width || 270;
                 height = height || 210;
                 btmMarg = btmMarg || 30;
@@ -33,20 +35,19 @@ angular.module('transmartBaseUi')
                     .centerBar(true)
                     .gap(1)
                     .x(d3.scale.linear().domain([min-0.05*min, max+0.05*max]))
-                    .renderHorizontalGridLines(true)
-                ;
+                    .renderHorizontalGridLines(true);
                 // Correction for unusual chart behavior with floating point
                 // Numbers.
                 // Check the precision of floating point numbers and adjust
                 // the scale of x units accordingly
                 if(precision[1]){
-                  _barChart.xUnits(dc.units.fp.precision(Math.pow(0.01, precision[1].length)));
+                  _barChart.xUnits(
+                    dc.units.fp.precision(Math.pow(0.01, precision[1].length)));
                 } else {
                   _barChart.xUnits();
                 }
                 _barChart.xAxis().ticks(5);
                 _barChart.yAxis().ticks(5);
-                //_barChart.xAxisLabel(nodeTitle);
                 _barChart.yAxisLabel('# subjects');
 
                 return _barChart;

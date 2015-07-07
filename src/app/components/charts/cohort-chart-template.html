@@ -1,13 +1,10 @@
   <div class="panel
               panel-default
-              cohort-chart
-              chart-container-panel"
+              chart-container"
         id="cohort-chart-panel-{{label.ids}}">
     <div class="panel-heading
                 chart-drag-handle">
-      {{title | cutstring:false:divWidth:' ...'}}
+      {{title | cutstring:false:cutOff:' ...'}}
     </div>
-    <div class="panel-body">
-      <div class="inner-chart" id="cohort-chart-{{label.ids}}" style=""></div>
-    </div>
+    <div class="panel-body inner-chart" id="cohort-chart-{{label.ids}}"></div>
   </div>
