@@ -29,7 +29,7 @@ angular.module('transmartBaseUi')
                     .dimension(cDimension)
                     .group(cGroup)
                     .elasticY(true)
-                    .elasticY(true)
+                    .elasticX(true)
                     .xAxisPadding('10%')
                     .yAxisPadding('10%')
                     .centerBar(true)
@@ -52,6 +52,22 @@ angular.module('transmartBaseUi')
 
                 return _barChart;
             };
+
+            /**
+             * Create dc.js box plot
+             */
+            var _boxPlot = function(cDimension, cGroup, el, min, max) {
+              var _bp = dc.boxPlot(el);
+
+              _bp
+                .margins({top: 5, right: 5, bottom: 5, left: 25})
+                .dimension(cDimension)
+                .group(cGroup)
+                .y(d3.scale.linear().domain([min-(0.1*(max-min)), max+(0.1*(max-min))]))
+                .xAxis().tickValues([]);;
+
+              return _bp;
+            }
 
             /**
              * Create dc.js pie chart
@@ -183,19 +199,19 @@ angular.module('transmartBaseUi')
              * @private
              */
             var _addLabel = function (obs, node) {
-                var present = false;
-                cs.labels.forEach(function(label){
-                    present = label.label === obs.label ? true : present;
-                });
-                if(!present){
-                    cs.labels.push({
-                        label: obs.label,
-                        type: typeof obs.value,
-                        name: _getLastToken(obs.label),
-                        ids: cs.chartId++,
-                        study: node.study
-                    });
+                var label = _.findWhere(cs.labels, {label: obs.label});
+                if(!label){
+                  label = {
+                      label: obs.label,
+                      type: typeof obs.value,
+                      name: _getLastToken(obs.label),
+                      ids: cs.chartId++,
+                      study: node.study
+                  };
+                  cs.labels.push(label);
                 }
+                if(label.type === 'number' && (obs.value % 1) != 0)
+                  label.type = 'float';
             };
 
             /**
@@ -289,22 +305,54 @@ angular.module('transmartBaseUi')
             var _createCohortCharts = function () {
               cs.charts = [];
                 cs.labels.forEach(function (label) {
-                    cs.dims[label.label] = cs.cross.dimension(function (d) {
-                        return d.labels[label.label] === undefined ? 'UnDef' : d.labels[label.label];
-                    });
-                    cs.grps[label.label] = cs.dims[label.label].group();
 
-                    if (label.type === 'string' || label.type === 'object') {
-                        var chart = _pieChart(cs.dims[label.label], cs.grps[label.label], '#cohort-chart-' + label.ids);
-                        chart.id = label.ids;
-                        cs.charts.push(chart);
-                    } else if (label.type === 'number') {
-                        var max = cs.dims[label.label].top(1)[0].labels[label.label];
-                        var min = cs.dims[label.label].bottom(1)[0].labels[label.label];
-                        var chart = _barChart(cs.dims[label.label], cs.grps[label.label], '#cohort-chart-' + label.ids, min, max, label.name);
-                        chart.id = label.ids;
-                        cs.charts.push(chart);
-                    }
+                  if (label.type === 'string' || label.type === 'object') {
+                      cs.dims[label.label] = cs.cross.dimension(function (d) {
+                        return d.labels[label.label] === undefined ? 'UnDef' : d.labels[label.label];
+                      });
+                      cs.grps[label.label] = cs.dims[label.label].group()
+                      var chart = _pieChart(cs.dims[label.label], cs.grps[label.label], '#cohort-chart-' + label.ids);
+                      chart.id = label.ids;
+                      chart.type = 'PIECHART';
+                      cs.charts.push(chart);
+
+                  } else if (label.type === 'number') {
+                      cs.dims[label.label] = cs.cross.dimension(function (d) {
+                        return d.labels[label.label] === undefined ? 'UnDef' : d.labels[label.label];
+                      });
+                      cs.grps[label.label] = cs.dims[label.label].group()
+                      var max = cs.dims[label.label].top(1)[0].labels[label.label];
+                      var min = cs.dims[label.label].bottom(1)[0].labels[label.label];
+                      var chart = _barChart(cs.dims[label.label], cs.grps[label.label], '#cohort-chart-' + label.ids, min, max, label.name);
+                      chart.id = label.ids;
+                      chart.type = 'BARCHART';
+                      cs.charts.push(chart);
+
+                  } else if (label.type === 'float'){
+                    cs.dims[label.label] = cs.cross.dimension(function (d) {
+                      return label.name;
+                    });
+                    cs.grps[label.label] = cs.dims[label.label].group().reduce(
+                      function(p,v) {
+                        p.push(v.labels[label.label]);
+                        return p;
+                      },
+                      function(p,v) {
+                        p.splice(p.indexOf(v.labels[label.label]), 1);
+                        return p;
+                      },
+                      function() {
+                        return [];
+                      }
+                    );
+                    var it = cs.grps[label.label].top(1)[0].value;
+                    var max = _.max(it);
+                    var min = _.min(it);
+                    var chart = _boxPlot(cs.dims[label.label], cs.grps[label.label], '#cohort-chart-' + label.ids, min, max);
+                    chart.id = label.ids;
+                    chart.type = 'BOXPLOT';
+                    cs.charts.push(chart);
+                  }
                 });
             };
 
@@ -324,7 +372,7 @@ angular.module('transmartBaseUi')
                 chart.width(width).height(height);
 
                 // If the chart has a radius (ie. pie chart)
-                if(chart.radius){
+                if(chart.type === 'PIECHART'){
                   //  set the radius to half the shortest dimension
                   chart.radius((set.min) / 2 * set.rad)
                   // Limit the number of slices in the chart
@@ -335,12 +383,17 @@ angular.module('transmartBaseUi')
                     .y(height * set.legH)
                     .itemHeight(4 + 6 * set.min/300)
                     .gap(4 + height/100));
-                } else {
+                } else if (chart.type === 'BARCHART') {
                   // Adjust number of ticks to not overlap
                   // Number of ticks per pixel
                   chart.xAxis().ticks(Math.floor(width/set.xt));
                   chart.yAxis().ticks(Math.floor(height/set.yt));
                   chart.rescale();
+                } else if (chart.type === 'BOXPLOT') {
+                  chart
+                    .boxPadding(0.2)
+                    .outerPadding(0.5)
+                    .boxWidth(width/4);
                 }
 
                 chart.render();
