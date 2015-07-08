@@ -359,6 +359,10 @@ angular.module('transmartBaseUi')
                 };
             };
 
+            chartService.getLabels = function () {
+              return cs.labels;
+            };
+
             /**
              * ChartService
              */
