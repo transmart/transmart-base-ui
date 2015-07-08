@@ -2,8 +2,8 @@
 
 angular.module('transmartBaseUi')
 
-    .factory('ChartService', ['Restangular', '$q', '$rootScope', '$timeout',
-        function (Restangular, $q, $rootScope, $timeout) {
+    .factory('ChartService', ['Restangular', '$q', '$rootScope', '$timeout', 'AlertService',
+        function (Restangular, $q, $rootScope, $timeout, AlertService) {
             var chartService = {};
 
             /**
@@ -179,6 +179,8 @@ angular.module('transmartBaseUi')
                      charts: [],
                      cross: crossfilter(),
                      dims: {},
+                     numDim: 0,
+                     maxDim: 20,
                      grps: {},
                      labels: []
                 };
@@ -201,16 +203,23 @@ angular.module('transmartBaseUi')
             var _addLabel = function (obs, node) {
                 var label = _.findWhere(cs.labels, {label: obs.label});
                 if(!label){
-                  label = {
-                      label: obs.label,
-                      type: typeof obs.value,
-                      name: _getLastToken(obs.label),
-                      ids: cs.chartId++,
-                      study: node.study
-                  };
-                  cs.labels.push(label);
+                  if(cs.numDim < cs.maxDim)
+                  {
+                    cs.numDim++;
+                    label = {
+                        label: obs.label,
+                        type: typeof obs.value,
+                        name: _getLastToken(obs.label),
+                        ids: cs.chartId++,
+                        study: node.study,
+                        rendered: false
+                    };
+                    cs.labels.push(label);
+                  } else {
+                    AlertService.add('danger', 'Max number of dimensions reached !', 2000);
+                  }
                 }
-                if(label.type === 'number' && (obs.value % 1) != 0)
+                if(label && label.type === 'number' && (obs.value % 1) != 0)
                   label.type = 'float';
             };
 
@@ -278,6 +287,7 @@ angular.module('transmartBaseUi')
                 _populateCohortCrossfilter;
                 //Remove dimension and group associated with the label
                 cs.dims[label.label].dispose();
+                cs.numDim--;
                 cs.grps[label.label].dispose();
                 //Finally remove label
                 cs.labels = _.reject(cs.labels, function(el) { return el.label === label.label; });
@@ -303,55 +313,58 @@ angular.module('transmartBaseUi')
              * @private
              */
             var _createCohortCharts = function () {
-              cs.charts = [];
+
                 cs.labels.forEach(function (label) {
+                  if(!label.rendered){
 
-                  if (label.type === 'string' || label.type === 'object') {
+                    if (label.type === 'string' || label.type === 'object') {
+                        cs.dims[label.label] = cs.cross.dimension(function (d) {
+                          return d.labels[label.label] === undefined ? 'UnDef' : d.labels[label.label];
+                        });
+                        cs.grps[label.label] = cs.dims[label.label].group()
+                        var chart = _pieChart(cs.dims[label.label], cs.grps[label.label], '#cohort-chart-' + label.ids);
+                        chart.id = label.ids;
+                        chart.type = 'PIECHART';
+                        cs.charts.push(chart);
+
+                    } else if (label.type === 'number') {
+                        cs.dims[label.label] = cs.cross.dimension(function (d) {
+                          return d.labels[label.label] === undefined ? 'UnDef' : d.labels[label.label];
+                        });
+                        cs.grps[label.label] = cs.dims[label.label].group()
+                        var max = cs.dims[label.label].top(1)[0].labels[label.label];
+                        var min = cs.dims[label.label].bottom(1)[0].labels[label.label];
+                        var chart = _barChart(cs.dims[label.label], cs.grps[label.label], '#cohort-chart-' + label.ids, min, max, label.name);
+                        chart.id = label.ids;
+                        chart.type = 'BARCHART';
+                        cs.charts.push(chart);
+
+                    } else if (label.type === 'float'){
                       cs.dims[label.label] = cs.cross.dimension(function (d) {
-                        return d.labels[label.label] === undefined ? 'UnDef' : d.labels[label.label];
+                        return label.name;
                       });
-                      cs.grps[label.label] = cs.dims[label.label].group()
-                      var chart = _pieChart(cs.dims[label.label], cs.grps[label.label], '#cohort-chart-' + label.ids);
+                      cs.grps[label.label] = cs.dims[label.label].group().reduce(
+                        function(p,v) {
+                          p.push(v.labels[label.label]);
+                          return p;
+                        },
+                        function(p,v) {
+                          p.splice(p.indexOf(v.labels[label.label]), 1);
+                          return p;
+                        },
+                        function() {
+                          return [];
+                        }
+                      );
+                      var it = cs.grps[label.label].top(1)[0].value;
+                      var max = _.max(it);
+                      var min = _.min(it);
+                      var chart = _boxPlot(cs.dims[label.label], cs.grps[label.label], '#cohort-chart-' + label.ids, min, max);
                       chart.id = label.ids;
-                      chart.type = 'PIECHART';
+                      chart.type = 'BOXPLOT';
                       cs.charts.push(chart);
-
-                  } else if (label.type === 'number') {
-                      cs.dims[label.label] = cs.cross.dimension(function (d) {
-                        return d.labels[label.label] === undefined ? 'UnDef' : d.labels[label.label];
-                      });
-                      cs.grps[label.label] = cs.dims[label.label].group()
-                      var max = cs.dims[label.label].top(1)[0].labels[label.label];
-                      var min = cs.dims[label.label].bottom(1)[0].labels[label.label];
-                      var chart = _barChart(cs.dims[label.label], cs.grps[label.label], '#cohort-chart-' + label.ids, min, max, label.name);
-                      chart.id = label.ids;
-                      chart.type = 'BARCHART';
-                      cs.charts.push(chart);
-
-                  } else if (label.type === 'float'){
-                    cs.dims[label.label] = cs.cross.dimension(function (d) {
-                      return label.name;
-                    });
-                    cs.grps[label.label] = cs.dims[label.label].group().reduce(
-                      function(p,v) {
-                        p.push(v.labels[label.label]);
-                        return p;
-                      },
-                      function(p,v) {
-                        p.splice(p.indexOf(v.labels[label.label]), 1);
-                        return p;
-                      },
-                      function() {
-                        return [];
-                      }
-                    );
-                    var it = cs.grps[label.label].top(1)[0].value;
-                    var max = _.max(it);
-                    var min = _.min(it);
-                    var chart = _boxPlot(cs.dims[label.label], cs.grps[label.label], '#cohort-chart-' + label.ids, min, max);
-                    chart.id = label.ids;
-                    chart.type = 'BOXPLOT';
-                    cs.charts.push(chart);
+                    }
+                    label.rendered = true;
                   }
                 });
             };
@@ -408,7 +421,9 @@ angular.module('transmartBaseUi')
                 return {
                     selected: cs.cross.groupAll().value(),
                     total: cs.cross.size(),
-                    subjects: cs.mainDim.top(Infinity)
+                    subjects: cs.mainDim.top(Infinity),
+                    dimensions: cs.numDim,
+                    maxdim: cs.maxDim
                 };
             };
 
