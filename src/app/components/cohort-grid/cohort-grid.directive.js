@@ -1,31 +1,5 @@
 'use strict';
 
-/**
-  -----------------------------------------------------------------------------
-  - Parameters
-  -----------------------------------------------------------------------------
-  cohort:
-    Array of subjects
-      Subjects are formatted as:
-        {
-          id: ...
-          ...
-          labels: [
-            label1: value,
-            label2: value
-          ]
-        }
-  headers:
-    Array of grid headers corresponding to the subject labels.
-      Headers are formatted as:
-        {
-          name: ...
-          ...
-          label: "label1"
-        }
-
-*/
-
 angular.module('transmartBaseUi')
   .directive('cohortGrid', function () {
     return {
