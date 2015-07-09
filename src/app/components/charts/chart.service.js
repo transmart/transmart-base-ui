@@ -1,10 +1,13 @@
 'use strict';
 
-angular.module('transmartBaseUi')
+angular.module('transmartBaseUi').factory('ChartService',
+  ['Restangular', '$q', '$rootScope', '$timeout', 'AlertService',
+  function (Restangular, $q, $rootScope, $timeout, AlertService) {
+  var chartService = {};
 
-    .factory('ChartService', ['Restangular', '$q', '$rootScope', '$timeout', 'AlertService',
-        function (Restangular, $q, $rootScope, $timeout, AlertService) {
-            var chartService = {};
+  var _filterEvent = function () {};
+  chartService.registerFilterEvent = function (func) {_filterEvent = func;}
+  chartService.triggerFilterEvent = function (){_filterEvent();};
 
             /**
              * Create dc.js bar chart
@@ -64,7 +67,7 @@ angular.module('transmartBaseUi')
                 .dimension(cDimension)
                 .group(cGroup)
                 .y(d3.scale.linear().domain([min-(0.1*(max-min)), max+(0.1*(max-min))]))
-                .xAxis().tickValues([]);;
+                .xAxis().tickValues([]);
 
               return _bp;
             }
@@ -78,6 +81,7 @@ angular.module('transmartBaseUi')
              * @private
              */
             var _pieChart = function (cDimension, cGroup, el, size, nolegend) {
+
                 var tChart = dc.pieChart(el);
 
                 nolegend = nolegend || false;
@@ -90,7 +94,7 @@ angular.module('transmartBaseUi')
                     .dimension(cDimension)
                     .group(cGroup)
                     .renderLabel(false)
-                    .colors(d3.scale.category20());
+                    .colors(d3.scale.category20c());
 
                 if(!nolegend){
                     tChart.legend(dc.legend());
@@ -119,8 +123,11 @@ angular.module('transmartBaseUi')
                 charts = cs.charts;
               }
               angular.forEach(charts, function (chart) {
+                if(!chart.rendered){
+                  chart.render();
+                  chart.rendered = true;
+                }
 
-                chart.render();
               });
             };
 
@@ -212,7 +219,7 @@ angular.module('transmartBaseUi')
                         name: _getLastToken(obs.label),
                         ids: cs.chartId++,
                         study: node.study,
-                        rendered: false
+                        resolved: false
                     };
                     cs.labels.push(label);
                   } else {
@@ -258,13 +265,11 @@ angular.module('transmartBaseUi')
                         }
                     });
 
+                    _removeAllLabelFilters;
+                    _populateCohortCrossfilter();
                     $rootScope.$broadcast('prepareChartContainers', cs.labels);
-                    $timeout(function () {
-                        _removeAllLabelFilters;
-                        _populateCohortCrossfilter();
-                        _createCohortCharts();
-                        _deferred.resolve(cs.charts);
-                    });
+
+                    _deferred.resolve(cs.charts);
                 }, function (err) {
                     //TODO: add alert
                     _deferred.reject('Cannot get data from the end-point.' + err);
@@ -312,10 +317,73 @@ angular.module('transmartBaseUi')
              * TODO: Enable removing specific charts
              * @private
              */
+            chartService.createCohortChart = function (label, el) {
+              if (!label.resolved) {
+                if (label.type === 'string' || label.type === 'object') {
+                    cs.dims[label.label] = cs.cross.dimension(function (d) {
+                      return d.labels[label.label] === undefined ? 'UnDef' : d.labels[label.label];
+                    });
+                    cs.grps[label.label] = cs.dims[label.label].group()
+                    var chart = _pieChart(cs.dims[label.label], cs.grps[label.label], el);
+                    chart.id = label.ids;
+                    chart.type = 'PIECHART';
+                    cs.charts.push(chart);
+
+                } else if (label.type === 'number') {
+                    cs.dims[label.label] = cs.cross.dimension(function (d) {
+                      return d.labels[label.label] === undefined ? 'UnDef' : d.labels[label.label];
+                    });
+                    cs.grps[label.label] = cs.dims[label.label].group()
+                    var max = cs.dims[label.label].top(1)[0].labels[label.label];
+                    var min = cs.dims[label.label].bottom(1)[0].labels[label.label];
+                    var chart = _barChart(cs.dims[label.label], cs.grps[label.label], el, min, max, label.name);
+                    chart.id = label.ids;
+                    chart.type = 'BARCHART';
+                    cs.charts.push(chart);
+
+                } else if (label.type === 'float'){
+                  cs.dims[label.label] = cs.cross.dimension(function (d) {
+                    return label.name;
+                  });
+                  cs.grps[label.label] = cs.dims[label.label].group().reduce(
+                    function(p,v) {
+                      p.push(v.labels[label.label]);
+                      return p;
+                    },
+                    function(p,v) {
+                      p.splice(p.indexOf(v.labels[label.label]), 1);
+                      return p;
+                    },
+                    function() {
+                      return [];
+                    }
+                  );
+                  var it = cs.grps[label.label].top(1)[0].value;
+                  var max = _.max(it);
+                  var min = _.min(it);
+                  var chart = _boxPlot(cs.dims[label.label], cs.grps[label.label], el, min, max);
+                  chart.id = label.ids;
+                  chart.type = 'BOXPLOT';
+                  cs.charts.push(chart);
+                }
+                label.resolved = true;
+                return chart;
+              }
+            };
+
+
+            /**
+             * Create the charts for each selected label
+             * TODO: Leave the existing charts in place, and only add the new ones
+             * TODO: Enable removing specific charts
+             * @private
+             */
             var _createCohortCharts = function () {
+              // Get the size of the created containers
+
 
                 cs.labels.forEach(function (label) {
-                  if(!label.rendered){
+                  if(!label.resolved){
 
                     if (label.type === 'string' || label.type === 'object') {
                         cs.dims[label.label] = cs.cross.dimension(function (d) {
@@ -341,7 +409,7 @@ angular.module('transmartBaseUi')
 
                     } else if (label.type === 'float'){
                       cs.dims[label.label] = cs.cross.dimension(function (d) {
-                        return label.name;
+                        return d;
                       });
                       cs.grps[label.label] = cs.dims[label.label].group().reduce(
                         function(p,v) {
@@ -364,13 +432,14 @@ angular.module('transmartBaseUi')
                       chart.type = 'BOXPLOT';
                       cs.charts.push(chart);
                     }
-                    label.rendered = true;
+                    label.resolved = true;
                   }
                 });
             };
 
             chartService.doResizeChart = function (id, height, width) {
               var chart = _.findWhere(cs.charts, {id: id});
+              console.log(chart)
               if(chart) {
                 var set = {
                   rad: 0.9, // Percentage to adjust the radius of the chart

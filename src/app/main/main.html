@@ -83,7 +83,10 @@
             <div gridster="gridsterOpts" id="ts-gridster-box">
               <ul>
                   <li gridster-item="label" ng-repeat="label in cohortChartContainerLabels">
-                    <ts-cohort-chart repeat-done class="chart-container"></ts-cohort-chart>
+                    <ts-cohort-chart  class="chart-container"
+                                      ts-gridster-item="gridsterItem"
+                                      ts-gridster="gridster"
+                                      ts-label="label"></ts-cohort-chart>
                   </li>
               </ul>
             </div>
