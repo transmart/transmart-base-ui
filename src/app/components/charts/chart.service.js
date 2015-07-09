@@ -321,7 +321,7 @@ angular.module('transmartBaseUi')
                         cs.dims[label.label] = cs.cross.dimension(function (d) {
                           return d.labels[label.label] === undefined ? 'UnDef' : d.labels[label.label];
                         });
-                        cs.grps[label.label] = cs.dims[label.label].group()
+                        cs.grps[label.label] = cs.dims[label.label].group();
                         var chart = _pieChart(cs.dims[label.label], cs.grps[label.label], '#cohort-chart-' + label.ids);
                         chart.id = label.ids;
                         chart.type = 'PIECHART';
@@ -331,7 +331,7 @@ angular.module('transmartBaseUi')
                         cs.dims[label.label] = cs.cross.dimension(function (d) {
                           return d.labels[label.label] === undefined ? 'UnDef' : d.labels[label.label];
                         });
-                        cs.grps[label.label] = cs.dims[label.label].group()
+                        cs.grps[label.label] = cs.dims[label.label].group();
                         var max = cs.dims[label.label].top(1)[0].labels[label.label];
                         var min = cs.dims[label.label].bottom(1)[0].labels[label.label];
                         var chart = _barChart(cs.dims[label.label], cs.grps[label.label], '#cohort-chart-' + label.ids, min, max, label.name);
