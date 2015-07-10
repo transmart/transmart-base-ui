@@ -1,5 +1,6 @@
 'use strict';
 
+<<<<<<< HEAD
 angular.module('transmartBaseUi').factory('ChartService',
   ['Restangular', '$q', '$rootScope', '$timeout', 'AlertService',
   function (Restangular, $q, $rootScope, $timeout, AlertService) {
