@@ -50,7 +50,7 @@ angular.module('transmartBaseUi').controller('MainCtrl',
       // whether to push other items out of the way on move or resize
       pushing: true,
       // whether to automatically float items up so they stack
-      floating: true,
+      floating: false,
       // whether or not to have items of the same size switch places instead
       // of pushing down if they are the same size
       swapping: true,
@@ -110,6 +110,13 @@ angular.module('transmartBaseUi').controller('MainCtrl',
      * @param labels Corresponding to selected concepts
      */
     $scope.$on('prepareChartContainers', function (event, labels) {
+      _resizeGridster(labels, false);
+    });
+    $scope.$on('gridster-resized', function (event) {
+      _resizeGridster(false, true);
+    });
+
+    var _resizeGridster = function (labels, reDistribute) {
       // Get width of the full gridster grid
       var _gWidth = angular.element('#main-chart-container').width();
       // Calculate the number of columns in the grid according to full gridster
@@ -119,16 +126,20 @@ angular.module('transmartBaseUi').controller('MainCtrl',
       var _gCols  = _gCols%2 ? _gCols-1 : _gCols;
       $scope.gridsterOpts.columns = _gCols ;
       // For each label create a gridster item
+      if (!labels) labels = $scope.cohortChartContainerLabels;
       labels.forEach(function(label, index){
-        label.sizeX = _CONFIG.G_ITEM_SPAN_X;
-        label.sizeY = _CONFIG.G_ITEM_SPAN_Y;
-        // Spread items left to rigth
-        label.col = (index*label.sizeX)%_gCols ;
-        // And top to bottom
-        label.row = Math.floor((index*label.sizeX)/_gCols )*label.sizeY;
+        if(!label.sizeX || reDistribute){
+          console.log("fdgsf")
+          label.sizeX = _CONFIG.G_ITEM_SPAN_X;
+          label.sizeY = _CONFIG.G_ITEM_SPAN_Y;
+          // Spread items left to rigth
+          label.col = (index*label.sizeX)%_gCols ;
+          // And top to bottom
+          label.row = Math.floor((index*label.sizeX)/_gCols )*label.sizeY;
+        }
       });
       $scope.cohortChartContainerLabels = labels;
-    });
+    };
 
     /**
      * Removes a label and thus a concept form the selection
