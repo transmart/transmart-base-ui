@@ -30,6 +30,11 @@ angular.module('transmartBaseUi', [
           url: '/login',
           templateUrl: 'app/components/login/login.html',
           controller: 'LoginCtrl'
+        })
+        .state('connections', {
+          url: '/connections',
+          templateUrl: 'app/components/connections/connections.html',
+          controller: 'ConnectionsCtrl'
         });
 
       // =========================

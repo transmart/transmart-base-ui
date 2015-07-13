@@ -3,59 +3,10 @@
 angular.module('transmartBaseUi')
   .controller('SidebarCtrl', ['$scope', '$rootScope', '$window', 'Restangular', 'EndpointService', 'AlertService',
     function ($scope, $rootScope, $window, Restangular, EndpointService, AlertService) {
-    //------------------------------------------------------------------------------------------------------------------
-    // Scope
-    //------------------------------------------------------------------------------------------------------------------
-    $scope.endpoints = [];
-    $scope.formData = {};
-
-    $scope.endpointTabOpen = true;
 
     $scope.publicStudies = [];
     $scope.privateStudies = [];
 
-    $scope.clearSavedEndpoints = function () {
-      EndpointService.clearStoredEnpoints();
-      $scope.endpoints = EndpointService.getEndpoints();
-      _loadStudies();
-    };
-
-    $scope.addResource = function() {
-      var formData = $scope.formData;
-      if (formData.requestToken) {
-        EndpointService.addOAuthEndpoint(formData.title, formData.url, formData.requestToken)
-          .then(function() {
-            resetEndpointForm();
-            _loadStudies();
-          });
-      }
-      else {
-        EndpointService.addEndpoint(formData.title, formData.url);
-        resetEndpointForm();
-        _loadStudies();
-      }
-      $scope.endpointTabOpen = false;
-    };
-
-    $scope.navigateToAuthorizationPage = function() {
-      var url = $scope.formData.url;
-
-      // Cut off any '/'
-      if (url.substring(url.length-1, url.length) === '/') {
-        url = url.substring(0, url.length-1);
-      }
-
-      var authorizationUrl = url +
-        '/oauth/authorize?response_type=code&client_id=api-client&client_secret=api-client&redirect_uri=' +
-        url + '/oauth/verify';
-
-      $window.open(authorizationUrl, '_blank');
-    };
-
-
-    //------------------------------------------------------------------------------------------------------------------
-    // Helper functions
-    //------------------------------------------------------------------------------------------------------------------
     var _loadStudies = function () {
       var endpoints = EndpointService.getEndpoints();
       $scope.endpoints = endpoints;
@@ -89,23 +40,9 @@ angular.module('transmartBaseUi')
               });
             endpoint.status = 'error';
           });
-     };
-
-    $scope.populateDefaultApi = function(name, link) {
-      $scope.formData.title = name;
-      $scope.formData.url = link;
-      $scope.formData.requestToken = '';
     };
 
-    function resetEndpointForm() {
-      var formData = $scope.formData;
-      formData.title = '';
-      formData.url = '';
-      formData.requestToken = '';
-      formData.endpointForm.$setPristine();
-    }
+    EndpointService.registerNewEndpointEvent(_loadStudies);
 
-      _loadStudies();
-
-
+    _loadStudies();
   }]);
