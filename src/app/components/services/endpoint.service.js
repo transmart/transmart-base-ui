@@ -2,11 +2,17 @@
 
 angular.module('transmartBaseUi')
   .factory('EndpointService',
-  ['$rootScope', '$http', '$q', 'Restangular', '$cookies',
-    function ($rootScope, $http, $q, Restangular, $cookies) {
+  ['$rootScope', '$http', '$q', 'Restangular', '$cookies', '$window',
+    function ($rootScope, $http, $q, Restangular, $cookies, $window) {
 
       var _endpoints = [];
       var service = {};
+
+      var _newEndpointEvents = [];
+      service.triggerNewEndpointEvent = function () {
+        _newEndpointEvents.forEach(function(func){func();});
+      };
+      service.registerNewEndpointEvent = function(func){_newEndpointEvents.push(func)}
 
       service.getEndpoints = function() {
         return _endpoints;
@@ -23,6 +29,7 @@ angular.module('transmartBaseUi')
         endpoint.restangular = _newRestangularConfig(endpoint);
         // Add endpoint to the list
         _endpoints.push(endpoint);
+        service.triggerNewEndpointEvent();
       };
 
       service.addOAuthEndpoint = function(title, url, requestToken) {
@@ -67,7 +74,7 @@ angular.module('transmartBaseUi')
             endpoint.restangular = _newRestangularConfig(endpoint);
             // Add endpoint to the list
             _endpoints.push(endpoint);
-
+            service.triggerNewEndpointEvent();
             deferred.resolve(response);
           })
           .error(function (data) {
@@ -75,6 +82,19 @@ angular.module('transmartBaseUi')
           });
 
         return deferred.promise;
+      };
+
+      service.navigateToAuthorizationPage = function(url) {
+        // Cut off any '/'
+        if (url.substring(url.length-1, url.length) === '/') {
+          url = url.substring(0, url.length-1);
+        }
+
+        var authorizationUrl = url +
+          '/oauth/authorize?response_type=code&client_id=api-client&client_secret=api-client&redirect_uri=' +
+          url + '/oauth/verify';
+
+        $window.open(authorizationUrl, '_blank');
       };
 
       service.retrieveStoredEndpoints = function() {
@@ -90,6 +110,7 @@ angular.module('transmartBaseUi')
       service.clearStoredEnpoints = function(){
         $cookies.remove('endpoints' + $rootScope.globals.currentUser.authdata);
         _endpoints = [];
+        service.triggerNewEndpointEvent();
       };
 
       var _newRestangularConfig = function (end) {

@@ -8,7 +8,7 @@ angular.module('transmartBaseUi').controller('MainCtrl',
 
     $scope.$on('howManyStudiesLoaded', function(e, val){
       $scope.tuto = {openStep1: !val, disableStep1: val, openStep2: val};
-    })
+    });
 
     $scope.summaryLoading = false;
     $scope.summaryOpen = false;
@@ -77,7 +77,7 @@ angular.module('transmartBaseUi').controller('MainCtrl',
         handles: ['n', 'e', 's', 'w', 'ne', 'se', 'sw', 'nw'],
         resize: function(event, $element, widget) {
           // Resize chart container in an interactive way
-          angular.element("#cohort-chart-panel-" + widget.ids)
+          angular.element('#cohort-chart-panel-' + widget.ids)
             .width($element[0].clientWidth)
             .height($element[0].clientHeight);
         }
@@ -101,7 +101,7 @@ angular.module('transmartBaseUi').controller('MainCtrl',
       G_ITEM_SPAN_X: 3,
       // Number of rows a gridster item will occupy by default
       G_ITEM_SPAN_Y: 3,
-    }
+    };
 
     /**
      * Update quantity of containers necessary for displaying the graphs in
@@ -113,8 +113,9 @@ angular.module('transmartBaseUi').controller('MainCtrl',
       _resizeGridster(labels, false);
     });
     $scope.$on('gridster-resized', function (event, newS, obj) {
-      if(newS[0] < obj.currentSize -20)
+      if(newS[0] < obj.currentSize -20){
         _resizeGridster(false, true);
+      }
     });
 
     var _resizeGridster = function (labels, reDistribute) {
@@ -123,11 +124,11 @@ angular.module('transmartBaseUi').controller('MainCtrl',
       // Calculate the number of columns in the grid according to full gridster
       // grid size and the base square size. Adjust by -1 if number of columns
       // is not pair.
-      var _gCols  = Math.floor(_gWidth/_CONFIG.G_BASE_WIDTH)
-      var _gCols  = _gCols%2 ? _gCols-1 : _gCols;
+      var _gCols  = Math.floor(_gWidth/_CONFIG.G_BASE_WIDTH);
+      _gCols  = _gCols%2 ? _gCols-1 : _gCols;
       $scope.gridsterOpts.columns = _gCols ;
       // For each label create a gridster item
-      if (!labels) labels = $scope.cohortChartContainerLabels;
+      if (!labels) {labels = $scope.cohortChartContainerLabels;}
       labels.forEach(function(label, index){
         if(!label.sizeX || reDistribute){
           label.sizeX = _CONFIG.G_ITEM_SPAN_X;
@@ -165,8 +166,8 @@ angular.module('transmartBaseUi').controller('MainCtrl',
     var _updateCohortDisplay = function(noApply){
       $scope.cohortVal = ChartService.getSelectionValues();
       $scope.cohortLabels = ChartService.getLabels();
-      if(!noApply)$scope.$apply();
-    }
+      if(!noApply){$scope.$apply();}
+    };
     ChartService.registerFilterEvent(_updateCohortDisplay);
 
     /**
