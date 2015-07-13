@@ -90,8 +90,8 @@ angular.module('transmartBaseUi', [
       cfpLoadingBarProvider.includeSpinner = false;
   }])
 
-  .run(['$rootScope', '$location', '$cookieStore', '$http', 'EndpointService', '$cookies',
-    function ($rootScope, $location, $cookieStore, $http, EndpointService, $cookies) {
+  .run(['$rootScope', '$location', '$cookieStore', '$http', 'EndpointService',
+    function ($rootScope, $location, $cookieStore, $http, EndpointService) {
 
       EndpointService.addEndpoint('Local', 'http://localhost:8080/transmart-rest-api');
 

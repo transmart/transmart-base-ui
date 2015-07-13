@@ -9,7 +9,7 @@ angular.module('transmartBaseUi')
 
     var _updateEndpoints = function (){
       $scope.endpoints = EndpointService.getEndpoints();
-    }
+    };
     EndpointService.registerNewEndpointEvent(_updateEndpoints);
 
     $scope.clearSavedEndpoints = EndpointService.clearStoredEnpoints;
@@ -44,6 +44,6 @@ angular.module('transmartBaseUi')
       formData.url = '';
       formData.requestToken = '';
       formData.endpointForm.$setPristine();
-    }
+    };
 
   }]);

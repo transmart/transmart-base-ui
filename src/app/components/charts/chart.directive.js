@@ -10,7 +10,7 @@ angular.module('transmartBaseUi')
         tsGridsterItem: '=',
         tsLabel: '='
       },
-      link: function(scope, el, attr) {
+      link: function(scope, el) {
         var _chart = ChartService.createCohortChart(scope.tsLabel, el.find('div')[2]);
 
         _chart.on('postRedraw', ChartService.triggerFilterEvent);

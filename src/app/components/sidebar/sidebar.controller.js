@@ -22,7 +22,7 @@ angular.module('transmartBaseUi')
             endpoint.status = 'success';
             $scope.studies = studies;
             $scope.$emit('howManyStudiesLoaded', $scope.studies.length);
-            if(studies.length > 0) $scope.endpointTabOpen = true;
+            if(studies.length > 0) {$scope.endpointTabOpen = true;}
             // Checking if studies are public or private
             $scope.studies.forEach(function(study){
               study.endpoint = endpoint; // Keep reference to endpoint

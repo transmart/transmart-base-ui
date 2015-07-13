@@ -19,7 +19,7 @@ describe('ConnectionsCtrlTests', function() {
   beforeEach(function (){
     scope.formData.endpointForm = {};
     scope.formData.endpointForm.$setPristine = function (){};
-  })
+  });
 
   describe('OnStartup', function() {
     it('is defined', function() {
@@ -30,7 +30,7 @@ describe('ConnectionsCtrlTests', function() {
   describe('Form actions', function() {
 
     it('populates the form correctly', function() {
-      scope.populateDefaultApi("foo", "bar");
+      scope.populateDefaultApi('foo', 'bar');
 
       expect(scope.formData.title).toEqual('foo');
       expect(scope.formData.url).toEqual('bar');
