@@ -112,8 +112,9 @@ angular.module('transmartBaseUi').controller('MainCtrl',
     $scope.$on('prepareChartContainers', function (event, labels) {
       _resizeGridster(labels, false);
     });
-    $scope.$on('gridster-resized', function (event) {
-      _resizeGridster(false, true);
+    $scope.$on('gridster-resized', function (event, newS, obj) {
+      if(newS[0] < obj.currentSize -20)
+        _resizeGridster(false, true);
     });
 
     var _resizeGridster = function (labels, reDistribute) {
@@ -129,7 +130,6 @@ angular.module('transmartBaseUi').controller('MainCtrl',
       if (!labels) labels = $scope.cohortChartContainerLabels;
       labels.forEach(function(label, index){
         if(!label.sizeX || reDistribute){
-          console.log("fdgsf")
           label.sizeX = _CONFIG.G_ITEM_SPAN_X;
           label.sizeY = _CONFIG.G_ITEM_SPAN_Y;
           // Spread items left to rigth
