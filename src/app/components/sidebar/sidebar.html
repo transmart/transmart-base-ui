@@ -3,6 +3,13 @@
       class="col-sm-3 col-md-2 sidebar"
       ng-controller="SidebarCtrl">
 
+
+    <label>Search studies</label>
+    <input  type="text"
+            class="form-control"
+            placeholder="Search term"
+            ng-model="searchTerm">
+
   <!-- START STUDIES -->
   <accordion close-others="status.oneAtATime">
 
@@ -20,7 +27,8 @@
     <study-accordion  acc-studies="publicStudies"
                       acc-title="'Public studies'"
                       study-action="displayStudySummaryStatistics"
-                      ng-if="publicStudies.length > 0">
+                      ng-if="publicStudies.length > 0"
+                      study-shown='searchTerm'>
     </study-accordion>
 
 
@@ -28,7 +36,8 @@
     <study-accordion  acc-studies="privateStudies"
                       acc-title="'Private studies'"
                       study-action="displayStudySummaryStatistics"
-                      ng-if="privateStudies.length > 0">
+                      ng-if="privateStudies.length > 0"
+                      study-shown='searchTerm'>
     </study-accordion>
 
   </accordion>

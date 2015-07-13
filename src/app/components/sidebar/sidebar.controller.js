@@ -6,6 +6,7 @@ angular.module('transmartBaseUi')
 
     $scope.publicStudies = [];
     $scope.privateStudies = [];
+    $scope.searchTerm = '';
 
     var _loadStudies = function () {
       var endpoints = EndpointService.getEndpoints();
