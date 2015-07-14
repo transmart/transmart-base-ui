@@ -191,10 +191,11 @@ var studyResponse = {
 describe('SidebarCtrlTests', function() {
   beforeEach(module('transmartBaseUi'));
 
-  var $controller, httpBackend, Restangular, scope, rootScope;
+  var $controller, httpBackend, Restangular, scope, rootScope, EndpointService;
 
-  beforeEach(inject(function (_$controller_, _$httpBackend_, _$rootScope_, _Restangular_) {
+  beforeEach(inject(function (_$controller_, _$httpBackend_, _$rootScope_, _Restangular_, _EndpointService_) {
         httpBackend = _$httpBackend_;
+        EndpointService = _EndpointService_;
         httpBackend.whenGET('http://localhost:8080/transmart-rest-api/studies').respond(emptyResponse);
         Restangular = _Restangular_;
         scope = _$rootScope_.$new();
@@ -223,15 +224,10 @@ describe('SidebarCtrlTests', function() {
     });
   });
 
-  describe('Adding a successful endpoint', function() {
+  describe('Loading studies', function() {
     beforeEach(function(){
-      scope.formData.url = 'www.mock.com';
-      scope.formData.title = 'Mock';
-      scope.formData.requestToken = null;
-      scope.formData.endpointForm = {};
-      scope.formData.endpointForm.$setPristine = function (){};
+      EndpointService.addEndpoint('Mock', 'www.mock.com');
       httpBackend.expectGET('www.mock.com/studies').respond(studyResponse);
-      scope.addResource();
       httpBackend.flush();
     });
 
@@ -245,10 +241,6 @@ describe('SidebarCtrlTests', function() {
       expect(scope.endpoints[1].status).toEqual('success');
     });
 
-    it('has studies with HAL properties', function() {
-      expect(scope.publicStudies[0]._embedded.ontologyTerm.name).not.toEqual(undefined);
-    });
-
     it('has studies with endpoint attached', function() {
       expect(scope.publicStudies[0].endpoint).not.toEqual(undefined);
     });
@@ -258,15 +250,10 @@ describe('SidebarCtrlTests', function() {
     });
   });
 
-  describe('Adding a failing endpoint', function() {
+  describe('With a failing endpoint', function() {
     beforeEach(function(){
-      scope.formData.url = 'www.mock.com';
-      scope.formData.title = 'Mock';
-      scope.formData.requestToken = null;
-      scope.formData.endpointForm = {};
-      scope.formData.endpointForm.$setPristine = function (){};
-      httpBackend.expectGET('www.mock.com/studies').respond(500, '');
-      scope.addResource();
+      EndpointService.addEndpoint('Mock', 'www.mock.com');
+      httpBackend.expectGET('www.mock.com/studies').respond(500);
       httpBackend.flush();
     });
 
@@ -279,31 +266,4 @@ describe('SidebarCtrlTests', function() {
       expect(scope.endpoints[1].status).toEqual('error');
     });
   });
-
-  describe('Populating the form with a default API', function() {
-    beforeEach(function(){
-      scope.populateDefaultApi('whatitscalled', 'whereitgoes');
-    });
-
-    it('populates the form correctly', function() {
-      expect(scope.formData.title ).toEqual('whatitscalled');
-      expect(scope.formData.url).toEqual('whereitgoes');
-      expect(scope.formData.requestToken).toEqual('');
-    });
-  });
-
-  describe('Clearing the endpoints', function() {
-    beforeEach(function(){
-      rootScope.globals = {};
-      rootScope.globals.currentUser = {};
-      rootScope.globals.currentUser.authdata = ''
-      scope.clearSavedEndpoints();
-    });
-
-    it('has not endpoints after clearing', function() {
-      expect(scope.endpoints.length).toEqual(0);
-    });
-  });
-
-
 });

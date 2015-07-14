@@ -20,7 +20,7 @@ describe('Unit testing cohort-grid directive', function() {
   describe('Empty template', function () {
     beforeEach(function() {
       // Compile a piece of HTML containing the directive
-      element = $compile("<cohort-grid></cohort-grid>")(scope);
+      element = $compile('<cohort-grid></cohort-grid>')(scope);
       scope.$digest();
     });
 

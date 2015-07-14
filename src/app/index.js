@@ -30,6 +30,11 @@ angular.module('transmartBaseUi', [
           url: '/login',
           templateUrl: 'app/components/login/login.html',
           controller: 'LoginCtrl'
+        })
+        .state('connections', {
+          url: '/connections',
+          templateUrl: 'app/components/connections/connections.html',
+          controller: 'ConnectionsCtrl'
         });
 
       // =========================
@@ -85,8 +90,8 @@ angular.module('transmartBaseUi', [
       cfpLoadingBarProvider.includeSpinner = false;
   }])
 
-  .run(['$rootScope', '$location', '$cookieStore', '$http', 'EndpointService', '$cookies',
-    function ($rootScope, $location, $cookieStore, $http, EndpointService, $cookies) {
+  .run(['$rootScope', '$location', '$cookieStore', '$http', 'EndpointService',
+    function ($rootScope, $location, $cookieStore, $http, EndpointService) {
 
       EndpointService.addEndpoint('Local', 'http://localhost:8080/transmart-rest-api');
 
