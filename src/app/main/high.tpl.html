@@ -1,0 +1,15 @@
+<div ng-controller="HighCtrl">
+  <div  class="well well-lg ts-node-well cwell"
+        data-drop="true"
+        ng-model='droppedNode'
+        jqyoui-droppable="{multiple:true, onDrop:'onNodeDropEvent(droppedNode)'}">
+
+    <div class="ts-node-name">
+      {{concept.name}}
+      <br>
+      <span class="ts-smaller-font">
+        {{concept.study._embedded.ontologyTerm.name}}
+      </span>
+    </div>
+  </div>
+</div>

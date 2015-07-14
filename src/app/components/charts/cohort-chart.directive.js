@@ -4,7 +4,7 @@ angular.module('transmartBaseUi')
   .directive('tsCohortChart', ['ChartService', '$compile', function(ChartService, $compile) {
     return {
       restrict: 'E',
-      templateUrl: 'app/components/charts/directives/cohort-chart.tpl.html',
+      templateUrl: 'app/components/charts/cohort-chart.tpl.html',
       scope: {
         tsGridster: '=',
         tsGridsterItem: '=',
