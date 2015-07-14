@@ -8,7 +8,8 @@ angular.module('transmartBaseUi')
       studies: '=accStudies',
       title: '=accTitle',
       saction: '&studyAction',
-      naction: '&nodeAction'
+      naction: '&nodeAction',
+      studyShown: '='
 
     },
     templateUrl: 'app/components/study-accordion/study-accordion.tpl.html'

@@ -35,8 +35,12 @@
 
 <span><h4>{{title}}</h4></span>
 
-<div ng-repeat="study in studies" ng-controller="StudyCtrl" class="ts-study-accordion">
-  <accordion-group  is-open="study.open" >
+<div  ng-repeat="study in studies"
+      ng-controller="StudyCtrl"
+      class="ts-study-accordion">
+
+  <accordion-group  is-open="study.open"
+                    ng-if="studyShown === '' || study._embedded.ontologyTerm.name.includes(studyShown)">
     <!--heading-->
     <accordion-heading ng-click="getTree(study); saction()(study);" >
       <span ng-click="getTree(study); saction()(study);" >
@@ -64,5 +68,6 @@
       <small>Data could not be loaded.</small>
     </div>
   </accordion-group>
+
 </div>
     <hr>

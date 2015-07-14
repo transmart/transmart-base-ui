@@ -236,7 +236,9 @@ angular.module('transmartBaseUi').factory('ChartService',
    * @private
    */
   var _removeAllLabelFilters = function () {
-    for (var key in cs.dims) {cs.dims[key].filterAll();}
+    _.each(cs.dims, function(dim){dim.filterAll();});
+    dc.filterAll();
+    dc.redrawAll();
   };
 
   /**
@@ -255,6 +257,7 @@ angular.module('transmartBaseUi').factory('ChartService',
           _addLabel(obs, node);
           // Check if the subject of the observation is already present
           var found = _.findWhere(cs.subjects, {id: obs._embedded.subject.id});
+
           if (found){
             found.labels[obs.label] = obs.value;
           } else {
@@ -314,8 +317,7 @@ angular.module('transmartBaseUi').factory('ChartService',
    * @private
    */
   var _populateCohortCrossfilter = function () {
-    //
-    _removeAllLabelFilters;
+    _removeAllLabelFilters();
     cs.cross.remove();
     cs.cross.add(cs.subjects);
   };
