@@ -58,6 +58,18 @@ angular.module('transmartBaseUi').factory('ChartService',
     return _barChart;
   };
 
+  var _numDisplay = function (cDimension, cGroup, el){
+    var _number = dc.numberDisplay(el);
+    _number.group(cGroup)
+      .html({
+        one:'%number',
+        some:'%number',
+        none:'%number'
+      })
+      .formatNumber(d3.format('f'));
+    return _number;
+  }
+
   /**
    * Create dc.js box plot
    */
@@ -196,6 +208,20 @@ angular.module('transmartBaseUi').factory('ChartService',
   };
   chartService.reset();
 
+  var _getType = function (value) {
+    var _type = typeof value;
+    if(_type === 'string'){
+      if(value === 'E' || value === 'MRNA'){
+        _type = 'highdim';
+      }
+    } else if (_type === 'number'){
+      if((value % 1) != 0) {
+        _type = 'float';
+      }
+    }
+    return _type;
+  }
+
   /**
    * Add new label to list and check data type
    * @param label
@@ -212,7 +238,7 @@ angular.module('transmartBaseUi').factory('ChartService',
         // Create the new label object
         label = {
           label: obs.label,
-          type: typeof obs.value,
+          type: _getType(obs.value),
           name: _getLastToken(obs.label),
           ids: cs.chartId++,
           study: node.study,
@@ -222,12 +248,9 @@ angular.module('transmartBaseUi').factory('ChartService',
       } else {
         AlertService.add('danger', 'Max number of dimensions reached !', 2000);
       }
+    } else {
+      label.type = _getType(obs.value);
     }
-    // Check if type is floating point
-    // *** In some cases, within the same concept, some values are integer and
-    // *** others float
-    if(label && label.type === 'number' && (obs.value % 1) != 0)
-      label.type = 'float';
   };
 
   /**
@@ -339,8 +362,13 @@ angular.module('transmartBaseUi').factory('ChartService',
 
     if (!label.resolved) {
       var _chart;
+      // Create a number display if highdim
+      if (label.type === 'highdim') {
+        _defaultDim();
+        var _chart = _numDisplay(cs.dims[label.label], cs.grps[label.label], el);
+        _chart.type = 'NUMBER';
       // Create a PIECHART if categorical
-      if (label.type === 'string' || label.type === 'object') {
+      } else if (label.type === 'string' || label.type === 'object') {
         _defaultDim();
         var _chart = _pieChart(cs.dims[label.label], cs.grps[label.label], el);
         _chart.type = 'PIECHART';

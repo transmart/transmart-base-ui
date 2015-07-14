@@ -166,7 +166,7 @@ angular.module('transmartBaseUi').controller('MainCtrl',
     var _updateCohortDisplay = function(noApply){
       $scope.cohortVal = ChartService.getSelectionValues();
       $scope.cohortLabels = ChartService.getLabels();
-      if(!noApply){$scope.$apply();}
+      if (!$scope.$$phase) $scope.$apply();
     };
     ChartService.registerFilterEvent(_updateCohortDisplay);
 

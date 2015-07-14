@@ -6,5 +6,12 @@
                 chart-drag-handle">
       {{title | cutstring:false:cutOff:' ...'}}
     </div>
-    <div class="panel-body inner-chart"></div>
+    <div class="panel-body inner-chart">
+      <div ng-if="number">
+
+        <span class="number-display-title">HIGH DIMENSIONAL CONCEPT</span>
+        <br>
+        <span>Subjects selected:</span>
+      </div>
+    </div>
   </div>
