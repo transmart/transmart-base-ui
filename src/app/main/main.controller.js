@@ -125,7 +125,7 @@ angular.module('transmartBaseUi').controller('MainCtrl',
       // grid size and the base square size. Adjust by -1 if number of columns
       // is not pair.
       var _gCols  = Math.floor(_gWidth/_CONFIG.G_BASE_WIDTH);
-      _gCols  = _gCols%2 ? _gCols-1 : _gCols;
+      _gCols  = _gCols%3 ? (_gCols%3 === 1 ? _gCols-1 : _gCols+1) : _gCols;
       $scope.gridsterOpts.columns = _gCols ;
       // For each label create a gridster item
       if (!labels) {labels = $scope.cohortChartContainerLabels;}
