@@ -18,6 +18,11 @@ angular.module('transmartBaseUi')
         return _endpoints;
       };
 
+      service.remove =  function (endpoint) {
+        var _in = _endpoints.indexOf(endpoint);
+        if(_in >= 0){_endpoints.splice(_in, 1)};
+      }
+
       service.addEndpoint = function(title, url) {
         url = _cleanUrl(url);
         // Store meta data and restangular instance in object
