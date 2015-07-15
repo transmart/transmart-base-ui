@@ -46,4 +46,6 @@ angular.module('transmartBaseUi')
       formData.endpointForm.$setPristine();
     };
 
+    $scope.removeEndpoint = EndpointService.remove;
+
   }]);

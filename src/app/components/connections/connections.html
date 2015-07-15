@@ -66,16 +66,19 @@
         <th>Name</th>
         <th>Url</th>
         <th>Expiration</th>
+        <th></th>
       </tr>
 
       <tr ng-repeat="endpoint in endpoints">
         <td>      <i class="glyphicon"
-                    ng-class="{'glyphicon-ok': endpoint.status == 'local',
-                                'glyphicon-ok success-color': endpoint.status == 'success',
-                                'glyphicon-remove': endpoint.status == 'error'}"></td>
+                    ng-class="{
+                                'glyphicon-ok text-success': endpoint.status == 'success',
+                                'glyphicon-warning-sign text-warning': endpoint.status == 'error'}"></td>
         <td>{{endpoint.title}}</td>
         <td>{{endpoint.url}}</td>
         <td>{{endpoint.expiresAt | date:'dd-M H:mm'}}</td>
+        <td><i class="glyphicon glyphicon-remove-circle text-danger"
+                ng-click="removeEndpoint(endpoint)"></td>
       </tr>
     </table>
 

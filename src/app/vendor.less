@@ -72,3 +72,29 @@ h3,
     transform: rotate(359deg);
   }
 }
+
+//Prevent page jump when scroll bar appears when gridster items are dragged
+html {
+  overflow-y: scroll;
+}
+
+// Brand Colors
+@brand-primary: #2f6997;
+@brand-success: #31bc31;
+@brand-warning: #eba13e;
+@brand-danger: #eb3e3e;
+@brand-info: #6491b4;
+
+// Form States
+@state-warning-text: #b66a06;
+@state-warning-bg: #fff5e6;
+@state-warning-border: darken(spin(@state-warning-bg, -10), 3%);
+@state-danger-text: #b60606;
+@state-danger-bg: #ffe6e6;
+@state-danger-border: darken(spin(@state-danger-bg, -10), 3%);
+@state-success-text: #059105;
+@state-success-bg: #cce1cc;
+@state-success-border: darken(spin(@state-success-bg, -10), 5%);
+@state-info-text: #6491b4;
+@state-info-bg: #b8c2ca;
+@state-info-border: darken(spin(@state-info-bg, -10), 7%);
