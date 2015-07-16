@@ -186,7 +186,7 @@ angular.module('transmartBaseUi').factory('ChartService',
     cs.charts.forEach(function(chart){
       chart.savedFilters = chart.filters();
     });
-  }
+  };
 
   var _reapplyFilters = function(){
     cs.charts.forEach(function(chart){
@@ -195,7 +195,7 @@ angular.module('transmartBaseUi').factory('ChartService',
       });
     });
     dc.redrawAll();
-  }
+  };
 
   /****************************************************************************
    * Cohort chart service
