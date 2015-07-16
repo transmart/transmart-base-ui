@@ -285,11 +285,9 @@ angular.module('transmartBaseUi').factory('ChartService',
    * @private
    */
   var _populateCohortCrossfilter = function () {
-    _saveFilters();
     _removeAllLabelFilters();
     cs.cross.remove();
     cs.cross.add(cs.subjects);
-    _reapplyFilters();
   };
 
   /**
@@ -319,10 +317,12 @@ angular.module('transmartBaseUi').factory('ChartService',
         }
       });
       // Add all the subjects to a crossfilter instance
+      _saveFilters();
       _populateCohortCrossfilter();
       // Notify the applicable controller that the chart directive instances
       // can be created
       $rootScope.$broadcast('prepareChartContainers', cs.labels);
+      _reapplyFilters();
 
       _deferred.resolve();
     }, function (err) {
@@ -346,19 +346,22 @@ angular.module('transmartBaseUi').factory('ChartService',
         }
       }
       //Update crossfilter instance
+      _saveFilters();
       _populateCohortCrossfilter();
       //Remove dimension and group associated with the label
       cs.dims[label.label].dispose();
       cs.numDim--;
       cs.grps[label.label].dispose();
+      //Remove the chart
+      var _i = _.findIndex(cs.charts, function(c){return c.id === label.ids;});
+      if(_i >= 0){cs.charts.splice(_i, 1);}
       //Finally remove label
       cs.labels = _.reject(cs.labels, function(el) {
         return el.label === label.label;
       });
       //Update charts
       $rootScope.$broadcast('prepareChartContainers',cs.labels);
-      dc.redrawAll();
-
+      _reapplyFilters();
   };
 
   /**
