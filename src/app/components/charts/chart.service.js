@@ -182,6 +182,21 @@ angular.module('transmartBaseUi').factory('ChartService',
     return _deferred.promise;
   };
 
+  var _saveFilters = function(){
+    cs.charts.forEach(function(chart){
+      chart.savedFilters = chart.filters();
+    });
+  };
+
+  var _reapplyFilters = function(){
+    cs.charts.forEach(function(chart){
+      chart.savedFilters.forEach(function(filter){
+        chart.filter(filter);
+      });
+    });
+    dc.redrawAll();
+  };
+
   /****************************************************************************
    * Cohort chart service
    */
@@ -270,9 +285,11 @@ angular.module('transmartBaseUi').factory('ChartService',
    * @private
    */
   var _populateCohortCrossfilter = function () {
+    _saveFilters();
     _removeAllLabelFilters();
     cs.cross.remove();
     cs.cross.add(cs.subjects);
+    _reapplyFilters();
   };
 
   /**
@@ -340,7 +357,6 @@ angular.module('transmartBaseUi').factory('ChartService',
       });
       //Update charts
       $rootScope.$broadcast('prepareChartContainers',cs.labels);
-      dc.filterAll();
       dc.redrawAll();
 
   };
