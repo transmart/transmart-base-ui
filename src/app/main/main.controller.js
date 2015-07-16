@@ -163,10 +163,10 @@ angular.module('transmartBaseUi').controller('MainCtrl',
      * grid.
      * @private
      */
-    var _updateCohortDisplay = function(noApply){
+    var _updateCohortDisplay = function(){
       $scope.cohortVal = ChartService.getSelectionValues();
       $scope.cohortLabels = ChartService.getLabels();
-      if (!$scope.$$phase) $scope.$apply();
+      if (!$scope.$$phase) {$scope.$apply();}
     };
     ChartService.registerFilterEvent(_updateCohortDisplay);
 
@@ -182,7 +182,7 @@ angular.module('transmartBaseUi').controller('MainCtrl',
 
       ChartService.addNodeToActiveCohortSelection(node).then(function () {
         $scope.cohortUpdating = false;
-        _updateCohortDisplay(true);
+        _updateCohortDisplay();
       });
     };
 

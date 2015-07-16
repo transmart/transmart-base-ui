@@ -1,4 +1,5 @@
 'use strict';
+/*jshint camelcase: false */
 
 angular.module('transmartBaseUi')
   .factory('EndpointService',
@@ -12,7 +13,7 @@ angular.module('transmartBaseUi')
       service.triggerNewEndpointEvent = function () {
         _newEndpointEvents.forEach(function(func){func();});
       };
-      service.registerNewEndpointEvent = function(func){_newEndpointEvents.push(func)}
+      service.registerNewEndpointEvent = function(func){_newEndpointEvents.push(func);};
 
       service.getEndpoints = function() {
         return _endpoints;
@@ -20,8 +21,8 @@ angular.module('transmartBaseUi')
 
       service.remove =  function (endpoint) {
         var _in = _endpoints.indexOf(endpoint);
-        if(_in >= 0){_endpoints.splice(_in, 1)};
-      }
+        if(_in >= 0){_endpoints.splice(_in, 1);}
+      };
 
       service.addEndpoint = function(title, url) {
         url = _cleanUrl(url);
@@ -48,8 +49,10 @@ angular.module('transmartBaseUi')
           code: requestToken,
           redirect_uri: url + '/oauth/verify'
         };
+        /*jshint undef: false */
         //data must be URL encoded to be passed to the POST body
         data = $.param(data);
+        /*jshint undef: true */
 
         // Get the access_token using the request token (code)
         $http({

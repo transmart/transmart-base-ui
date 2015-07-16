@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('transmartBaseUi')
-  .directive('tsCohortChart', ['ChartService', '$compile', function(ChartService, $compile) {
+  .directive('tsCohortChart', ['ChartService', function(ChartService) {
     return {
       restrict: 'E',
       templateUrl: 'app/components/charts/cohort-chart.tpl.html',
@@ -17,7 +17,7 @@ angular.module('transmartBaseUi')
         _chart.on('postRedraw', ChartService.triggerFilterEvent);
         _chart.render();
 
-        if(_chart.type === 'NUMBER') {scope.number = true;};
+        if(_chart.type === 'NUMBER') {scope.number = true;}
 
         scope.$watchGroup(['tsGridsterItem.sizeX', 'tsGridsterItem.sizeY'],
           function(newValues, oldValues, scope) {

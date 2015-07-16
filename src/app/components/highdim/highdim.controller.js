@@ -16,7 +16,8 @@ angular.module('transmartBaseUi').controller('HighdimCtrl',
 
     $scope.getData = function (name) {
       $scope.restObj.one('?dataType='+name).get({}, {'Accept': 'application/octet-stream'}).then(function (data){
-        var message = ProtobufService.decode(data);
+        ProtobufService.decode(data);
+        //console.log(message);
       });
-    }
+    };
   }]);

@@ -1,4 +1,5 @@
 'use strict';
+/* jshint undef: false */
 
 angular.module('transmartBaseUi').factory('ChartService',
   ['Restangular', '$q', '$rootScope', '$timeout', 'AlertService',
@@ -7,7 +8,7 @@ angular.module('transmartBaseUi').factory('ChartService',
   var chartService = {};
 
   var _filterEvent = function () {};
-  chartService.registerFilterEvent = function (func) {_filterEvent = func;}
+  chartService.registerFilterEvent = function (func) {_filterEvent = func;};
   chartService.triggerFilterEvent = function (){_filterEvent();};
 
   /**
@@ -68,7 +69,7 @@ angular.module('transmartBaseUi').factory('ChartService',
       })
       .formatNumber(d3.format('f'));
     return _number;
-  }
+  };
 
   /**
    * Create dc.js box plot
@@ -82,7 +83,7 @@ angular.module('transmartBaseUi').factory('ChartService',
       .y(d3.scale.linear().domain([min-(0.1*(max-min)), max+(0.1*(max-min))]))
       .xAxis().tickValues([]);
     return _bp;
-  }
+  };
 
   /**
    * Create dc.js pie chart
@@ -159,7 +160,7 @@ angular.module('transmartBaseUi').factory('ChartService',
 
       magicConcepts.forEach(function(concept){
         ss.dims[concept] = ss.cross.dimension(function(d){
-          return d[concept];})
+          return d[concept];});
         ss.grps[concept] = ss.dims[concept].group();
 
         if (typeof sub[0][concept] === 'string' ||
@@ -215,12 +216,12 @@ angular.module('transmartBaseUi').factory('ChartService',
         _type = 'highdim';
       }
     } else if (_type === 'number'){
-      if((value % 1) != 0) {
+      if((value % 1) !== 0) {
         _type = 'float';
       }
     }
     return _type;
-  }
+  };
 
   /**
    * Add new label to list and check data type
@@ -262,6 +263,16 @@ angular.module('transmartBaseUi').factory('ChartService',
     _.each(cs.dims, function(dim){dim.filterAll();});
     dc.filterAll();
     dc.redrawAll();
+  };
+
+  /**
+   * Create the Crossfilter instance from the subject data
+   * @private
+   */
+  var _populateCohortCrossfilter = function () {
+    _removeAllLabelFilters();
+    cs.cross.remove();
+    cs.cross.add(cs.subjects);
   };
 
   /**
@@ -311,7 +322,6 @@ angular.module('transmartBaseUi').factory('ChartService',
   chartService.removeLabel = function (label) {
       // Remove label from subjects and remove subjects no longer associated
       // with any label
-      console.log(cs.subjects)
       for (var i = 0; i < cs.subjects.length; i++) {
         delete cs.subjects[i].labels[label.label];
         if (_.size(cs.subjects[i].labels) === 0){
@@ -319,7 +329,7 @@ angular.module('transmartBaseUi').factory('ChartService',
         }
       }
       //Update crossfilter instance
-      _populateCohortCrossfilter;
+      _populateCohortCrossfilter();
       //Remove dimension and group associated with the label
       cs.dims[label.label].dispose();
       cs.numDim--;
@@ -336,16 +346,6 @@ angular.module('transmartBaseUi').factory('ChartService',
   };
 
   /**
-   * Create the Crossfilter instance from the subject data
-   * @private
-   */
-  var _populateCohortCrossfilter = function () {
-    _removeAllLabelFilters();
-    cs.cross.remove();
-    cs.cross.add(cs.subjects);
-  };
-
-  /**
    * Create the charts for each selected label
    * TODO: Leave the existing charts in place, and only add the new ones
    * TODO: Enable removing specific charts
@@ -354,35 +354,36 @@ angular.module('transmartBaseUi').factory('ChartService',
   chartService.createCohortChart = function (label, el) {
     var _defaultDim = function () {
       cs.dims[label.label] = cs.cross.dimension(function (d) {
-        return d.labels[label.label] === undefined
-          ? 'UnDef' : d.labels[label.label];
+        return d.labels[label.label] === undefined ? 'UnDef' : d.labels[label.label];
       });
       cs.grps[label.label] = cs.dims[label.label].group();
     };
 
     if (!label.resolved) {
       var _chart;
+      var _max;
+      var _min;
       // Create a number display if highdim
       if (label.type === 'highdim') {
         _defaultDim();
-        var _chart = _numDisplay(cs.dims[label.label], cs.grps[label.label], el);
+        _chart = _numDisplay(cs.dims[label.label], cs.grps[label.label], el);
         _chart.type = 'NUMBER';
       // Create a PIECHART if categorical
       } else if (label.type === 'string' || label.type === 'object') {
         _defaultDim();
-        var _chart = _pieChart(cs.dims[label.label], cs.grps[label.label], el);
+        _chart = _pieChart(cs.dims[label.label], cs.grps[label.label], el);
         _chart.type = 'PIECHART';
       // Create a BARCHART if numerical
       } else if (label.type === 'number') {
         _defaultDim();
-        var _max = cs.dims[label.label].top(1)[0].labels[label.label];
-        var _min = cs.dims[label.label].bottom(1)[0].labels[label.label];
-        var _chart = _barChart(cs.dims[label.label], cs.grps[label.label],
+        _max = cs.dims[label.label].top(1)[0].labels[label.label];
+        _min = cs.dims[label.label].bottom(1)[0].labels[label.label];
+        _chart = _barChart(cs.dims[label.label], cs.grps[label.label],
           el, _min, _max, label.name);
         _chart.type = 'BARCHART';
       // Create a BOXPLOT if floating point values
       } else if (label.type === 'float'){
-        cs.dims[label.label] = cs.cross.dimension(function (d) {
+        cs.dims[label.label] = cs.cross.dimension(function () {
           return label.name;
         });
         cs.grps[label.label] = cs.dims[label.label].group().reduce(
@@ -399,9 +400,9 @@ angular.module('transmartBaseUi').factory('ChartService',
           }
         );
         var _it = cs.grps[label.label].top(1)[0].value;
-        var _max = _.max(_it);
-        var _min = _.min(_it);
-        var _chart = _boxPlot(cs.dims[label.label], cs.grps[label.label],
+        _max = _.max(_it);
+        _min = _.min(_it);
+        _chart = _boxPlot(cs.dims[label.label], cs.grps[label.label],
            el, _min, _max);
         _chart.type = 'BOXPLOT';
       }
@@ -462,7 +463,7 @@ angular.module('transmartBaseUi').factory('ChartService',
 
       _chart.render();
     }
-  }
+  };
 
   /**
    * Return the values for the current selection in cohort

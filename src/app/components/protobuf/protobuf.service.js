@@ -1,10 +1,11 @@
 'use strict';
+/* jshint undef: false */
 
 angular.module('transmartBaseUi').factory('ProtobufService', [function(){
   var service = {};
 
   //Load proto file
-  var _builder = dcodeIO.ProtoBuf.loadProtoFile("/app/components/protobuf/highdim.proto");
+  var _builder = dcodeIO.ProtoBuf.loadProtoFile('/app/components/protobuf/highdim.proto');
   _builder = _builder.build('highdim');
 
   service.decode = function (buffer) {
