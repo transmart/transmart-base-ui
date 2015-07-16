@@ -197,6 +197,37 @@ angular.module('transmartBaseUi').factory('ChartService',
     dc.redrawAll();
   };
 
+  var _groupCharts = function (chart1, chart2) {
+    var _combinationLabel = {
+      ids: cs.chartId++,
+      label: [chart1.tsLabel, chart2.tsLabel],
+      name: chart1.name + " - " + chart2.name,
+      resolved: false,
+      //TODO: manage multiple studies
+      study: chart1.study,
+      type: 'combination'
+    };
+    cs.labels.push(_combinationLabel);
+    $rootScope.$broadcast('prepareChartContainers',cs.labels);
+
+  }
+
+  var _groupingChart = {};
+  chartService.groupCharts = function (newChart, turnOff) {
+    // If a first chart was already selected, group them together
+    if(_groupingChart.chartOne){
+      _groupCharts(newChart, _groupingChart.chartOne);
+      // Turn off both selection lights
+      _groupingChart.turnOff();
+      turnOff();
+      _groupingChart = {};
+    // If this is the first chart selected
+    }else{
+      _groupingChart.chartOne = newChart;
+      _groupingChart.turnOff = turnOff;
+    }
+  };
+
   /****************************************************************************
    * Cohort chart service
    */
@@ -364,6 +395,17 @@ angular.module('transmartBaseUi').factory('ChartService',
       _reapplyFilters();
   };
 
+  var _creatMultidimensionalChart = function (label, el) {
+    // Create new container for the combination chart
+    console.log(label)
+    //cs.labels.push()
+
+    cs.dims[label.label] = cs.cross.dimension(function (d) {
+      return d.labels[label.label] === undefined ? 'UnDef' : d.labels[label.label];
+    });
+    cs.grps[label.label] = cs.dims[label.label].group();
+  }
+
   /**
    * Create the charts for each selected label
    * TODO: Leave the existing charts in place, and only add the new ones
@@ -371,64 +413,69 @@ angular.module('transmartBaseUi').factory('ChartService',
    * @private
    */
   chartService.createCohortChart = function (label, el) {
-    var _defaultDim = function () {
-      cs.dims[label.label] = cs.cross.dimension(function (d) {
-        return d.labels[label.label] === undefined ? 'UnDef' : d.labels[label.label];
-      });
-      cs.grps[label.label] = cs.dims[label.label].group();
-    };
-
-    if (!label.resolved) {
-      var _chart;
-      var _max;
-      var _min;
-      // Create a number display if highdim
-      if (label.type === 'highdim') {
-        _defaultDim();
-        _chart = _numDisplay(cs.dims[label.label], cs.grps[label.label], el);
-        _chart.type = 'NUMBER';
-      // Create a PIECHART if categorical
-      } else if (label.type === 'string' || label.type === 'object') {
-        _defaultDim();
-        _chart = _pieChart(cs.dims[label.label], cs.grps[label.label], el);
-        _chart.type = 'PIECHART';
-      // Create a BARCHART if numerical
-      } else if (label.type === 'number') {
-        _defaultDim();
-        _max = cs.dims[label.label].top(1)[0].labels[label.label];
-        _min = cs.dims[label.label].bottom(1)[0].labels[label.label];
-        _chart = _barChart(cs.dims[label.label], cs.grps[label.label],
-          el, _min, _max, label.name);
-        _chart.type = 'BARCHART';
-      // Create a BOXPLOT if floating point values
-      } else if (label.type === 'float'){
-        cs.dims[label.label] = cs.cross.dimension(function () {
-          return label.name;
+    if(Array.isArray(label)){
+      return _creatMultidimensionalChart(label, el);
+    } else {
+      var _defaultDim = function () {
+        cs.dims[label.label] = cs.cross.dimension(function (d) {
+          return d.labels[label.label] === undefined ? 'UnDef' : d.labels[label.label];
         });
-        cs.grps[label.label] = cs.dims[label.label].group().reduce(
-          function(p,v) {
-            p.push(v.labels[label.label]);
-            return p;
-          },
-          function(p,v) {
-            p.splice(p.indexOf(v.labels[label.label]), 1);
-            return p;
-          },
-          function() {
-            return [];
-          }
-        );
-        var _it = cs.grps[label.label].top(1)[0].value;
-        _max = _.max(_it);
-        _min = _.min(_it);
-        _chart = _boxPlot(cs.dims[label.label], cs.grps[label.label],
-           el, _min, _max);
-        _chart.type = 'BOXPLOT';
+        cs.grps[label.label] = cs.dims[label.label].group();
+      };
+
+      if (!label.resolved) {
+        var _chart;
+        var _max;
+        var _min;
+        // Create a number display if highdim
+        if (label.type === 'highdim') {
+          _defaultDim();
+          _chart = _numDisplay(cs.dims[label.label], cs.grps[label.label], el);
+          _chart.type = 'NUMBER';
+        // Create a PIECHART if categorical
+        } else if (label.type === 'string' || label.type === 'object') {
+          _defaultDim();
+          _chart = _pieChart(cs.dims[label.label], cs.grps[label.label], el);
+          _chart.type = 'PIECHART';
+        // Create a BARCHART if numerical
+        } else if (label.type === 'number') {
+          _defaultDim();
+          _max = cs.dims[label.label].top(1)[0].labels[label.label];
+          _min = cs.dims[label.label].bottom(1)[0].labels[label.label];
+          _chart = _barChart(cs.dims[label.label], cs.grps[label.label],
+            el, _min, _max, label.name);
+          _chart.type = 'BARCHART';
+        // Create a BOXPLOT if floating point values
+        } else if (label.type === 'float'){
+          cs.dims[label.label] = cs.cross.dimension(function () {
+            return label.name;
+          });
+          cs.grps[label.label] = cs.dims[label.label].group().reduce(
+            function(p,v) {
+              p.push(v.labels[label.label]);
+              return p;
+            },
+            function(p,v) {
+              p.splice(p.indexOf(v.labels[label.label]), 1);
+              return p;
+            },
+            function() {
+              return [];
+            }
+          );
+          var _it = cs.grps[label.label].top(1)[0].value;
+          _max = _.max(_it);
+          _min = _.min(_it);
+          _chart = _boxPlot(cs.dims[label.label], cs.grps[label.label],
+             el, _min, _max);
+          _chart.type = 'BOXPLOT';
+        }
+        label.resolved = true;
+        _chart.id = label.ids;
+        _chart.tsLabel = label;
+        cs.charts.push(_chart);
+        return _chart;
       }
-      label.resolved = true;
-      _chart.id = label.ids;
-      cs.charts.push(_chart);
-      return _chart;
     }
   };
 
