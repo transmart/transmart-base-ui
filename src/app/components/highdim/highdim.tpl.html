@@ -1,0 +1,25 @@
+<div ng-controller="HighdimCtrl">
+  <div  class="well well-lg ts-node-well cwell"
+        data-drop="true"
+        ng-model='droppedNode'
+        jqyoui-droppable="{multiple:true, onDrop:'onNodeDropEvent(droppedNode)'}">
+
+    <div class="ts-node-name">
+      {{concept.title}}
+      <br>
+      <span class="ts-smaller-font">
+        {{concept.study._embedded.ontologyTerm.name}}
+      </span>
+    </div>
+  </div>
+  <div ng-repeat="type in metadata">
+    <h2>Name: {{type.name}}</h2>
+    <h3>Assay constraints</h3>
+    <h5 ng-repeat="con in type.supportedAssayConstraints">{{con}}</h5>
+    <h3>Data constraints</h3>
+    <h5 ng-repeat="con in type.supportedDataConstraints">{{con}}</h5>
+    <h3>Projections constraints</h3>
+    <h5 ng-repeat="con in type.supportedProjections">{{con}}</h5>
+    <button class="btn btn-default" ng-click="getData(type.name)">Get this</button>
+  </div>
+</div>
