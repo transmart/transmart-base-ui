@@ -18,6 +18,7 @@ angular.module('transmartBaseUi')
         _chart.render();
 
         if(_chart.type === 'NUMBER') {scope.number = true;}
+        if(scope.tsLabel.type === 'number') {scope.linkIcon = true;}
 
         scope.$watchGroup(['tsGridsterItem.sizeX', 'tsGridsterItem.sizeY'],
           function(newValues, oldValues, scope) {
