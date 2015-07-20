@@ -2,7 +2,11 @@
 <script type="text/ng-template" id="tree-tooltip.html">
   <ul id="tree-tooltip">
     <li><a ng-click="displayMetadata(treeNode);"><i class="glyphicon glyphicon-info-sign"></i> &nbsp; Metadata </a></li>
-    <li ng-if="treeNode.isStudy"><a ng-click="displayMetadata(node);" ><i class="glyphicon glyphicon-stats" ng-click="displayMetadata(treeNode);"></i>  &nbsp; Summary Statistic</a></li>
+    <li ng-if="treeNode.isStudy">
+        <a ng-click="displaySummaryStatistics(treeNode);" >
+            <i class="glyphicon glyphicon-stats"></i>  &nbsp; Summary Statistic
+        </a>
+    </li>
   </ul>
 </script>
 
@@ -20,10 +24,10 @@
                                      '': type.cat(node),
                                      '': type.hid(node)}">
       </i> &nbsp;
-
     </i>
-     <a popover-template="'tree-tooltip.html'" popover-placement="right"
-        ng-click="displayToolTip($event, node)"> {{node.title | cutstring:false:divWidth:' ...'}}</a> &nbsp; &nbsp; <span class="quantity-num">({{node.total}})</span>
+    <a popover-template="'tree-tooltip.html'" popover-placement="right"
+        ng-click="displayToolTip($event, node)"> {{node.title | cutstring:false:divWidth:' ...'}}</a> &nbsp; &nbsp;
+    <span class="quantity-num">({{node.total}})</span>
   </div>
   <ol ui-tree-nodes="" ng-model="node.nodes" ng-class="{hidden: collapsed}">
     <li ng-repeat="node in node.nodes"
