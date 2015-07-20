@@ -1,4 +1,5 @@
 'use strict';
+/* jshint undef: false */
 
 describe('Metadata Controller Unit Testing', function() {
 
@@ -31,14 +32,14 @@ describe('Metadata Controller Unit Testing', function() {
 
     it ('should define metadata', function () {
       var $scope = {};
-      var controller = $controller('MetadataCtrl', { $scope: $scope });
+      $controller('MetadataCtrl', { $scope: $scope });
 
       expect($scope.metadata).toBeDefined();
     });
 
     it('should invoke $modalInstance.dismiss', function () {
       var $scope = {};
-      var controller = $controller('MetadataCtrl', { $scope: $scope });
+      $controller('MetadataCtrl', { $scope: $scope });
 
       $scope.close();
       expect($modalInstanceMock.dismiss).toHaveBeenCalled();

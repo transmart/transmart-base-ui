@@ -38,22 +38,30 @@
 
 <span><h4>{{title}}</h4></span>
 
-<div ng-repeat="study in studies" ng-controller="StudyCtrl" class="ts-study-accordion">
-  <accordion-group  is-open="study.open" >
-    <!--heading-->
-    <accordion-heading >
+<div  ng-repeat="study in studies"
+      ng-controller="StudyCtrl"
+      class="ts-study-accordion">
 
-      <i class="glyphicon glyphicon-folder-close ts-node-icon"
+      <!--<i class="glyphicon glyphicon-folder-close ts-node-icon"-->
+         <!--ng-click="getTree(study); saction()(study);" >-->
+      <!--</i>-->
+  <accordion-group  is-open="study.open"
+                    ng-if="studyShown === '' || study._embedded.ontologyTerm.name.includes(studyShown)">
+    <!--heading-->
+    <accordion-heading ng-click="getTree(study); saction()(study);" >
+      <span ng-click="getTree(study); saction()(study);" >
+      <a href="#" class="glyphicon glyphicon-folder-close ts-node-icon"
            ng-class="{
              'glyphicon-folder-close' : !opened,
              'glyphicon-folder-open' : opened
            }"
-           ng-click="getTree(study); saction()(study);" >
-      </i>
+           >
+      </a>
       &nbsp;
       <a popover-template="'tree-tooltip.html'" popover-placement="right"
          ng-click="displayToolTip($event, study)">{{study._embedded.ontologyTerm.name}}</a>
       <span class="glyphicon glyphicon-spin" ng-class="{'glyphicon-refresh': treeLoading}"></span>
+    </span>
     </accordion-heading>
     <!--content-->
     <div ui-tree id="tree-root" data-drag-enabled="treeConfig.drag" data-drop-enabled="false" ng-if="!callFailure">
@@ -66,5 +74,6 @@
       <small>Data could not be loaded.</small>
     </div>
   </accordion-group>
+
 </div>
     <hr>

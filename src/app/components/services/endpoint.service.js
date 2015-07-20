@@ -1,15 +1,27 @@
 'use strict';
+/*jshint camelcase: false */
 
 angular.module('transmartBaseUi')
   .factory('EndpointService',
-  ['$rootScope', '$http', '$q', 'Restangular', '$cookies',
-    function ($rootScope, $http, $q, Restangular, $cookies) {
+  ['$rootScope', '$http', '$q', 'Restangular', '$cookies', '$window',
+    function ($rootScope, $http, $q, Restangular, $cookies, $window) {
 
       var _endpoints = [];
       var service = {};
 
+      var _newEndpointEvents = [];
+      service.triggerNewEndpointEvent = function () {
+        _newEndpointEvents.forEach(function(func){func();});
+      };
+      service.registerNewEndpointEvent = function(func){_newEndpointEvents.push(func);};
+
       service.getEndpoints = function() {
         return _endpoints;
+      };
+
+      service.remove =  function (endpoint) {
+        var _in = _endpoints.indexOf(endpoint);
+        if(_in >= 0){_endpoints.splice(_in, 1);}
       };
 
       service.addEndpoint = function(title, url) {
@@ -23,6 +35,7 @@ angular.module('transmartBaseUi')
         endpoint.restangular = _newRestangularConfig(endpoint);
         // Add endpoint to the list
         _endpoints.push(endpoint);
+        service.triggerNewEndpointEvent();
       };
 
       service.addOAuthEndpoint = function(title, url, requestToken) {
@@ -36,8 +49,10 @@ angular.module('transmartBaseUi')
           code: requestToken,
           redirect_uri: url + '/oauth/verify'
         };
+        /*jshint undef: false */
         //data must be URL encoded to be passed to the POST body
         data = $.param(data);
+        /*jshint undef: true */
 
         // Get the access_token using the request token (code)
         $http({
@@ -67,7 +82,7 @@ angular.module('transmartBaseUi')
             endpoint.restangular = _newRestangularConfig(endpoint);
             // Add endpoint to the list
             _endpoints.push(endpoint);
-
+            service.triggerNewEndpointEvent();
             deferred.resolve(response);
           })
           .error(function (data) {
@@ -75,6 +90,19 @@ angular.module('transmartBaseUi')
           });
 
         return deferred.promise;
+      };
+
+      service.navigateToAuthorizationPage = function(url) {
+        // Cut off any '/'
+        if (url.substring(url.length-1, url.length) === '/') {
+          url = url.substring(0, url.length-1);
+        }
+
+        var authorizationUrl = url +
+          '/oauth/authorize?response_type=code&client_id=api-client&client_secret=api-client&redirect_uri=' +
+          url + '/oauth/verify';
+
+        $window.open(authorizationUrl, '_blank');
       };
 
       service.retrieveStoredEndpoints = function() {
@@ -90,6 +118,7 @@ angular.module('transmartBaseUi')
       service.clearStoredEnpoints = function(){
         $cookies.remove('endpoints' + $rootScope.globals.currentUser.authdata);
         _endpoints = [];
+        service.triggerNewEndpointEvent();
       };
 
       var _newRestangularConfig = function (end) {

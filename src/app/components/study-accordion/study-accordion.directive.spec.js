@@ -19,7 +19,7 @@ describe('Unit testing study accordion', function() {
 
   beforeEach(function() {
     // Compile a piece of HTML containing the directive
-    element = $compile("<study-accordion></study-accordion>")(scope);
+    element = $compile('<study-accordion></study-accordion>')(scope);
     scope.$digest();
   });
 

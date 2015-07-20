@@ -1,4 +1,5 @@
 'use strict';
+/* jshint undef: false */
 
 angular.module('transmartBaseUi')
   .controller('StudyCtrl',
@@ -34,6 +35,25 @@ angular.module('transmartBaseUi')
     };
 
     /**
+     * Populates the first 2 levels of a study tree
+     * @param study
+     * @returns {{title: string, nodes: Array, restObj: *, loaded: boolean}}
+     * @private
+     */
+    var _getSingleTree = function(study) {
+      study._links.children = study._embedded.ontologyTerm._links.children;
+      var tree = {
+        'title': 'ROOT',
+        'nodes': [],
+        'restObj': study,
+        'loaded': false,
+        'study': study
+      };
+      _getNodeChildren(tree, false, 'concepts/');
+      return tree;
+    };
+
+    /**
      * When a study is selected, get the tree
      * @param study
      */
@@ -41,7 +61,7 @@ angular.module('transmartBaseUi')
       $scope.selectedStudy = study;
       if(!$scope.opened){
         $scope.tree = _getSingleTree(study);
-        $scope.opened = true;ho
+        $scope.opened = true;
       } else {
         $scope.opened = false;
       }
@@ -128,7 +148,7 @@ angular.module('transmartBaseUi')
                 $scope.treeLoading = false;
               }
 
-            }, function(err){
+            }, function(){
               $scope.callFailure = true;
               $scope.treeLoading = false;
               node.loaded = true;
@@ -142,25 +162,6 @@ angular.module('transmartBaseUi')
       if (!end) {
         node.loaded = true;
       }
-    };
-
-    /**
-     * Populates the first 2 levels of a study tree
-     * @param study
-     * @returns {{title: string, nodes: Array, restObj: *, loaded: boolean}}
-     * @private
-     */
-    var _getSingleTree = function(study) {
-      study._links.children = study._embedded.ontologyTerm._links.children;
-      var tree = {
-        'title': 'ROOT',
-        'nodes': [],
-        'restObj': study,
-        'loaded': false,
-        'study': study
-      };
-      _getNodeChildren(tree, false, 'concepts/');
-      return tree;
     };
 
     $scope.displayToolTip = function (e, node) {
@@ -184,7 +185,7 @@ angular.module('transmartBaseUi')
           _metadataObj.body = node._embedded.ontologyTerm.metadata;
         }
 
-        var modalInstance = $modal.open({
+        $modal.open({
           animation: false, // IMPORTANT: Cannot use animation in angular 1.4.x
           controller: 'MetadataCtrl',
           templateUrl: 'app/components/metadata/metadata.html',

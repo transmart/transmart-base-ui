@@ -14,6 +14,11 @@ angular.module('transmartBaseUi')
         label : 'Workspace',
         path : 'workspace',
         isActive : false
+      },
+      {
+        label : 'Data Sources',
+        path : 'connections',
+        isActive : false
       }
     ];
 

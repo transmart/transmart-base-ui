@@ -2,7 +2,7 @@
 
 angular.module('transmartBaseUi').filter('cutstring', function () {
   return function (value, wordwise, max, tail) {
-    if (!value) {return ''};
+    if (!value) {return '';}
 
     max = parseInt(max, 10);
     if (!max) {
