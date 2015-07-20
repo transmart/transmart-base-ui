@@ -15,9 +15,9 @@
       <tabset>
 
         <!-- Cohort selection tab ------------------------------------------------------------------------------------->
-        <tab>
+        <tab active="tabs[0].active" ng-click="activateTab(tabs[0].title, 'cohortSelection');">
           <tab-heading>
-            <span>Cohort selection</span>
+            <span>{{tabs[0].title}}</span>
           </tab-heading>
 
           <div class="well well-lg ts-node-well" data-drop="true" ng-model='droppedNode'
@@ -27,7 +27,6 @@
                     ng-click="removeLabel(label)">
               <div class="ts-node-name">
                 {{label.name}}<br><span class="ts-smaller-font">{{label.study._embedded.ontologyTerm.name}}</span>
-
               </div>
 
               <div class="ts-node-close-x" aria-hidden="true">&times;</div>
@@ -57,13 +56,62 @@
         </tab>
 
         <!-- Cohort subjects tab -------------------------------------------------------------------------------------->
-        <tab heading="Cohort subjects">
-          <cohort-grid cohort="cohortVal.subjects" headers="cohortLabels"></cohort-grid>
+        <tab active="tabs[1].active" ng-click="activateTab(tabs[1].title, 'cohortGrid');">
+            <tab-heading>
+              <span>{{tabs[1].title}}</span>
+            </tab-heading>
+            <div class="btn-group ts-export-btn" dropdown>
+                <button type="button" class="btn btn-primary dropdown-toggle" dropdown-toggle ng-disabled="!cohortVal.selected">
+                  Export cohort <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                  <li ng-csv="getCsvFormatted()" filename="cohort.csv" csv-header="csvHeaders"><a href="#">Csv</a></li>
+                  <li ng-csv="getCsvFormatted()" filename="cohort.txt" csv-header="csvHeaders"><a href="#">Text</a></li>
+                </ul>
+            </div>
+
+          <img ng-show="dataLoading" class="loading-img"/>
+          <table st-table="displayedCollection" st-safe-src="cohortVal.subjects" class="table table-striped">
+            <thead>
+            <tr>
+              <th st-sort="iD" st-sort-default="true">ID</th>
+              <th st-sort="sex">Sex</th>
+              <th st-sort="age">Age</th>
+              <th st-sort="race">Race</th>
+              <th st-sort="inTrialId">Trial ID</th>
+            </tr>
+            <tr>
+              <th colspan="1"><input st-search="" class="form-control" placeholder="ID search ..." type="text"/></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th colspan="1"><input st-search="" class="form-control" placeholder="Trial ID search ..." type="text"/></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="row in displayedCollection">
+              <td>{{row.id}}</td>
+              <td>{{row.sex}}</td>
+              <td>{{row.age}}</td>
+              <td>{{row.race}}</td>
+              <td>{{row.inTrialId}}</td>
+            </tr>
+            </tbody>
+            <tfoot>
+            <tr>
+              <td colspan="5" class="text-center">
+                <div st-pagination="" st-items-by-page="15"></div>
+              </td>
+            </tr>
+            </tfoot>
+          </table>
+
         </tab>
 
-
-        <tab>
-          <tab-heading>Summary Statistics</tab-heading>
+        <!-- Summary Statistics tab -------------------------------------------------------------------------------------->
+        <tab active="tabs[2].active" ng-click="activateTab(tabs[2].title, 'summaryStats');">
+          <tab-heading>{{tabs[2].title}}</tab-heading>
+          <h3>{{selectedStudy.id}}</h3>
           <div class="summary-div">
             <span ng-repeat="concept in summaryStatistics.magicConcepts" id="summary-chart-{{concept}}">
               <h6>{{summaryStatistics.titles[$index]}}</h6>

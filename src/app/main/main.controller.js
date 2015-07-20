@@ -2,8 +2,10 @@
 
 angular.module('transmartBaseUi')
   .controller('MainCtrl',
-  ['$scope', '$rootScope', 'Restangular', 'ChartService', 'AlertService', '$location',
-    function ($scope, $rootScope, Restangular, ChartService, AlertService, $location) {
+  ['$scope', '$rootScope', 'Restangular', 'ChartService', 'AlertService', '$location', '$stateParams',
+    'StudyListService', '$state',
+    function ($scope, $rootScope, Restangular, ChartService, AlertService, $location, $stateParams,
+        StudyListService, $state) {
 
     $scope.summaryStatistics = {
       isLoading : false,
@@ -11,17 +13,24 @@ angular.module('transmartBaseUi')
       titles : ['Sex', 'Race', 'Age', 'Religion', 'Marital Status']
     };
 
-    $scope.tutorial = {
-      openStep1: true,
-      disableStep1: false,
-      openStep2: false
-    };
+    $scope.tabs = [
+      {title: 'Cohort Selection', active: true},
+      {title: 'Cohort Grid', active: false},
+      {title: 'Summary Statistics', active: false}
+    ];
 
-    $scope.$on('howManyStudiesLoaded', function(e, val) {
-      $scope.tutorial.openStep1 = !val;
-      $scope.tutorial.disableStep1 = val;
-      $scope.tutorial.openStep2 = val;
-    });
+    $scope.activateTab = function (tabTitle, tabAction) {
+        var _tab;
+        $scope.tabs.forEach(function (tab) {
+            if (tab.title !== tabTitle) {
+                tab.active = false;
+            } else {
+                tab.active = true;
+            }
+        });
+        $state.go('workspace', {action:tabAction});
+        //return _tab;
+    };
 
     $scope.close = AlertService.remove;
     $scope.alerts = AlertService.get();
@@ -31,6 +40,7 @@ angular.module('transmartBaseUi')
     /**************************************************************************
      * Summary statistics
      */
+
     /**
      * Selected study
      * @type {{}}
@@ -44,7 +54,8 @@ angular.module('transmartBaseUi')
     $scope.displayStudySummaryStatistics = function (study) {
       $scope.summaryStatistics.isLoading = true;
       $scope.selectedStudy.title = study.id;
-      ChartService.displaySummaryStatistics(study, $scope.summaryStatistics.magicConcepts).then(function(){
+      ChartService.displaySummaryStatistics(study,
+        $scope.summaryStatistics.magicConcepts).then(function() {
         $scope.summaryStatistics.isLoading = false;
       });
     };

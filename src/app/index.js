@@ -26,11 +26,11 @@ angular.module('transmartBaseUi', [
         })
         .state('home', {
           url: '/home',
-          templateUrl: 'app/main/welcome.html',
-          controller: 'MainCtrl'
+          templateUrl: 'app/home/home.html',
+          controller: 'HomeCtrl'
         })
         .state('workspace', {
-          url: '/workspace?cohorts',
+          url: '/workspace?action&study&cohorts',
           templateUrl: 'app/main/main.html',
           controller: 'MainCtrl',
           reloadOnSearch: false
