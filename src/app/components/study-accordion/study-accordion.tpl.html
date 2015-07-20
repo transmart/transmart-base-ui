@@ -42,9 +42,6 @@
       ng-controller="StudyCtrl"
       class="ts-study-accordion">
 
-      <!--<i class="glyphicon glyphicon-folder-close ts-node-icon"-->
-         <!--ng-click="getTree(study); saction()(study);" >-->
-      <!--</i>-->
   <accordion-group  is-open="study.open"
                     ng-if="studyShown === '' || study._embedded.ontologyTerm.name.includes(studyShown)">
     <!--heading-->
