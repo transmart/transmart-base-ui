@@ -18,7 +18,10 @@ angular.module('transmartBaseUi')
         _chart.render();
 
         if(_chart.type === 'NUMBER') {scope.number = true;}
-        if(scope.tsLabel.type === 'number') {scope.linkIcon = true;}
+        if(scope.tsLabel.type !== 'combination' &&
+            scope.tsLabel.type !== 'highdim') {
+          scope.showGroupIcon = true;
+        }
 
         scope.$watchGroup(['tsGridsterItem.sizeX', 'tsGridsterItem.sizeY'],
           function(newValues, oldValues, scope) {
@@ -40,8 +43,8 @@ angular.module('transmartBaseUi')
 
         scope.groupAction = function(){
           scope.groupOn = true;
-          ChartService.groupCharts(_chart, function(){scope.groupOn = false;})
-        }
+          ChartService.groupCharts(_chart, function(){scope.groupOn = false;});
+        };
 
 
       }
