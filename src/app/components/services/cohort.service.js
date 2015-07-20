@@ -1,5 +1,8 @@
 'use strict';
 
+/**
+ * TODO : Cohorts to act as service
+ */
 angular.module('transmartBaseUi').factory('CohortService', [ function(){
 
   var cohortService = {

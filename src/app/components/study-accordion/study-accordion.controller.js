@@ -3,7 +3,7 @@
 
 angular.module('transmartBaseUi')
   .controller('StudyCtrl',
-  ['$scope', '$modal', function ($scope, $modal) {
+  ['$scope', '$modal','$location','$state', function ($scope, $modal, $location, $state) {
 
     //------------------------------------------------------------------------------------------------------------------
     // Scope
@@ -197,5 +197,8 @@ angular.module('transmartBaseUi')
         });
     };
 
+    $scope.displaySummaryStatistics = function (node) {
+      $state.go('workspace', {action : 'summaryStats', study : node.id}, {reload : true});
+    };
 
   }]);
