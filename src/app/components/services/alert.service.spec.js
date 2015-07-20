@@ -1,4 +1,5 @@
 'use strict';
+/* jshint undef: false */
 
 describe('AlertService Unit Tests', function() {
   var AlertService, $interval;

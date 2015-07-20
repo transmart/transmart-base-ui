@@ -4,17 +4,20 @@ angular.module('transmartBaseUi')
   .directive('tsCohortChart', ['ChartService', function(ChartService) {
     return {
       restrict: 'E',
-      templateUrl: 'app/components/charts/cohort-chart-template.html',
+      templateUrl: 'app/components/charts/cohort-chart.tpl.html',
       scope: {
         tsGridster: '=',
         tsGridsterItem: '=',
         tsLabel: '='
       },
       link: function(scope, el) {
-        var _chart = ChartService.createCohortChart(scope.tsLabel, el.find('div')[2]);
+        var _bodyDiv = el.find('div')[2];
+        var _chart = ChartService.createCohortChart(scope.tsLabel, _bodyDiv);
 
         _chart.on('postRedraw', ChartService.triggerFilterEvent);
         _chart.render();
+
+        if(_chart.type === 'NUMBER') {scope.number = true;}
 
         scope.$watchGroup(['tsGridsterItem.sizeX', 'tsGridsterItem.sizeY'],
           function(newValues, oldValues, scope) {
@@ -32,6 +35,13 @@ angular.module('transmartBaseUi')
         scope.title = scope.tsLabel.name +
                       ' - ' +
                       scope.tsLabel.study._embedded.ontologyTerm.name;
+        scope.groupOn = false;
+
+        scope.groupAction = function(){
+          scope.groupOn = true;
+          ChartService.groupCharts(_chart, function(){scope.groupOn = false;})
+        }
+
 
       }
     };
