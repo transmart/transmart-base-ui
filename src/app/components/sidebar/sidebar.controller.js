@@ -2,7 +2,7 @@
 
 angular.module('transmartBaseUi')
   .controller('SidebarCtrl', ['$scope', '$rootScope', '$window', 'Restangular', 'EndpointService', 'AlertService',
-    function ($scope, $rootScope, $window, Restangular, EndpointService, AlertService) {
+    function ($scope, $rootScope, $window, Restangular, EndpointService) {
 
       $scope.publicStudies = [];
       $scope.privateStudies = [];
@@ -15,13 +15,11 @@ angular.module('transmartBaseUi')
         $scope.publicStudies = [];
         $scope.privateStudies = [];
 
-        // Load studies for each endpoint
+        // Load studies from each endpoints
         _endpoints.forEach(function (endpoint) {
+
           endpoint.restangular.all('studies').getList()
             .then(function (studies) {
-
-              // Alert user that it successfully connects to the rest-api
-              // AlertService.add('success', 'Loaded studies from: ' + endpoint.url, 3000);
 
               endpoint.status = 'success';
               $scope.studies = studies;
@@ -44,15 +42,18 @@ angular.module('transmartBaseUi')
                 }
               });
             }, function () {
-              AlertService.add('danger', 'Could not load studies from API: ' +
-                endpoint.url, 3000);
+              // AlertService.add('danger', 'Could not load studies from API: ' +
+              //  endpoint.url, 3000);
             });
           endpoint.status = 'error';
         });
       };
 
-      EndpointService.registerNewEndpointEvent(_loadStudies);
+      EndpointService.registerNewEndpointEvent(_loadStudies); // register event
 
+      // ***************************************************************************************************
+      // TODO: checkout active connections, doesn't have to load studies each time users open this controller
+      // ***************************************************************************************************
       _loadStudies();
 
     }]);
