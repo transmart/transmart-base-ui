@@ -30,6 +30,14 @@ angular.module('transmartBaseUi')
         if (_in >= 0) {
           _endpoints.splice(_in, 1);
         }
+        // Remove nested restangular object
+        var _end = _.map(_endpoints, function(e){
+          var _n = _.clone(e);
+          _n.restangular = undefined;
+          return _n;
+        });
+
+        $cookies.putObject('endpoints' + $rootScope.globals.currentUser.authdata, _end);
       };
 
       service.addEndpoint = function (title, url) {
