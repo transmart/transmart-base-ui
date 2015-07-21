@@ -203,15 +203,36 @@ angular.module('transmartBaseUi')
     };
 
 
+    /**
+     * When this controller is loaded, check the query params if it contains some actions.
+     * If it is, do the necessities.
+     * @private
+     */
     var _initLoad = function () {
+
       var searchObject = $location.search();
+
       if (searchObject !== undefined) {
+
         if (searchObject.action === 'summaryStats') {
           if (searchObject.study) {
-            var _x = _.findWhere($rootScope.publicStudies, {id: searchObject.study});
+
+            // check if study id already loaded in existing array
+            var _x = _.findWhere(
+              _.union(
+                $rootScope.publicStudies,
+                $rootScope.privateStudies
+              ),
+              {id: searchObject.study}
+            );
+
+            // display summary statistics if the study is existing
             if (_x) {
               $scope.displayStudySummaryStatistics(_x);
+            } else {
+              // TODO rest call by subject id
             }
+
           }
           $scope.activateTab($scope.tabs[2].title, 'summaryStats');
         } else if (searchObject.action === 'cohortGrid') {
