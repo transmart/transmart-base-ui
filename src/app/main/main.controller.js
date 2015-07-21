@@ -27,12 +27,11 @@ angular.module('transmartBaseUi')
             }
         });
         $state.go('workspace', {action:tabAction});
-        //return _tab;
     };
 
     $scope.close = AlertService.remove;
-    $scope.alerts = AlertService.get();
 
+    $scope.alerts = AlertService.get();
     $scope.csvHeaders = [];
 
     /**************************************************************************
@@ -202,5 +201,28 @@ angular.module('transmartBaseUi')
         _updateCohortDisplay();
       });
     };
+
+
+    var _initLoad = function () {
+      var searchObject = $location.search();
+      if (searchObject !== undefined) {
+        if (searchObject.action === 'summaryStats') {
+          if (searchObject.study) {
+            var _x = _.findWhere($rootScope.publicStudies, {id: searchObject.study});
+            if (_x) {
+              $scope.displayStudySummaryStatistics(_x);
+            }
+          }
+          $scope.activateTab($scope.tabs[2].title, 'summaryStats');
+        } else if (searchObject.action === 'cohortGrid') {
+          $scope.activateTab($scope.tabs[1].title, 'cohortGrid');
+        } else {
+          $scope.activateTab($scope.tabs[0].title, 'cohortSelection');
+        }
+      }
+    };
+
+
+    _initLoad();
 
   }]);
