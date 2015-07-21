@@ -1,6 +1,13 @@
 
-<script type="text/ng-template" id="study-tooltip.html">
-  <span>Metadata <i class="glyphicon glyphicon-info-sign" ng-click="displayMetadata(concept);"></i></span>
+<script type="text/ng-template" id="tree-tooltip.html">
+  <ul id="tree-tooltip">
+    <li><a ng-click="displayMetadata(treeNode);"><i class="glyphicon glyphicon-info-sign"></i> &nbsp; Metadata </a></li>
+    <li ng-if="treeNode.isStudy">
+        <a ng-click="displaySummaryStatistics(treeNode);" >
+            <i class="glyphicon glyphicon-stats"></i>  &nbsp; Summary Statistic
+        </a>
+    </li>
+  </ul>
 </script>
 
 <!--------------------------------------------------------------------------------------------------------------------->
@@ -10,17 +17,17 @@
   <div ui-tree-handle class="tree-node tree-node-content" ng-click="populateChilds(node); naction()(node);"
        data-drag="true" jqyoui-draggable="{placeholder: 'keep'}"
        data-jqyoui-options="{containment: 'document', appendTo: 'body', helper: 'clone'}" ng-model="node">
-    <a data-nodrag ng-click="toggle(this)">
+    <i data-nodrag ng-click="toggle(this)">
       <i class="glyphicon ts-node-icon" ng-class="{'glyphicon-folder-close': collapsed && type.fol(node),
                                      'glyphicon-folder-open': !collapsed && type.fol(node),
                                      'glyphicon-equalizer': type.num(node),
                                      '': type.cat(node),
                                      '': type.hid(node)}">
       </i> &nbsp;
-
-    </a>
-     <a popover-template="'study-tooltip.html'" popover-placement="right"
-        ng-click="displayToolTip($event, node)"> {{node.title | cutstring:false:divWidth:' ...'}}</a> &nbsp; &nbsp; <span class="quantity-num">({{node.total}})</span>
+    </i>
+    <a popover-template="'tree-tooltip.html'" popover-placement="right"
+        ng-click="displayToolTip($event, node)"> {{node.title | cutstring:false:divWidth:' ...'}}</a> &nbsp; &nbsp;
+    <span class="quantity-num">({{node.total}})</span>
   </div>
   <ol ui-tree-nodes="" ng-model="node.nodes" ng-class="{hidden: collapsed}">
     <li ng-repeat="node in node.nodes"
@@ -52,7 +59,7 @@
            >
       </a>
       &nbsp;
-      <a popover-template="'study-tooltip.html'" popover-placement="right"
+      <a popover-template="'tree-tooltip.html'" popover-placement="right"
          ng-click="displayToolTip($event, study)">{{study._embedded.ontologyTerm.name}}</a>
       <span class="glyphicon glyphicon-spin" ng-class="{'glyphicon-refresh': treeLoading}"></span>
     </span>

@@ -1,29 +1,43 @@
 'use strict';
 
-angular.module('transmartBaseUi').controller('MainCtrl',
-  ['$scope', '$rootScope', 'Restangular', 'ChartService', 'AlertService',
-  function ($scope, $rootScope, Restangular, ChartService, AlertService) {
+angular.module('transmartBaseUi')
+  .controller('MainCtrl',
+    ['$scope', '$rootScope', 'Restangular', 'ChartService', 'AlertService', '$location', '$stateParams',
+    '$state',  function ($scope, $rootScope, Restangular, ChartService, AlertService, $location, $stateParams, $state)
+  {
 
-    $scope.tuto = {openStep1: true, disableStep1: false, openStep2: false};
+    $scope.summaryStatistics = {
+      isLoading : false,
+      magicConcepts : ['sex', 'race', 'age', 'religion', 'maritalStatus'],
+      titles : ['Sex', 'Race', 'Age', 'Religion', 'Marital Status']
+    };
 
-    $scope.$on('howManyStudiesLoaded', function(e, val){
-      $scope.tuto = {openStep1: !val, disableStep1: val, openStep2: val};
-    });
+    $scope.tabs = [
+      {title: 'Cohort Selection', active: true},
+      {title: 'Cohort Grid', active: false},
+      {title: 'Summary Statistics', active: false}
+    ];
 
-    $scope.summaryLoading = false;
-    $scope.summaryOpen = false;
+    $scope.activateTab = function (tabTitle, tabAction) {
+        $scope.tabs.forEach(function (tab) {
+            if (tab.title !== tabTitle) {
+                tab.active = false;
+            } else {
+                tab.active = true;
+            }
+        });
+        $state.go('workspace', {action:tabAction});
+    };
 
     $scope.close = AlertService.remove;
+
     $scope.alerts = AlertService.get();
-
-    $scope.magicConcepts = ['sex', 'race', 'age', 'religion', 'maritalStatus'];
-    $scope.titles = ['Sex', 'Race', 'Age', 'Religion', 'Marital Status'];
-
     $scope.csvHeaders = [];
 
     /**************************************************************************
      * Summary statistics
      */
+
     /**
      * Selected study
      * @type {{}}
@@ -35,12 +49,12 @@ angular.module('transmartBaseUi').controller('MainCtrl',
      * @param study
      */
     $scope.displayStudySummaryStatistics = function (study) {
-      $scope.summaryLoading = true;
+      $scope.summaryStatistics.isLoading = true;
       $scope.selectedStudy.title = study.id;
-      ChartService.displaySummaryStatistics(study, $scope.magicConcepts)
-        .then(function(){
-          $scope.summaryLoading = false;
-        });
+      ChartService.displaySummaryStatistics(study,
+        $scope.summaryStatistics.magicConcepts).then(function() {
+        $scope.summaryStatistics.isLoading = false;
+      });
     };
 
     /**************************************************************************
@@ -166,7 +180,9 @@ angular.module('transmartBaseUi').controller('MainCtrl',
     var _updateCohortDisplay = function(){
       $scope.cohortVal = ChartService.getSelectionValues();
       $scope.cohortLabels = ChartService.getLabels();
-      if (!$scope.$$phase) {$scope.$apply();}
+      if (!$scope.$$phase) {
+        $scope.$apply();
+      }
     };
     ChartService.registerFilterEvent(_updateCohortDisplay);
 
@@ -185,5 +201,49 @@ angular.module('transmartBaseUi').controller('MainCtrl',
         _updateCohortDisplay();
       });
     };
+
+
+    /**
+     * When this controller is loaded, check the query params if it contains some actions.
+     * If it is, do the necessities.
+     * @private
+     */
+    var _initLoad = function () {
+
+      var searchObject = $location.search();
+
+      if (searchObject !== undefined) {
+
+        if (searchObject.action === 'summaryStats') {
+          if (searchObject.study) {
+
+            // check if study id already loaded in existing array
+            var _x = _.findWhere(
+              _.union(
+                $rootScope.publicStudies,
+                $rootScope.privateStudies
+              ),
+              {id: searchObject.study}
+            );
+
+            // display summary statistics if the study is existing
+            if (_x) {
+              $scope.displayStudySummaryStatistics(_x);
+            } else {
+              // TODO rest call by subject id
+            }
+
+          }
+          $scope.activateTab($scope.tabs[2].title, 'summaryStats');
+        } else if (searchObject.action === 'cohortGrid') {
+          $scope.activateTab($scope.tabs[1].title, 'cohortGrid');
+        } else {
+          $scope.activateTab($scope.tabs[0].title, 'cohortSelection');
+        }
+      }
+    };
+
+
+    _initLoad();
 
   }]);

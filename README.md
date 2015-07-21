@@ -20,11 +20,6 @@ $ bower install
 ```
 $ gulp serve
 ```
-- Launch proxy
-```
-$ node proxy.js
-```
-The application can be accessed at http://localhost:8001
 
 ### Use More Gulp tasks
 
