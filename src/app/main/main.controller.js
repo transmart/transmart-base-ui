@@ -110,7 +110,7 @@ angular.module('transmartBaseUi')
     var _CONFIG = {
       // Base width for a gridster square, this value will be adapted to fit
       // exaclty an even number of squares in the grid according to window size
-      G_BASE_WIDTH: 70,
+      G_BASE_WIDTH: 80,
       // Number of columns a gridster item will occupy by default
       G_ITEM_SPAN_X: 3,
       // Number of rows a gridster item will occupy by default
