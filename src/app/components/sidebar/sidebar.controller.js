@@ -4,16 +4,16 @@ angular.module('transmartBaseUi')
   .controller('SidebarCtrl', ['$scope', '$rootScope', '$window', 'Restangular', 'EndpointService', 'AlertService',
     function ($scope, $rootScope, $window, Restangular, EndpointService) {
 
-      $scope.publicStudies = [];
-      $scope.privateStudies = [];
+      $rootScope.publicStudies = []; // TODO MOVE THIS TO SERVICE
+      $rootScope.privateStudies = []; // TODO MOVE THIS TO SERVICE
       $scope.searchTerm = '';
 
       var _loadStudies = function () {
 
         var _endpoints = EndpointService.getEndpoints();
 
-        $scope.publicStudies = [];
-        $scope.privateStudies = [];
+        $rootScope.publicStudies = [];
+        $rootScope.privateStudies = [];
 
         // Load studies from each endpoints
         _endpoints.forEach(function (endpoint) {
@@ -36,9 +36,9 @@ angular.module('transmartBaseUi')
                 study.endpoint = endpoint; // Keep reference to endpoint
                 if (study._embedded.ontologyTerm.fullName.split('\\')[1] ===
                   'Public Studies') {
-                  $scope.publicStudies.push(study);
+                  $rootScope.publicStudies.push(study);
                 } else {
-                  $scope.privateStudies.push(study);
+                  $rootScope.privateStudies.push(study);
                 }
               });
             }, function () {
