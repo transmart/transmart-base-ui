@@ -2,7 +2,7 @@
 
 angular.module('transmartBaseUi')
   .controller('HomeCtrl',
-  ['$scope', '$rootScope', function ($scope, $rootScope) {
+  ['$scope', function ($scope) {
 
       $scope.tutorial = {
         openStep1: true,
@@ -10,8 +10,10 @@ angular.module('transmartBaseUi')
       };
 
       $scope.$on('howManyStudiesLoaded', function(e, val) {
-        $scope.tutorial.openStep1 = !val;
-        $scope.tutorial.openStep2 = val;
+        if (val !== undefined) {
+          $scope.tutorial.openStep1 = !val;
+          $scope.tutorial.openStep2 = val;
+        }
       });
 
   }]);
