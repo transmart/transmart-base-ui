@@ -1,14 +1,16 @@
 <nav class="navbar navbar-fixed-top navbar-inverse" ng-controller="NavbarCtrl">
   <div class="container-fluid">
-    <div class="navbar-header">
-      <img class="navbar-brand" href="/#/" ng-src="/assets/images/transmart-logo.png">
 
-      </img>
+    <div class="navbar-header">
+      <a ui-sref="home"><img class="navbar-brand" ng-src="/assets/images/transmart-logo.png"/></a>
     </div>
+
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-6">
+
       <ul class="nav navbar-nav">
-        <li><a ng-href="/#/">Main</a></li>
-        <li><a ng-href="/#/connections">Data sources</a></li>
+        <li ng-repeat="nav in navigations track by $index" ng-class="{'active' : nav.isActive}">
+          <a ui-sref="{{nav.path}}" ng-click="setActiveNavItem($index)">{{nav.label}}</a>
+        </li>
       </ul>
 
       <ul class="nav navbar-nav navbar-right">

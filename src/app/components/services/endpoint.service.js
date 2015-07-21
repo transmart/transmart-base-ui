@@ -10,21 +10,29 @@ angular.module('transmartBaseUi')
       var service = {};
 
       var _newEndpointEvents = [];
-      service.triggerNewEndpointEvent = function () {
-        _newEndpointEvents.forEach(function(func){func();});
-      };
-      service.registerNewEndpointEvent = function(func){_newEndpointEvents.push(func);};
 
-      service.getEndpoints = function() {
+      service.triggerNewEndpointEvent = function () {
+        _newEndpointEvents.forEach(function (func) {
+          func();
+        });
+      };
+
+      service.registerNewEndpointEvent = function (func) {
+        _newEndpointEvents.push(func);
+      };
+
+      service.getEndpoints = function () {
         return _endpoints;
       };
 
-      service.remove =  function (endpoint) {
+      service.remove = function (endpoint) {
         var _in = _endpoints.indexOf(endpoint);
-        if(_in >= 0){_endpoints.splice(_in, 1);}
+        if (_in >= 0) {
+          _endpoints.splice(_in, 1);
+        }
       };
 
-      service.addEndpoint = function(title, url) {
+      service.addEndpoint = function (title, url) {
         url = _cleanUrl(url);
         // Store meta data and restangular instance in object
         var endpoint = {
@@ -38,7 +46,7 @@ angular.module('transmartBaseUi')
         service.triggerNewEndpointEvent();
       };
 
-      service.addOAuthEndpoint = function(title, url, requestToken) {
+      service.addOAuthEndpoint = function (title, url, requestToken) {
         var deferred = $q.defer();
         url = _cleanUrl(url);
 
@@ -92,10 +100,10 @@ angular.module('transmartBaseUi')
         return deferred.promise;
       };
 
-      service.navigateToAuthorizationPage = function(url) {
+      service.navigateToAuthorizationPage = function (url) {
         // Cut off any '/'
-        if (url.substring(url.length-1, url.length) === '/') {
-          url = url.substring(0, url.length-1);
+        if (url.substring(url.length - 1, url.length) === '/') {
+          url = url.substring(0, url.length - 1);
         }
 
         var authorizationUrl = url +
@@ -105,8 +113,8 @@ angular.module('transmartBaseUi')
         $window.open(authorizationUrl, '_blank');
       };
 
-      service.retrieveStoredEndpoints = function() {
-        if($rootScope.globals.currentUser){
+      service.retrieveStoredEndpoints = function () {
+        if ($rootScope.globals.currentUser) {
           var storedEnpoints = $cookies.getObject('endpoints' + $rootScope.globals.currentUser.authdata) || [];
           storedEnpoints.forEach(function (endpoint) {
             endpoint.restangular = _newRestangularConfig(endpoint);
@@ -115,14 +123,14 @@ angular.module('transmartBaseUi')
         }
       };
 
-      service.clearStoredEnpoints = function(){
+      service.clearStoredEnpoints = function () {
         $cookies.remove('endpoints' + $rootScope.globals.currentUser.authdata);
         _endpoints = [];
         service.triggerNewEndpointEvent();
       };
 
       var _newRestangularConfig = function (end) {
-        return Restangular.withConfig(function(RestangularConfigurer) {
+        return Restangular.withConfig(function (RestangularConfigurer) {
           RestangularConfigurer.setBaseUrl(end.url);
           RestangularConfigurer.setDefaultHeaders({
             'Authorization': 'Bearer ' + end.accessToken,
@@ -139,8 +147,8 @@ angular.module('transmartBaseUi')
 
       var _cleanUrl = function (url) {
         // Cut off any '/'
-        if (url.substring(url.length-1, url.length) === '/') {
-          url = url.substring(0, url.length-1);
+        if (url.substring(url.length - 1, url.length) === '/') {
+          url = url.substring(0, url.length - 1);
         }
         return url;
       };

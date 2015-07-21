@@ -3,7 +3,7 @@
 
 angular.module('transmartBaseUi')
   .controller('StudyCtrl',
-  ['$scope', '$modal', function ($scope, $modal) {
+  ['$scope', '$modal','$location','$state', function ($scope, $modal, $location, $state) {
 
     //------------------------------------------------------------------------------------------------------------------
     // Scope
@@ -33,7 +33,7 @@ angular.module('transmartBaseUi')
       cat: function(node){return node.type === 'CATEGORICAL';},
       hid: function(node){return node.type === 'HIGH_DIMENSIONAL';}
     };
-    
+
     /**
      * Populates the first 2 levels of a study tree
      * @param study
@@ -166,7 +166,10 @@ angular.module('transmartBaseUi')
 
     $scope.displayToolTip = function (e, node) {
         e.stopPropagation(); // preventing selected accordion to expand.
-        $scope.concept = node;
+        $scope.treeNode = node;
+        if ($scope.treeNode.hasOwnProperty('_embedded')) {
+          $scope.treeNode.isStudy = true;
+        }
     };
 
     $scope.displayMetadata = function (node) {
@@ -194,5 +197,8 @@ angular.module('transmartBaseUi')
         });
     };
 
+    $scope.displaySummaryStatistics = function (node) {
+      $state.go('workspace', {action : 'summaryStats', study : node.id}, {reload : true});
+    };
 
   }]);

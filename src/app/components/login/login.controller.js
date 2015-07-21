@@ -16,7 +16,7 @@ angular.module('transmartBaseUi')
         if(response.success) {
           AlertService.reset();
           AuthenticationService.SetCredentials($scope.username, $scope.password);
-          $location.path('/');
+          $location.path('/home');
         } else {
           AlertService.add('danger', 'Invalid login credentials.');
           $scope.error = response.message;

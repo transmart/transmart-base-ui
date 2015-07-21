@@ -1,20 +1,3 @@
-<!--------------------------------------------------------------------------------------------------------------------->
-<!-- START Popover template -->
-
-<script type="text/ng-template" id="NodePopoverTemplate">
-  <div ng-click="$event.stopPropagation()">
-    <table >
-      <tr ng-repeat="(key, value) in study._embedded.ontologyTerm.metadata" class="popover-table-row">
-        <td ><b>{{key}}:&nbsp&nbsp</b></td>
-        <td></td>
-        <td>{{value}}</td>
-      </tr>
-    </table>
-  </div>
-</script>
-<!-- END Popover template -->
-<!--------------------------------------------------------------------------------------------------------------------->
-
 <div class="container-fluid" >
   <div class="row">
 
@@ -28,43 +11,22 @@
         {{alert.message}}
       </alert>
 
-      <!-- Welcome ---------------------------------------------------------------------------------------------------->
-      <div ng-include="'app/main/welcome.html'" ng-show="!selectedStudy.title"></div>
-
-      <!-- Summary statistics ----------------------------------------------------------------------------------------->
-      <accordion close-others="false" ng-show="selectedStudy.title">
-        <accordion-group is-open="summaryOpen" is-disabled="summaryLoading">
-          <accordion-heading>
-            {{selectedStudy.title}} Summary Statistics
-            <span class="glyphicon glyphicon-spin" ng-class="{'glyphicon-refresh': summaryLoading}"></span>
-            <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.open,
-                                                        'glyphicon-chevron-right': !status.open}"></i>
-          </accordion-heading>
-
-          <div class="summarydiv">
-            <span ng-repeat="concept in magicConcepts" id="summary-chart-{{concept}}">
-              <h6>{{titles[$index]}}</h6>
-            </span>
-          </div>
-        </accordion-group>
-      </accordion>
-
-      <!-- Cohort selection ------------------------------------------------------------------------------------------->
-      <tabset ng-show="selectedStudy.title">
+      <h3>Workspace</h3>
+      <tabset>
 
         <!-- Cohort selection tab ------------------------------------------------------------------------------------->
-        <tab>
+        <tab active="tabs[0].active" ng-click="activateTab(tabs[0].title, 'cohortSelection');">
           <tab-heading>
-            <span>Cohort selection</span>
+            <span>{{tabs[0].title}}</span>
           </tab-heading>
-          <div class="well well-lg ts-node-well cwell" data-drop="true" ng-model='droppedNode'
+
+          <div class="well well-lg ts-node-well" data-drop="true" ng-model='droppedNode'
                jqyoui-droppable="{multiple:true, onDrop:'onNodeDropEvent(droppedNode)'}">
             <h5 ng-if="cohortChartContainerLabels.length == 0"><small>  Drag and drop some nodes here to add them.</small></h5>
             <button type="button" class="btn btn-primary btn-sm ts-btn-node" ng-repeat="label in cohortChartContainerLabels"
                     ng-click="removeLabel(label)">
               <div class="ts-node-name">
                 {{label.name}}<br><span class="ts-smaller-font">{{label.study._embedded.ontologyTerm.name}}</span>
-
               </div>
 
               <div class="ts-node-close-x" aria-hidden="true">&times;</div>
@@ -94,10 +56,24 @@
         </tab>
 
         <!-- Cohort subjects tab -------------------------------------------------------------------------------------->
-        <tab heading="Cohort subjects">
+        <tab heading="Cohort subjects" active="tabs[1].active" ng-click="activateTab(tabs[1].title, 'cohortGrid');">
+          <tab-heading>
+            <span>{{tabs[1].title}}</span>
+          </tab-heading>
           <cohort-grid cohort="cohortVal.subjects" headers="cohortLabels"></cohort-grid>
         </tab>
 
+
+        <!-- Summary Statistics tab -------------------------------------------------------------------------------------->
+        <tab active="tabs[2].active" ng-click="activateTab(tabs[2].title, 'summaryStats');">
+          <tab-heading>{{tabs[2].title}}</tab-heading>
+          <h3>{{selectedStudy.id}}</h3>
+          <div class="summary-div">
+            <span ng-repeat="concept in summaryStatistics.magicConcepts" id="summary-chart-{{concept}}">
+              <h6>{{summaryStatistics.titles[$index]}}</h6>
+            </span>
+          </div>
+        </tab>
 
       </tabset>
       </div>
