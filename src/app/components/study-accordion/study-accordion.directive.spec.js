@@ -21,7 +21,6 @@ describe('Unit testing study accordion', function() {
     // Compile a piece of HTML containing the directive
     element = $compile('<study-accordion></study-accordion>')(scope);
     scope.$digest();
-    console.log(element);
   });
 
   it('should renders study-accordion template', function() {
