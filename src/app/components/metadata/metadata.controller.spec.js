@@ -28,7 +28,7 @@ describe('Metadata Controller Unit Testing', function() {
   }));
 
 
-  describe('', function() {
+  describe('$scope', function() {
 
     it ('should define metadata', function () {
       var $scope = {};

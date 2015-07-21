@@ -1,6 +1,7 @@
 'use strict';
 
 describe('NavbarCtrl', function() {
+
   beforeEach(module('transmartBaseUi'));
 
   var $controller;
@@ -10,5 +11,24 @@ describe('NavbarCtrl', function() {
     $controller = _$controller_;
   }));
 
+
+  describe('$scope', function() {
+    var $scope;
+
+    beforeEach(inject(function(_$controller_){
+      $scope = {};
+      var controller = $controller('NavbarCtrl', { $scope: $scope });
+    }));
+
+    it ('should define navigations', function () {
+      expect($scope.navigations).toBeDefined();
+    });
+    it ('should define usermenus', function () {
+      expect($scope.usermenus).toBeDefined();
+    });
+    it ('should activate selected nav item', function () {
+
+    });
+  });
 
 });

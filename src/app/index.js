@@ -5,7 +5,6 @@ angular.module('transmartBaseUi', [
   'ngCookies',
   'ngTouch',
   'ngSanitize',
-  'restangular',
   'ui.router',
   'ui.bootstrap',
   'restangular',
@@ -16,26 +15,32 @@ angular.module('transmartBaseUi', [
   'ngCsv',
   'gridster'
 ])
-
   .config( ['$stateProvider', 'RestangularProvider', '$tooltipProvider', 'cfpLoadingBarProvider',
     function ($stateProvider, RestangularProvider, $tooltipProvider, cfpLoadingBarProvider) {
 
       $stateProvider
-        .state('main', {
-          url: '/',
-          templateUrl: 'app/main/main.html',
-          controller: 'MainCtrl'
-        })
         .state('login', {
           url: '/login',
           templateUrl: 'app/components/login/login.html',
           controller: 'LoginCtrl'
         })
+        .state('home', {
+          url: '/home',
+          templateUrl: 'app/home/home.html',
+          controller: 'HomeCtrl'
+        })
+        .state('workspace', {
+          url: '/workspace?action&study&cohorts',
+          templateUrl: 'app/main/main.html',
+          controller: 'MainCtrl',
+          reloadOnSearch: false
+        })
         .state('connections', {
           url: '/connections',
           templateUrl: 'app/components/connections/connections.html',
           controller: 'ConnectionsCtrl'
-        });
+        })
+      ;
 
       // =========================
       // Set restful api base url

@@ -236,10 +236,6 @@ describe('SidebarCtrlTests', function() {
       expect(scope.privateStudies.length).toEqual(1);
     });
 
-    it('sets the endpoint to successful connection', function() {
-      expect(scope.endpoints[0].status).toEqual('success');
-      expect(scope.endpoints[1].status).toEqual('success');
-    });
 
     it('has studies with endpoint attached', function() {
       expect(scope.publicStudies[0].endpoint).not.toEqual(undefined);
@@ -262,8 +258,5 @@ describe('SidebarCtrlTests', function() {
       expect(scope.privateStudies.length).toEqual(0);
     });
 
-    it('sets the endpoint to failed', function() {
-      expect(scope.endpoints[1].status).toEqual('error');
-    });
   });
 });
