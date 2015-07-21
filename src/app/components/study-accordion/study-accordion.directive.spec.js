@@ -14,7 +14,7 @@ describe('Unit testing study accordion', function() {
     // The injector unwraps the underscores (_) from around the parameter names when matching
     $compile = _$compile_;
     scope = _$rootScope_;
-    scope.studies = 'foo bar';
+    scope.studies = [];
   }));
 
   beforeEach(function() {
@@ -25,9 +25,8 @@ describe('Unit testing study accordion', function() {
 
   it('should renders study-accordion template', function() {
     // Check that the compiled element contains the templated content
-    // TODO FIX THIS
-    // expect(element.html()).toContain('<script type="text/ng-template" id="study-tooltip.html">');
-    //expect(element.html()).toContain('<script type="text/ng-template" id="nodes_renderer.html">');
+    expect(element.html()).toContain('<script type="text/ng-template" id="tree-tooltip.html">');
+    expect(element.html()).toContain('<script type="text/ng-template" id="nodes_renderer.html">');
   });
 
 });

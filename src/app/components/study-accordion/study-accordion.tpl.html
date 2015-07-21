@@ -14,9 +14,11 @@
 <!-- START Node template -->
 
 <script type="text/ng-template" id="nodes_renderer.html">
-  <div ui-tree-handle class="tree-node tree-node-content" ng-click="populateChilds(node); naction()(node);"
+
+  <div ui-tree-handle class="tree-node tree-node-content" ng-click="populateChilds(node);"
        data-drag="true" jqyoui-draggable="{placeholder: 'keep'}"
        data-jqyoui-options="{containment: 'document', appendTo: 'body', helper: 'clone'}" ng-model="node">
+
     <i data-nodrag ng-click="toggle(this)">
       <i class="glyphicon ts-node-icon" ng-class="{'glyphicon-folder-close': collapsed && type.fol(node),
                                      'glyphicon-folder-open': !collapsed && type.fol(node),
@@ -25,8 +27,9 @@
                                      'b': type.hid(node)}">
       </i> &nbsp;
     </i>
+
     <a popover-template="'tree-tooltip.html'" popover-placement="right"
-        ng-click="displayToolTip($event, node)"> {{node.title | cutstring:false:divWidth:' ...'}}</a> &nbsp; &nbsp;
+       ng-click="displayToolTip($event, node)"> {{node.title | cutstring:false:divWidth:' ...'}}</a> &nbsp; &nbsp;
     <span class="quantity-num">({{node.total}})</span>
   </div>
   <ol ui-tree-nodes="" ng-model="node.nodes" ng-class="{hidden: collapsed}">
@@ -49,8 +52,8 @@
   <accordion-group  is-open="study.open"
                     ng-if="studyShown === '' || study._embedded.ontologyTerm.name.includes(studyShown)">
     <!--heading-->
-    <accordion-heading ng-click="getTree(study); saction()(study);" >
-      <span ng-click="getTree(study); saction()(study);" >
+    <accordion-heading ng-click="getTree(study);" >
+      <span ng-click="getTree(study);" >
       <a href="#" class="glyphicon glyphicon-folder-close ts-node-icon"
            ng-class="{
              'glyphicon-folder-close' : !opened,

@@ -20,7 +20,7 @@ angular.module('transmartBaseUi')
 
           endpoint.restangular.all('studies').getList()
             .then(function (studies) {
-
+              console.log(studies);
               endpoint.status = 'success';
               $scope.studies = studies;
 
@@ -47,6 +47,8 @@ angular.module('transmartBaseUi')
             });
           endpoint.status = 'error';
         });
+
+
       };
 
       EndpointService.registerNewEndpointEvent(_loadStudies); // register event
