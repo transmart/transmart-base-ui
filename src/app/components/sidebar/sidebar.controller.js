@@ -20,7 +20,6 @@ angular.module('transmartBaseUi')
 
           endpoint.restangular.all('studies').getList()
             .then(function (studies) {
-              console.log(studies);
               endpoint.status = 'success';
               $scope.studies = studies;
 
