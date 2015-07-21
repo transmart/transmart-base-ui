@@ -72,11 +72,11 @@ describe('Unit testing cohort-grid directive', function() {
       scope.headers = [
         {
           name: 'Age',
-          label: 'age'
+          ids: 'age'
         },
         {
           name: 'Sex',
-          label: 'sex'
+          ids: 'sex'
         }
       ];
       // Compile a piece of HTML containing the directive
@@ -119,7 +119,7 @@ describe('Unit testing cohort-grid directive', function() {
       scope.headers = [
         {
           name: 'Age',
-          label: 'age'
+          ids: 'age'
         }
       ];
 
