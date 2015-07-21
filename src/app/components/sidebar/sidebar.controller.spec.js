@@ -196,7 +196,6 @@ describe('SidebarCtrlTests', function() {
   beforeEach(inject(function (_$controller_, _$httpBackend_, _$rootScope_, _Restangular_, _EndpointService_) {
         httpBackend = _$httpBackend_;
         EndpointService = _EndpointService_;
-        httpBackend.whenGET('http://localhost:8080/transmart-rest-api/studies').respond(emptyResponse);
         Restangular = _Restangular_;
         scope = _$rootScope_.$new();
         rootScope = _$rootScope_;
@@ -206,7 +205,6 @@ describe('SidebarCtrlTests', function() {
             $rootScope: rootScope,
             Restangular: Restangular
           });
-        httpBackend.flush();
       }));
   afterEach(function () {
     httpBackend.verifyNoOutstandingExpectation();

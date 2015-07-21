@@ -137,8 +137,10 @@ angular.module('transmartBaseUi').factory('ChartService',
     _chart
       .dimension(cDimension)
       .group(cGroup)
-      .keyAccessor(function(d) { return d.key[0].slice(0,3)+'..'; })
-      .valueAccessor(function(d) { return d.key[1].slice(0,3)+'..'; })
+      .keyAccessor(function(d) {
+        return d.key[0] ? d.key[0].slice(0,3)+'..' : undefined; })
+      .valueAccessor(function(d) {
+        return d.key[1] ? d.key[1].slice(0,3)+'..' : undefined; })
       .colorAccessor(function(d) { return d.value; })
       .margins({top: 5, right: 5, bottom: 40, left: 50})
       .title(function(d) {
@@ -468,15 +470,15 @@ angular.module('transmartBaseUi').factory('ChartService',
         var _valueY = _valueX === 0 ? 1 : 0;
 
         cs.dims[label.ids] = cs.cross.dimension(function (d) {
-          return d.labels[label.ids][_valueX];
+          return d.labels[label.ids] ? d.labels[label.ids][_valueX] : undefined;
         });
         cs.grps[label.ids] = cs.dims[label.ids].group().reduce(
           function(p,v) {
-            p.push(v.labels[label.ids][_valueY]);
+            p.push(v.labels[label.ids] ? v.labels[label.ids][_valueY] : undefined);
             return p;
           },
           function(p,v) {
-            p.splice(p.indexOf(v.labels[label.ids][_valueY]), 1);
+            p.splice(p.indexOf(v.labels[label.ids] ? v.labels[label.ids][_valueY] : undefined), 1);
             return p;
           },
           function() {
@@ -493,7 +495,8 @@ angular.module('transmartBaseUi').factory('ChartService',
       } else {
         // Both labels are categorical
         cs.dims[label.ids] = cs.cross.dimension(function (d) {
-          return [d.labels[label.ids][0], d.labels[label.ids][1]];
+          return [d.labels[label.ids] ? d.labels[label.ids][0]: undefined,
+                  d.labels[label.ids] ? d.labels[label.ids][1]: undefined];
         });
         cs.grps[label.ids] = cs.dims[label.ids].group();
 
@@ -508,7 +511,8 @@ angular.module('transmartBaseUi').factory('ChartService',
     } else {
       // Both labels are numerical, create a scatter plot
       cs.dims[label.ids] = cs.cross.dimension(function (d) {
-        return [d.labels[label.ids][0], d.labels[label.ids][1]];
+        return [d.labels[label.ids] ? d.labels[label.ids][0]: undefined,
+                d.labels[label.ids] ? d.labels[label.ids][1]: undefined];
       });
       cs.grps[label.ids] = cs.dims[label.ids].group();
 
@@ -646,8 +650,10 @@ angular.module('transmartBaseUi').factory('ChartService',
 
       } else if (_chart.type === 'HEATMAP') {
         _chart
-          .keyAccessor(function(d) { return d.key[0].slice(0, Math.floor(width/80)); })
-          .valueAccessor(function(d) { return d.key[1].slice(0, Math.floor(width/50)); })
+          .keyAccessor(function(d) {
+            return d.key[0] ? d.key[0].slice(0, Math.floor(width/80)): undefined; })
+          .valueAccessor(function(d) {
+            return d.key[1] ? d.key[1].slice(0, Math.floor(width/50)): undefined; })
           .colorAccessor(function(d) { return d.value; })
           .margins({top: 5, right: 5, bottom: 40, left: _CONF.HM_LEFT_MARGIN});
 

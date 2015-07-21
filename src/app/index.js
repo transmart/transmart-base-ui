@@ -98,8 +98,6 @@ angular.module('transmartBaseUi', [
   .run(['$rootScope', '$location', '$cookieStore', '$http', 'EndpointService',
     function ($rootScope, $location, $cookieStore, $http, EndpointService) {
 
-      EndpointService.addEndpoint('Local', 'http://localhost:8080/transmart-rest-api');
-
       // keep user logged in after page refresh
       $rootScope.globals = $cookieStore.get('globals') || {};
 
