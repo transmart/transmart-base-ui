@@ -31,7 +31,7 @@
     <tr>
       <th st-sort="id" st-sort-default="true">ID</th>
       <th ng-repeat="concept in headers track by $index"
-          st-sort="getConceptValue(concept.label)">
+          st-sort="getConceptValue(concept.ids)">
           {{concept.name}}
       </th>
     </tr>
@@ -41,7 +41,7 @@
     <tr ng-repeat="row in displayedCollection">
       <td>{{row.id}}</td>
       <td ng-repeat="concept in headers track by $index">
-          {{row.labels[concept.label]}}
+          {{row.labels[concept.ids]}}
       </td>
     </tr>
   </tbody>

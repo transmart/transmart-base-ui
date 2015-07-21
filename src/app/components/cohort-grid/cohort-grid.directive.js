@@ -20,7 +20,7 @@ angular.module('transmartBaseUi')
               var cleanSubject = {};
               cleanSubject.id = subject.id;
               $scope.headers.forEach(function(label){
-                cleanSubject[label.name] = subject.labels[label.label];
+                cleanSubject[label.name] = subject.labels[label.ids];
               });
               formatted.push(cleanSubject);
             });
