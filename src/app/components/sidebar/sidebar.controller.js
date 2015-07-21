@@ -8,7 +8,6 @@ angular.module('transmartBaseUi')
     $scope.privateStudies = [];
     $scope.searchTerm = '';
 
-
     var _loadStudies = function () {
         var endpoints = EndpointService.getEndpoints();
 
@@ -37,10 +36,8 @@ angular.module('transmartBaseUi')
               if (study._embedded.ontologyTerm.fullName.split('\\')[1] ===
                 'Public Studies') {
                 $scope.publicStudies.push(study);
-                StudyListService.addStudy(study, 'public');
               } else {
                 $scope.privateStudies.push(study);
-                StudyListService.addStudy(study, 'private');
               }
             });
           }, function () {

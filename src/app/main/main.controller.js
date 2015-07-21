@@ -2,10 +2,9 @@
 
 angular.module('transmartBaseUi')
   .controller('MainCtrl',
-  ['$scope', '$rootScope', 'Restangular', 'ChartService', 'AlertService', '$location', '$stateParams',
-    'StudyListService', '$state',
-    function ($scope, $rootScope, Restangular, ChartService, AlertService, $location, $stateParams,
-        StudyListService, $state) {
+    ['$scope', '$rootScope', 'Restangular', 'ChartService', 'AlertService', '$location', '$stateParams',
+    '$state',  function ($scope, $rootScope, Restangular, ChartService, AlertService, $location, $stateParams, $state)
+  {
 
     $scope.summaryStatistics = {
       isLoading : false,
@@ -20,7 +19,6 @@ angular.module('transmartBaseUi')
     ];
 
     $scope.activateTab = function (tabTitle, tabAction) {
-        var _tab;
         $scope.tabs.forEach(function (tab) {
             if (tab.title !== tabTitle) {
                 tab.active = false;
