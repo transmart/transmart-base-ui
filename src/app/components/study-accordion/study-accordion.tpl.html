@@ -19,20 +19,23 @@
        data-drag="true" jqyoui-draggable="{placeholder: 'keep'}"
        data-jqyoui-options="{containment: 'document', appendTo: 'body', helper: 'clone'}" ng-model="node">
 
-    <i data-nodrag ng-click="toggle(this)">
+    <a data-nodrag ng-click="toggle(this)">
       <i  class="glyphicon ts-node-icon"
           ng-class="{ 'glyphicon-folder-close': collapsed && node.type === 'UNKNOWN',
                       'glyphicon-folder-open': !collapsed && node.type === 'UNKNOWN',
-                      'glyphicon-equalizer': node.type === 'HIGH_DIMENSIONAL',
+                      'mdi mdi-blur': node.type === 'HIGH_DIMENSIONAL',
                       'mdi mdi-numeric': node.type === 'NUMERIC',
-                      'mdi mdi-chart-pie': node.type === 'CATEGORICAL_CONTAINER',
-                      'mdi mdi-tag': node.type === 'CATEGORICAL_OPTION'}">
+                      'mdi mdi-chart-pie': collapsed && node.type === 'CATEGORICAL_CONTAINER',
+                      'mdi mdi-chart-arc': !collapsed && node.type === 'CATEGORICAL_CONTAINER',
+                      'mdi mdi-tag': node.type === 'CATEGORICAL_OPTION',
+                      'mdi mdi-alert text-danger': node.type === 'FAILED_CALL',
+                      'mdi mdi-fullscreen': node.type === 'UNDEF'}">
       </i> &nbsp;
-    </i>
+    </a>
 
     <a popover-template="'tree-tooltip.html'" popover-placement="right"
        ng-click="displayToolTip($event, node)"> {{node.title | cutstring:false:divWidth:' ...'}}</a> &nbsp; &nbsp;
-    <span class="quantity-num">({{node.total}})</span>
+    <a class="quantity-num">({{node.total}})</a>
   </div>
   <ol ui-tree-nodes="" ng-model="node.nodes" ng-class="{hidden: collapsed}">
     <li ng-repeat="node in node.nodes"

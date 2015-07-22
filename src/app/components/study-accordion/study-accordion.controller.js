@@ -92,7 +92,10 @@ angular.module('transmartBaseUi')
      * @private
      */
     var _countSubjects = function(node) {
-      if(!node.hasOwnProperty('total')){
+      if(!node.hasOwnProperty('restObj')){
+        node.total = '-';
+      }
+      else if(!node.hasOwnProperty('total')){
         node.restObj.one('subjects').get().then(function(subjects){
           node.total = subjects._embedded.subjects.length;
         });
@@ -108,7 +111,7 @@ angular.module('transmartBaseUi')
      */
     var _getNodeChildren = function(node, end, prefix){
       prefix = prefix || '';
-      var children = node.restObj._links.children;
+      var children = node.restObj ? node.restObj._links.children : undefined;
 
       if(!node.loaded){
 
@@ -118,16 +121,17 @@ angular.module('transmartBaseUi')
         if(children){
           children.forEach(function(child){
 
+            var newNode = {
+              title: child.title,
+              nodes: [],
+              loaded: false,
+              study: node.study
+            };
+
             node.restObj.one(prefix + child.title).get().then(function(childObj){
 
-              var newNode = {
-                title: child.title,
-                nodes: [],
-                type: childObj.type,
-                loaded: false,
-                study: node.study,
-                restObj: childObj
-              };
+              newNode.type = childObj.type ? childObj.type : 'UNDEF';
+              newNode.restObj = childObj;
 
               if(newNode.type === 'CATEGORICAL_OPTION'){
                 node.type = 'CATEGORICAL_CONTAINER';
@@ -142,7 +146,9 @@ angular.module('transmartBaseUi')
               }
 
             }, function(){
-              $scope.callFailure = true;
+              newNode.type = 'FAILED_CALL';
+              node.nodes.push(newNode);
+              //$scope.callFailure = true;
               $scope.treeLoading = false;
               node.loaded = true;
             });
