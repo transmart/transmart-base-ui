@@ -59,6 +59,8 @@ angular.module('transmartBaseUi').factory('StudyListService', ['EndpointService'
     return _deferred.promise;
   };
 
+  EndpointService.registerNewEndpointEvent(service.loadStudies);
+
   return service;
 }]);
 
