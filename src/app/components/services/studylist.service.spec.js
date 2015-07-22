@@ -241,7 +241,7 @@ describe('StudyListService Unit Tests', function() {
       StudyListService.loadStudies();
       httpBackend.flush();
     });
-    //
+    // TODO: fix this
     //it('loads some studies', function() {
     //  expect(StudyListService.public.length).toEqual(3);
     //  expect(StudyListService.private.length).toEqual(1);
