@@ -3,7 +3,9 @@
 angular.module('transmartBaseUi')
   .controller('MainCtrl',
     ['$scope', '$rootScope', 'Restangular', 'ChartService', 'AlertService', '$location', '$stateParams',
-    '$state',  function ($scope, $rootScope, Restangular, ChartService, AlertService, $location, $stateParams, $state)
+      '$state', 'StudyListService',
+      function ($scope, $rootScope, Restangular, ChartService, AlertService, $location, $stateParams,
+                $state, StudyListService)
   {
 
     $scope.summaryStatistics = {
@@ -126,6 +128,7 @@ angular.module('transmartBaseUi')
     $scope.$on('prepareChartContainers', function (event, labels) {
       _resizeGridster(labels, false);
     });
+
     $scope.$on('gridster-resized', function (event, newS, obj) {
       if(newS[0] < obj.currentSize -20){
         _resizeGridster(false, true);
@@ -220,8 +223,8 @@ angular.module('transmartBaseUi')
             // check if study id already loaded in existing array
             var _x = _.findWhere(
               _.union(
-                $rootScope.publicStudies,
-                $rootScope.privateStudies
+                StudyListService.public,
+                StudyListService.private
               ),
               {id: searchObject.study}
             );
@@ -231,6 +234,7 @@ angular.module('transmartBaseUi')
               $scope.displayStudySummaryStatistics(_x);
             } else {
               // TODO rest call by subject id
+              // console.log(' im hitting here ..')
             }
 
           }
