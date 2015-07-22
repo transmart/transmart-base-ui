@@ -27,13 +27,6 @@ angular.module('transmartBaseUi')
       oneAtATime: true
     };
 
-    $scope.type = {
-      fol: function(node){return node.type === 'FOLDER';},
-      num: function(node){return node.type === 'NUMERICAL';},
-      cat: function(node){return node.type === 'CATEGORICAL';},
-      hid: function(node){return node.type === 'HIGH_DIMENSIONAL';}
-    };
-
     /**
      * Populates the first 2 levels of a study tree
      * @param study
@@ -124,20 +117,20 @@ angular.module('transmartBaseUi')
 
         if(children){
           children.forEach(function(child){
-            var newNode = {
-              'title': child.title,
-              'nodes': [],
-              'type': 'NUMERICAL',
-              'loaded': false,
-              'study': node.study
-            };
 
             node.restObj.one(prefix + child.title).get().then(function(childObj){
 
-              newNode.restObj = childObj;
+              var newNode = {
+                title: child.title,
+                nodes: [],
+                type: childObj.type,
+                loaded: false,
+                study: node.study,
+                restObj: childObj
+              };
 
-              if (childObj._links.children) {
-                newNode.type = 'FOLDER';
+              if(newNode.type === 'CATEGORICAL_OPTION'){
+                node.type = 'CATEGORICAL_CONTAINER';
               }
 
               node.nodes.push(newNode);

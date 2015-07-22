@@ -20,11 +20,13 @@
        data-jqyoui-options="{containment: 'document', appendTo: 'body', helper: 'clone'}" ng-model="node">
 
     <i data-nodrag ng-click="toggle(this)">
-      <i class="glyphicon ts-node-icon" ng-class="{'glyphicon-folder-close': collapsed && type.fol(node),
-                                     'glyphicon-folder-open': !collapsed && type.fol(node),
-                                     'glyphicon-equalizer': type.num(node),
-                                     'a': type.cat(node),
-                                     'b': type.hid(node)}">
+      <i  class="glyphicon ts-node-icon"
+          ng-class="{ 'glyphicon-folder-close': collapsed && node.type === 'UNKNOWN',
+                      'glyphicon-folder-open': !collapsed && node.type === 'UNKNOWN',
+                      'glyphicon-equalizer': node.type === 'HIGH_DIMENSIONAL',
+                      'mdi mdi-numeric': node.type === 'NUMERIC',
+                      'mdi mdi-chart-pie': node.type === 'CATEGORICAL_CONTAINER',
+                      'mdi mdi-tag': node.type === 'CATEGORICAL_OPTION'}">
       </i> &nbsp;
     </i>
 
