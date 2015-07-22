@@ -16,7 +16,7 @@
 <script type="text/ng-template" id="nodes_renderer.html">
 
   <div ui-tree-handle class="tree-node tree-node-content" ng-click="populateChilds(node);"
-       data-drag="true" jqyoui-draggable="{placeholder: 'keep'}"
+       data-drag="node.type !== 'FAILED_CALL'" jqyoui-draggable="{placeholder: 'keep'}"
        data-jqyoui-options="{containment: 'document', appendTo: 'body', helper: 'clone'}" ng-model="node">
 
     <a data-nodrag ng-click="toggle(this)">
@@ -33,8 +33,12 @@
       </i> &nbsp;
     </a>
 
-    <a popover-template="'tree-tooltip.html'" popover-placement="right"
-       ng-click="displayToolTip($event, node)"> {{node.title | cutstring:false:divWidth:' ...'}}</a> &nbsp; &nbsp;
+    <a  popover-template="'tree-tooltip.html'"
+        popover-placement="right"
+        ng-click="displayToolTip($event, node)"
+        ng-class="{'text-grey': node.type === 'FAILED_CALL'}">
+        {{node.title | cutstring:false:divWidth:' ...'}}
+    </a> &nbsp; &nbsp;
     <a class="quantity-num">({{node.total}})</a>
   </div>
   <ol ui-tree-nodes="" ng-model="node.nodes" ng-class="{hidden: collapsed}">
