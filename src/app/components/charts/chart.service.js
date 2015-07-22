@@ -72,10 +72,15 @@ angular.module('transmartBaseUi').factory('ChartService',
     _bp
       .dimension(cDimension)
       .group(cGroup)
-      .elasticY(true)
       .elasticX(true)
       .yAxisLabel(opt.yLab ? opt.yLab : '')
       .xAxisLabel(opt.xLab ? opt.xLab : '');
+
+    if(opt.min !== undefined && opt.max !== undefined){
+      _bp.y(d3.scale.linear().domain([opt.min-0.20*opt.max, opt.max*1.20]));
+    }else{
+      _bp.elasticY(true);
+    }
 
     return _bp;
   };
@@ -112,7 +117,7 @@ angular.module('transmartBaseUi').factory('ChartService',
     var _chart = dc.scatterPlot(el);
 
     //Min and max for the x dimension
-    if(opt.min && opt.max){
+    if(opt.min !== undefined && opt.max !== undefined){
       _chart.x(d3.scale.linear().domain(
         [opt.min-opt.max*0.1, opt.max+opt.max*0.05]
       ));
@@ -474,11 +479,11 @@ angular.module('transmartBaseUi').factory('ChartService',
         });
         cs.grps[label.ids] = cs.dims[label.ids].group().reduce(
           function(p,v) {
-            p.push(v.labels[label.ids] ? v.labels[label.ids][_valueY] : undefined);
+            p.push(v.labels[label.ids] ? +v.labels[label.ids][_valueY] : undefined);
             return p;
           },
           function(p,v) {
-            p.splice(p.indexOf(v.labels[label.ids] ? v.labels[label.ids][_valueY] : undefined), 1);
+            p.splice(p.indexOf(v.labels[label.ids] ? +v.labels[label.ids][_valueY] : undefined), 1);
             return p;
           },
           function() {
@@ -486,9 +491,14 @@ angular.module('transmartBaseUi').factory('ChartService',
           }
         );
 
+        var _max = cs.dims[label.label[_valueY].ids].top(1)[0].labels[label.label[_valueY].ids];
+        var _min = cs.dims[label.label[_valueY].ids].bottom(1)[0].labels[label.label[_valueY].ids];
+
         _chart = _boxPlot(cs.dims[label.ids], cs.grps[label.ids], el, {
           xLab: label.label[_valueX].name,
-          yLab: label.label[_valueY].name
+          yLab: label.label[_valueY].name,
+          min: _min,
+          max: _max
         });
         _chart.type = 'BOXPLOT';
 
@@ -516,13 +526,12 @@ angular.module('transmartBaseUi').factory('ChartService',
       });
       cs.grps[label.ids] = cs.dims[label.ids].group();
 
-      var _subs = cs.dims[label.ids].top(Infinity);
-      var _maxX = d3.max(_subs, function(d){return d.labels[label.label[0].ids];});
-      var _minX = d3.min(_subs, function(d){return d.labels[label.label[0].ids];});
+      var _max = cs.dims[label.label[0].ids].top(1)[0].labels[label.label[0].ids];
+      var _min = cs.dims[label.label[0].ids].bottom(1)[0].labels[label.label[0].ids];
 
       _chart = _scatterPlot(cs.dims[label.ids], cs.grps[label.ids], el, {
-        min: _minX,
-        max: _maxX,
+        min: _min,
+        max: _max,
         xLab: label.label[0].name,
         yLab: label.label[1].name
       });
@@ -605,7 +614,7 @@ angular.module('transmartBaseUi').factory('ChartService',
       TICK_X: 30, // Pixels per tick in x
       TICK_Y: 30, // Pixels per tick in y
       SLICE: 20, // Pixels per slice for pie charts
-      SP_DOT_SIZE: 3/300, // Pixels per width / heigth
+      SP_DOT_SIZE: 4, // Pixels per width / heigth
       BP_PIXELS_PER_GROUP: 110,
       HM_LEFT_MARGIN: width/6,
       HM_Y_LABELS_PIXELS: 10
@@ -663,7 +672,7 @@ angular.module('transmartBaseUi').factory('ChartService',
         _chart.xAxis().ticks(Math.floor(width/_CONF.TICK_X));
         _chart.yAxis().ticks(Math.floor(height/_CONF.TICK_Y));
         // Adjust the size of the dots
-        _chart.symbolSize(_CONF.SP_DOT_SIZE*(width+height/2));
+        _chart.symbolSize(_CONF.SP_DOT_SIZE);
         _chart.rescale();
       }
 
