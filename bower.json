@@ -38,5 +38,16 @@
     "jquery": "~1.11.1",
     "angular": "~1.4.3",
     "angular-bootstrap": "~0.13.0"
+  },
+  "overrides": {
+    "ace-builds": {
+      "main": [
+        "src-min-noconflict/ace.js",
+        "src-min-noconflict/mode-json.js",
+        "src-min-noconflict/mode-yaml.js",
+        "src-min-noconflict/theme-idle_fingers.js",
+        "src-min-noconflict/worker-json.js"
+      ]
+    }
   }
 }
