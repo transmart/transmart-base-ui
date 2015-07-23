@@ -56,11 +56,19 @@
         </tab>
 
         <!-- Cohort subjects tab -------------------------------------------------------------------------------------->
-        <tab heading="Cohort subjects" active="tabs[1].active" ng-click="activateTab(tabs[1].title, 'cohortGrid');">
+        <tab active="tabs[1].active" ng-click="activateTab(tabs[1].title, 'cohortGrid');">
           <tab-heading>
             <span>{{tabs[1].title}}</span>
           </tab-heading>
           <cohort-grid cohort="cohortVal.subjects" headers="cohortLabels"></cohort-grid>
+        </tab>
+
+        <!-- R console tab -------------------------------------------------------------------------------------->
+        <tab active="tabs[3].active" ng-click="activateTab(tabs[3].title, 'rConsole');">
+          <tab-heading>
+            <span>{{tabs[3].title}}</span>
+          </tab-heading>
+          <ace-console></ace-console>
         </tab>
 
 
