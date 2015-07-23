@@ -8,7 +8,7 @@ angular.module('transmartBaseUi')
       scope: {},
       controller: function($scope) {
         $scope.aceOptions = {
-          theme: 'solarized_dark',
+          theme: 'idle_fingers',
           mode: 'r',
           useWrapMode : true
         };
