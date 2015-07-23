@@ -21,6 +21,7 @@
     "angular-gridster": "~0.13.4",
     "angular-smart-table": "~2.1.0",
     "angular-loading-bar": "~0.8.0",
+    "angular-ui-layout": "~1",
     "mdi": "~1.1.70"
   },
   "devDependencies": {
@@ -30,6 +31,7 @@
     "angular-gridster": "~0.13.4",
     "angular-smart-table": "~2.1.0",
     "angular-loading-bar": "~0.8.0",
+    "angular-ui-layout": "~1",
     "mdi": "~1.1.70"
   },
   "resolutions": {
