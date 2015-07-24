@@ -8,6 +8,10 @@ https://docs.npmjs.com/getting-started/installing-node
 ## Usage
 Run following from the project root
 
+## Demo
+http://transmart-gb.thehyve.net
+
+
 - Install tools
 ```
 $ npm install 
