@@ -1,17 +1,19 @@
-<div class="row" style="padding-top: 100px;">
+<div class="row" style="padding-top: 20px;">
   <div class="col-md-1"></div>
   <div class="col-md-4">
 
     <h2>Add data source</h2>
+    <hr/>
 
-    <div class="btn-group" dropdown>
-      <button type="button" class="btn btn-default dropdown-toggle" dropdown-toggle>Defaults <span class="caret"></span></button>
-      <ul class="dropdown-menu" role="menu">
-        <li><a href="#" ng-click="populateDefaultApi('transmart-demo', 'http://transmart-demo.thehyve.net/transmart')">transmart-demo</a></li>
-        <li><a href="#" ng-click="populateDefaultApi('transmart-gb', 'http://transmart-gb.thehyve.net/transmart')">transmart-gb</a></li>
-        <li><a href="#" ng-click="populateDefaultApi('local', 'http://localhost:8080/transmart-rest-api')">local</a></li>
-      </ul>
-    </div>
+    <!-- Alert ------------------------------------------------------------------------------------------------------>
+    <alert class="alert-div" ng-repeat="alert in alerts" type="{{alert.type}}" close="close(alert.id)">
+      {{alert.message}}
+    </alert>
+
+    <select class="form-control" ng-change="populateDefaultApi();"
+            ng-model="selectedConnection"
+            ng-options="connection.label for connection in connections">
+    </select>
 
     <br>
     <br>
@@ -73,8 +75,10 @@
       <tr ng-repeat="endpoint in endpoints">
         <td>      <i class="glyphicon"
                     ng-class="{
-                                'glyphicon-ok text-success': endpoint.status == 'success',
-                                'glyphicon-warning-sign text-warning': endpoint.status == 'error'}"></td>
+                                'glyphicon-ok text-success': endpoint.status == 'active',
+                                'glyphicon-warning-sign text-warning': endpoint.status == 'error',
+                                'glyphicon glyphicon-hdd text-success' : endpoint.status == 'local'
+                                }"></i> </td>
         <td>{{endpoint.title}}</td>
         <td>{{endpoint.url}}</td>
         <td>{{endpoint.expiresAt | date:'dd-M H:mm'}}</td>
