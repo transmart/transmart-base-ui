@@ -20,11 +20,13 @@ angular.module('transmartBaseUi', [
     function ($stateProvider, RestangularProvider, $tooltipProvider, cfpLoadingBarProvider) {
 
       $stateProvider
-        .state('login', {
-          url: '/login',
-          templateUrl: 'app/components/login/login.html',
-          controller: 'LoginCtrl'
-        })
+
+        //.state('login', {
+        //  url: '/login',
+        //  templateUrl: 'app/components/login/login.html',
+        //  controller: 'LoginCtrl'
+        //})
+
         .state('home', {
           url: '/home',
           templateUrl: 'app/home/home.html',
@@ -94,6 +96,7 @@ angular.module('transmartBaseUi', [
 
       // Remove spinner from http request loading bar
       cfpLoadingBarProvider.includeSpinner = false;
+
   }])
 
   .run(['$rootScope', '$location', '$cookieStore', '$http', 'EndpointService',
@@ -109,9 +112,8 @@ angular.module('transmartBaseUi', [
       EndpointService.retrieveStoredEndpoints();
 
       $rootScope.$on('$locationChangeStart', function () {
-        // redirect to login page if not logged in
-        if ($location.path() !== '/login' && !$rootScope.globals.currentUser) {
-          $location.path('/login');
+        if ($location.path() === '') {
+          $location.path('/home');
         }
       });
     }]);
