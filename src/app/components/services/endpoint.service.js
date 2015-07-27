@@ -37,7 +37,7 @@ angular.module('transmartBaseUi')
           return _n;
         });
 
-        $cookies.putObject('endpoints' + $rootScope.globals.currentUser.authdata, _end);
+        $cookies.putObject('transmart-base-ui-v2.endpoints', _end);
       };
 
       service.addEndpoint = function (title, url) {
@@ -122,17 +122,15 @@ angular.module('transmartBaseUi')
       };
 
       service.retrieveStoredEndpoints = function () {
-        if ($rootScope.globals.currentUser) {
-          var storedEnpoints = $cookies.getObject('endpoints' + $rootScope.globals.currentUser.authdata) || [];
+          var storedEnpoints = $cookies.getObject('transmart-base-ui-v2.endpoints') || [];
           storedEnpoints.forEach(function (endpoint) {
             endpoint.restangular = _newRestangularConfig(endpoint);
             _endpoints.push(endpoint);
           });
-        }
       };
 
       service.clearStoredEnpoints = function () {
-        $cookies.remove('endpoints' + $rootScope.globals.currentUser.authdata);
+        $cookies.remove('transmart-base-ui-v2.endpoints');
         _endpoints = [];
         service.triggerNewEndpointEvent();
       };
@@ -148,9 +146,9 @@ angular.module('transmartBaseUi')
       };
 
       var _saveEndpointToCookies = function (end) {
-        var storedEnpoints = $cookies.getObject('endpoints' + $rootScope.globals.currentUser.authdata) || [];
+        var storedEnpoints = $cookies.getObject('transmart-base-ui-v2.endpoints') || [];
         storedEnpoints.push(end);
-        $cookies.putObject('endpoints' + $rootScope.globals.currentUser.authdata, storedEnpoints);
+        $cookies.putObject('transmart-base-ui-v2.endpoints', storedEnpoints);
       };
 
       var _cleanUrl = function (url) {

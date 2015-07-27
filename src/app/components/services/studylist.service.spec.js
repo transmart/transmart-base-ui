@@ -199,6 +199,11 @@ describe('StudyListService Unit Tests', function() {
     EndpointService = _EndpointService_;
   }));
 
+  afterEach(function() {
+    httpBackend.verifyNoOutstandingExpectation();
+    httpBackend.verifyNoOutstandingRequest();
+  });
+
 
   it('should have StudyListService defined', function () {
     expect(StudyListService).toBeDefined();
@@ -230,26 +235,5 @@ describe('StudyListService Unit Tests', function() {
     var _all = StudyListService.getAll();
     expect(_all.length).toEqual(6);
   });
-
-
-
-  describe('test load studies', function () {
-
-    beforeEach(function(){
-      EndpointService.addEndpoint('Mock', 'www.mock.com');
-      httpBackend.expectGET('www.mock.com/studies').respond(studyResponse);
-      StudyListService.loadStudies();
-      httpBackend.flush();
-    });
-    // TODO: fix this
-    //it('loads some studies', function() {
-    //  expect(StudyListService.public.length).toEqual(3);
-    //  expect(StudyListService.private.length).toEqual(1);
-    //});
-
-
-  });
-
-
 
 });

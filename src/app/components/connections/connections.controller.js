@@ -1,51 +1,79 @@
 'use strict';
 
 angular.module('transmartBaseUi')
-  .controller('ConnectionsCtrl', ['$scope', '$location', 'AlertService', 'EndpointService',
-    function ($scope, $location, AlertService , EndpointService) {
+  .controller('ConnectionsCtrl', ['$scope', '$location', 'EndpointService',
+    function ($scope, $location, EndpointService) {
 
-    $scope.formData = {};
-    $scope.endpoints = EndpointService.getEndpoints();
+      $scope.formData = {};
 
-    var _updateEndpoints = function (){
       $scope.endpoints = EndpointService.getEndpoints();
-    };
-    EndpointService.registerNewEndpointEvent(_updateEndpoints);
 
-    $scope.clearSavedEndpoints = EndpointService.clearStoredEnpoints;
-    $scope.navigateToAuthorizationPage = function(){
-      EndpointService.navigateToAuthorizationPage($scope.formData.url);
-    };
+      $scope.connections = [
+        {label: 'transmart-gb', url: 'http://transmart-gb.thehyve.net/transmart'},
+        {label: 'localhost', url: 'http://localhost:8080/transmart-rest-api'},
+        {label: 'local iMAC', url: 'http://10.8.10.198:8080/transmart-rest-api'} // local dev
+      ];
+      $scope.selectedConnection = '';
 
-    $scope.addResource = function() {
-      var formData = $scope.formData;
-      if (formData.requestToken) {
-        EndpointService.addOAuthEndpoint(formData.title, formData.url, formData.requestToken)
-          .then(function() {
-            $scope.resetEndpointForm();
-          });
-      }
-      else {
-        EndpointService.addEndpoint(formData.title, formData.url);
-        $scope.resetEndpointForm();
-      }
-      $scope.endpointTabOpen = false;
-    };
+      /**
+       * Empty endpoints
+       */
+      $scope.clearSavedEndpoints = function () {
+        EndpointService.clearStoredEnpoints();
+        $scope.endpoints = EndpointService.getEndpoints();
+      };
 
-    $scope.populateDefaultApi = function(name, link) {
-      $scope.formData.title = name;
-      $scope.formData.url = link;
-      $scope.formData.requestToken = '';
-    };
+      /**
+       * Navigate to authorization page
+       */
+      $scope.navigateToAuthorizationPage = function () {
+        EndpointService.navigateToAuthorizationPage($scope.formData.url);
+      };
 
-    $scope.resetEndpointForm = function () {
-      var formData = $scope.formData;
-      formData.title = '';
-      formData.url = '';
-      formData.requestToken = '';
-      formData.endpointForm.$setPristine();
-    };
+      /**
+       * Add restful endpoint
+       */
+      $scope.addResource = function () {
 
-    $scope.removeEndpoint = EndpointService.remove;
+        var _resetEndpointForm = function () {
+          var formData = $scope.formData;
+          formData.title = '';
+          formData.url = '';
+          formData.requestToken = '';
+        };
 
-  }]);
+        var formData = $scope.formData;
+        if (formData.requestToken) {
+          EndpointService.addOAuthEndpoint(formData.title, formData.url, formData.requestToken)
+            .then(function (d) {
+              $scope.endpoints = EndpointService.getEndpoints();
+              _resetEndpointForm();
+            }, function(err) {
+              // TODO Error handling
+            });
+        }
+        else {
+          EndpointService.addEndpoint(formData.title, formData.url);
+          _resetEndpointForm();
+        }
+        $scope.endpointTabOpen = false;
+      };
+
+      /**
+       * Populate selected endpoint
+       */
+      $scope.populateDefaultApi = function () {
+        $scope.formData.title = $scope.selectedConnection.label;
+        $scope.formData.url = $scope.selectedConnection.url;
+        $scope.formData.requestToken = '';
+      };
+
+      /**
+       * Remove an endpoint
+       * @param e
+       */
+      $scope.removeEndpoint = function (e) {
+        EndpointService.remove(e);
+      };
+
+}]);

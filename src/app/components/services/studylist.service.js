@@ -38,7 +38,7 @@ angular.module('transmartBaseUi').factory('StudyListService', ['EndpointService'
     // Load studies from each endpoints
     _endpoints.forEach(function (endpoint) {
       endpoint.restangular.all('studies').getList().then(function (studies) {
-          endpoint.status = 'success';
+          endpoint.status = 'active'; // reconfirmed that endpoint are still active
           // Checking if studies are public or private
           studies.forEach(function (study) {
             study.endpoint = endpoint; // Keep reference to endpoint
@@ -49,11 +49,13 @@ angular.module('transmartBaseUi').factory('StudyListService', ['EndpointService'
               service.private.push(study);
             }
           });
+
           _deferred.resolve();
         }, function (err) {
           _deferred.reject('Cannot get studies from the rest endpoint. ' + err);
-        });
-      endpoint.status = 'error';
+          endpoint.status = 'error';
+      });
+
     });
 
     return _deferred.promise;
