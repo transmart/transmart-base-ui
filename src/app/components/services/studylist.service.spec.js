@@ -236,30 +236,4 @@ describe('StudyListService Unit Tests', function() {
     expect(_all.length).toEqual(6);
   });
 
-  //it('should get no studies when there is no endpoints', function () {
-  //  EndpointService.addEndpoint('testone', 'http://testone' );
-  //  httpBackend.expectGET('http://testone/studies').respond(studyResponse);
-  //  httpBackend.flush();
-  //  StudyListService.loadStudies();
-  //  console.log(StudyListService.public.length);
-  //});
-
-  //describe('test load studies', function () {
-  //
-  //  beforeEach(function(){
-  //    EndpointService.addEndpoint('Mock', 'www.mock.com');
-  //    httpBackend.expectGET('www.mock.com/studies').respond(studyResponse);
-  //    StudyListService.loadStudies();
-  //    httpBackend.flush();
-  //    //console.log(StudyListService.public);
-  //  });
-  //
-  //  it('loads some studies', function() {
-  //    expect(StudyListService.public.length).toEqual(3);
-  //    expect(StudyListService.private.length).toEqual(1);
-  //  });
-
-  //
-  //});
-
 });
