@@ -10,8 +10,7 @@ angular.module('transmartBaseUi')
 
       $scope.connections = [
         {label: 'transmart-gb', url: 'http://transmart-gb.thehyve.net/transmart'},
-        {label: 'localhost', url: 'http://localhost:8080/transmart-rest-api'},
-        {label: 'local iMAC', url: 'http://10.8.10.198:8080/transmart-rest-api'} // local dev
+        {label: 'localhost', url: 'http://localhost:8080/transmart-rest-api'}
       ];
       $scope.selectedConnection = '';
 
