@@ -1,7 +1,8 @@
 'use strict';
 
 angular.module('transmartBaseUi')
-  .controller('HomeCtrl', ['$scope', 'StudyListService', function ($scope, StudyListService) {
+  .controller('HomeCtrl', ['$scope', 'StudyListService',   function ($scope, StudyListService) {
+
 
     $scope.tutorial = {
       openStep1: true,
@@ -9,10 +10,15 @@ angular.module('transmartBaseUi')
       openStep2: false
     };
 
-    if (StudyListService.getAll().length > 0) {
-      $scope.tutorial.openStep1 = false;
-      $scope.tutorial.disableStep1 = true;
-      $scope.tutorial.openStep2 = true;
-    }
+
+    var init = function () {
+      if (StudyListService.getAll().length > 0) {
+        $scope.tutorial.openStep1 = false;
+        $scope.tutorial.disableStep1 = true;
+        $scope.tutorial.openStep2 = true;
+      }
+    };
+
+    init();
 
   }]);

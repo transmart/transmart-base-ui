@@ -1,11 +1,12 @@
-<div class="container-fluid" >
-  <div class="row">
+<div ui-layout="{flow : 'column'}">
 
+  <div ui-layout-container size="15%" min-size="15%">
     <!--Side Bar-->
     <div ng-include="'app/components/sidebar/sidebar.html'"></div>
+  </div>
 
-    <!--Main-->
-    <div class="col-sm-10 col-sm-offset-3 col-md-10 col-md-offset-2 main" >
+  <div ui-layout-container min-size="50%">
+    <div class="main-container">
       <!-- Alert ------------------------------------------------------------------------------------------------------>
       <alert class="alert-div" ng-repeat="alert in alerts" type="{{alert.type}}" close="close(alert.id)">
         {{alert.message}}
@@ -22,8 +23,11 @@
 
           <div class="well well-lg ts-node-well" data-drop="true" ng-model='droppedNode'
                jqyoui-droppable="{multiple:true, onDrop:'onNodeDropEvent(droppedNode)'}">
-            <h5 ng-if="cohortChartContainerLabels.length == 0"><small>  Drag and drop some nodes here to add them.</small></h5>
-            <button type="button" class="btn btn-primary btn-sm ts-btn-node" ng-repeat="label in cohortChartContainerLabels"
+            <h5 ng-if="cohortChartContainerLabels.length == 0">
+              <small> Drag and drop some nodes here to add them.</small>
+            </h5>
+            <button type="button" class="btn btn-primary btn-sm ts-btn-node"
+                    ng-repeat="label in cohortChartContainerLabels"
                     ng-click="removeLabel(label)">
               <div class="ts-node-name">
                 {{label.name}}<br><span class="ts-smaller-font">{{label.study._embedded.ontologyTerm.name}}</span>
@@ -33,7 +37,7 @@
             </button>
             <button ng-if="cohortChartContainerLabels.length >= 1" class="btn btn-danger ts-btn-node-reset"
                     ng-click="resetActiveLabels()">
-               Reset<br>({{cohortVal.dimensions}}/{{cohortVal.maxdim}})
+              Reset<br>({{cohortVal.dimensions}}/{{cohortVal.maxdim}})
             </button>
           </div>
           <div id="main-chart-container">
@@ -44,12 +48,12 @@
 
             <div gridster="gridsterOpts" id="ts-gridster-box">
               <ul>
-                  <li gridster-item="label" ng-repeat="label in cohortChartContainerLabels">
-                    <ts-cohort-chart  class="chart-container"
-                                      ts-gridster-item="gridsterItem"
-                                      ts-gridster="gridster"
-                                      ts-label="label"></ts-cohort-chart>
-                  </li>
+                <li gridster-item="label" ng-repeat="label in cohortChartContainerLabels">
+                  <ts-cohort-chart class="chart-container"
+                                   ts-gridster-item="gridsterItem"
+                                   ts-gridster="gridster"
+                                   ts-label="label"></ts-cohort-chart>
+                </li>
               </ul>
             </div>
           </div>
@@ -71,10 +75,11 @@
           <ace-console></ace-console>
         </tab>
 
-        <!-- Summary Statistics tab -------------------------------------------------------------------------------------->
+        <!-- Summary Statistics tab ----------------------------------------------------------------------------------->
         <tab active="tabs[2].active" ng-click="activateTab(tabs[2].title, 'summaryStats');">
           <tab-heading>{{tabs[2].title}}</tab-heading>
           <h3>{{selectedStudy.id}}</h3>
+
           <div class="summary-div">
             <span ng-repeat="concept in summaryStatistics.magicConcepts" id="summary-chart-{{concept}}">
               <h6>{{summaryStatistics.titles[$index]}}</h6>
@@ -83,6 +88,8 @@
         </tab>
 
       </tabset>
-      </div>
+    </div>
   </div>
+
 </div>
+
