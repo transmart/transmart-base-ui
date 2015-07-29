@@ -1,8 +1,78 @@
-<div class="well well-lg ts-node-well" data-drop="true" ng-model='droppedNode'
-     jqyoui-droppable="{multiple:false, onDrop:'onNodeDropEvent(droppedNode)'}">
-  <h5 ng-if="droppedNode == undefined">
-    <small> Drag and drop some nodes here to add them.</small>
-  </h5>
-  {{droppedNode.title}} - {{droppedNode.restObj.getRestangularUrl()}}
+<script type="text/ng-template" id="step1.html">
+  <div class="well well-lg ts-node-well" data-drop="true" ng-model='droppedNode'
+       jqyoui-droppable="{multiple:false, onDrop:'onNodeDropEvent(droppedNode)'}">
+    <span ng-if="droppedNode !== undefined" >{{droppedNode.title}} - {{droppedNode.restObj.getRestangularUrl()}}</span>
+    <span ng-if="droppedNode === undefined"> Drag and drop a high dimensional node.</span>
+  </div>
 
-</div>
+</script>
+
+<script type="text/ng-template" id="step2.html">
+  <br>
+
+  Pre-process option:
+  <select class="form-control" ng-model="step2option" ng-options="opt for opt in step2drop"></select>
+
+  <br>
+
+  <button class="btn btn-default"
+          ng-click="step2()">
+    Execute
+  </button>
+
+</script>
+
+<script type="text/ng-template" id="step3.html">
+
+  <button class="btn btn-default"
+          ng-click="step3(step.data)">
+    Execute
+  </button>
+
+  <img ng-src="http://localhost:8004/ocpu/tmp/{{imgHash}}/files/heatmap.png"/>
+
+</script>
+
+
+<tabset  justified="true">
+  <tab  ng-repeat="step in tabs"
+        heading="{{step.title}}"
+        active="step.active"
+        ng-click="setTab($index)"
+        disabled="!step.active && !step.done">
+
+    <div class="row">
+
+      <div class="col-xs-6">
+
+        <div ng-include src="step.content"></div>
+
+      </div>
+
+      <div class="col-xs-6">
+
+        <span ng-if="step.executing" class="text-info">
+          Data is loading...
+          <i ng-if="!step.done" class="glyphicon glyphicon-spin glyphicon-refresh"></i>
+        </span>
+        <span ng-if="step.done" class="text-success">
+          Data loaded, proceed to next step.
+        </span>
+
+        <br>
+
+
+      </div>
+
+    </div>
+
+
+
+    <button class="btn btn-default pull-right"
+            ng-if="step.done && $scope.tabIndex != $scope.tabs.length -1"
+            ng-click="nextTab()">
+      Next
+    </button>
+
+  </tab>
+</tabset>
