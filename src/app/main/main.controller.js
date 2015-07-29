@@ -216,16 +216,11 @@ angular.module('transmartBaseUi')
       var findURLQueryParams = $location.search(); //
 
       if (findURLQueryParams !== undefined) {
-
         if (findURLQueryParams.action === 'summaryStats') {
           if (findURLQueryParams.study) {
 
             // check if study id already loaded in existing array
-            var _x = _.findWhere(
-              _.union(
-                StudyListService.public,
-                StudyListService.private
-              ),
+            var _x = _.findWhere(StudyListService.getAll(),
               {id: findURLQueryParams.study}
             );
 

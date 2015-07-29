@@ -3,13 +3,11 @@
 angular.module('transmartBaseUi').factory('StudyListService', ['EndpointService', '$q', function(EndpointService, $q){
 
   var service = {
-    public : [],
-    private : []
+    studyList : []
   };
 
   service.emptyAll = function () {
-    service.public = [];
-    service.private = [];
+    service.studyList = [];
   };
 
   /**
@@ -17,8 +15,21 @@ angular.module('transmartBaseUi').factory('StudyListService', ['EndpointService'
    * @returns {Array}
    */
   service.getAll = function () {
-    return _.union(service.public, service.private);
+    return service.studyList;
   };
+
+  service.getPublicStudies = function () {
+    return _.where(service.studyList, {type:'public'});
+  };
+
+  service.getPrivateStudies = function () {
+    return _.where(service.studyList, {type:'private'});
+  };
+
+  service.getOtherStudies = function () {
+    return _.where(service.studyList, {type:'other'});
+  };
+
 
   /**
    * Load studies from existing endpoints
@@ -41,13 +52,18 @@ angular.module('transmartBaseUi').factory('StudyListService', ['EndpointService'
           endpoint.status = 'active'; // reconfirmed that endpoint are still active
           // Checking if studies are public or private
           studies.forEach(function (study) {
+
             study.endpoint = endpoint; // Keep reference to endpoint
-            if (study._embedded.ontologyTerm.fullName.split('\\')[1] ===
-              'Public Studies') {
-              service.public.push(study)
+
+            if (study._embedded.ontologyTerm.fullName.split('\\')[1] === 'Public Studies') {
+              study.type = 'public';
+            } else if (study._embedded.ontologyTerm.fullName.split('\\')[1] === 'Private Studies') {
+              study.type = 'private';
             } else {
-              service.private.push(study);
+              study.type = 'other';
             }
+
+            service.studyList.push(study);
           });
 
           _deferred.resolve();
@@ -60,6 +76,7 @@ angular.module('transmartBaseUi').factory('StudyListService', ['EndpointService'
 
     return _deferred.promise;
   };
+
 
   EndpointService.registerNewEndpointEvent(service.loadStudies);
 
