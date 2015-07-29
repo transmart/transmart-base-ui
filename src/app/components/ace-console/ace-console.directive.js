@@ -23,7 +23,7 @@ angular.module('transmartBaseUi')
         $scope.inputConsole = 'x <- 5';
         $scope.outputConsole = '';
 
-        ocpu.seturl("//transmart-gb-opencpu.thehyve.net/ocpu/github/thehyve/rtransmartbaseui/R");
+        ocpu.seturl("//localhost:8004/ocpu/library/opencpuRScripts/R");
 
         $scope.runScript = function () {
           var req = ocpu.rpc("execscript",{
