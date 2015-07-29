@@ -18,7 +18,8 @@ angular.module('transmartBaseUi')
       {title: 'Cohort Selection', active: true},
       {title: 'Cohort Grid', active: false},
       {title: 'Summary Statistics', active: false},
-      {title: 'R console', active: false}
+      {title: 'R console', active: false},
+      {title: 'Analysis', active: false}
     ];
 
     $scope.activateTab = function (tabTitle, tabAction) {

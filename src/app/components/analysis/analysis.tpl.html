@@ -1,0 +1,8 @@
+<div class="well well-lg ts-node-well" data-drop="true" ng-model='droppedNode'
+     jqyoui-droppable="{multiple:false, onDrop:'onNodeDropEvent(droppedNode)'}">
+  <h5 ng-if="droppedNode == undefined">
+    <small> Drag and drop some nodes here to add them.</small>
+  </h5>
+  {{droppedNode.title}} - {{droppedNode.restObj.getRestangularUrl()}}
+
+</div>
