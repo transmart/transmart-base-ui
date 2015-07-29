@@ -213,12 +213,12 @@ angular.module('transmartBaseUi')
      */
     var _initLoad = function () {
 
-      var searchObject = $location.search();
+      var findURLQueryParams = $location.search(); //
 
-      if (searchObject !== undefined) {
+      if (findURLQueryParams !== undefined) {
 
-        if (searchObject.action === 'summaryStats') {
-          if (searchObject.study) {
+        if (findURLQueryParams.action === 'summaryStats') {
+          if (findURLQueryParams.study) {
 
             // check if study id already loaded in existing array
             var _x = _.findWhere(
@@ -226,7 +226,7 @@ angular.module('transmartBaseUi')
                 StudyListService.public,
                 StudyListService.private
               ),
-              {id: searchObject.study}
+              {id: findURLQueryParams.study}
             );
 
             // display summary statistics if the study is existing
@@ -239,7 +239,7 @@ angular.module('transmartBaseUi')
 
           }
           $scope.activateTab($scope.tabs[2].title, 'summaryStats');
-        } else if (searchObject.action === 'cohortGrid') {
+        } else if (findURLQueryParams.action === 'cohortGrid') {
           $scope.activateTab($scope.tabs[1].title, 'cohortGrid');
         } else {
           $scope.activateTab($scope.tabs[0].title, 'cohortSelection');
