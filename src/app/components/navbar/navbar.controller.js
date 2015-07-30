@@ -8,16 +8,24 @@ angular.module('transmartBaseUi')
       {
         label : 'Home',
         path : 'home',
+        children : [],
         isActive : true
       },
       {
         label : 'Workspace',
         path : 'workspace',
+        children : [
+          {
+            label : 'Save',
+            path : 'workspace.save'
+          }
+        ],
         isActive : false
       },
       {
         label : 'Data Sources',
         path : 'connections',
+        children : [],
         isActive : false
       }
     ];

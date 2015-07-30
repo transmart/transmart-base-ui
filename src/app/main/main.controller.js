@@ -32,7 +32,6 @@ angular.module('transmartBaseUi')
     };
 
     $scope.close = AlertService.remove;
-
     $scope.alerts = AlertService.get();
     $scope.csvHeaders = [];
 
@@ -165,6 +164,7 @@ angular.module('transmartBaseUi')
      */
     $scope.removeLabel = function (label) {
       ChartService.removeLabel(label);
+      _updateCohortDisplay();
     };
 
     /**
@@ -172,22 +172,28 @@ angular.module('transmartBaseUi')
      */
     $scope.resetActiveLabels = function () {
       ChartService.reset();
-      _updateCohortDisplay(true);
+      _updateCohortDisplay();
     };
 
     /**
-     * Updates the bar graph slection values and the subjects displayed by the
+     * Updates the bar graph selection values and the subjects displayed by the
      * grid.
      * @private
      */
     var _updateCohortDisplay = function(){
       $scope.cohortVal = ChartService.getSelectionValues();
-      $scope.cohortLabels = ChartService.getLabels();
-      if (!$scope.$$phase) {
-        $scope.$apply();
-      }
+
+      //console.log($scope.cohortVal)
+
+      $scope.cohortLabels = ChartService.getLabels(); // this one
+      console.log($scope.cohortLabels)
+
+      //if (!$scope.$$phase) {
+      //  $scope.$apply();
+      //}
     };
-    ChartService.registerFilterEvent(_updateCohortDisplay);
+
+    //ChartService.registerFilterEvent(_updateCohortDisplay);
 
     /**
      * Callback for node drop
@@ -234,6 +240,8 @@ angular.module('transmartBaseUi')
 
           }
           $scope.activateTab($scope.tabs[2].title, 'summaryStats');
+        } else if (findURLQueryParams.action === 'save') {
+          // todo save workspace
         } else if (findURLQueryParams.action === 'cohortGrid') {
           $scope.activateTab($scope.tabs[1].title, 'cohortGrid');
         } else {

@@ -5,11 +5,17 @@ angular.module('transmartBaseUi').factory('ChartService',
   ['Restangular', '$q', '$rootScope', '$timeout', 'AlertService',
   function (Restangular, $q, $rootScope, $timeout, AlertService) {
 
-  var chartService = {};
+    var chartService = {};
 
-  var _filterEvent = function () {};
-  chartService.registerFilterEvent = function (func) {_filterEvent = func;};
-  chartService.triggerFilterEvent = function (){_filterEvent();};
+    var _filterEvent = function () {};
+
+    chartService.registerFilterEvent = function (func) {
+      _filterEvent = func;
+    };
+
+    chartService.triggerFilterEvent = function () {
+      _filterEvent();
+    };
 
   /**
    * Create dc.js bar chart
@@ -202,22 +208,22 @@ angular.module('transmartBaseUi').factory('ChartService',
         charts: [],
         cross: crossfilter(sub),
         dims: {},
-        grps: {},
+        groups: {},
       };
 
       magicConcepts.forEach(function(concept){
         ss.dims[concept] = ss.cross.dimension(function(d){
           return d[concept];});
-        ss.grps[concept] = ss.dims[concept].group();
+        ss.groups[concept] = ss.dims[concept].group();
 
         if (typeof sub[0][concept] === 'string' ||
             typeof sub[0][concept] === 'object') {
-          ss.charts.push(_pieChart(ss.dims[concept], ss.grps[concept],
+          ss.charts.push(_pieChart(ss.dims[concept], ss.groups[concept],
             '#summary-chart-' + concept, {size: 75, nolegend: true}));
         } else if (typeof sub[0][concept] === 'number') {
           var max = ss.dims[concept].top(1)[0][concept];
           var min = ss.dims[concept].bottom(1)[0][concept];
-          ss.charts.push(_barChart(ss.dims[concept], ss.grps[concept], '#summary-chart-' + concept, {
+          ss.charts.push(_barChart(ss.dims[concept], ss.groups[concept], '#summary-chart-' + concept, {
             nodeTitle: '',
             min: min-5,
             max: max+5,
@@ -302,7 +308,7 @@ angular.module('transmartBaseUi').factory('ChartService',
       dims: {},
       numDim: 0,
       maxDim: 20,
-      grps: {},
+      groups: {},
       labels: []
     };
 
@@ -393,6 +399,7 @@ angular.module('transmartBaseUi').factory('ChartService',
    * @returns {*}
    */
   chartService.addNodeToActiveCohortSelection = function (node){
+    console.log(node);
     var _deferred = $q.defer();
     //Get all observations under the selected concept
     node.restObj.one('observations').get().then(function (observations){
@@ -437,7 +444,7 @@ angular.module('transmartBaseUi').factory('ChartService',
     //Remove dimension and group associated with the label
     cs.dims[label.ids].dispose();
     cs.numDim--;
-    cs.grps[label.ids].dispose();
+    cs.groups[label.ids].dispose();
 
       // Remove label from subjects and remove subjects no longer associated
       // with any label
@@ -463,7 +470,7 @@ angular.module('transmartBaseUi').factory('ChartService',
       _reapplyFilters();
   };
 
-  var _creatMultidimensionalChart = function (label, el) {
+  var _createMultidimensionalChart = function (label, el) {
     var _chart;
 
     // Check if label0 or label1 has categorical values
@@ -477,7 +484,7 @@ angular.module('transmartBaseUi').factory('ChartService',
         cs.dims[label.ids] = cs.cross.dimension(function (d) {
           return d.labels[label.ids] ? d.labels[label.ids][_valueX] : undefined;
         });
-        cs.grps[label.ids] = cs.dims[label.ids].group().reduce(
+        cs.groups[label.ids] = cs.dims[label.ids].group().reduce(
           function(p,v) {
             p.push(v.labels[label.ids] ? +v.labels[label.ids][_valueY] : undefined);
             return p;
@@ -494,7 +501,7 @@ angular.module('transmartBaseUi').factory('ChartService',
         var _max = cs.dims[label.label[_valueY].ids].top(1)[0].labels[label.label[_valueY].ids];
         var _min = cs.dims[label.label[_valueY].ids].bottom(1)[0].labels[label.label[_valueY].ids];
 
-        _chart = _boxPlot(cs.dims[label.ids], cs.grps[label.ids], el, {
+        _chart = _boxPlot(cs.dims[label.ids], cs.groups[label.ids], el, {
           xLab: label.label[_valueX].name,
           yLab: label.label[_valueY].name,
           min: _min,
@@ -508,9 +515,9 @@ angular.module('transmartBaseUi').factory('ChartService',
           return [d.labels[label.ids] ? d.labels[label.ids][0]: undefined,
                   d.labels[label.ids] ? d.labels[label.ids][1]: undefined];
         });
-        cs.grps[label.ids] = cs.dims[label.ids].group();
+        cs.groups[label.ids] = cs.dims[label.ids].group();
 
-        _chart = _heatMap(cs.dims[label.ids], cs.grps[label.ids], el, {
+        _chart = _heatMap(cs.dims[label.ids], cs.groups[label.ids], el, {
           xLab: label.label[0].name,
           yLab: label.label[1].name
         });
@@ -524,12 +531,12 @@ angular.module('transmartBaseUi').factory('ChartService',
         return [d.labels[label.ids] ? d.labels[label.ids][0]: undefined,
                 d.labels[label.ids] ? d.labels[label.ids][1]: undefined];
       });
-      cs.grps[label.ids] = cs.dims[label.ids].group();
+      cs.groups[label.ids] = cs.dims[label.ids].group();
 
       var _max = cs.dims[label.label[0].ids].top(1)[0].labels[label.label[0].ids];
       var _min = cs.dims[label.label[0].ids].bottom(1)[0].labels[label.label[0].ids];
 
-      _chart = _scatterPlot(cs.dims[label.ids], cs.grps[label.ids], el, {
+      _chart = _scatterPlot(cs.dims[label.ids], cs.groups[label.ids], el, {
         min: _min,
         max: _max,
         xLab: label.label[0].name,
@@ -553,32 +560,32 @@ angular.module('transmartBaseUi').factory('ChartService',
       cs.dims[label.ids] = cs.cross.dimension(function (d) {
         return d.labels[label.ids] === undefined ? 'UnDef' : d.labels[label.ids];
       });
-      cs.grps[label.ids] = cs.dims[label.ids].group();
+      cs.groups[label.ids] = cs.dims[label.ids].group();
     };
 
     if (!label.resolved) {
       var _chart;
 
       if(label.type === 'combination'){
-        _chart = _creatMultidimensionalChart(label, el);
+        _chart = _createMultidimensionalChart(label, el);
       } else {
 
         // Create a number display if highdim
         if (label.type === 'highdim') {
           _defaultDim();
-          _chart = _numDisplay(cs.dims[label.ids], cs.grps[label.ids], el);
+          _chart = _numDisplay(cs.dims[label.ids], cs.groups[label.ids], el);
           _chart.type = 'NUMBER';
 
         // Create a PIECHART if categorical
         } else if (label.type === 'string' || label.type === 'object') {
           _defaultDim();
-          _chart = _pieChart(cs.dims[label.ids], cs.grps[label.ids], el);
+          _chart = _pieChart(cs.dims[label.ids], cs.groups[label.ids], el);
           _chart.type = 'PIECHART';
 
         // Create a BARCHART if numerical
         } else if (label.type === 'number') {
           _defaultDim();
-          _chart = _barChart(cs.dims[label.ids], cs.grps[label.ids], el,
+          _chart = _barChart(cs.dims[label.ids], cs.groups[label.ids], el,
             {nodeTitle: label.name});
           _chart.type = 'BARCHART';
 
@@ -587,8 +594,8 @@ angular.module('transmartBaseUi').factory('ChartService',
           cs.dims[label.ids] = cs.cross.dimension(function (d) {
             return d.labels[label.ids] === undefined ? 'UnDef' : d.labels[label.ids].toFixed(label.precision === 0 ? 0 : label.precision);
           });
-          cs.grps[label.ids] = cs.dims[label.ids].group();
-          _chart = _barChart(cs.dims[label.ids], cs.grps[label.ids],
+          cs.groups[label.ids] = cs.dims[label.ids].group();
+          _chart = _barChart(cs.dims[label.ids], cs.groups[label.ids],
             el, {nodeTitle: label.name, float: true, precision: label.precision});
           _chart.type = 'BARCHART';
 

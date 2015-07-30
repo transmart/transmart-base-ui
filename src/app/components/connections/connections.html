@@ -39,6 +39,7 @@
       <div class="form-group">
         <button type="button"
                 class="form-control btn btn-default"
+                ng-disabled="!selectedConnection.isOAuth"
                 ng-click="navigateToAuthorizationPage()">
                 Get authorization code
         </button>
@@ -74,11 +75,7 @@
 
       <tr ng-repeat="endpoint in endpoints">
         <td>      <i class="glyphicon"
-                    ng-class="{
-                                'glyphicon-ok text-success': endpoint.status == 'active',
-                                'glyphicon-warning-sign text-warning': endpoint.status == 'error',
-                                'glyphicon glyphicon-hdd text-success' : endpoint.status == 'local'
-                                }"></i> </td>
+                    ng-class="getStatusIcon(endpoint)"></i> </td>
         <td>{{endpoint.title}}</td>
         <td>{{endpoint.url}}</td>
         <td>{{endpoint.expiresAt | date:'dd-M H:mm'}}</td>

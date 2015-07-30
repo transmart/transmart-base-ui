@@ -12,6 +12,7 @@ angular.module('transmartBaseUi')
       var _newEndpointEvents = [];
 
       service.triggerNewEndpointEvent = function () {
+        console.log(_newEndpointEvents);
         _newEndpointEvents.forEach(function (func) {
           func();
         });
@@ -48,7 +49,9 @@ angular.module('transmartBaseUi')
           url: url,
           status: 'local'
         };
+        _saveEndpointToCookies(endpoint);
         endpoint.restangular = _newRestangularConfig(endpoint);
+
         // Add endpoint to the list
         _endpoints.push(endpoint);
         service.triggerNewEndpointEvent();
@@ -146,9 +149,9 @@ angular.module('transmartBaseUi')
       };
 
       var _saveEndpointToCookies = function (end) {
-        var storedEnpoints = $cookies.getObject('transmart-base-ui-v2.endpoints') || [];
-        storedEnpoints.push(end);
-        $cookies.putObject('transmart-base-ui-v2.endpoints', storedEnpoints);
+        var storedEndpoints = $cookies.getObject('transmart-base-ui-v2.endpoints') || [];
+        storedEndpoints.push(end);
+        $cookies.putObject('transmart-base-ui-v2.endpoints', storedEndpoints);
       };
 
       var _cleanUrl = function (url) {
