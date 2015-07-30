@@ -6,27 +6,23 @@ angular.module('transmartBaseUi')
       restrict: 'E',
       templateUrl: 'app/components/analysis/analysis.tpl.html',
       scope: {},
-      controller: function($scope) {
-        $scope.step2drop = ['zscore','logfold'];
-        $scope.step2option="zscore";
+      link: function($scope){
+
+        $scope.dropConcept = function (event, info, node, input) {
+          input.value = [];
+          input.value[0] = node.restObj.getRequestedUrl().split('/studies')[0];
+          input.value[1] = node.study.endpoint.accessToken;
+          input.value[2] = node.study.id;
+          input.value[3] = node.restObj._links.self.href;
+        };
 
         $scope.tabIndex = 0;
 
-        $scope.tabs = [
-          { title:'1. Fetch data', content:'step1.html', done: true, active: true},
-          { title:'2. Pre-process data', content:'step2.html', done: false },
-          { title:'3. Generate heatmap', content:'step3.html', done: false },
-        ];
-
         $scope.nextTab = function() {
-           if($scope.tabIndex !== $scope.tabs.length -1 ){
-            $scope.tabs[$scope.tabIndex].active = false;
+           if($scope.tabIndex !== $scope.analysis.length -1 ){
+            $scope.analysis[$scope.tabIndex].active = false;
             $scope.tabIndex++;
-            $scope.tabs[$scope.tabIndex].active = true;
-           }
-
-           if($scope.tabIndex === $scope.tabs.length -1){
-              $scope.buttonLabel = "Finish";
+            $scope.analysis[$scope.tabIndex].active = true;
            }
         };
 
@@ -34,58 +30,60 @@ angular.module('transmartBaseUi')
           $scope.tabIndex = i;
         };
 
+        // Get the UI configuration
+        $http({
+          method: 'POST',
+          url: 'http://localhost:8004/ocpu/library/opencpuRScripts/R/produceUI/json',
+          headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+          data: jQuery.param({})
+        })
+        .success(function (data) {
+          $scope.analysis = data;
 
-        $scope.concept = {};
-        $scope.token = 'f50a1cea-c3ec-4910-b56f-ec60eece043d';
+          $scope.analysis.forEach(function(step){
+            step.done = false;
 
-        $scope.onNodeDropEvent = function (event, info, node) {
-          $scope.concept.link = node.restObj._links.self.href;
-          $scope.concept.study = node.study.id;
-          $scope.concept.url = node.restObj.getRequestedUrl().split('/studies')[0];
+            step.exec = function(){
+              $scope.analysis[$scope.tabIndex].executing = true;
+              $scope.analysis[$scope.tabIndex].done = false;
 
-          if(node.restObj._links.highdim === undefined){
-            $scope.droppedNode = {title: 'This node is not highdim'};
-          } else {
-            $scope.tabs[$scope.tabIndex].executing = true;
+              var _query = {};
+              step.inputs.forEach(function(inp){
+                inp.param.forEach(function(par, index){
+                  _query[par] = inp.value ? '"'+inp.value[index]+'"' : "";
+                });
+              });
 
-            $http({
-              method: 'POST',
-              url: 'http://localhost:8004/ocpu/library/transmartRClient/R/getHighdimData',
-              headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-              data: jQuery.param({
-                'apiUrl': '"'+$scope.concept.url+'"',
-                'auth.token': '"'+$scope.token+'"',
-                'study.name': '"'+$scope.concept.study+'"',
-                'concept.link': '"'+$scope.concept.link+'"',
-                'projection': '"zscore"'})
-            }).success(function (data) {
-              $scope.tabs[$scope.tabIndex].done = true;
-              $scope.tabs[$scope.tabIndex].executing = false;
-              $scope.tabs[$scope.tabIndex+1].data = data.split('/')[3];
-            });
-          }
-        };
+              if($scope.tabIndex !== 0) _query.data = step.data;
 
-        $scope.step2 = function (dataKey) {
-          $scope.tabs[$scope.tabIndex].executing = true;
-          $http({
-            method: 'POST',
-            url: 'http://localhost:8004/ocpu/library/opencpuRScript/R/preprocessDataHeatmap',
-            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-            data: jQuery.param({
-              'data': 'x0919f30f67',
-              'preprocess': '"'+$scope.step2option+'"',
+              $http({
+                method: 'POST',
+                url: 'http://localhost:8004/ocpu/library/'+step.package[0]+'/R/'+step.func[0],
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                data: jQuery.param(_query)
+              }).success(function (data) {
 
-            })
+                $scope.analysis[$scope.tabIndex].done = true;
+                $scope.analysis[$scope.tabIndex].executing = false;
+                $scope.analysis[$scope.tabIndex].return = data.split('/')[3];
+                if(!step.final[0])$scope.analysis[$scope.tabIndex+1].data = data.split('/')[3];
+              });
+
+            }
           })
-          .success(function (data) {
-            $scope.tabs[$scope.tabIndex].done = true;
-            $scope.tabs[$scope.tabIndex].executing = false;
-            $scope.tabs[$scope.tabIndex+1].data = data.split('/')[3];
-          });
-        }
+          data[0].active = true;
+          //data[0].done = true;
+          //data[1].data = "x02c7eeb35b";
+          console.log(data)
+
+        });
+
+
+      },
+      controller: function($scope) {
 
         $scope.step3 = function (dataKey) {
+          $scope.tabs[$scope.tabIndex].executing = false;
           $scope.tabs[$scope.tabIndex].executing = true;
           $http({
             method: 'POST',

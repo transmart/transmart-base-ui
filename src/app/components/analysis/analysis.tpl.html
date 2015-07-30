@@ -1,75 +1,75 @@
-<script type="text/ng-template" id="step1.html">
+<script type="text/ng-template" id="conceptInput.html">
   <div class="well well-lg ts-node-well" data-drop="true" ng-model='droppedNode'
-       jqyoui-droppable="{multiple:false, onDrop:'onNodeDropEvent(droppedNode)'}">
+       jqyoui-droppable="{multiple:false, onDrop:'dropConcept(droppedNode, input)'}">
     <span ng-if="droppedNode !== undefined" >{{droppedNode.title}} - {{droppedNode.restObj.getRestangularUrl()}}</span>
     <span ng-if="droppedNode === undefined"> Drag and drop a high dimensional node.</span>
   </div>
 
 </script>
 
-<script type="text/ng-template" id="step2.html">
-  <br>
-
-  Pre-process option:
-  <select class="form-control" ng-model="step2option" ng-options="opt for opt in step2drop"></select>
-
-  <br>
-
-  <button class="btn btn-default"
-          ng-click="step2()">
-    Execute
-  </button>
-
+<script type="text/ng-template" id="dropdownInput.html">
+  <span>{{input.title[0]}}</span>
+  <select class="form-control" ng-model="input.value" ng-options="opt for opt in input.options"></select>
 </script>
 
-<script type="text/ng-template" id="step3.html">
+<script type="text/ng-template" id="imageOutput.html">
+  <img ng-src="http://localhost:8004/ocpu/tmp/{{step.return}}/files/{{output.filename[0]}}"/>
+</script>
 
-  <button class="btn btn-default"
-          ng-click="step3(step.data)">
-    Execute
-  </button>
-
-  <img ng-src="http://localhost:8004/ocpu/tmp/{{imgHash}}/files/heatmap.png"/>
-
+<script type="text/ng-template" id="infoOutput.html">
+  <span ng-if="output.when[0] == 'RUNNING' && step.executing" class="text-info">
+    {{output.message[0]}}
+    <i class="glyphicon glyphicon-spin glyphicon-refresh"></i>
+  </span>
+  <span ng-if="output.when[0] == 'DONE' && step.done" class="text-success">
+    {{output.message[0]}}
+  </span>
 </script>
 
 
 <tabset  justified="true">
-  <tab  ng-repeat="step in tabs"
-        heading="{{step.title}}"
+  <tab  ng-repeat="step in analysis"
+        heading="{{step.name[0]}}"
         active="step.active"
         ng-click="setTab($index)"
         disabled="!step.active && !step.done">
 
     <div class="row">
 
-      <div class="col-xs-6">
+      <div class="col-xs-6" id="stepInputs">
 
-        <div ng-include src="step.content"></div>
+        <div ng-repeat="input in step.inputs">
+          <div ng-if="input.type[0] == 'CONCEPT'" ng-include src="'conceptInput.html'"></div>
+          <div ng-if="input.type[0] == 'DROPDOWN'" ng-include src="'dropdownInput.html'"></div>
+          <div ng-if="input.type[0] == 'IMAGE'" ng-include src="'imageOutput.html'"></div>
+        </div>
+
+        <br>
+        <br>
+
+        <button class="btn btn-default pull-right"
+                ng-click="step.exec()">
+          Execute
+        </button>
 
       </div>
 
-      <div class="col-xs-6">
+      <div class="col-xs-6" id="stepOutputs">
 
-        <span ng-if="step.executing" class="text-info">
-          Data is loading...
-          <i ng-if="!step.done" class="glyphicon glyphicon-spin glyphicon-refresh"></i>
-        </span>
-        <span ng-if="step.done" class="text-success">
-          Data loaded, proceed to next step.
-        </span>
-
-        <br>
-
+        <div ng-repeat="output in step.outputs">
+          <div ng-if="output.type[0] == 'IMAGE'" ng-include src="'imageOutput.html'"></div>
+          <div ng-if="output.type[0] == 'INFOTEXT'" ng-include src="'infoOutput.html'"></div>
+          <br>
+        </div>
 
       </div>
 
     </div>
 
-
+    <br>
 
     <button class="btn btn-default pull-right"
-            ng-if="step.done && $scope.tabIndex != $scope.tabs.length -1"
+            ng-if="step.done && !step.final[0]"
             ng-click="nextTab()">
       Next
     </button>
