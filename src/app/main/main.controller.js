@@ -3,9 +3,9 @@
 angular.module('transmartBaseUi')
   .controller('MainCtrl',
     ['$scope', '$rootScope', 'Restangular', 'ChartService', 'AlertService', '$location', '$stateParams',
-      '$state', 'StudyListService',
+      '$state', 'StudyListService', 'CohortSelectionService',
       function ($scope, $rootScope, Restangular, ChartService, AlertService, $location, $stateParams,
-                $state, StudyListService)
+                $state, StudyListService, CohortSelectionService)
   {
 
     $scope.summaryStatistics = {
@@ -171,6 +171,7 @@ angular.module('transmartBaseUi')
      * Remove all the concepts from the cohort selection
      */
     $scope.resetActiveLabels = function () {
+      CohortSelectionService.clearAll();
       ChartService.reset();
       _updateCohortDisplay();
     };
@@ -180,17 +181,9 @@ angular.module('transmartBaseUi')
      * grid.
      * @private
      */
-    var _updateCohortDisplay = function(){
+    var _updateCohortDisplay = function () {
       $scope.cohortVal = ChartService.getSelectionValues();
-
-      //console.log($scope.cohortVal)
-
       $scope.cohortLabels = ChartService.getLabels(); // this one
-      console.log($scope.cohortLabels)
-
-      //if (!$scope.$$phase) {
-      //  $scope.$apply();
-      //}
     };
 
     //ChartService.registerFilterEvent(_updateCohortDisplay);
@@ -202,13 +195,17 @@ angular.module('transmartBaseUi')
      * @param node Dropped node from the study tree
      */
     $scope.onNodeDropEvent = function (event, info, node) {
+      //console.log(event);
+      //console.log(info);
+      //console.log(node);
       // Makes the progress bar animated
       $scope.cohortUpdating = true;
-
+      CohortSelectionService.nodes.push(node);
       ChartService.addNodeToActiveCohortSelection(node).then(function () {
         $scope.cohortUpdating = false;
         _updateCohortDisplay();
       });
+
     };
 
 

@@ -1,13 +1,14 @@
 'use strict';
 
-angular.module('transmartBaseUi').factory('CohortSelectionService', [ function(){
+angular.module('transmartBaseUi').factory('CohortSelectionService', [ function () {
 
   var service = {
-    cohortList : []
+    nodes : []
   };
 
-
-  //service.addCohort
+  service.clearAll = function () {
+    service.nodes = [];
+  };
 
   return service;
 
