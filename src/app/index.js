@@ -20,13 +20,6 @@ angular.module('transmartBaseUi', [
     function ($stateProvider, RestangularProvider, $tooltipProvider, cfpLoadingBarProvider) {
 
       $stateProvider
-
-        //.state('login', {
-        //  url: '/login',
-        //  templateUrl: 'app/components/login/login.html',
-        //  controller: 'LoginCtrl'
-        //})
-
         .state('home', {
           url: '/home',
           templateUrl: 'app/home/home.html',
