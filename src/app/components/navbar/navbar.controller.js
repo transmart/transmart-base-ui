@@ -1,23 +1,31 @@
 'use strict';
 
 angular.module('transmartBaseUi')
-  .controller('NavbarCtrl', ['$scope', function ($scope) {
+  .controller('NavbarCtrl', ['$scope', 'CohortSelectionService',
+    function ($scope, CohortSelectionService) {
+
     $scope.date = new Date();
 
     $scope.navigations = [
       {
         label : 'Home',
         path : 'home',
-        children : [],
         isActive : true
       },
       {
         label : 'Workspace',
-        path : 'workspace',
         children : [
           {
-            label : 'Save',
-            path : 'workspace.save'
+            label : 'Open',
+            path : 'workspace'
+          },
+          {
+            label : 'Export To File',
+            action : 'exportToFile'
+          },
+          {
+            label : 'Import from File',
+            action : 'importToFile'
           }
         ],
         isActive : false
@@ -28,12 +36,6 @@ angular.module('transmartBaseUi')
         children : [],
         isActive : false
       }
-    ];
-
-    $scope.usermenus = [
-      {'label' : 'Account Details', 'action' : 'accountDetails'},
-      {'label' : 'Administrator Dashboard', 'action' : 'adminDashboard'},
-      {'label' : 'Logout', 'action' : 'logout'}
     ];
 
     $scope.setActiveNavItem = function (idx) {
@@ -48,6 +50,11 @@ angular.module('transmartBaseUi')
       $event.stopPropagation();
       $scope.status.isopen = !$scope.status.isopen;
     };
+
+     $scope.exportToFile = function () {
+       CohortSelectionService.exportToJSONFile();
+     };
+
 
 
   }]);
