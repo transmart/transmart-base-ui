@@ -33,7 +33,7 @@ angular.module('transmartBaseUi', [
         })
         .state('connections', {
           url: '/connections',
-          templateUrl: 'app/components/connections/connections.html',
+          templateUrl: 'app/connections/connections.html',
           controller: 'ConnectionsCtrl'
         })
         .state('help', {

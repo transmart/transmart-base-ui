@@ -54,13 +54,12 @@ angular.module('transmartBaseUi')
               StudyListService.loadStudies();
             }, function(err) {
               // TODO Error handling
-              console.error('Error', e);
+              console.error('Error', err);
             });
         }
         else {
           EndpointService.addEndpoint(formData.title, formData.url);
           $scope.endpoints = EndpointService.getEndpoints();
-          // console.log($scope.endpoints);
           _resetEndpointForm();
           StudyListService.loadStudies();
         }
