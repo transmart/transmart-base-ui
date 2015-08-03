@@ -24,11 +24,4 @@ describe('CohortSelectionService Unit Tests', function() {
     expect(CohortSelectionService.nodes.length).toEqual(0);
   });
 
-  it('should invoke $window.open', function () {
-    CohortSelectionService.nodes = ['node1', 'node2', 'node3', 'node4', 'node5'];
-    CohortSelectionService.exportToJSONFile();
-
-  });
-
-
 });
