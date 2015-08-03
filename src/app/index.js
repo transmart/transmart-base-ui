@@ -36,6 +36,10 @@ angular.module('transmartBaseUi', [
           templateUrl: 'app/components/connections/connections.html',
           controller: 'ConnectionsCtrl'
         })
+        .state('help', {
+          url: '/help',
+          templateUrl: 'app/help/help.html'
+        })
       ;
 
       // =========================
