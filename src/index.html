@@ -28,7 +28,19 @@
     <!-- Navigator -->
     <div ng-include="'app/components/navbar/navbar.html'"></div>
 
-    <div ui-view></div>
+    <div ui-layout="{flow : 'column'}">
+
+      <div ui-layout-container size="15%" min-size="15%">
+        <!--Side Bar-->
+        <div ng-include="'app/components/sidebar/sidebar.html'"></div>
+      </div>
+
+      <div ui-layout-container min-size="50%">
+        <div ui-view></div>
+      </div>
+    </div>
+
+    <!--<div ui-view></div>-->
 
     <!-- Footer -->
     <div ng-include="'app/components/footer/footer.html'"></div>
