@@ -44,32 +44,36 @@ angular.module('transmartBaseUi').factory('StudyListService', ['EndpointService'
 
     var _endpoints = EndpointService.getEndpoints();
 
-    console.log(_endpoints);
-
     var _deferred = $q.defer();
 
     // Load studies from each endpoints
-    _.each(_endpoints, function (endpoint) {
+    if (_endpoints.length > 0) {
+      _.each(_endpoints, function (endpoint) {
         endpoint.restangular.all('studies').getList().then(function (studies) {
 
           endpoint.status = 'active'; // reconfirmed that endpoint are still active
           _.each(studies, function (study) {
-              study.endpoint = endpoint; // Keep reference to endpoint
-              if (study._embedded.ontologyTerm.fullName.split('\\')[1] === 'Public Studies') {
-                study.type = 'public';
-              } else if (study._embedded.ontologyTerm.fullName.split('\\')[1] === 'Private Studies') {
-                study.type = 'private';
-              } else {
-                study.type = 'other';
-              }
-              service.studyList.push(study);
+            study.endpoint = endpoint; // Keep reference to endpoint
+            if (study._embedded.ontologyTerm.fullName.split('\\')[1] === 'Public Studies') {
+              study.type = 'public';
+            } else if (study._embedded.ontologyTerm.fullName.split('\\')[1] === 'Private Studies') {
+              study.type = 'private';
+            } else {
+              study.type = 'other';
+            }
+            service.studyList.push(study);
           });
-
-      }, function (err) {
+          _deferred.resolve(service.studyList);
+        }, function (err) {
+          endpoint.status = 'error';
           console.error(err);
-      });
+        });
 
-    });
+      });
+    } else {
+      _deferred.reject('No active endpoints');
+    }
+
 
     return _deferred.promise;
   };
