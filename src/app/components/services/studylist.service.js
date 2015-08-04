@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('transmartBaseUi').factory('StudyListService', ['EndpointService', '$q', function(EndpointService, $q){
+angular.module('transmartBaseUi').factory('StudyListService', ['$q', function($q){
 
   var service = {
     studyList : []
@@ -30,52 +30,44 @@ angular.module('transmartBaseUi').factory('StudyListService', ['EndpointService'
     return _.where(service.studyList, {type:'other'});
   };
 
-  /**
-   * Load studies from existing endpoints
-   * TODO: checkout active connections, doesn't have to load studies each time users open this controller
-   * @returns {*}
-   */
-  service.loadStudies = function () {
-
-    /**
-     * TODO does not have to be called if smart checking is already implemented
-     */
-    service.emptyAll();
-
-    var _endpoints = EndpointService.getEndpoints();
-
-    var _deferred = $q.defer();
-
-    // Load studies from each endpoints
-    if (_endpoints.length > 0) {
-      _.each(_endpoints, function (endpoint) {
-        endpoint.restangular.all('studies').getList().then(function (studies) {
-
-          endpoint.status = 'active'; // reconfirmed that endpoint are still active
-          _.each(studies, function (study) {
-            study.endpoint = endpoint; // Keep reference to endpoint
-            if (study._embedded.ontologyTerm.fullName.split('\\')[1] === 'Public Studies') {
-              study.type = 'public';
-            } else if (study._embedded.ontologyTerm.fullName.split('\\')[1] === 'Private Studies') {
-              study.type = 'private';
-            } else {
-              study.type = 'other';
-            }
-            service.studyList.push(study);
-          });
-          _deferred.resolve(service.studyList);
-        }, function (err) {
-          endpoint.status = 'error';
-          console.error(err);
-        });
-
+  service.loadStudyList = function (endpoint) {
+    var deferred = $q.defer();
+    // Do ajax call on each endpoints
+    endpoint.restangular.all('studies').getList().then(function (studies) {
+      // reconfirmed that endpoint are still active
+      endpoint.status = 'active';
+      // add study type based on root
+      _.each(studies, function (study) {
+        study.endpoint = endpoint; // Keep reference to endpoint
+        if (study._embedded.ontologyTerm.fullName.split('\\')[1] === 'Public Studies') {
+          study.type = 'public';
+        } else if (study._embedded.ontologyTerm.fullName.split('\\')[1] === 'Private Studies') {
+          study.type = 'private';
+        } else {
+          study.type = 'other';
+        }
+        service.studyList.push(study);
       });
-    } else {
-      _deferred.reject('No active endpoints');
+      deferred.resolve(service.studyList);
+    }, function (err) {
+      deferred.reject(err);
+    });
+
+    return deferred.promise;
+  };
+
+  /**
+   * Remove study(s) by endpoint
+   * @param endpoint
+   */
+  service.removeStudiesByEndpoint = function (endpoint) {
+    if (endpoint) {
+      var studies = _.filter(service.studyList, function (study) {
+        return  study.endpoint.url !== endpoint.url ? study : null;
+      });
+      service.studyList = studies;
+
     }
-
-
-    return _deferred.promise;
   };
 
   return service;

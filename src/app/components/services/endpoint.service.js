@@ -6,13 +6,13 @@ angular.module('transmartBaseUi')
   ['$rootScope', '$http', '$q', 'Restangular', '$cookies', '$window',
     function ($rootScope, $http, $q, Restangular, $cookies, $window) {
 
-      var _endpoints = [];
-      var service = {};
+      var service = {
+        endpoints : []
+      };
 
       var _newEndpointEvents = [];
 
       service.triggerNewEndpointEvent = function () {
-        console.log(_newEndpointEvents);
         _newEndpointEvents.forEach(function (func) {
           func();
         });
@@ -23,16 +23,16 @@ angular.module('transmartBaseUi')
       };
 
       service.getEndpoints = function () {
-        return _endpoints;
+        return service.endpoints;
       };
 
       service.remove = function (endpoint) {
-        var _in = _endpoints.indexOf(endpoint);
+        var _in = service.endpoints.indexOf(endpoint);
         if (_in >= 0) {
-          _endpoints.splice(_in, 1);
+          service.endpoints.splice(_in, 1);
         }
         // Remove nested restangular object
-        var _end = _.map(_endpoints, function(e){
+        var _end = _.map(service.endpoints, function(e){
           var _n = _.clone(e);
           _n.restangular = undefined;
           return _n;
@@ -53,7 +53,7 @@ angular.module('transmartBaseUi')
         endpoint.restangular = _newRestangularConfig(endpoint);
 
         // Add endpoint to the list
-        _endpoints.push(endpoint);
+        service.endpoints.push(endpoint);
         service.triggerNewEndpointEvent();
       };
 
@@ -100,7 +100,7 @@ angular.module('transmartBaseUi')
             // Create new restangular instance
             endpoint.restangular = _newRestangularConfig(endpoint);
             // Add endpoint to the list
-            _endpoints.push(endpoint);
+            service.endpoints.push(endpoint);
             service.triggerNewEndpointEvent();
             deferred.resolve(response);
           })
@@ -128,13 +128,13 @@ angular.module('transmartBaseUi')
           var storedEnpoints = $cookies.getObject('transmart-base-ui-v2.endpoints') || [];
           storedEnpoints.forEach(function (endpoint) {
             endpoint.restangular = _newRestangularConfig(endpoint);
-            _endpoints.push(endpoint);
+            service.endpoints.push(endpoint);
           });
       };
 
       service.clearStoredEnpoints = function () {
         $cookies.remove('transmart-base-ui-v2.endpoints');
-        _endpoints = [];
+        service.endpoints = [];
         service.triggerNewEndpointEvent();
       };
 

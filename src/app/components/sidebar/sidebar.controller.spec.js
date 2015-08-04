@@ -20,7 +20,7 @@ describe('SidebarCtrlTests', function() {
 
     beforeEach(function () {
       StudyListService.public = [1,2,3];
-      spyOn(StudyListService, 'loadStudies');
+      spyOn(StudyListService, 'loadStudyList');
     });
 
     it('is defined', function() {
