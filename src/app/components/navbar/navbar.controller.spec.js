@@ -23,12 +23,6 @@ describe('NavbarCtrl', function() {
     it ('should define navigations', function () {
       expect($scope.navigations).toBeDefined();
     });
-    it ('should define usermenus', function () {
-      expect($scope.usermenus).toBeDefined();
-    });
-    it ('should activate selected nav item', function () {
-
-    });
   });
 
 });

@@ -7,6 +7,7 @@
             ng-model="searchTerm"
             ng-disabled="publicStudies.length == 0 && privateStudies.length == 0">
 
+
   <!-- START STUDIES -->
   <accordion close-others="status.oneAtATime">
 
@@ -27,9 +28,6 @@
                       ng-if="publicStudies.length > 0"
                       study-shown='searchTerm'>
     </study-accordion>
-
-
-
     <study-accordion  studies="privateStudies"
                       title="'Private studies'"
                       study-action="displayStudySummaryStatistics"
@@ -38,6 +36,7 @@
     </study-accordion>
 
   </accordion>
+
 </div>
-  <!--end tree-->
+<!--end tree-->
 

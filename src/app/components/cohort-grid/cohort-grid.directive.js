@@ -10,8 +10,8 @@ angular.module('transmartBaseUi')
           headers: '='
         },
         controller: function($scope) {
-          $scope.getConceptValue = function (label) {
-              return function (subject) {return subject.labels[label];};
+          $scope.getConceptValue = function (id) {
+              return function (subject) {return subject.labels[id];};
           };
 
           $scope.getCsvFormatted = function(){
