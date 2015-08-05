@@ -37,42 +37,74 @@
     <div class="row">
 
       <div class="col-xs-6" id="stepInputs">
+        <div class="panel panel-default">
+          <div class="panel-heading">Input</div>
+          <div class="panel-body">
 
-        <div ng-repeat="input in step.inputs">
-          <div ng-if="input.type[0] == 'CONCEPT'" ng-include src="'conceptInput.html'"></div>
-          <div ng-if="input.type[0] == 'DROPDOWN'" ng-include src="'dropdownInput.html'"></div>
-          <div ng-if="input.type[0] == 'IMAGE'" ng-include src="'imageOutput.html'"></div>
+            <div ng-repeat="input in step.inputs">
+              <div ng-if="input.type[0] == 'CONCEPT'" ng-include src="'conceptInput.html'"></div>
+              <div ng-if="input.type[0] == 'DROPDOWN'" ng-include src="'dropdownInput.html'"></div>
+              <div ng-if="input.type[0] == 'IMAGE'" ng-include src="'imageOutput.html'"></div>
+            </div>
+
+            <br>
+            <br>
+
+            <button class="btn btn-default pull-right"
+                    ng-click="step.exec()">
+              Execute
+            </button>
+
+          </div>
         </div>
-
-        <br>
-        <br>
-
-        <button class="btn btn-default pull-right"
-                ng-click="step.exec()">
-          Execute
-        </button>
-
       </div>
 
       <div class="col-xs-6" id="stepOutputs">
+        <div class="panel panel-default">
+          <div class="panel-heading">Output</div>
+          <div class="panel-body">
 
-        <div ng-repeat="output in step.outputs">
-          <div ng-if="output.type[0] == 'IMAGE'" ng-include src="'imageOutput.html'"></div>
-          <div ng-if="output.type[0] == 'INFOTEXT'" ng-include src="'infoOutput.html'"></div>
-          <br>
+            <div ng-repeat="output in step.outputs">
+              <div ng-if="output.type[0] == 'IMAGE'" ng-include src="'imageOutput.html'"></div>
+              <div ng-if="output.type[0] == 'INFOTEXT'" ng-include src="'infoOutput.html'"></div>
+              <br>
+            </div>
+            <br>
+            <br>
+
+            <button class="btn btn-default pull-right"
+                    ng-if="step.done && !step.final[0]"
+                    ng-click="nextTab()">
+              Next
+            </button>
+
+          </div>
         </div>
-
       </div>
 
     </div>
 
     <br>
 
-    <button class="btn btn-default pull-right"
-            ng-if="step.done && !step.final[0]"
-            ng-click="nextTab()">
-      Next
-    </button>
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="panel panel-default">
+          <div class="panel-heading">Messages</div>
+          <div class="panel-body">
+            <span ng-repeat="line in step.messages" ng-class="{'text-success': line.type == 'MESSAGE',
+                                                                'text-info': line.type == 'OTHER',
+                                                                'text-warning': line.type == 'WARNING'}">
+              {{line.message}}
+              <br>
+              <br>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
 
   </tab>
 </tabset>

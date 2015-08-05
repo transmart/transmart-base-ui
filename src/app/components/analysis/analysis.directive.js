@@ -46,6 +46,7 @@ angular.module('transmartBaseUi')
             step.exec = function(){
               $scope.analysis[$scope.tabIndex].executing = true;
               $scope.analysis[$scope.tabIndex].done = false;
+              $scope.analysis[$scope.tabIndex].return = ""
 
               var _query = {};
               step.inputs.forEach(function(inp){
@@ -67,6 +68,28 @@ angular.module('transmartBaseUi')
                 $scope.analysis[$scope.tabIndex].executing = false;
                 $scope.analysis[$scope.tabIndex].return = data.split('/')[3];
                 if(!step.final[0])$scope.analysis[$scope.tabIndex+1].data = data.split('/')[3];
+
+                // Fetch the console output of the executed function for display
+                $http({
+                  method: 'GET',
+                  url: 'http://localhost:8004/ocpu/tmp/'+$scope.analysis[$scope.tabIndex+1].data+'/console/json'
+                }).success(function (data){
+                  var modified = [];
+                  data.pop();
+                  data.forEach(function(message){
+                    var type;
+                    if(message[0] === 'M') {type = 'MESSAGE';}
+                    else if (message[0] === 'W') {type = 'WARNING';}
+                    else {type = 'OTHER';}
+
+                    modified.push({'message': message, 'type': type});
+                  });
+                  $scope.analysis[$scope.tabIndex].messages = modified;
+                });
+
+              }).error(function(data){
+                $scope.analysis[$scope.tabIndex].messages = [{'message': "Call failure, try again.", 'type': "WARNING"}];
+                $scope.analysis[$scope.tabIndex].executing = false;
               });
 
             }
@@ -81,24 +104,6 @@ angular.module('transmartBaseUi')
 
       },
       controller: function($scope) {
-
-        $scope.step3 = function (dataKey) {
-          $scope.tabs[$scope.tabIndex].executing = false;
-          $scope.tabs[$scope.tabIndex].executing = true;
-          $http({
-            method: 'POST',
-            url: 'http://localhost:8004/ocpu/library/opencpuRScript/R/generateArtefactsHeatmap',
-            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-            data: jQuery.param({'data': dataKey})
-          })
-          .success(function (data) {
-            $scope.tabs[$scope.tabIndex].done = true;
-            $scope.tabs[$scope.tabIndex].executing = false;
-            $scope.imgHash = data.split('/')[3];
-          });
-        }
-
-
 
       }
     };
