@@ -13,7 +13,7 @@
 </script>
 
 <script type="text/ng-template" id="imageOutput.html">
-  <img ng-src="http://localhost:8004/ocpu/tmp/{{step.return}}/files/{{output.filename[0]}}"/>
+  <img ng-if="step.return" ng-src="http://localhost:8004/ocpu/tmp/{{step.return}}/files/{{output.filename[0]}}"/>
 </script>
 
 <script type="text/ng-template" id="infoOutput.html">

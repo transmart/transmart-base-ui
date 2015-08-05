@@ -7,6 +7,7 @@ angular.module('transmartBaseUi')
       templateUrl: 'app/components/analysis/analysis.tpl.html',
       scope: {},
       link: function($scope){
+        $scope.opencpuURL = "http://transmart-gb-opencpu.thehyve.net/ocpu/"
 
         $scope.dropConcept = function (event, info, node, input) {
           input.value = [];
@@ -33,7 +34,7 @@ angular.module('transmartBaseUi')
         // Get the UI configuration
         $http({
           method: 'POST',
-          url: 'http://localhost:8004/ocpu/library/opencpuRScripts/R/produceUI/json',
+          url: $scope.opencpuURL + 'library/opencpuRScripts/R/produceUI/json',
           headers: {'Content-Type': 'application/x-www-form-urlencoded'},
           data: jQuery.param({})
         })
@@ -46,20 +47,20 @@ angular.module('transmartBaseUi')
             step.exec = function(){
               $scope.analysis[$scope.tabIndex].executing = true;
               $scope.analysis[$scope.tabIndex].done = false;
-              $scope.analysis[$scope.tabIndex].return = ""
+              $scope.analysis[$scope.tabIndex].return = undefined;
 
               var _query = {};
               step.inputs.forEach(function(inp){
                 inp.param.forEach(function(par, index){
-                  _query[par] = inp.value ? '"'+inp.value[index]+'"' : "";
+                  _query[par] = inp.value ? '"'+inp.value[index]+'"' : '';
                 });
               });
 
-              if($scope.tabIndex !== 0) _query.data = step.data;
+              if($scope.tabIndex !== 0){ _query.data = step.data};
 
               $http({
                 method: 'POST',
-                url: 'http://localhost:8004/ocpu/library/'+step.package[0]+'/R/'+step.func[0],
+                url: $scope.opencpuURL +'library/'+step.package[0]+'/R/'+step.func[0],
                 headers: {'Content-Type': 'application/x-www-form-urlencoded'},
                 data: jQuery.param(_query)
               }).success(function (data) {
@@ -67,12 +68,14 @@ angular.module('transmartBaseUi')
                 $scope.analysis[$scope.tabIndex].done = true;
                 $scope.analysis[$scope.tabIndex].executing = false;
                 $scope.analysis[$scope.tabIndex].return = data.split('/')[3];
-                if(!step.final[0])$scope.analysis[$scope.tabIndex+1].data = data.split('/')[3];
+                if(!step.final[0]){
+                  $scope.analysis[$scope.tabIndex+1].data = data.split('/')[3]
+                };
 
                 // Fetch the console output of the executed function for display
                 $http({
                   method: 'GET',
-                  url: 'http://localhost:8004/ocpu/tmp/'+$scope.analysis[$scope.tabIndex+1].data+'/console/json'
+                  url: $scope.opencpuURL + 'tmp/'+$scope.analysis[$scope.tabIndex+1].data+'/console/json'
                 }).success(function (data){
                   var modified = [];
                   data.pop();
@@ -87,17 +90,16 @@ angular.module('transmartBaseUi')
                   $scope.analysis[$scope.tabIndex].messages = modified;
                 });
 
-              }).error(function(data){
-                $scope.analysis[$scope.tabIndex].messages = [{'message': "Call failure, try again.", 'type': "WARNING"}];
+              }).error(function(){
+                $scope.analysis[$scope.tabIndex].messages = [{'message': 'Call failure, try again.', 'type': 'WARNING'}];
                 $scope.analysis[$scope.tabIndex].executing = false;
               });
 
-            }
-          })
+            };
+          });
           data[0].active = true;
           //data[0].done = true;
           //data[1].data = "x02c7eeb35b";
-          console.log(data)
 
         });
 
