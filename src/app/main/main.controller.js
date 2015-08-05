@@ -3,9 +3,9 @@
 angular.module('transmartBaseUi')
   .controller('MainCtrl',
     ['$scope', '$rootScope', 'Restangular', 'ChartService', 'AlertService', '$location', '$stateParams',
-      '$state', 'StudyListService',
+      '$state', 'StudyListService', 'CohortSelectionService',
       function ($scope, $rootScope, Restangular, ChartService, AlertService, $location, $stateParams,
-                $state, StudyListService)
+                $state, StudyListService, CohortSelectionService)
   {
 
     $scope.summaryStatistics = {
@@ -34,7 +34,6 @@ angular.module('transmartBaseUi')
     };
 
     $scope.close = AlertService.remove;
-
     $scope.alerts = AlertService.get();
     $scope.csvHeaders = [];
 
@@ -167,29 +166,29 @@ angular.module('transmartBaseUi')
      */
     $scope.removeLabel = function (label) {
       ChartService.removeLabel(label);
+      _updateCohortDisplay();
     };
 
     /**
      * Remove all the concepts from the cohort selection
      */
     $scope.resetActiveLabels = function () {
+      CohortSelectionService.clearAll();
       ChartService.reset();
-      _updateCohortDisplay(true);
+      _updateCohortDisplay();
     };
 
     /**
-     * Updates the bar graph slection values and the subjects displayed by the
+     * Updates the bar graph selection values and the subjects displayed by the
      * grid.
      * @private
      */
-    var _updateCohortDisplay = function(){
+    var _updateCohortDisplay = function () {
       $scope.cohortVal = ChartService.getSelectionValues();
-      $scope.cohortLabels = ChartService.getLabels();
-      if (!$scope.$$phase) {
-        $scope.$apply();
-      }
+      $scope.cohortLabels = ChartService.getLabels(); // this one
     };
-    ChartService.registerFilterEvent(_updateCohortDisplay);
+
+    //ChartService.registerFilterEvent(_updateCohortDisplay);
 
     /**
      * Callback for node drop
@@ -198,13 +197,17 @@ angular.module('transmartBaseUi')
      * @param node Dropped node from the study tree
      */
     $scope.onNodeDropEvent = function (event, info, node) {
+      //console.log(event);
+      //console.log(info);
+      //console.log(node);
       // Makes the progress bar animated
       $scope.cohortUpdating = true;
-
+      CohortSelectionService.nodes.push(node);
       ChartService.addNodeToActiveCohortSelection(node).then(function () {
         $scope.cohortUpdating = false;
         _updateCohortDisplay();
       });
+
     };
 
 
@@ -215,20 +218,15 @@ angular.module('transmartBaseUi')
      */
     var _initLoad = function () {
 
-      var searchObject = $location.search();
+      var findURLQueryParams = $location.search(); //
 
-      if (searchObject !== undefined) {
-
-        if (searchObject.action === 'summaryStats') {
-          if (searchObject.study) {
+      if (findURLQueryParams !== undefined) {
+        if (findURLQueryParams.action === 'summaryStats') {
+          if (findURLQueryParams.study) {
 
             // check if study id already loaded in existing array
-            var _x = _.findWhere(
-              _.union(
-                StudyListService.public,
-                StudyListService.private
-              ),
-              {id: searchObject.study}
+            var _x = _.findWhere(StudyListService.getAll(),
+              {id: findURLQueryParams.study}
             );
 
             // display summary statistics if the study is existing
@@ -241,7 +239,9 @@ angular.module('transmartBaseUi')
 
           }
           $scope.activateTab($scope.tabs[2].title, 'summaryStats');
-        } else if (searchObject.action === 'cohortGrid') {
+        } else if (findURLQueryParams.action === 'save') {
+          // todo save workspace
+        } else if (findURLQueryParams.action === 'cohortGrid') {
           $scope.activateTab($scope.tabs[1].title, 'cohortGrid');
         } else {
           $scope.activateTab($scope.tabs[0].title, 'cohortSelection');

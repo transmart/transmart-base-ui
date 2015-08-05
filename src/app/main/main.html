@@ -1,11 +1,11 @@
-<div ui-layout="{flow : 'column'}">
+<!--<div ui-layout="{flow : 'column'}">-->
 
-  <div ui-layout-container size="15%" min-size="15%">
-    <!--Side Bar-->
-    <div ng-include="'app/components/sidebar/sidebar.html'"></div>
-  </div>
+  <!--<div ui-layout-container size="15%" min-size="15%">-->
+    <!--&lt;!&ndash;Side Bar&ndash;&gt;-->
+    <!--<div ng-include="'app/components/sidebar/sidebar.html'"></div>-->
+  <!--</div>-->
 
-  <div ui-layout-container min-size="50%">
+  <!--<div ui-layout-container min-size="50%">-->
     <div class="main-container">
       <!-- Alert ------------------------------------------------------------------------------------------------------>
       <alert class="alert-div" ng-repeat="alert in alerts" type="{{alert.type}}" close="close(alert.id)">
@@ -75,7 +75,7 @@
           <ace-console></ace-console>
         </tab>
         -->
-        
+
         <!-- Analysis tab -------------------------------------------------------------------------------------->
         <tab active="tabs[4].active" ng-click="activateTab(tabs[4].title, 'analysis');">
           <tab-heading>
@@ -100,6 +100,4 @@
 
       </tabset>
     </div>
-  </div>
-
-</div>
+  <!--</div>-->

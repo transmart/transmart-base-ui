@@ -1,15 +1,13 @@
 'use strict';
 
-angular.module('transmartBaseUi').factory('StudyListService', ['EndpointService', '$q', function(EndpointService, $q){
+angular.module('transmartBaseUi').factory('StudyListService', ['$q', function($q){
 
   var service = {
-    public : [],
-    private : []
+    studyList : []
   };
 
   service.emptyAll = function () {
-    service.public = [];
-    service.private = [];
+    service.studyList = [];
   };
 
   /**
@@ -17,51 +15,60 @@ angular.module('transmartBaseUi').factory('StudyListService', ['EndpointService'
    * @returns {Array}
    */
   service.getAll = function () {
-    return _.union(service.public, service.private);
+    return service.studyList;
+  };
+
+  service.getPublicStudies = function () {
+    return _.where(service.studyList, {type:'public'});
+  };
+
+  service.getPrivateStudies = function () {
+    return _.where(service.studyList, {type:'private'});
+  };
+
+  service.getOtherStudies = function () {
+    return _.where(service.studyList, {type:'other'});
+  };
+
+  service.loadStudyList = function (endpoint) {
+    var deferred = $q.defer();
+    // Do ajax call on each endpoints
+    endpoint.restangular.all('studies').getList().then(function (studies) {
+      // reconfirmed that endpoint are still active
+      endpoint.status = 'active';
+      // add study type based on root
+      _.each(studies, function (study) {
+        study.endpoint = endpoint; // Keep reference to endpoint
+        if (study._embedded.ontologyTerm.fullName.split('\\')[1] === 'Public Studies') {
+          study.type = 'public';
+        } else if (study._embedded.ontologyTerm.fullName.split('\\')[1] === 'Private Studies') {
+          study.type = 'private';
+        } else {
+          study.type = 'other';
+        }
+        service.studyList.push(study);
+      });
+      deferred.resolve(service.studyList);
+    }, function (err) {
+      deferred.reject(err);
+    });
+
+    return deferred.promise;
   };
 
   /**
-   * Load studies from existing endpoints
-   * TODO: checkout active connections, doesn't have to load studies each time users open this controller
-   * @returns {*}
+   * Remove study(s) by endpoint
+   * @param endpoint
    */
-  service.loadStudies = function () {
-
-    /**
-     * TODO does not have to be called if smart checking is already implemented
-     */
-    service.emptyAll();
-
-    var _endpoints = EndpointService.getEndpoints();
-    var _deferred = $q.defer();
-
-    // Load studies from each endpoints
-    _endpoints.forEach(function (endpoint) {
-      endpoint.restangular.all('studies').getList().then(function (studies) {
-          endpoint.status = 'active'; // reconfirmed that endpoint are still active
-          // Checking if studies are public or private
-          studies.forEach(function (study) {
-            study.endpoint = endpoint; // Keep reference to endpoint
-            if (study._embedded.ontologyTerm.fullName.split('\\')[1] ===
-              'Public Studies') {
-              service.public.push(study)
-            } else {
-              service.private.push(study);
-            }
-          });
-
-          _deferred.resolve();
-        }, function (err) {
-          _deferred.reject('Cannot get studies from the rest endpoint. ' + err);
-          endpoint.status = 'error';
+  service.removeStudiesByEndpoint = function (endpoint) {
+    if (endpoint) {
+      var studies = _.filter(service.studyList, function (study) {
+        return  study.endpoint.url !== endpoint.url ? study : null;
       });
+      service.studyList = studies;
 
-    });
-
-    return _deferred.promise;
+    }
   };
-
-  EndpointService.registerNewEndpointEvent(service.loadStudies);
 
   return service;
 }]);

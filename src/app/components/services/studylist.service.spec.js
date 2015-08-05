@@ -207,31 +207,28 @@ describe('StudyListService Unit Tests', function() {
 
   it('should have StudyListService defined', function () {
     expect(StudyListService).toBeDefined();
-    expect(StudyListService.public).toBeDefined();
-    expect(StudyListService.private).toBeDefined();
+    expect(StudyListService.studyList).toBeDefined();
   });
 
   it('should start with empty studies', function () {
-    expect(StudyListService.public.length).toEqual(0);
-    expect(StudyListService.private.length).toEqual(0);
+    expect(StudyListService.studyList.length).toEqual(0);
   });
 
-  it('should start with empty studies', function () {
-    expect(StudyListService.public.length).toEqual(0);
-    expect(StudyListService.private.length).toEqual(0);
-  });
-
-  it('should empty both public and private studies', function () {
-    StudyListService.public = ['1', '2', '3'];
-    StudyListService.private = ['1', '2', '3'];
+  it('should empty studies', function () {
+    StudyListService.studyList = ['1', '2', '3'];
     StudyListService.emptyAll();
-    expect(StudyListService.public.length).toEqual(0);
-    expect(StudyListService.private.length).toEqual(0);
+    expect(StudyListService.studyList.length).toEqual(0);
   });
 
   it('should get all studies', function () {
-    StudyListService.public = ['1', '2', '3'];
-    StudyListService.private = ['4', '5', '6'];
+    StudyListService.studyList = [
+      {id:1, type:'public'},
+      {id:2, type:'private'},
+      {id:3, type:'public'},
+      {id:4, type:'private'},
+      {id:5, type:'public'},
+      {id:6, type:'public'}
+    ];
     var _all = StudyListService.getAll();
     expect(_all.length).toEqual(6);
   });
