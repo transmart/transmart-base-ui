@@ -14,7 +14,6 @@ angular.module('transmartBaseUi', [
   'ngDragDrop',
   'ngCsv',
   'gridster',
-  'ui.ace',
   'ui.layout'
 ])
   .config( ['$stateProvider', 'RestangularProvider', '$tooltipProvider', 'cfpLoadingBarProvider',

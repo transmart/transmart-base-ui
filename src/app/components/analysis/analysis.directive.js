@@ -98,28 +98,7 @@ angular.module('transmartBaseUi')
             };
           });
           data[0].active = true;
-          //data[0].done = true;
-          //data[1].data = "x02c7eeb35b";
-
         });
-
-
-      },
-      controller: function($scope) {
-
       }
     };
 }]);
-
-/**
-
-
-$http({
-  method: 'POST',
-  url: 'http://localhost:8004/ocpu/library/opencpuRScript/R/generateArtefactsHeatmap',
-  headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-  data: jQuery.param({'data': "x0d9cecc2b0"})
-}).success(function (data, status, headers, config) {
-  console.log(data.split("/")[3])
-});
-**/
