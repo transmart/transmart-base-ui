@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('transmartBaseUi')
-  .controller('NavbarCtrl', ['$scope', 'CohortSelectionService',
-    function ($scope, CohortSelectionService) {
+  .controller('NavbarCtrl', ['$scope', 'CohortSelectionService', '$modal',
+    function ($scope, CohortSelectionService,  $modal) {
 
     $scope.date = new Date();
 
@@ -37,6 +37,13 @@ angular.module('transmartBaseUi')
         isActive : false
       }
     ];
+
+    $scope.openImportModal = function () {
+      var modalInstance = $modal.open({
+        templateUrl: 'app/components/import-workspace/import-workspace.tpl.html',
+        controller: 'ImportWorkspaceCtrl'
+      })
+    };
 
     $scope.setActiveNavItem = function (idx) {
       for (var i = 0; i<$scope.navigations.length; i++) {
