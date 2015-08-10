@@ -99,6 +99,7 @@ angular.module('transmartBaseUi')
             _saveEndpointToCookies(endpoint);
             // Create new restangular instance
             endpoint.restangular = _newRestangularConfig(endpoint);
+            endpoint.restangular.token = response.access_token;
             // Add endpoint to the list
             service.endpoints.push(endpoint);
             service.triggerNewEndpointEvent();
