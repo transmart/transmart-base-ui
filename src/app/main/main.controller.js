@@ -244,7 +244,6 @@ angular.module('transmartBaseUi')
           $scope.activateTab($scope.tabs[0].title, 'cohortSelection');
         }
       }
-
       // register update cohort display function to be invoked when filter changed
       ChartService.registerFilterEvent(_updateCohortDisplay);
     };
