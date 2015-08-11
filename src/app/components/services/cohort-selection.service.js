@@ -43,13 +43,16 @@ angular.module('transmartBaseUi').factory('CohortSelectionService', [ '$window',
   /**
    * Export json to file
    */
-  service.exportToJSONFile = function () {
-    var _d;
+  service.exportToJSONFile = function (endpoints) {
+    var _d = {};
+    console.log(endpoints);
     if (this.nodes.length > 0) { // flush to file only when there's selected cohort
-      _d = angular.toJson(_convertNodesToJSON(this.nodes), true);
+      _d.nodes = _convertNodesToJSON(this.nodes);
+      _d = angular.toJson(_d, true);
       $window.open("data:text/csv;charset=utf-8," + encodeURIComponent(_d));
     }
   };
+
 
   return service;
 }]);

@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('transmartBaseUi')
-  .controller('NavbarCtrl', ['$scope', 'CohortSelectionService', '$modal',
-    function ($scope, CohortSelectionService,  $modal) {
+  .controller('NavbarCtrl', ['$scope', 'CohortSelectionService', 'EndpointService', 'ChartService', '$modal',
+    function ($scope, CohortSelectionService, EndpointService, ChartService,  $modal) {
 
     $scope.date = new Date();
 
@@ -42,7 +42,7 @@ angular.module('transmartBaseUi')
       var modalInstance = $modal.open({
         templateUrl: 'app/components/import-workspace/import-workspace.tpl.html',
         controller: 'ImportWorkspaceCtrl'
-      })
+      });
     };
 
     $scope.setActiveNavItem = function (idx) {
@@ -58,10 +58,9 @@ angular.module('transmartBaseUi')
       $scope.status.isopen = !$scope.status.isopen;
     };
 
-     $scope.exportToFile = function () {
-       CohortSelectionService.exportToJSONFile();
-     };
-
-
+   $scope.exportToFile = function () {
+     console.log(ChartService.getCohortFilters());
+     CohortSelectionService.exportToJSONFile(EndpointService.endpoints);
+   };
 
   }]);

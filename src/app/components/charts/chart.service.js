@@ -693,18 +693,34 @@ angular.module('transmartBaseUi').factory('ChartService',
    * observes all dimension's filters}), total: *}}
    */
   chartService.getSelectionValues = function () {
-      return {
-          selected: cs.cross.groupAll().value(),
-          total: cs.cross.size(),
-          subjects: cs.mainDim.top(Infinity),
-          dimensions: cs.numDim,
-          maxdim: cs.maxDim
-      };
+    return {
+        selected: cs.cross.groupAll().value(),
+        total: cs.cross.size(),
+        subjects: cs.mainDim.top(Infinity),
+        dimensions: cs.numDim,
+        maxdim: cs.maxDim
+    };
   };
 
   chartService.getLabels = function () {
     return cs.labels;
   };
+
+    /**
+     * Return active filters
+     */
+    chartService.getCohortFilters = function () {
+      var _filters = [];
+      if (cs.charts) {
+        _.each(cs.charts, function (c, _index) {
+          console.log(cs.labels[_index]);
+          console.log(c.filter());
+          _filters.push(c.filter());
+        });
+      }
+
+      return _filters;
+    };
 
   /**
    * ChartService
