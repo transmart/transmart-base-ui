@@ -2,7 +2,7 @@
 
 angular.module('transmartBaseUi')
   .controller('NavbarCtrl', ['$scope', 'CohortSelectionService', 'EndpointService', 'ChartService', '$modal',
-    function ($scope, CohortSelectionService, EndpointService, ChartService,  $modal) {
+    function ($scope, CohortSelectionService, EndpointService, ChartService, $modal) {
 
     $scope.date = new Date();
 
@@ -39,7 +39,7 @@ angular.module('transmartBaseUi')
     ];
 
     $scope.openImportModal = function () {
-      var modalInstance = $modal.open({
+      $modal.open({
         templateUrl: 'app/components/import-workspace/import-workspace.tpl.html',
         controller: 'ImportWorkspaceCtrl'
       });
@@ -59,8 +59,10 @@ angular.module('transmartBaseUi')
     };
 
    $scope.exportToFile = function () {
-     console.log(ChartService.getCohortFilters());
-     CohortSelectionService.exportToJSONFile(EndpointService.endpoints);
+     CohortSelectionService.exportToFile(
+       EndpointService.endpoints,
+       ChartService.getCohortFilters()
+     );
    };
 
   }]);

@@ -194,9 +194,6 @@ angular.module('transmartBaseUi')
      * @param node Dropped node from the study tree
      */
     $scope.onNodeDropEvent = function (event, info, node) {
-      //console.log(event);
-      //console.log(info);
-      //console.log(node);
       // Makes the progress bar animated
       $scope.cohortUpdating = true;
       CohortSelectionService.nodes.push(node);
@@ -247,7 +244,6 @@ angular.module('transmartBaseUi')
       // register update cohort display function to be invoked when filter changed
       ChartService.registerFilterEvent(_updateCohortDisplay);
     };
-
 
     _initLoad();
 

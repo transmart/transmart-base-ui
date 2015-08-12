@@ -399,7 +399,6 @@ angular.module('transmartBaseUi').factory('ChartService',
    * @returns {*}
    */
   chartService.addNodeToActiveCohortSelection = function (node){
-    console.log(node);
     var _deferred = $q.defer();
     //Get all observations under the selected concept
     node.restObj.one('observations').get().then(function (observations){
@@ -556,6 +555,7 @@ angular.module('transmartBaseUi').factory('ChartService',
    * @private
    */
   chartService.createCohortChart = function (label, el) {
+
     var _defaultDim = function () {
       cs.dims[label.ids] = cs.cross.dimension(function (d) {
         return d.labels[label.ids] === undefined ? 'UnDef' : d.labels[label.ids];
@@ -601,9 +601,11 @@ angular.module('transmartBaseUi').factory('ChartService',
 
         }
       }
+
       label.resolved = true;
       _chart.id = label.ids;
       _chart.tsLabel = label;
+
       cs.charts.push(_chart);
       return _chart;
     }
@@ -711,11 +713,15 @@ angular.module('transmartBaseUi').factory('ChartService',
      */
     chartService.getCohortFilters = function () {
       var _filters = [];
+
       if (cs.charts) {
         _.each(cs.charts, function (c, _index) {
-          console.log(cs.labels[_index]);
-          console.log(c.filter());
-          _filters.push(c.filter());
+          _filters.push({
+            name : cs.labels[_index].name,
+            label :cs.labels[_index].label,
+            type : cs.labels[_index].type,
+            filters : c.filters()
+          });
         });
       }
 
