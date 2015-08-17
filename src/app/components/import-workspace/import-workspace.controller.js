@@ -1,13 +1,23 @@
 'use strict';
 
 angular.module('transmartBaseUi')
-  .controller('ImportWorkspaceCtrl', ['$scope', '$modalInstance', function ($scope, $modalInstance) {
+  .controller('ImportWorkspaceCtrl', ['$scope', '$modalInstance', 'ChartService', function ($scope, $modalInstance, ChartService) {
 
-    $scope.showContent = function ($fileContent){
-      $scope.content = $fileContent;
+    $scope.readContent = function ($fileContent){
+      $scope.content = JSON.parse($fileContent);
     };
 
     $scope.ok = function () {
+      //console.log('$scope.content', $scope.content);
+
+      // TODO add nodes via chart service
+      _.each($scope.content.nodes, function (node) {
+        ChartService.addNodeToActiveCohortSelection(node);
+      });
+
+
+      //
+
       $modalInstance.close();
     };
 

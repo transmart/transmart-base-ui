@@ -197,6 +197,7 @@ angular.module('transmartBaseUi')
       // Makes the progress bar animated
       $scope.cohortUpdating = true;
       CohortSelectionService.nodes.push(node);
+      //console.log(node);
       ChartService.addNodeToActiveCohortSelection(node).then(function () {
         $scope.cohortUpdating = false;
         _updateCohortDisplay();

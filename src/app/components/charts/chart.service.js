@@ -208,7 +208,7 @@ angular.module('transmartBaseUi').factory('ChartService',
         charts: [],
         cross: crossfilter(sub),
         dims: {},
-        groups: {},
+        groups: {}
       };
 
       magicConcepts.forEach(function(concept){
@@ -400,6 +400,15 @@ angular.module('transmartBaseUi').factory('ChartService',
    */
   chartService.addNodeToActiveCohortSelection = function (node){
     var _deferred = $q.defer();
+
+    // if no restObj then create it
+    if (typeof node.restObj === 'undefined') {
+      Restangular.oneUrl('googlers', node.restangularUrl).get().then(function (s) {
+        console.log(s);
+      });
+
+    }
+
     //Get all observations under the selected concept
     node.restObj.one('observations').get().then(function (observations){
       observations = observations._embedded.observations;
@@ -419,9 +428,11 @@ angular.module('transmartBaseUi').factory('ChartService',
           }
         }
       });
+
       // Add all the subjects to a crossfilter instance
       _saveFilters();
       _populateCohortCrossfilter();
+
       // Notify the applicable controller that the chart directive instances
       // can be created
       $rootScope.$broadcast('prepareChartContainers', cs.labels);
@@ -432,6 +443,8 @@ angular.module('transmartBaseUi').factory('ChartService',
       //TODO: add alert
       _deferred.reject('Cannot get data from the end-point.' + err);
     });
+
+
     return _deferred.promise;
   };
 

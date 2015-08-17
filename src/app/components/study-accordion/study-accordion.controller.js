@@ -75,9 +75,9 @@ angular.module('transmartBaseUi')
     //------------------------------------------------------------------------------------------------------------------
 
     //TODO: Adjust to node depth
-    $scope.$watch(function() {
-      $scope.divWidth = (angular.element(document.getElementById('sidebardiv')).width()-85)/10;
-    });
+    //$scope.$watch(function() {
+    //  $scope.divWidth = (angular.element(document.getElementById('sidebardiv')).width()-85)/10;
+    //});
 
     // Hide popover on click outside
     angular.element('html').on('click', function(e) {

@@ -17,8 +17,10 @@
 
   <div ui-tree-handle class="tree-node tree-node-content" ng-click="populateChilds(node);"
        data-drag="node.type !== 'FAILED_CALL'" jqyoui-draggable="{placeholder: 'keep'}"
-       data-jqyoui-options="{containment: 'document', appendTo: 'body', helper: 'clone'}" ng-model="node">
+       data-jqyoui-options="{containment: 'document', appendTo: 'body', helper: 'clone'}" ng-model="node"
+       style="background-color: greenyellow; overflow-x: hidden !important; white-space: nowrap;">
 
+    <!--icons-->
     <a data-nodrag ng-click="toggle(this)">
       <i  class="glyphicon ts-node-icon"
           ng-class="{ 'glyphicon-folder-close': collapsed && node.type === 'UNKNOWN',
@@ -33,14 +35,24 @@
       </i> &nbsp;
     </a>
 
+    <!--node title-->
     <a  popover-template="'tree-tooltip.html'"
         popover-placement="right"
         ng-click="displayToolTip($event, node)"
         ng-class="{'text-grey': node.type === 'FAILED_CALL'}">
-        {{node.title | cutstring:false:divWidth:' ...'}}
-    </a> &nbsp; &nbsp;
-    <a class="quantity-num">({{node.total}})</a>
+        {{node.title}}
+      <i class="quantity-num">({{node.total}})</i>
+    </a>
+
+    <!--&lt;!&ndash;spaces&ndash;&gt;-->
+    <!--&nbsp; &nbsp;-->
+
+    <!--total subjects-->
+    <!--<a class="quantity-num">({{node.total}})</a>-->
+
   </div>
+
+  <!--node children-->
   <ol ui-tree-nodes="" ng-model="node.nodes" ng-class="{hidden: collapsed}">
     <li ng-repeat="node in node.nodes"
         ui-tree-node
@@ -48,6 +60,7 @@
         data-collapsed="treeConfig.collapsed">
     </li>
   </ol>
+
 </script>
 <!--------------------------------------------------------------------------------------------------------------------->
 <!-- END Node template -->
