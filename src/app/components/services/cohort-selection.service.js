@@ -16,9 +16,12 @@ angular.module('transmartBaseUi').factory('CohortSelectionService', [ '$window',
 
     var nodesJSON = [];
 
+    console.log('nodes', nodes);
+
     _.each(nodes, function (node) {
       var _node = {
         key: node.restObj.key,
+        links: node.restObj._links,
         fullpath: node.restObj.fullName,
         requestedUrl: node.restObj.getRequestedUrl(),
         restangularUrl: node.restObj.getRestangularUrl(),

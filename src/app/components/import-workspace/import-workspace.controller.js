@@ -2,7 +2,8 @@
 
 angular.module('transmartBaseUi')
   .controller('ImportWorkspaceCtrl', ['$scope', '$modalInstance', 'ChartService', 'EndpointService',
-    function ($scope, $modalInstance, ChartService, EndpointService) {
+    'CohortSelectionService',
+    function ($scope, $modalInstance, ChartService, EndpointService, CohortSelectionService) {
 
     $scope.readContent = function ($fileContent){
       $scope.content = JSON.parse($fileContent);
@@ -18,22 +19,29 @@ angular.module('transmartBaseUi')
         var _e = _.where(EndpointService.endpoints, {url:node.endpoint.url});
 
         if (_e) { // get restObj for each nodes
-          console.log(_e[0].restangular);
+
+          console.log(_e[0]);
+          console.log(node);
+
           var _restObj =  _e[0].restangular;
 
-          _restObj.oneUrl('xx', node.restangularUrl).get().then(function (d) {
+          _restObj.oneUrl(node.links.self.href).get().then(function (d) {
+
             console.log(d);
+
             node.restObj = d;
-            ChartService.addNodeToActiveCohortSelection(node);
+
+            CohortSelectionService.nodes.push(node);
+            ChartService.addNodeToActiveCohortSelection(node).then(function() {
+
+            });
           });
 
         } else {
           // TODO tell user endpoint is not connected
         }
 
-
         // add nodes to active cohort selection
-
 
       });
 
