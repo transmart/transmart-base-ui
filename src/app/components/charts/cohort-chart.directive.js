@@ -37,9 +37,7 @@ angular.module('transmartBaseUi')
             });
 
           //Title for the chart panel
-          scope.title = scope.tsLabel.name +
-            ' - ' +
-            scope.tsLabel.study._embedded.ontologyTerm.name;
+          scope.title = scope.tsLabel.name + ' - ' + scope.tsLabel.study._embedded.ontologyTerm.name;
           scope.groupOn = false;
 
           scope.groupAction = function(){

@@ -15,9 +15,12 @@ describe('ImportWorkspaceCtrl unit test', function() {
   describe('initial checks', function() {
     var $scope;
 
-    beforeEach(inject(function(_$controller_){
+    beforeEach(inject(function(_$controller_, _ChartService_, _EndpointService_, _CohortSelectionService_){
       $scope = {};
-      var controller = $controller('ImportWorkspaceCtrl', { $scope: $scope, $modalInstance: modalInstance });
+      var controller = $controller('ImportWorkspaceCtrl', {
+        $scope: $scope,
+        $modalInstance: modalInstance
+      });
       spyOn(modalInstance, 'close');
       spyOn(modalInstance, 'dismiss');
     }));
@@ -26,6 +29,8 @@ describe('ImportWorkspaceCtrl unit test', function() {
       $scope.showContent('dummy content');
       expect($scope.content).toEqual('dummy content');
     });
+
+
 
     it ('should invoke modalInstance.close()', function () {
       $scope.ok();

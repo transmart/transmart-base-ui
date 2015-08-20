@@ -106,6 +106,7 @@ angular.module('transmartBaseUi')
 
     // Values and subjects of the cohort selection
     $scope.cohortVal = {selected: 0, total: 0, subjects: []};
+
     // Every selected concept is represented by a label
     $scope.cohortChartContainerLabels = [];
 
@@ -126,6 +127,7 @@ angular.module('transmartBaseUi')
      * @param labels Corresponding to selected concepts
      */
     $scope.$on('prepareChartContainers', function (event, labels) {
+      console.log('labels', labels);
       _resizeGridster(labels, false);
     });
 
@@ -184,7 +186,8 @@ angular.module('transmartBaseUi')
      */
     var _updateCohortDisplay = function () {
       $scope.cohortVal = ChartService.getSelectionValues();
-      $scope.cohortLabels = ChartService.getLabels(); // this one
+      //$scope.cohortCharts = ChartService.cs;
+      $scope.cohortLabels = ChartService.cs.labels; // this one
     };
 
     /**
@@ -197,14 +200,13 @@ angular.module('transmartBaseUi')
       // Makes the progress bar animated
       $scope.cohortUpdating = true;
       CohortSelectionService.nodes.push(node);
-      console.log(node);
+      // console.log(node);
       ChartService.addNodeToActiveCohortSelection(node).then(function () {
         $scope.cohortUpdating = false;
         _updateCohortDisplay();
       });
 
     };
-
 
     /**
      * When this controller is loaded, check the query params if it contains some actions.

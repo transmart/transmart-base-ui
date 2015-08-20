@@ -34,9 +34,10 @@
             </button>
           </div>
           <div id="main-chart-container">
-            <progressbar max="100" value="cohortVal.selected/(cohortVal.total/100)"
+            <progressbar max="100" value="cohortVal.cs.cross.groupAll().value()/(cohortVal.cs.cross.size())"
                          ng-class="{'progress-striped': cohortUpdating}" class="progress active" animate="true">
-              <div class="data-count">{{cohortVal.selected}}/{{cohortVal.total}}</div>
+              <div class="data-count">{{cohortVal.selected}}/{{cohortVal.total}} </div>
+              <div> {{cohortCharts.cross.groupAll().value()}}</div>
             </progressbar>
 
             <div gridster="gridsterOpts" id="ts-gridster-box">

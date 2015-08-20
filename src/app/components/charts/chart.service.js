@@ -6,8 +6,8 @@ angular.module('transmartBaseUi').factory('ChartService',
   function (Restangular, $q, $rootScope, $timeout, AlertService) {
 
     var chartService = {
-      cs : {},
-      ss : {}
+      cs : {}, // cohort
+      ss : {}  //
     };
 
     var _filterEvent = function () {};
@@ -407,7 +407,9 @@ angular.module('transmartBaseUi').factory('ChartService',
 
     //Get all observations under the selected concept
     node.restObj.one('observations').get().then(function (observations){
+
       observations = observations._embedded.observations;
+
       observations.forEach(function (obs){
         if(obs.value !== null) {
           // Add the concept to the list of chart labels
@@ -432,9 +434,11 @@ angular.module('transmartBaseUi').factory('ChartService',
       // Notify the applicable controller that the chart directive instances
       // can be created
       $rootScope.$broadcast('prepareChartContainers', chartService.cs.labels);
+
       _reapplyFilters();
 
       _deferred.resolve();
+
     }, function (err) {
       //TODO: add alert
       _deferred.reject('Cannot get data from the end-point.' + err);

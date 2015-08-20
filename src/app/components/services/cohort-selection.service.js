@@ -16,20 +16,25 @@ angular.module('transmartBaseUi').factory('CohortSelectionService', [ '$window',
 
     var nodesJSON = [];
 
-    console.log('nodes', nodes);
+    //console.log('nodes', nodes);
 
     _.each(nodes, function (node) {
       var _node = {
-        key: node.restObj.key,
-        links: node.restObj._links,
-        fullpath: node.restObj.fullName,
-        requestedUrl: node.restObj.getRequestedUrl(),
-        restangularUrl: node.restObj.getRestangularUrl(),
-        endpoint: {
-          url: node.study.endpoint.url,
-          title: node.study.endpoint.title
+        title : node.title,
+        type : node.type,
+        _links : node.restObj._links,
+        loaded : node.loaded,
+        study : {
+          id : node.study.id,
+          type : node.study.type,
+          _links : node.study._links,
+          endpoint : {
+            url: node.study.endpoint.url,
+            title: node.study.endpoint.title
+          }
         }
       };
+
       nodesJSON.push(_node);
     }); //end each
 
@@ -46,16 +51,6 @@ angular.module('transmartBaseUi').factory('CohortSelectionService', [ '$window',
   /**
    * Export json to file
    */
-  service.exportToJSONFile = function (endpoints) {
-    var _d = {};
-    console.log(endpoints);
-    if (this.nodes.length > 0) { // flush to file only when there's selected cohort
-      _d.nodes = _convertNodesToJSON(this.nodes);
-      _d = angular.toJson(_d, true);
-      $window.open("data:text/csv;charset=utf-8," + encodeURIComponent(_d));
-    }
-  };
-
   service.exportToFile = function (endpoints, filters) {
 
     var _obj = {
