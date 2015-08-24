@@ -132,7 +132,6 @@ angular.module('transmartBaseUi')
      * @param labels Corresponding to selected concepts
      */
     $scope.$on('prepareChartContainers', function (event, labels) {
-      console.log('labels', labels);
       _resizeGridster(labels, false);
     });
 

@@ -237,8 +237,6 @@ angular.module('transmartBaseUi').factory('ChartService',
           // Add the concept to the list of chart labels
           var _id = _addLabel(obs, node);
 
-          console.log(chartService.cs);
-
           // Check if the subject of the observation is already present
           var found = _.findWhere(chartService.cs.subjects, {id: obs._embedded.subject.id});
 
