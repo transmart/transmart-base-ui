@@ -15,7 +15,6 @@ angular.module('transmartBaseUi')
         var _chart = ChartService.createCohortChart(scope.tsLabel, _bodyDiv);
 
         if (_chart) {
-
           _chart.on('filtered', ChartService.triggerFilterEvent);
           _chart.render();
           if(_chart.type === 'NUMBER') {scope.number = true;}
@@ -28,12 +27,12 @@ angular.module('transmartBaseUi')
             function(newValues, oldValues, scope) {
               //Calculate the gridster element size
               var _width = scope.tsGridsterItem.sizeX * scope.tsGridster.curColWidth;
-              var _heigth = scope.tsGridsterItem.sizeY * scope.tsGridster.curRowHeight;
-              //Number of caracters after wich the title string will be cut off
-              //10 pixels per caracter is assumed
+              var _height = scope.tsGridsterItem.sizeY * scope.tsGridster.curRowHeight;
+              //Number of characters after wich the title string will be cut off
+              //10 pixels per characters is assumed
               scope.cutOff = _width / 10;
               //Resize the chart leving some margin space
-              ChartService.doResizeChart(scope.tsLabel.ids, _heigth-60, _width-50);
+              ChartService.doResizeChart(scope.tsLabel.ids, _height-60, _width-50);
             });
 
           //Title for the chart panel
