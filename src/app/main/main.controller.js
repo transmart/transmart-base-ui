@@ -36,7 +36,6 @@ angular.module('transmartBaseUi')
     $scope.alerts = AlertService.get();
     $scope.csvHeaders = [];
 
-
     /**
      * Selected study
      * @type {{}}
@@ -103,14 +102,24 @@ angular.module('transmartBaseUi')
 
     $scope.cs = ChartService.cs; // pass by reference
 
-    $scope.$watchCollection('cs', function() {
+    /**
+     * Updates the bar graph selection values and the subjects displayed by the
+     * grid.
+     * @private
+     */
+    var _updateCohortDisplay = function () {
       $scope.cohortVal.selected = $scope.cs.cross.groupAll().value();
       $scope.cohortVal.total = $scope.cs.cross.size();
       $scope.cohortVal.subjects =  $scope.cs.mainDim.top(Infinity);
       $scope.cohortVal.dimensions = $scope.cs.numDim;
       $scope.cohortVal.maxdim = $scope.cs.maxDim;
       $scope.cohortLabels = $scope.cs.labels;
-    });
+      //console.log('updating cohort display', $scope.cohortVal);
+    };
+
+    $scope.$watchCollection('cs', function() {
+      _updateCohortDisplay();
+    }, true);
 
     // Every selected concept is represented by a label
     $scope.cohortChartContainerLabels = [];
@@ -156,7 +165,7 @@ angular.module('transmartBaseUi')
         if(!label.sizeX || reDistribute){
           label.sizeX = _CONFIG.G_ITEM_SPAN_X;
           label.sizeY = _CONFIG.G_ITEM_SPAN_Y;
-          // Spread items left to rigth
+          // Spread items left to right
           label.col = (index*label.sizeX)%_gCols ;
           // And top to bottom
           label.row = Math.floor((index*label.sizeX)/_gCols )*label.sizeY;
@@ -171,7 +180,7 @@ angular.module('transmartBaseUi')
      */
     $scope.removeLabel = function (label) {
       ChartService.removeLabel(label);
-      _updateCohortDisplay();
+      //_updateCohortDisplay();
     };
 
     /**
@@ -180,18 +189,7 @@ angular.module('transmartBaseUi')
     $scope.resetActiveLabels = function () {
       CohortSelectionService.clearAll();
       ChartService.reset();
-      _updateCohortDisplay();
-    };
-
-    /**
-     * Updates the bar graph selection values and the subjects displayed by the
-     * grid.
-     * @private
-     */
-    var _updateCohortDisplay = function () {
-      //$scope.cohortVal = ChartService.getSelectionValues();
-      //$scope.cohortCharts = ChartService.cs;
-      $scope.cohortLabels = ChartService.cs.labels; // this one
+      //_updateCohortDisplay();
     };
 
     /**
@@ -207,7 +205,7 @@ angular.module('transmartBaseUi')
       // console.log(node);
       ChartService.addNodeToActiveCohortSelection(node).then(function () {
         $scope.cohortUpdating = false;
-        _updateCohortDisplay();
+        //_updateCohortDisplay();
       });
 
     };
