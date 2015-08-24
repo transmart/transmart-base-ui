@@ -12,7 +12,7 @@ angular.module('transmartBaseUi')
     $scope.ok = function () {
 
       //console.log('$scope.content', $scope.content);
-      $modalInstance.dismiss('cancel');
+      $modalInstance.close();
       $state.go('workspace'); // go to workspace
 
       // TODO add nodes via chart service
@@ -31,16 +31,17 @@ angular.module('transmartBaseUi')
               node.study = _study[0];
             } else {
               // TODO load study
+              console.error('Cannot find saved study');
             }
             CohortSelectionService.nodes.push(node);
             ChartService.addNodeToActiveCohortSelection(node).then(function() {
             // TODO :
             // - Apply filters
-            // - Get subject selection for grid view
             });
           });
         } else {
           // TODO tell user endpoint is not connected
+          console.error('Cannot connect to ' + node.study.endpoint.url);
         }
 
         // add nodes to active cohort selection

@@ -16,7 +16,11 @@ describe('ImportWorkspaceCtrl unit test', function() {
     var $scope;
 
     beforeEach(inject(function(_$controller_, _ChartService_, _EndpointService_, _CohortSelectionService_){
-      $scope = {};
+      $scope = {
+        content : {
+          nodes : []
+        }
+      };
       var controller = $controller('ImportWorkspaceCtrl', {
         $scope: $scope,
         $modalInstance: modalInstance
@@ -24,13 +28,6 @@ describe('ImportWorkspaceCtrl unit test', function() {
       spyOn(modalInstance, 'close');
       spyOn(modalInstance, 'dismiss');
     }));
-
-    it ('should fill in content', function () {
-      $scope.showContent('dummy content');
-      expect($scope.content).toEqual('dummy content');
-    });
-
-
 
     it ('should invoke modalInstance.close()', function () {
       $scope.ok();
