@@ -18,7 +18,7 @@
   <div ui-tree-handle class="tree-node tree-node-content" ng-click="populateChilds(node);"
        data-drag="node.type !== 'FAILED_CALL'" jqyoui-draggable="{placeholder: 'keep'}"
        data-jqyoui-options="{containment: 'document', appendTo: 'body', helper: 'clone'}" ng-model="node"
-       style="background-color: greenyellow; overflow-x: hidden !important; white-space: nowrap;">
+       style="overflow-x: hidden !important; white-space: nowrap;">
 
     <!--icons-->
     <a data-nodrag ng-click="toggle(this)">
@@ -41,7 +41,7 @@
         ng-click="displayToolTip($event, node)"
         ng-class="{'text-grey': node.type === 'FAILED_CALL'}">
         {{node.title}}
-      <i class="quantity-num">({{node.total}})</i>
+      <span class="quantity-num">({{node.total}})</span>
     </a>
 
     <!--&lt;!&ndash;spaces&ndash;&gt;-->
