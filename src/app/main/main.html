@@ -5,7 +5,7 @@
         {{alert.message}}
       </alert>
 
-      <h3>Workspace - {{cohortVal.dimensions}}</h3>
+      <h3>Workspace</h3>
       <tabset>
 
         <!-- Cohort selection tab ------------------------------------------------------------------------------------->
@@ -34,10 +34,9 @@
             </button>
           </div>
           <div id="main-chart-container">
-            <progressbar max="100" value="cohortVal.cs.cross.groupAll().value()/(cohortVal.cs.cross.size())"
+            <progressbar max="100" value="cohortVal.selected/(cohortVal.total/100)"
                          ng-class="{'progress-striped': cohortUpdating}" class="progress active" animate="true">
-              <div class="data-count">{{cohortVal.selected}}/{{cohortVal.total}} </div>
-              <div> {{cohortCharts.cross.groupAll().value()}}</div>
+              <div class="data-count">{{cohortVal.selected}}/{{cohortVal.total}}</div>
             </progressbar>
 
             <div gridster="gridsterOpts" id="ts-gridster-box">

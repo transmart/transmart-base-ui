@@ -3,9 +3,9 @@
 angular.module('transmartBaseUi')
   .controller('MainCtrl',
     ['$scope', '$rootScope', 'Restangular', 'ChartService', 'AlertService', '$location', '$stateParams',
-      '$state', 'StudyListService', 'CohortSelectionService',
+      '$state', 'StudyListService', 'CohortSelectionService', 'SummaryStatsService',
       function ($scope, $rootScope, Restangular, ChartService, AlertService, $location, $stateParams,
-                $state, StudyListService, CohortSelectionService)
+                $state, StudyListService, CohortSelectionService, SummaryStatsService)
   {
 
     $scope.summaryStatistics = {
@@ -36,9 +36,6 @@ angular.module('transmartBaseUi')
     $scope.alerts = AlertService.get();
     $scope.csvHeaders = [];
 
-    /**************************************************************************
-     * Summary statistics
-     */
 
     /**
      * Selected study
@@ -53,15 +50,12 @@ angular.module('transmartBaseUi')
     $scope.displayStudySummaryStatistics = function (study) {
       $scope.summaryStatistics.isLoading = true;
       $scope.selectedStudy.title = study.id;
-      ChartService.displaySummaryStatistics(study,
+      SummaryStatsService.displaySummaryStatistics(study,
         $scope.summaryStatistics.magicConcepts).then(function() {
         $scope.summaryStatistics.isLoading = false;
       });
     };
 
-    /**************************************************************************
-     * Cohort selection
-     */
     $scope.gridsterOpts = {
       // whether to push other items out of the way on move or resize
       pushing: true,
@@ -100,12 +94,23 @@ angular.module('transmartBaseUi')
       },
       draggable: {
         enabled: true, // whether dragging items is supported
-        handle: '.chart-drag-handle', // optional selector for resize handle
+        handle: '.chart-drag-handle' // optional selector for resize handle
       }
     };
 
     // Values and subjects of the cohort selection
     $scope.cohortVal = {selected: 0, total: 0, subjects: []};
+
+    $scope.cs = ChartService.cs; // pass by reference
+
+    $scope.$watchCollection('cs', function() {
+      $scope.cohortVal.selected = $scope.cs.cross.groupAll().value();
+      $scope.cohortVal.total = $scope.cs.cross.size();
+      $scope.cohortVal.subjects =  $scope.cs.mainDim.top(Infinity);
+      $scope.cohortVal.dimensions = $scope.cs.numDim;
+      $scope.cohortVal.maxdim = $scope.cs.maxDim;
+      $scope.cohortLabels = $scope.cs.labels;
+    });
 
     // Every selected concept is represented by a label
     $scope.cohortChartContainerLabels = [];
@@ -117,7 +122,7 @@ angular.module('transmartBaseUi')
       // Number of columns a gridster item will occupy by default
       G_ITEM_SPAN_X: 3,
       // Number of rows a gridster item will occupy by default
-      G_ITEM_SPAN_Y: 3,
+      G_ITEM_SPAN_Y: 3
     };
 
     /**
@@ -185,7 +190,7 @@ angular.module('transmartBaseUi')
      * @private
      */
     var _updateCohortDisplay = function () {
-      $scope.cohortVal = ChartService.getSelectionValues();
+      //$scope.cohortVal = ChartService.getSelectionValues();
       //$scope.cohortCharts = ChartService.cs;
       $scope.cohortLabels = ChartService.cs.labels; // this one
     };

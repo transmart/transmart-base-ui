@@ -6,8 +6,17 @@ angular.module('transmartBaseUi').factory('ChartService',
   function (Restangular, $q, $rootScope, $timeout, AlertService, DcChartsService) {
 
     var chartService = {
-      cs : {}, // cohort
-      ss : {}  //
+      cs : {
+        subjects: [],
+        chartId: 0,
+        charts: [],
+        cross: crossfilter(),
+        dims: {},
+        numDim: 0,
+        maxDim: 20,
+        groups: {},
+        labels: []
+      } // cohort selection
     };
 
     var _filterEvent = function () {};
@@ -19,7 +28,6 @@ angular.module('transmartBaseUi').factory('ChartService',
     chartService.triggerFilterEvent = function () {
       _filterEvent();
     };
-
 
   var _numDisplay = function (cDimension, cGroup, el){
     var _number = dc.numberDisplay(el);
@@ -61,53 +69,6 @@ angular.module('transmartBaseUi').factory('ChartService',
     });
   };
 
-  /****************************************************************************
-  * Summary statistics chart service
-  */
-  var ss = {};
-
-  chartService.displaySummaryStatistics = function(study, magicConcepts){
-    var _deferred = $q.defer();
-
-    study.one('subjects').get().then(function (d) {
-      var sub = d._embedded.subjects;
-
-      ss = {
-        charts: [],
-        cross: crossfilter(sub),
-        dims: {},
-        groups: {}
-      };
-
-      magicConcepts.forEach(function(concept){
-        ss.dims[concept] = ss.cross.dimension(function(d){
-          return d[concept];});
-        ss.groups[concept] = ss.dims[concept].group();
-
-        if (typeof sub[0][concept] === 'string' ||
-            typeof sub[0][concept] === 'object') {
-          ss.charts.push(DcChartsService.getPieChart(ss.dims[concept], ss.groups[concept],
-            '#summary-chart-' + concept, {size: 75, nolegend: true}));
-        } else if (typeof sub[0][concept] === 'number') {
-          var max = ss.dims[concept].top(1)[0][concept];
-          var min = ss.dims[concept].bottom(1)[0][concept];
-          ss.charts.push(DcChartsService.getBarChart(ss.dims[concept], ss.groups[concept], '#summary-chart-' + concept, {
-            nodeTitle: '',
-            min: min-5,
-            max: max+5,
-            width: 600,
-            height: 100,
-            btmMarg: 5
-          }));
-        }
-      });
-      chartService.renderAll(ss.charts);
-      _deferred.resolve();
-    }, function (err) {
-      _deferred.reject('Cannot get data from the end-point.' + err);
-    });
-    return _deferred.promise;
-  };
 
   var _saveFilters = function(){
     chartService.cs.charts.forEach(function(chart){
@@ -159,11 +120,6 @@ angular.module('transmartBaseUi').factory('ChartService',
     }
   };
 
-  /****************************************************************************
-   * Cohort chart service
-   */
-  var cs = {};
-
   /**
    * Reset the cohort chart service to initial state
    */
@@ -187,6 +143,7 @@ angular.module('transmartBaseUi').factory('ChartService',
 
     $rootScope.$broadcast('prepareChartContainers',chartService.cs.labels);
   };
+
   chartService.reset();
 
   var _getType = function (value) {
@@ -270,7 +227,7 @@ angular.module('transmartBaseUi').factory('ChartService',
 
     var _deferred = $q.defer();
 
-    //Get all observations under the selected concept
+    // Get all observations under the selected concept
     node.restObj.one('observations').get().then(function (observations){
 
       observations = observations._embedded.observations;
@@ -279,6 +236,9 @@ angular.module('transmartBaseUi').factory('ChartService',
         if(obs.value !== null) {
           // Add the concept to the list of chart labels
           var _id = _addLabel(obs, node);
+
+          console.log(chartService.cs);
+
           // Check if the subject of the observation is already present
           var found = _.findWhere(chartService.cs.subjects, {id: obs._embedded.subject.id});
 
@@ -565,25 +525,6 @@ angular.module('transmartBaseUi').factory('ChartService',
 
       _chart.render();
     }
-  };
-
-  /**
-   * Return the values for the current selection in cohort
-   * @returns {{selected: (*|{returns the sum total of matching records,
-   * observes all dimension's filters}), total: *}}
-   */
-  chartService.getSelectionValues = function () {
-    return {
-        selected: chartService.cs.cross.groupAll().value(),
-        total: chartService.cs.cross.size(),
-        subjects: chartService.cs.mainDim.top(Infinity),
-        dimensions: chartService.cs.numDim,
-        maxdim: chartService.cs.maxDim
-    };
-  };
-
-  chartService.getLabels = function () {
-    return chartService.cs.labels;
   };
 
     /**

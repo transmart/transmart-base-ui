@@ -128,7 +128,6 @@ angular.module('transmartBaseUi').factory('DcChartsService', [function(){
     return _chart;
   };
 
-
   /**
    * Create dc.js Heatmap
    * @param cDimension
@@ -160,7 +159,18 @@ angular.module('transmartBaseUi').factory('DcChartsService', [function(){
     return _chart;
   };
 
-
+  /**
+   * Render all
+   * @param charts
+   */
+  service.renderAll = function (charts) {
+    angular.forEach(charts, function (chart) {
+      if(!chart.rendered){
+        chart.render();
+        chart.rendered = true;
+      }
+    });
+  };
 
   // at the end ..
   return service;
