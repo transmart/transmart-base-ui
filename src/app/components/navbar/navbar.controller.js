@@ -41,7 +41,8 @@ angular.module('transmartBaseUi')
     $scope.openImportModal = function () {
       $modal.open({
         templateUrl: 'app/components/import-workspace/import-workspace.tpl.html',
-        controller: 'ImportWorkspaceCtrl'
+        controller: 'ImportWorkspaceCtrl',
+        animation:false
       });
     };
 
