@@ -1,11 +1,11 @@
 
-    <div class="main-container">
+    <div class="main-container as potato">
       <!-- Alert ------------------------------------------------------------------------------------------------------>
       <alert class="alert-div" ng-repeat="alert in alerts" type="{{alert.type}}" close="close(alert.id)">
         {{alert.message}}
       </alert>
 
-      <h3>Workspace</h3>
+      <h3>Workspace - {{potato.fooRiza}}</h3>
       <tabset>
 
         <!-- Cohort selection tab ------------------------------------------------------------------------------------->
@@ -33,6 +33,7 @@
               Reset<br>({{cohortVal.dimensions}}/{{cohortVal.maxdim}})
             </button>
           </div>
+
           <div id="main-chart-container">
             <progressbar max="100" value="cohortVal.selected/(cohortVal.total/100)"
                          ng-class="{'progress-striped': cohortUpdating}" class="progress active" animate="true">
@@ -74,7 +75,7 @@
         <!-- Summary Statistics tab ----------------------------------------------------------------------------------->
         <tab active="tabs[2].active" ng-click="activateTab(tabs[2].title, 'summaryStats');">
           <tab-heading>{{tabs[2].title}}</tab-heading>
-          <h3>{{selectedStudy.id}}</h3>
+          <h3>{{summaryStatistics.selectedStudy.title}}</h3>
 
           <div class="summary-div">
             <span ng-repeat="concept in summaryStatistics.magicConcepts" id="summary-chart-{{concept}}">

@@ -25,8 +25,10 @@ angular.module('transmartBaseUi').factory('ChartService',
       _filterEvent = func;
     };
 
-    chartService.triggerFilterEvent = function () {
-      _filterEvent();
+    chartService.triggerFilterEvent = function (chart, filter) {
+      if (filter !== null) { // only trigger when
+        _filterEvent();
+      }
     };
 
   var _numDisplay = function (cDimension, cGroup, el){
@@ -276,33 +278,43 @@ angular.module('transmartBaseUi').factory('ChartService',
    * @param label
    */
   chartService.removeLabel = function (label) {
+
     //Remove dimension and group associated with the label
     chartService.cs.dims[label.ids].dispose();
     chartService.cs.numDim--;
     chartService.cs.groups[label.ids].dispose();
 
-      // Remove label from subjects and remove subjects no longer associated
-      // with any label
-      for (var i = 0; i < chartService.cs.subjects.length; i++) {
-        delete chartService.cs.subjects[i].labels[label.ids];
-        if (_.size(chartService.cs.subjects[i].labels) === 0){
-          chartService.cs.subjects.splice(i--, 1);
-        }
+    // Remove label from subjects and remove subjects no longer associated
+    // with any label
+    for (var i = 0; i < chartService.cs.subjects.length; i++) {
+      delete chartService.cs.subjects[i].labels[label.ids];
+      if (_.size(chartService.cs.subjects[i].labels) === 0) {
+        chartService.cs.subjects.splice(i--, 1);
       }
-      //Update crossfilter instance
-      _saveFilters();
-      _populateCohortCrossfilter();
+    }
 
-      //Remove the chart
-      var _i = _.findIndex(chartService.cs.charts, function(c){return c.id === label.ids;});
-      if(_i >= 0){chartService.cs.charts.splice(_i, 1);}
-      //Finally remove label
-      chartService.cs.labels = _.reject(chartService.cs.labels, function(el) {
-        return el.ids === label.ids;
-      });
-      //Update charts
-      $rootScope.$broadcast('prepareChartContainers',chartService.cs.labels);
-      _reapplyFilters();
+    //Update crossfilter instance
+    _saveFilters();
+
+    _populateCohortCrossfilter();
+
+    //Remove the chart
+    var _i = _.findIndex(chartService.cs.charts, function (c) {
+      return c.id === label.ids;
+    });
+    if (_i >= 0) {
+      chartService.cs.charts.splice(_i, 1);
+    }
+
+    //Finally remove label
+    chartService.cs.labels = _.reject(chartService.cs.labels, function (el) {
+      return el.ids === label.ids;
+    });
+
+    //Update charts
+    $rootScope.$broadcast('prepareChartContainers', chartService.cs.labels);
+
+    _reapplyFilters();
   };
 
   var _createMultidimensionalChart = function (label, el) {

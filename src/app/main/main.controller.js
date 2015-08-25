@@ -8,11 +8,7 @@ angular.module('transmartBaseUi')
                 $state, StudyListService, CohortSelectionService, SummaryStatsService)
   {
 
-    $scope.summaryStatistics = {
-      isLoading : false,
-      magicConcepts : ['sex', 'race', 'age', 'religion', 'maritalStatus'],
-      titles : ['Sex', 'Race', 'Age', 'Religion', 'Marital Status']
-    };
+    $scope.summaryStatistics = SummaryStatsService;
 
     $scope.tabs = [
       {title: 'Cohort Selection', active: true},
@@ -35,12 +31,6 @@ angular.module('transmartBaseUi')
     $scope.close = AlertService.remove;
     $scope.alerts = AlertService.get();
     $scope.csvHeaders = [];
-
-    /**
-     * Selected study
-     * @type {{}}
-     */
-    $scope.selectedStudy = {};
 
     /**
      * Display summary statisctics for the selected study
@@ -108,18 +98,24 @@ angular.module('transmartBaseUi')
      * @private
      */
     var _updateCohortDisplay = function () {
+      $scope.fooRiza = $scope.cs.cross.groupAll().value();
       $scope.cohortVal.selected = $scope.cs.cross.groupAll().value();
       $scope.cohortVal.total = $scope.cs.cross.size();
       $scope.cohortVal.subjects =  $scope.cs.mainDim.top(Infinity);
       $scope.cohortVal.dimensions = $scope.cs.numDim;
       $scope.cohortVal.maxdim = $scope.cs.maxDim;
       $scope.cohortLabels = $scope.cs.labels;
-      //console.log('updating cohort display', $scope.cohortVal);
+    };
+
+    var _applyScope = function () {
+      $scope.$apply(function () {
+        _updateCohortDisplay();
+      });
     };
 
     $scope.$watchCollection('cs', function() {
       _updateCohortDisplay();
-    }, true);
+    });
 
     // Every selected concept is represented by a label
     $scope.cohortChartContainerLabels = [];
@@ -246,8 +242,9 @@ angular.module('transmartBaseUi')
           $scope.activateTab($scope.tabs[0].title, 'cohortSelection');
         }
       }
+
       // register update cohort display function to be invoked when filter changed
-      ChartService.registerFilterEvent(_updateCohortDisplay);
+      ChartService.registerFilterEvent(_applyScope);
     };
 
     _initLoad();

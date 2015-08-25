@@ -4,10 +4,14 @@ angular.module('transmartBaseUi').factory('SummaryStatsService', ['DcChartsServi
   function (DcChartsService, $q) {
 
   var service = {
+    selectedStudy: {},
     charts: [],
     cross: {},
     dims: {},
-    groups: {}
+    groups: {},
+    isLoading : false,
+    magicConcepts : ['sex', 'race', 'age', 'religion', 'maritalStatus'],
+    titles : ['Sex', 'Race', 'Age', 'Religion', 'Marital Status']
   };
 
   service.displaySummaryStatistics = function(study, magicConcepts){
@@ -46,5 +50,7 @@ angular.module('transmartBaseUi').factory('SummaryStatsService', ['DcChartsServi
     });
     return _deferred.promise;
   };
+
   return service;
+
 }]);
