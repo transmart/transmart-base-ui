@@ -71,7 +71,6 @@ angular.module('transmartBaseUi').factory('ChartService',
     });
   };
 
-
   var _saveFilters = function(){
     chartService.cs.charts.forEach(function(chart){
       chart.savedFilters = chart.filters();
@@ -107,6 +106,7 @@ angular.module('transmartBaseUi').factory('ChartService',
   };
 
   var _groupingChart = {};
+
   chartService.groupCharts = function (newChart, turnOff) {
     // If a first chart was already selected, group them together
     if(_groupingChart.chartOne){
@@ -141,7 +141,9 @@ angular.module('transmartBaseUi').factory('ChartService',
     _groupingChart = {};
 
     // Main dimension used to get selection values
-    chartService.cs.mainDim = chartService.cs.cross.dimension(function (d) {return d.labels;});
+    chartService.cs.mainDim = chartService.cs.cross.dimension(function (d) {
+      return d.labels;
+    });
 
     $rootScope.$broadcast('prepareChartContainers',chartService.cs.labels);
   };
