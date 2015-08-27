@@ -10,6 +10,12 @@ angular.module('transmartBaseUi')
 
     $scope.summaryStatistics = SummaryStatsService;
 
+    $scope.gridsterOpts = GridsterService.options;
+
+    $scope.cohortVal = {selected: 0, total: 0, subjects: []};
+
+    $scope.cs = ChartService.cs;
+
     $scope.tabs = [
       {title: 'Cohort Selection', active: true},
       {title: 'Cohort Grid', active: false},
@@ -30,7 +36,6 @@ angular.module('transmartBaseUi')
 
     $scope.close = AlertService.remove;
     $scope.alerts = AlertService.get();
-    $scope.csvHeaders = [];
 
     /**
      * Display summary statisctics for the selected study
@@ -38,22 +43,12 @@ angular.module('transmartBaseUi')
      */
     $scope.displayStudySummaryStatistics = function (study) {
       $scope.summaryStatistics.isLoading = true;
-      $scope.selectedStudy.title = study.id;
+      $scope.summaryStatistics.selectedStudy.title = study.id;
       SummaryStatsService.displaySummaryStatistics(study,
         $scope.summaryStatistics.magicConcepts).then(function() {
         $scope.summaryStatistics.isLoading = false;
       });
     };
-
-    /**************************************************************************
-     * Cohort selection
-     */
-    $scope.gridsterOpts = GridsterService.options;
-
-    // Values and subjects of the cohort selection
-    $scope.cohortVal = {selected: 0, total: 0, subjects: []};
-
-    $scope.cs = ChartService.cs; // pass by reference
 
     /**
      * Updates the bar graph selection values and the subjects displayed by the
@@ -61,7 +56,6 @@ angular.module('transmartBaseUi')
      * @private
      */
     var _updateCohortDisplay = function () {
-      $scope.fooRiza = $scope.cs.cross.groupAll().value();
       $scope.cohortVal.selected = $scope.cs.cross.groupAll().value();
       $scope.cohortVal.total = $scope.cs.cross.size();
       $scope.cohortVal.subjects =  $scope.cs.mainDim.top(Infinity);
@@ -70,16 +64,9 @@ angular.module('transmartBaseUi')
       $scope.cohortLabels = $scope.cs.labels;
     };
 
-    var _applyScope = function () {
-      $scope.$apply(function () {
-        _updateCohortDisplay();
-      });
-    };
-
     $scope.$watchCollection('cs', function() {
       _updateCohortDisplay();
     });
-
 
     // Every selected concept is represented by a label
     $scope.cohortChartContainerLabels = GridsterService.cohortChartContainerLabels;
@@ -129,7 +116,6 @@ angular.module('transmartBaseUi')
       ChartService.addNodeToActiveCohortSelection(node).then(function () {
         $scope.cohortUpdating = false;
       });
-
     };
 
     /**
@@ -145,22 +131,20 @@ angular.module('transmartBaseUi')
         if (findURLQueryParams.action === 'summaryStats') {
           if (findURLQueryParams.study) {
 
-            // check if study id already loaded in existing array
-            var _x = _.findWhere(StudyListService.getAll(),
+            // check if study by id already loaded in existing array
+            var _study = _.findWhere(StudyListService.getAll(),
               {id: findURLQueryParams.study}
             );
 
             // display summary statistics if the study is existing
-            if (_x) {
-              $scope.displayStudySummaryStatistics(_x);
+            if (_study) {
+              $scope.displayStudySummaryStatistics(_study);
             } else {
               // TODO rest call by subject id
+              console.log('Cannot find study in existing loaded studies');
             }
-
           }
           $scope.activateTab($scope.tabs[2].title, 'summaryStats');
-        } else if (findURLQueryParams.action === 'save') {
-          // todo save workspace
         } else if (findURLQueryParams.action === 'cohortGrid') {
           $scope.activateTab($scope.tabs[1].title, 'cohortGrid');
         } else {
@@ -168,7 +152,7 @@ angular.module('transmartBaseUi')
         }
       }
       // register update cohort display function to be invoked when filter changed
-      ChartService.registerFilterEvent(_applyScope);
+      ChartService.registerFilterEvent(_updateCohortDisplay);
     };
 
     _initLoad();
