@@ -5,7 +5,7 @@
         {{alert.message}}
       </alert>
 
-      <h3>Workspace - {{potato.fooRiza}}</h3>
+      <h3>Workspace</h3>
       <tabset>
 
         <!-- Cohort selection tab ------------------------------------------------------------------------------------->
@@ -46,7 +46,8 @@
                   <ts-cohort-chart class="chart-container"
                                    ts-gridster-item="gridsterItem"
                                    ts-gridster="gridster"
-                                   ts-label="label"></ts-cohort-chart>
+                                   ts-label="label">
+                  </ts-cohort-chart>
                 </li>
               </ul>
             </div>
@@ -61,7 +62,6 @@
           <cohort-grid cohort="cohortVal.subjects" headers="cohortLabels"></cohort-grid>
         </tab>
 
-
         <!-- Analysis tab -------------------------------------------------------------------------------------->
         <tab active="tabs[3].active" ng-click="activateTab(tabs[3].title, 'analysis');">
           <tab-heading>
@@ -70,7 +70,6 @@
 
           <analysis></analysis>
         </tab>
-
 
         <!-- Summary Statistics tab ----------------------------------------------------------------------------------->
         <tab active="tabs[2].active" ng-click="activateTab(tabs[2].title, 'summaryStats');">
