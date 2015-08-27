@@ -12,7 +12,7 @@ angular.module('transmartBaseUi')
           var reader = new FileReader();
 
           reader.onload = function(onLoadEvent) {
-            scope.$apply(function() {
+            scope.$evalAsync(function() {
               fn(scope, {$fileContent:onLoadEvent.target.result});
             });
           };
