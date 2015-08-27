@@ -201,16 +201,18 @@ angular.module('transmartBaseUi').factory('ChartService',
     return label.ids;
   };
 
-  /**
-   * Remove all the filters applied to the label dimensions
-   * TODO: Add the possibility to reapply removed filters
-   * @private
-   */
-  var _removeAllLabelFilters = function () {
-    _.each(chartService.cs.dims, function(dim){dim.filterAll();});
-    dc.filterAll();
-    dc.redrawAll();
-  };
+    /**
+     * Remove all the filters applied to the label dimensions
+     * TODO: Add the possibility to reapply removed filters
+     * @private
+     */
+    var _removeAllLabelFilters = function () {
+      _.each(chartService.cs.dims, function (dim) {
+        dim.filterAll();
+      });
+      dc.filterAll();
+      dc.redrawAll();
+    };
 
   /**
    * Create the Crossfilter instance from the subject data
@@ -256,6 +258,7 @@ angular.module('transmartBaseUi').factory('ChartService',
 
       // Add all the subjects to a crossfilter instance
       _saveFilters();
+
       _populateCohortCrossfilter();
 
       // Notify the applicable controller that the chart directive instances
@@ -281,7 +284,7 @@ angular.module('transmartBaseUi').factory('ChartService',
    */
   chartService.removeLabel = function (label) {
 
-    //Remove dimension and group associated with the label
+    // Remove dimension and group associated with the label
     chartService.cs.dims[label.ids].dispose();
     chartService.cs.numDim--;
     chartService.cs.groups[label.ids].dispose();
