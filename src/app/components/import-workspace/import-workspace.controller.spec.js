@@ -4,7 +4,7 @@ describe('ImportWorkspaceCtrl unit test', function() {
 
   beforeEach(module('transmartBaseUi'));
 
-  var $controller, modalInstance =  { close: function() {}, dismiss: function() {} };;
+  var $controller, modalInstance =  { close: function() {}, dismiss: function() {} };
 
   beforeEach(inject(function(_$controller_){
     // The injector unwraps the underscores (_) from around the parameter names when matching
@@ -31,12 +31,12 @@ describe('ImportWorkspaceCtrl unit test', function() {
 
     it ('should invoke modalInstance.close()', function () {
       $scope.ok();
-      expect(modalInstance.close).toHaveBeenCalled()
+      expect(modalInstance.close).toHaveBeenCalled();
     });
 
     it ('should invoke modalInstance.dismiss()', function () {
       $scope.cancel();
-      expect(modalInstance.dismiss).toHaveBeenCalled()
+      expect(modalInstance.dismiss).toHaveBeenCalled();
     });
   });
 

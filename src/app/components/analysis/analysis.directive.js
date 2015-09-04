@@ -7,7 +7,7 @@ angular.module('transmartBaseUi')
       templateUrl: 'app/components/analysis/analysis.tpl.html',
       scope: {},
       link: function($scope){
-        $scope.opencpuURL = "http://transmart-gb-opencpu.thehyve.net/ocpu/"
+        $scope.opencpuURL = 'http://transmart-gb-opencpu.thehyve.net/ocpu/';
 
         $scope.dropConcept = function (event, info, node, input) {
           input.value = [];
@@ -56,7 +56,9 @@ angular.module('transmartBaseUi')
                 });
               });
 
-              if($scope.tabIndex !== 0){ _query.data = step.data};
+              if ($scope.tabIndex !== 0) {
+                _query.data = step.data;
+              }
 
               $http({
                 method: 'POST',
@@ -68,9 +70,10 @@ angular.module('transmartBaseUi')
                 $scope.analysis[$scope.tabIndex].done = true;
                 $scope.analysis[$scope.tabIndex].executing = false;
                 $scope.analysis[$scope.tabIndex].return = data.split('/')[3];
-                if(!step.final[0]){
-                  $scope.analysis[$scope.tabIndex+1].data = data.split('/')[3]
-                };
+
+                if (!step.final[0]) {
+                  $scope.analysis[$scope.tabIndex+1].data = data.split('/')[3];
+                }
 
                 // Fetch the console output of the executed function for display
                 $http({

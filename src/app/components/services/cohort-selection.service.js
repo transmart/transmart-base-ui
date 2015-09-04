@@ -16,8 +16,6 @@ angular.module('transmartBaseUi').factory('CohortSelectionService', [ '$window',
 
     var nodesJSON = [];
 
-    //console.log('nodes', nodes);
-
     _.each(nodes, function (node) {
       var _node = {
         title : node.title,
@@ -67,7 +65,7 @@ angular.module('transmartBaseUi').factory('CohortSelectionService', [ '$window',
     });
 
     var _d = angular.toJson(_obj, true);
-    $window.open("data:text/csv;charset=utf-8," + encodeURIComponent(_d));
+    $window.open('data:text/csv;charset=utf-8,' + encodeURIComponent(_d));
   };
 
 

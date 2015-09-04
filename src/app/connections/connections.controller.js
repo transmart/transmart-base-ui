@@ -48,11 +48,11 @@ angular.module('transmartBaseUi')
 
           StudyListService.emptyAll();
 
-          _.each($scope.endpoints, function (e) {
-            StudyListService.loadStudyList(e).then(function (studies) {
+          _.each($scope.endpoints, function (endpoint) {
+            StudyListService.loadStudyList(endpoint).then(function (studies) {
               $rootScope.publicStudies = StudyListService.getPublicStudies();
               $rootScope.privateStudies =  StudyListService.getPrivateStudies();
-            })
+            });
           });
 
           $scope.endpoints = EndpointService.getEndpoints();
@@ -99,7 +99,7 @@ angular.module('transmartBaseUi')
       };
 
       $scope.getStatusIcon = function (endpoint) {
-        var glyphicon = 'glyphicon glyphicon-ban-circle'
+        var glyphicon = 'glyphicon glyphicon-ban-circle';
         if (endpoint.status === 'active') {
           glyphicon = 'glyphicon-ok text-success';
         } else if (endpoint.status === 'error') {

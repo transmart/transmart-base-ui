@@ -58,9 +58,9 @@ angular.module('transmartBaseUi').factory('DcChartsService', [function(){
       .yAxisLabel(opt.yLab ? opt.yLab : '')
       .xAxisLabel(opt.xLab ? opt.xLab : '');
 
-    if(opt.min !== undefined && opt.max !== undefined){
-      _bp.y(d3.scale.linear().domain([opt.min-0.20*opt.max, opt.max*1.20]));
-    }else{
+    if (opt.min !== undefined && opt.max !== undefined) {
+      _bp.y(d3.scale.linear().domain([opt.min - 0.20 * opt.max, opt.max * 1.20]));
+    } else {
       _bp.elasticY(true);
     }
 

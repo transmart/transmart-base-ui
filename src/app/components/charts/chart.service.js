@@ -323,7 +323,7 @@ angular.module('transmartBaseUi').factory('ChartService',
   };
 
   var _createMultidimensionalChart = function (label, el) {
-    var _chart;
+    var _chart, _min, _max;
 
     // Check if label0 or label1 has categorical values
     if(label.label[0].type === 'string' || label.label[1].type === 'string'){
@@ -350,8 +350,8 @@ angular.module('transmartBaseUi').factory('ChartService',
           }
         );
 
-        var _max = chartService.cs.dims[label.label[_valueY].ids].top(1)[0].labels[label.label[_valueY].ids];
-        var _min = chartService.cs.dims[label.label[_valueY].ids].bottom(1)[0].labels[label.label[_valueY].ids];
+        _max = chartService.cs.dims[label.label[_valueY].ids].top(1)[0].labels[label.label[_valueY].ids];
+        _min = chartService.cs.dims[label.label[_valueY].ids].bottom(1)[0].labels[label.label[_valueY].ids];
 
         _chart = DcChartsService.getBoxPlot(chartService.cs.dims[label.ids], chartService.cs.groups[label.ids], el, {
           xLab: label.label[_valueX].name,
@@ -385,8 +385,8 @@ angular.module('transmartBaseUi').factory('ChartService',
       });
       chartService.cs.groups[label.ids] = chartService.cs.dims[label.ids].group();
 
-      var _max = chartService.cs.dims[label.label[0].ids].top(1)[0].labels[label.label[0].ids];
-      var _min = chartService.cs.dims[label.label[0].ids].bottom(1)[0].labels[label.label[0].ids];
+       _max = chartService.cs.dims[label.label[0].ids].top(1)[0].labels[label.label[0].ids];
+       _min = chartService.cs.dims[label.label[0].ids].bottom(1)[0].labels[label.label[0].ids];
 
       _chart = DcChartsService.getScatterPlot(chartService.cs.dims[label.ids], chartService.cs.groups[label.ids], el, {
         min: _min,
