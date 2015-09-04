@@ -11,7 +11,7 @@ angular.module('transmartBaseUi')
 
     $scope.ok = function () {
 
-      //console.log('$scope.content', $scope.content);
+      console.log('$scope.content', $scope.content);
       $modalInstance.close();
       $state.go('workspace'); // go to workspace
 
@@ -34,7 +34,7 @@ angular.module('transmartBaseUi')
               console.error('Cannot find saved study');
             }
             CohortSelectionService.nodes.push(node);
-            ChartService.addNodeToActiveCohortSelection(node).then(function() {
+            ChartService.addNodeToActiveCohortSelection(node, $scope.content.filters).then(function() {
             // TODO :
             // - Apply filters
             });

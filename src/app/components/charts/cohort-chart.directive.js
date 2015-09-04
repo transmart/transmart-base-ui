@@ -9,7 +9,6 @@ angular.module('transmartBaseUi')
       tsLabel: '='
     };
 
-
     return {
       restrict: 'E',
       templateUrl: 'app/components/charts/cohort-chart.tpl.html',

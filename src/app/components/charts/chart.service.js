@@ -78,8 +78,10 @@ angular.module('transmartBaseUi').factory('ChartService',
   };
 
   var _reapplyFilters = function(){
+    console.log('alo')
     chartService.cs.charts.forEach(function(chart){
       chart.savedFilters.forEach(function(filter){
+        console.log(filter)
         chart.filter(filter);
       });
     });
@@ -164,42 +166,53 @@ angular.module('transmartBaseUi').factory('ChartService',
     return _type;
   };
 
-  /**
-   * Add new label to list and check data type
-   * @param label
-   * @param value
-   * @private
-   */
-  var _addLabel = function (obs, node) {
-    // Check if label has already been added
-    var label = _.findWhere(chartService.cs.labels, {label: obs.label});
-    if(!label){
-      //Check that the maximum number of dimensions has not been reached
-      if(chartService.cs.numDim < chartService.cs.maxDim){
-        chartService.cs.numDim++;
-        // Create the new label object
-        label = {
-          label: obs.label,
-          type: _getType(obs.value),
-          name: _getLastToken(obs.label),
-          ids: chartService.cs.chartId++,
-          study: node.study,
-          resolved: false
-        };
-        chartService.cs.labels.push(label);
+    /**
+     * Add new label to list and check data type
+     * @param label
+     * @param value
+     * @private
+     */
+    var _addLabel = function (obs, node, filters) {
+
+      // Check if label has already been added
+      var label = _.findWhere(chartService.cs.labels, {label: obs.label});
+
+      if (!label) {
+
+        //Check that the maximum number of dimensions has not been reached
+        if (chartService.cs.numDim < chartService.cs.maxDim) {
+
+          chartService.cs.numDim++;
+          // Create the new label object
+
+          label = {
+            label : obs.label,
+            type : _getType(obs.value),
+            name : _getLastToken(obs.label),
+            ids : chartService.cs.chartId++,
+            study : node.study,
+            resolved : false,
+            filters : filters
+          };
+
+          chartService.cs.labels.push(label);
+
+        } else {
+          AlertService.add('danger', 'Max number of dimensions reached !', 2000);
+        }
       } else {
-        AlertService.add('danger', 'Max number of dimensions reached !', 2000);
+        // if label already exists check its type
+        label.type = label.type === 'float' ? label.type : _getType(obs.value);
       }
-    } else {
-      label.type = label.type === 'float' ? label.type : _getType(obs.value);
-    }
-    if(label.type === 'float'){
-      var precision = (obs.value + '').split('.');
-      precision = precision[1] ? precision[1].length : 0;
-      label.precision = label.precision ? Math.min(label.precision, precision) : precision;
-    }
-    return label.ids;
-  };
+
+      if (label.type === 'float') {
+        var precision = (obs.value + '').split('.');
+        precision = precision[1] ? precision[1].length : 0;
+        label.precision = label.precision ? Math.min(label.precision, precision) : precision;
+      }
+
+      return label.ids;
+    };
 
     /**
      * Remove all the filters applied to the label dimensions
@@ -229,19 +242,28 @@ angular.module('transmartBaseUi').factory('ChartService',
    * @param node
    * @returns {*}
    */
-  chartService.addNodeToActiveCohortSelection = function (node) {
+  chartService.addNodeToActiveCohortSelection = function (node, filters) {
 
-    var _deferred = $q.defer();
+    var _filter, _deferred = $q.defer();
+
+    var _getFilter = function (label, filters) {
+      return _.findWhere(filters, {label:label})
+    };
 
     // Get all observations under the selected concept
     node.restObj.one('observations').get().then(function (observations){
 
       observations = observations._embedded.observations;
 
-      observations.forEach(function (obs){
-        if(obs.value !== null) {
+      observations.forEach(function (obs) {
+        if (obs.value !== null) {
+
+          if (filters) {
+            _filter = _getFilter(obs.label, filters);
+          }
+
           // Add the concept to the list of chart labels
-          var _id = _addLabel(obs, node);
+          var _id = _addLabel(obs, node, _filter);
 
           // Check if the subject of the observation is already present
           var found = _.findWhere(chartService.cs.subjects, {id: obs._embedded.subject.id});
@@ -273,7 +295,6 @@ angular.module('transmartBaseUi').factory('ChartService',
       //TODO: add alert
       _deferred.reject('Cannot get data from the end-point.' + err);
     });
-
 
     return _deferred.promise;
   };
@@ -458,6 +479,19 @@ angular.module('transmartBaseUi').factory('ChartService',
       label.resolved = true;
       _chart.id = label.ids;
       _chart.tsLabel = label;
+
+      console.log(label)
+
+      if (typeof label.filters.filters != 'undefined') {
+        console.log(label.filters.filters);
+        if (label.filters.filters.length > 0) {
+          _chart.savedFilters = label.filters.filters;
+          _.each(_chart.savedFilters, function (f) {
+            console.log(f);
+            _chart.filter(f);
+          });
+        }
+      }
 
       chartService.cs.charts.push(_chart);
       return _chart;
