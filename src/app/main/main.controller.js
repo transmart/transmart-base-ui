@@ -71,6 +71,14 @@ angular.module('transmartBaseUi')
     // Every selected concept is represented by a label
     $scope.cohortChartContainerLabels = GridsterService.cohortChartContainerLabels;
 
+    $scope.$watch(function (x) {
+      return GridsterService.cohortChartContainerLabels;
+    }, function (r) {
+      $scope.cohortChartContainerLabels = GridsterService.cohortChartContainerLabels;
+      console.log('im watching cohort chart container labels', r);
+      ChartService.reapplyFilters();
+    });
+
     /**
      * Update quantity of containers necessary for displaying the graphs in
      * cohort selection.
@@ -114,6 +122,7 @@ angular.module('transmartBaseUi')
       $scope.cohortUpdating = true;
       CohortSelectionService.nodes.push(node);
       ChartService.addNodeToActiveCohortSelection(node).then(function () {
+        //$scope.cohortChartContainerLabels = GridsterService.cohortChartContainerLabels;
         $scope.cohortUpdating = false;
       });
     };
@@ -125,7 +134,7 @@ angular.module('transmartBaseUi')
      */
     var _initLoad = function () {
 
-      var findURLQueryParams = $location.search(); //
+      var findURLQueryParams = $location.search();
 
       if (findURLQueryParams !== undefined) {
         if (findURLQueryParams.action === 'summaryStats') {
@@ -140,7 +149,6 @@ angular.module('transmartBaseUi')
             if (_study) {
               $scope.displayStudySummaryStatistics(_study);
             } else {
-              // TODO rest call by subject id
               console.log('Cannot find study in existing loaded studies');
             }
           }

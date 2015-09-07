@@ -12,6 +12,7 @@ angular.module('transmartBaseUi')
     $scope.ok = function () {
 
       console.log('$scope.content', $scope.content);
+
       $modalInstance.close();
       $state.go('workspace'); // go to workspace
 
@@ -21,30 +22,36 @@ angular.module('transmartBaseUi')
         // check if endpoints are still connected
         var _e = _.where(EndpointService.endpoints, {url : node.study.endpoint.url});
 
-        // if yes
+        // if endpoints are still connected
         if (_e.length > 0) { // get restObj for each nodes
+
           _e[0].restangular.oneUrl(node._links.self.href).get().then(function (d) {
+
             node.restObj = d; // assign rest object to the imported node
+
             // assign study to the node
             var _study = _.where(StudyListService.studyList, {id : node.study.id});
+
             if (_study.length > 0) {
+
               node.study = _study[0];
+
+              CohortSelectionService.nodes.push(node);
+              ChartService.addNodeToActiveCohortSelection(node, $scope.content.filters).then(function () {
+
+              })
+
             } else {
               // TODO load study
               console.error('Cannot find saved study');
             }
-            CohortSelectionService.nodes.push(node);
-            ChartService.addNodeToActiveCohortSelection(node, $scope.content.filters).then(function() {
-            // TODO :
-            // - Apply filters
-            });
+          }, function (err) {
+            console.log(err);
           });
         } else {
           // TODO tell user endpoint is not connected
           console.error('Cannot connect to ' + node.study.endpoint.url);
         }
-
-        // add nodes to active cohort selection
       });
 
     };

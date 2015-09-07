@@ -2,8 +2,8 @@
 /* jshint undef: false */
 
 angular.module('transmartBaseUi').factory('ChartService',
-  ['Restangular', '$q', '$rootScope', '$timeout', 'AlertService', 'DcChartsService',
-  function (Restangular, $q, $rootScope, $timeout, AlertService, DcChartsService) {
+  ['Restangular', '$q', '$rootScope', '$timeout', 'AlertService', 'DcChartsService', 'GridsterService',
+  function (Restangular, $q, $rootScope, $timeout, AlertService, DcChartsService, GridsterService) {
 
     var chartService = {
       cs : {
@@ -78,7 +78,7 @@ angular.module('transmartBaseUi').factory('ChartService',
   };
 
   var _reapplyFilters = function(){
-    console.log('alo')
+    console.log('alo');
     chartService.cs.charts.forEach(function(chart){
       chart.savedFilters.forEach(function(filter){
         console.log(filter)
@@ -87,6 +87,18 @@ angular.module('transmartBaseUi').factory('ChartService',
     });
     dc.redrawAll();
   };
+
+    chartService.reapplyFilters = function () {
+
+      chartService.cs.charts.forEach(function(chart){
+        console.log(' oke im now here ..', chart.savedFilters)
+        chart.savedFilters.forEach(function(filter){
+          console.log(filter)
+          chart.filter(filter);
+        });
+      });
+      dc.redrawAll();
+    };
 
   var _groupCharts = function (chart1, chart2) {
     var _combinationLabel = {
@@ -147,7 +159,7 @@ angular.module('transmartBaseUi').factory('ChartService',
       return d.labels;
     });
 
-    $rootScope.$broadcast('prepareChartContainers',chartService.cs.labels);
+    $rootScope.$broadcast('prepareChartContainers', chartService.cs.labels);
   };
 
   chartService.reset();
@@ -285,7 +297,8 @@ angular.module('transmartBaseUi').factory('ChartService',
 
       // Notify the applicable controller that the chart directive instances
       // can be created
-      $rootScope.$broadcast('prepareChartContainers', chartService.cs.labels);
+      //$rootScope.$broadcast('prepareChartContainers', chartService.cs.labels);
+      GridsterService.resize('#main-chart-container', chartService.cs.labels, false);
 
       _reapplyFilters();
 
@@ -480,18 +493,17 @@ angular.module('transmartBaseUi').factory('ChartService',
       _chart.id = label.ids;
       _chart.tsLabel = label;
 
-      console.log(label)
 
-      if (typeof label.filters.filters != 'undefined') {
-        console.log(label.filters.filters);
-        if (label.filters.filters.length > 0) {
-          _chart.savedFilters = label.filters.filters;
-          _.each(_chart.savedFilters, function (f) {
-            console.log(f);
-            _chart.filter(f);
-          });
-        }
-      }
+      //if (typeof label.filters != 'undefined') {
+      //  if (label.filters.filters.length > 0) {
+      //    _chart.savedFilters = label.filters.filters;
+      //    console.log(_chart.savedFilters)
+      //    _.each(_chart.savedFilters, function (f) {
+      //      //_chart.filterAll();
+      //      //_chart.filter(f);
+      //    });
+      //  }
+      //}
 
       chartService.cs.charts.push(_chart);
       return _chart;
