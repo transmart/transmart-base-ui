@@ -10,7 +10,7 @@ describe('ConnectionsCtrlTests', function() {
    * @type {*[]}
    * @private
    */
-  var _dummy_endpoints = [
+  var _dummyEndpoints = [
     {
       title: 'foo',
       url: ' http://foo',
@@ -39,7 +39,7 @@ describe('ConnectionsCtrlTests', function() {
         navigateToAuthorizationPage : function () {},
         remove: function (e) {}
       };
-      spyOn(EndpointService, 'getEndpoints').and.returnValue(_dummy_endpoints);
+      spyOn(EndpointService, 'getEndpoints').and.returnValue(_dummyEndpoints);
       spyOn(EndpointService, 'clearStoredEnpoints');
       spyOn(EndpointService, 'navigateToAuthorizationPage');
       spyOn(EndpointService, 'remove');

@@ -254,7 +254,7 @@ angular.module('transmartBaseUi').factory('ChartService',
     var _filter, _deferred = $q.defer();
 
     var _getFilter = function (label, filters) {
-      return _.findWhere(filters, {label:label})
+      return _.findWhere(filters, {label:label});
     };
 
     // Get all observations under the selected concept
@@ -445,7 +445,7 @@ angular.module('transmartBaseUi').factory('ChartService',
       chartService.cs.groups[label.ids] = chartService.cs.dims[label.ids].group();
 
       // filter dimension
-      if (typeof label.filters != 'undefined') {
+      if (typeof label.filters !== 'undefined') {
         if (label.filters.filters.length > 0) {
           chartService.cs.dims[label.ids].filter(label.filters.filters[0]);
         }
@@ -494,7 +494,7 @@ angular.module('transmartBaseUi').factory('ChartService',
       _chart.id = label.ids;
       _chart.tsLabel = label;
 
-      if (typeof label.filters != 'undefined') {
+      if (typeof label.filters !== 'undefined') {
         if (label.filters.filters.length > 0) {
           _chart.savedFilters = label.filters.filters;
           _.each(_chart.savedFilters, function (f) {

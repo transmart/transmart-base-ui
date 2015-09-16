@@ -11,8 +11,6 @@ angular.module('transmartBaseUi')
 
     $scope.ok = function () {
 
-      console.log('$scope.content', $scope.content);
-
       $modalInstance.close();
       $state.go('workspace'); // go to workspace
 
@@ -33,20 +31,17 @@ angular.module('transmartBaseUi')
             var _study = _.where(StudyListService.studyList, {id : node.study.id});
 
             if (_study.length > 0) {
-
               node.study = _study[0];
-
               CohortSelectionService.nodes.push(node);
               ChartService.addNodeToActiveCohortSelection(node, $scope.content.filters).then(function () {
-
+                // and ..
               })
-
             } else {
               // TODO load study
               console.error('Cannot find saved study');
             }
           }, function (err) {
-            console.log(err);
+            console.error(err);
           });
         } else {
           // TODO tell user endpoint is not connected
