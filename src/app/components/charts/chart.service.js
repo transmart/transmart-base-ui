@@ -78,10 +78,8 @@ angular.module('transmartBaseUi').factory('ChartService',
   };
 
   var _reapplyFilters = function(){
-    console.log('alo');
     chartService.cs.charts.forEach(function(chart){
       chart.savedFilters.forEach(function(filter){
-        console.log(filter)
         chart.filter(filter);
       });
     });
@@ -89,11 +87,8 @@ angular.module('transmartBaseUi').factory('ChartService',
   };
 
     chartService.reapplyFilters = function () {
-
       chartService.cs.charts.forEach(function(chart){
-        console.log(' oke im now here ..', chart.savedFilters)
         chart.savedFilters.forEach(function(filter){
-          console.log(filter)
           chart.filter(filter);
         });
       });
@@ -448,15 +443,21 @@ angular.module('transmartBaseUi').factory('ChartService',
         return d.labels[label.ids] === undefined ? 'UnDef' : d.labels[label.ids];
       });
       chartService.cs.groups[label.ids] = chartService.cs.dims[label.ids].group();
+
+      // filter dimension
+      if (typeof label.filters != 'undefined') {
+        if (label.filters.filters.length > 0) {
+          chartService.cs.dims[label.ids].filter(label.filters.filters[0]);
+        }
+      }
     };
 
     if (!label.resolved) {
       var _chart;
 
-      if(label.type === 'combination'){
+      if (label.type === 'combination') {
         _chart = _createMultidimensionalChart(label, el);
       } else {
-
         // Create a number display if highdim
         if (label.type === 'highdim') {
           _defaultDim();
@@ -493,17 +494,15 @@ angular.module('transmartBaseUi').factory('ChartService',
       _chart.id = label.ids;
       _chart.tsLabel = label;
 
-
-      //if (typeof label.filters != 'undefined') {
-      //  if (label.filters.filters.length > 0) {
-      //    _chart.savedFilters = label.filters.filters;
-      //    console.log(_chart.savedFilters)
-      //    _.each(_chart.savedFilters, function (f) {
-      //      //_chart.filterAll();
-      //      //_chart.filter(f);
-      //    });
-      //  }
-      //}
+      if (typeof label.filters != 'undefined') {
+        if (label.filters.filters.length > 0) {
+          _chart.savedFilters = label.filters.filters;
+          _.each(_chart.savedFilters, function (f) {
+            _chart.filterAll();
+            _chart.filter(f);
+          });
+        }
+      }
 
       chartService.cs.charts.push(_chart);
       return _chart;

@@ -75,8 +75,6 @@ angular.module('transmartBaseUi')
       return GridsterService.cohortChartContainerLabels;
     }, function (r) {
       $scope.cohortChartContainerLabels = GridsterService.cohortChartContainerLabels;
-      console.log('im watching cohort chart container labels', r);
-      ChartService.reapplyFilters();
     });
 
     /**
@@ -90,8 +88,8 @@ angular.module('transmartBaseUi')
     });
 
     $scope.$on('gridster-resized', function (event, newS, obj) {
-      if(newS[0] < obj.currentSize -20){
-        $scope.cohortChartContainerLabels  = GridsterService.resize('#main-chart-container', false, true);
+      if (newS[0] < obj.currentSize - 20) {
+        $scope.cohortChartContainerLabels = GridsterService.resize('#main-chart-container', false, true);
       }
     });
 
@@ -122,7 +120,6 @@ angular.module('transmartBaseUi')
       $scope.cohortUpdating = true;
       CohortSelectionService.nodes.push(node);
       ChartService.addNodeToActiveCohortSelection(node).then(function () {
-        //$scope.cohortChartContainerLabels = GridsterService.cohortChartContainerLabels;
         $scope.cohortUpdating = false;
       });
     };
@@ -149,7 +146,8 @@ angular.module('transmartBaseUi')
             if (_study) {
               $scope.displayStudySummaryStatistics(_study);
             } else {
-              console.log('Cannot find study in existing loaded studies');
+              console.error('Cannot find study in existing loaded studies');
+              AlertService.add('danger', 'Cannot find study in existing loaded studies', 2000);
             }
           }
           $scope.activateTab($scope.tabs[2].title, 'summaryStats');

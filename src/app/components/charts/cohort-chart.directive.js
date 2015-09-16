@@ -62,7 +62,7 @@ angular.module('transmartBaseUi')
           };
 
         } else {
-          console.log('Cannot create chart');
+          console.error('Cannot create chart');
         }
       }
     };
