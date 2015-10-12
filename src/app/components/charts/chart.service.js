@@ -1,283 +1,177 @@
 'use strict';
+/* jshint undef: false */
 
-angular.module('transmartBaseUi')
+angular.module('transmartBaseUi').factory('ChartService',
+  ['Restangular', '$q', '$rootScope', '$timeout', 'AlertService', 'DcChartsService', 'GridsterService',
+  function (Restangular, $q, $rootScope, $timeout, AlertService, DcChartsService, GridsterService) {
 
-  .factory('ChartService',['Restangular', '$q', '$rootScope', '$timeout',
-    function (Restangular, $q, $rootScope, $timeout) {
-
-    var chartService = {};
-
-    /**
-     * Chart data constructor
-     * @param idx
-     * @param label
-     * @param title
-     * @param dataType
-     * @param observations
-     * @returns {{id: *, label: *, title: *, type: *, observations: *}}
-     */
-    var newChartData = function (idx, label, title, dataType, observations) {
-      return {
-        id: idx,
-        label: label,
-        title: title,
-        type: dataType,
-        observations: observations
-      };
-    };
-
-    /**
-     * Create dc.js bar chart
-     * @param cDimension
-     * @param cGroup
-     * @param el
-     * @private
-     */
-    var _barChart = function (cDimension, cGroup, el, min, max, nodeTitle, width) {
-
-      width = width || 270;
-
-      var _barChart = dc.barChart(el);
-      _barChart
-        .width(width)
-        .height(200)
-        .margins({top: 5, right: 5, bottom: 30, left: 25})
-        .dimension(cDimension)
-        .group(cGroup)
-        .elasticY(true)
-        .centerBar(true)
-        .gap(1)
-        .x(d3.scale.linear().domain([min, max]))
-        .renderHorizontalGridLines(true)
-      ;
-      _barChart.xAxis().tickFormat(
-        function (v) { return v; });
-      _barChart.yAxis().ticks(5);
-      _barChart.xAxisLabel(nodeTitle);
-      _barChart.yAxisLabel('# subjects');
-
-      return _barChart;
-    };
-
-    /**
-     * Create dc.js pie chart
-     * @param cDimension
-     * @param cGroup
-     * @param el
-     * @returns {*}
-     * @private
-     */
-    var _pieChart = function (cDimension, cGroup, el) {
-      var tChart = dc.pieChart(el);
-
-      tChart
-        .width(270)
-        .height(200)
-        .innerRadius(0)
-        .dimension(cDimension)
-        .group(cGroup)
-        .renderLabel(false)
-        .legend(dc.legend());
-
-     return tChart;
-    };
-
-    /**
-     * To find element in array based on object's key:value
-     * @param arr
-     * @param propName
-     * @param propValue
-     * @returns {*}
-     * @private
-     */
-    var _findElement = function (arr, propName, propValue) {
-      for (var i=0; i < arr.length; i++) {
-        if (arr[i][propName] === propValue) { return arr[i]; }
-      }
-      // will return undefined if not found; you could return a default instead
-    };
-
-    /**
-     * Get the last token when requested model is a string path
-     * @param what
-     * @returns {*}
-     * @private
-     */
-    var _getLastToken = function (what) {
-      var _t = what.split('\\').slice(1);
-      return what.indexOf('\\') === -1 ? what : _t[_t.length-2];
-    };
-
-    /**
-     * get data type
-     * @param val
-     * @returns {string}
-     * @private
-     */
-    var _getDataType = function (val) {
-      var _type = typeof val;
-      if (_type === 'string' || _type === 'number') {
-        return _type;
-      }
-      return  'unknown';
-    };
-
-    /**
-     * Group observations based on its labels
-     * @param d
-     * @returns {Array}
-     * @private
-     */
-    var _createGroupBasedOnObservationsLabel = function (d) {
-      var _d = [];
-
-      d.forEach(function (o, idx) {
-        var _x = _findElement(_d, 'label', o.label);
-        //var _dataType = _getDataType(o.value);
-        //console.log(_dataType);
-        if (typeof _x === 'undefined') {
-          _d.push(newChartData(idx, o.label, _getLastToken(o.label), _getDataType(o.value), [{value:o.value}]));
-        } else {
-          _x.observations.push({value : o.value});
-        }
-      });
-
-      return _d;
-    };
-
-
-    var _createGroupBasedOnSubjectAttributes = function (d) {
-      var _d = [],
-        _keys=['trial', 'inTrialId', 'birthDate', 'deathDate', 'id'],
-        _subjects = d._embedded.subjects;
-
-      if (_subjects.length > 0) {
-
-        angular.forEach(_subjects, function (subject) { // iterate through subjects
-          var _idx = 0;
-          angular.forEach(subject, function (value, key) { // iterate through subject properties
-
-            var _x = _findElement(_d, 'label', key); // check if label is already existing
-            var _dataType = _getDataType(subject[key]);
-
-            // only for known data types and keys
-            if (_dataType !== 'unknown' && (_keys.indexOf(key) === -1)) {
-              if (typeof _x === 'undefined') { // create new data chart when key is not yet in the collection
-                _d.push(newChartData(_idx, key, key, _dataType, [{value:subject[key]}]));
-                _idx ++;
-              } else { // otherwise add the data to the existing key
-                _x.observations.push({value : subject[key]});
-              }
-            }
-
-          }); //end forEach subject properties
-        }); //end forEach subjects
-
-      }
-      return _d;
-    };
-
-    chartService.getObservations = function (node) {
-      var _observationsList = [];
-
-      var promise = new Promise( function (resolve, reject) {
-        node.restObj.one('observations').get()
-          .then(function (d) {
-            d = d._embedded.observations;
-            // create categorical or numerical dimension based on observation data
-            _observationsList = _createGroupBasedOnObservationsLabel(d);
-            resolve(_observationsList);
-          }, function (err) {
-            reject('Cannot get data from the end-point.' + err);
-          });
-      });
-
-      return promise;
-    };
-
-    chartService.getSubjects = function (study) {
-      var selectedStudy = {};
-
-      var promise = new Promise( function (resolve, reject) {
-        study.one('subjects').get()
-          .then(function (d) {
-            selectedStudy.subjects = d._embedded.subjects;
-            selectedStudy.chartData = _createGroupBasedOnSubjectAttributes(d);
-            resolve(selectedStudy);
-          }, function (err) {
-            reject('Cannot get subjects from the end-point.' + err);
-          });
-      }); //end Promise
-
-      return promise;
-    };
-
-    chartService.generateCharts = function (nodes) {
-      var _charts = [], _deferred = $q.defer(), idx = 0;
-
-      angular.forEach(nodes, function (node) {
-        var ndx = crossfilter(node.observations),
-          tDimension = ndx.dimension(function(d) {return d.value;}),
-          tGroup = tDimension.group();
-
-        if (node.type === 'string') {
-          _charts.push(_pieChart(tDimension, tGroup, '#chart_' + idx));
-        } else if (node.type === 'number') {
-          var _max = Math.max.apply(Math,node.observations.map(function(o){return o.value;})),
-            _min = Math.min.apply(Math,node.observations.map(function(o){return o.value;}));
-          _charts.push(_barChart(tDimension, tGroup, '#chart_' + idx, _min, _max, node.title));
-        }
-
-        idx++;
-
-        if (idx === nodes.length) {
-          _deferred.resolve(_charts);
-        }
-      });
-
-      return _deferred.promise;
-
-    };
-
-    chartService.renderAll = function (charts) {
-      angular.forEach (charts, function (chart) {
-        chart.render();
-      });
-    };
-
-    /*******************************************************************************************************************
-     * Cohort chart service
-     */
-    var cohortState = {};
-
-    /**
-     * Reset the cohort chart service to initial state
-     */
-    chartService.reset = function (){
-      cohortState = {
+    var chartService = {
+      cs : {
         subjects: [],
         chartId: 0,
         charts: [],
-        data: {
-          cross: crossfilter(),
-          dimensions: {},
-          groups: {}
-        },
-        concepts: {
-          labels: [],
-          types: [],
-          names: [],
-          ids:[],
-          node:[]
-        }
-      };
-
-      cohortState.labelDim = cohortState.data.cross.dimension(function(d) {return d.nodes;});
-
-      $rootScope.$broadcast('prepareChartContainers', cohortState.concepts.names, cohortState.concepts.ids);
+        cross: crossfilter(),
+        dims: {},
+        numDim: 0,
+        maxDim: 20,
+        groups: {},
+        labels: []
+      } // cohort selection
     };
 
-    chartService.reset();
+    var _filterEvent = function () {};
+
+    chartService.registerFilterEvent = function (func) {
+      _filterEvent = func;
+    };
+
+    chartService.triggerFilterEvent = function (chart, filter) {
+      if (filter !== null) { // only trigger when
+        _filterEvent();
+      }
+    };
+
+  var _numDisplay = function (cDimension, cGroup, el){
+    var _number = dc.numberDisplay(el);
+    _number.group(cGroup)
+      .html({
+        one:'%number',
+        some:'%number',
+        none:'%number'
+      })
+      .formatNumber(d3.format('f'));
+    return _number;
+  };
+
+
+  /**
+   * Get the last token when requested model is a string path
+   * @param what
+   * @returns {*}
+   * @private
+   */
+  var _getLastToken = function (what) {
+      var _t = what.split('\\').slice(1);
+      return what.indexOf('\\') === -1 ? what : _t[_t.length - 2];
+  };
+
+  /**
+  *
+  * @param charts
+  */
+  chartService.renderAll = function (charts) {
+    if(!charts){
+      charts = chartService.cs.charts;
+    }
+    angular.forEach(charts, function (chart) {
+      if(!chart.rendered){
+        chart.render();
+        chart.rendered = true;
+      }
+    });
+  };
+
+  var _saveFilters = function(){
+    chartService.cs.charts.forEach(function(chart){
+      chart.savedFilters = chart.filters();
+    });
+  };
+
+  var _reapplyFilters = function(){
+    chartService.cs.charts.forEach(function(chart){
+      chart.savedFilters.forEach(function(filter){
+        chart.filter(filter);
+      });
+    });
+    dc.redrawAll();
+  };
+
+    chartService.reapplyFilters = function () {
+      chartService.cs.charts.forEach(function(chart){
+        chart.savedFilters.forEach(function(filter){
+          chart.filter(filter);
+        });
+      });
+      dc.redrawAll();
+    };
+
+  var _groupCharts = function (chart1, chart2) {
+    var _combinationLabel = {
+      ids: chartService.cs.chartId++,
+      label: [chart1.tsLabel, chart2.tsLabel],
+      name: chart1.tsLabel.name + ' - ' + chart2.tsLabel.name,
+      resolved: false,
+      //TODO: manage multiple studies
+      study: chart1.tsLabel.study,
+      type: 'combination'
+    };
+    chartService.cs.subjects.forEach(function(sub){
+      if(sub.labels[chart1.tsLabel.ids] || sub.labels[chart2.tsLabel.ids]){
+        sub.labels[_combinationLabel.ids] = [sub.labels[chart1.tsLabel.ids], sub.labels[chart2.tsLabel.ids]];
+      }
+    });
+    chartService.cs.labels.push(_combinationLabel);
+    $rootScope.$broadcast('prepareChartContainers',chartService.cs.labels);
+  };
+
+  var _groupingChart = {};
+
+  chartService.groupCharts = function (newChart, turnOff) {
+    // If a first chart was already selected, group them together
+    if(_groupingChart.chartOne){
+      _groupCharts(newChart, _groupingChart.chartOne);
+      // Turn off both selection lights
+      _groupingChart.turnOff();
+      turnOff();
+      _groupingChart = {};
+    // If this is the first chart selected
+    }else{
+      _groupingChart.chartOne = newChart;
+      _groupingChart.turnOff = turnOff;
+    }
+  };
+
+  /**
+   * Reset the cohort chart service to initial state
+   */
+  chartService.reset = function () {
+    chartService.cs = {
+      subjects: [],
+      chartId: 0,
+      charts: [],
+      cross: crossfilter(),
+      dims: {},
+      numDim: 0,
+      maxDim: 20,
+      groups: {},
+      labels: []
+    };
+
+    _groupingChart = {};
+
+    // Main dimension used to get selection values
+    chartService.cs.mainDim = chartService.cs.cross.dimension(function (d) {
+      return d.labels;
+    });
+
+    $rootScope.$broadcast('prepareChartContainers', chartService.cs.labels);
+  };
+
+  chartService.reset();
+
+  var _getType = function (value) {
+    var _type = typeof value;
+    if(_type === 'string'){
+      if(value === 'E' || value === 'MRNA'){
+        _type = 'highdim';
+      }
+    } else if (_type === 'number'){
+      if((value % 1) !== 0) {
+        _type = 'float';
+      }
+    }
+    return _type;
+  };
 
     /**
      * Add new label to list and check data type
@@ -285,192 +179,437 @@ angular.module('transmartBaseUi')
      * @param value
      * @private
      */
-    var _addLabel = function(label,value,node){
-      if(cohortState.concepts.labels.indexOf(label) === -1) {
-        cohortState.concepts.labels.push(label);
-        cohortState.concepts.types.push(typeof value);
-        cohortState.concepts.names.push(_getLastToken(label));
-        cohortState.concepts.ids.push(cohortState.chartId++);
-        console.log(node);
-        cohortState.concepts.node.push(node);
-        console.log(cohortState.concepts.node);
-      }
-    };
+    var _addLabel = function (obs, node, filters) {
 
-    var _addNode = function(subject, node){
-      if(subject.nodes.indexOf(node) === -1) {
-        subject.nodes.push(node);
-      }
-    };
+      // Check if label has already been added
+      var label = _.findWhere(chartService.cs.labels, {label: obs.label});
 
-    var _removeNodeConcepts = function(dNode){
-      console.log(cohortState.concepts.node);
-      for (var i = 0; i < cohortState.concepts.node.length; ++i) {
-        if (cohortState.concepts.node[i] === dNode) {
-          cohortState.data.dimensions[cohortState.concepts.labels[i]].dispose();
-          cohortState.data.groups[cohortState.concepts.labels[i]].dispose();
-          delete cohortState.data.dimensions[cohortState.concepts.labels[i]];
+      if (!label) {
 
-          cohortState.concepts.node.splice(i, 1);
-          cohortState.concepts.labels.splice(i, 1);
-          cohortState.concepts.types.splice(i, 1);
-          cohortState.concepts.names.splice(i, 1);
-          cohortState.concepts.ids.splice(i, 1);
-          i--;
+        //Check that the maximum number of dimensions has not been reached
+        if (chartService.cs.numDim < chartService.cs.maxDim) {
 
+          chartService.cs.numDim++;
+          // Create the new label object
+
+          label = {
+            label : obs.label,
+            type : _getType(obs.value),
+            name : _getLastToken(obs.label),
+            ids : chartService.cs.chartId++,
+            study : node.study,
+            resolved : false,
+            filters : filters
+          };
+
+          chartService.cs.labels.push(label);
+
+        } else {
+          AlertService.add('danger', 'Max number of dimensions reached !', 2000);
         }
+      } else {
+        // if label already exists check its type
+        label.type = label.type === 'float' ? label.type : _getType(obs.value);
       }
-    };
 
-    var _removeAllFilters = function() {
-      for (var key in cohortState.dimensions) {
-        cohortState.dimensions[key].filterAll();
+      if (label.type === 'float') {
+        var precision = (obs.value + '').split('.');
+        precision = precision[1] ? precision[1].length : 0;
+        label.precision = label.precision ? Math.min(label.precision, precision) : precision;
       }
+
+      return label.ids;
     };
 
-    var _applyLabelFilter = function(){
-      cohortState.labelFilter = cohortState.labelDim.filterFunction(function(d){
-        return d.length === 0;
+    /**
+     * Remove all the filters applied to the label dimensions
+     * TODO: Add the possibility to reapply removed filters
+     * @private
+     */
+    var _removeAllLabelFilters = function () {
+      _.each(chartService.cs.dims, function (dim) {
+        dim.filterAll();
       });
-    };
-
-    var _removeLabelFilter = function(){
-      cohortState.labelDim.filterAll();
-    };
-
-    chartService.removeNode = function (node){
-      cohortState.subjects.forEach(function(sub){
-        var index = sub.nodes.indexOf(node);
-        if(index > -1){
-          sub.nodes.splice(index, 1);
-        }
-      });
-      _removeAllFilters();
-      _applyLabelFilter();
-      cohortState.data.cross.remove();
-
-      _removeLabelFilter();
-      console.log(cohortState.concepts.names);
-      _removeNodeConcepts(node);
-      console.log(cohortState.concepts.names);
-      $rootScope.$broadcast('prepareChartContainers', cohortState.concepts.names, cohortState.concepts.ids);
-      cohortState.subjects = cohortState.labelDim.top(Infinity);
+      dc.filterAll();
       dc.redrawAll();
     };
 
+  /**
+   * Create the Crossfilter instance from the subject data
+   * @private
+   */
+  var _populateCohortCrossfilter = function () {
+    _removeAllLabelFilters();
+    chartService.cs.cross.remove();
+    chartService.cs.cross.add(chartService.cs.subjects);
+  };
 
-    /**
-     * Fetch the data for the selected node
-     * Add it to the current subject list
-     * Recreate Crossfilter instance with all the new and old subjects
-     * @param node
-     * @returns {*}
-     */
-    chartService.addNodeToActiveCohortSelection = function (node) {
-      var _deferred = $q.defer();
+  /**
+   * Fetch the data for the selected node
+   * @param node
+   * @returns {*}
+   */
+  chartService.addNodeToActiveCohortSelection = function (node, filters) {
 
+    var _filter, _deferred = $q.defer();
 
-      //Clear all existing chart containers
-      //$rootScope.$broadcast('prepareChartContainers', []);
+    var _getFilter = function (label, filters) {
+      return _.findWhere(filters, {label:label});
+    };
 
-      //Get all observations under the selected concept
-      node.restObj.one('observations').get().then(function (d) {
-        d = d._embedded.observations;
-        var _found = false;
+    // Get all observations under the selected concept
+    node.restObj.one('observations').get().then(function (observations){
 
-        // Group observation labels under common subject
-        d.forEach(function(obs){
-          _found = false;
-          if(obs.value != null) {
-            _addLabel(obs.label, obs.value, node);
-            // Check if subject is already present
-            cohortState.subjects.forEach(function (sub) {
-              if (sub.id === obs._embedded.subject.id) {
-                sub.labels[obs.label] = obs.value;
-                _addNode(sub, node);
-                _found = true;
-                return;
-              }
-            });
+      observations = observations._embedded.observations;
+
+      observations.forEach(function (obs) {
+        if (obs.value !== null) {
+
+          if (filters) {
+            _filter = _getFilter(obs.label, filters);
+          }
+
+          // Add the concept to the list of chart labels
+          var _id = _addLabel(obs, node, _filter);
+
+          // Check if the subject of the observation is already present
+          var found = _.findWhere(chartService.cs.subjects, {id: obs._embedded.subject.id});
+
+          if (found){
+            found.labels[_id] = obs.value;
           } else {
-            _found = true;
+            obs._embedded.subject.labels = {};
+            obs._embedded.subject.labels[_id] = obs.value;
+            chartService.cs.subjects.push(obs._embedded.subject);
           }
-          // If new subject, push to cohort selection
-          if(!_found){
-            var newSub = obs._embedded.subject;
-            newSub.labels = {};
-            newSub.labels[obs.label] = obs.value;
-            newSub.nodes = [];
-            newSub.nodes.push(node);
-            cohortState.subjects.push(newSub);
-
-          }
-        });
-
-        $rootScope.$broadcast('prepareChartContainers', cohortState.concepts.names, cohortState.concepts.ids);
-        $timeout(function(){
-            _populateCohortCrossfilter();
-            _createCohortCharts();
-            _deferred.resolve(cohortState.charts);
-        });
-      }, function (err) {
-        //TODO: add alert
-        _deferred.reject('Cannot get data from the end-point.' + err);
-      });
-      return _deferred.promise;
-    };
-
-    /**
-     * Create the Crossfilter instance from the subject data
-     * @private
-     */
-    var _populateCohortCrossfilter = function (){
-      _removeAllFilters();
-      cohortState.data.cross.remove();
-      cohortState.data.cross.add(cohortState.subjects);
-    };
-
-    /**
-     * Create the charts for each selected label
-     * TODO: Leave the existing charts in place, and only add the new ones
-     * TODO: Enable removing specific charts
-     * @private
-     */
-    var _createCohortCharts = function () {
-      cohortState.chartId = 0;
-      cohortState.charts = [];
-
-      cohortState.concepts.labels.forEach(function(label, index){
-        //Create dimension and grouping for the new label
-        cohortState.data.dimensions[label] = cohortState.data.cross.dimension(function(d) {return d.labels[label] === undefined ? 'UnDef' : d.labels[label];});
-        cohortState.data.groups[label] = cohortState.data.dimensions[label].group();
-
-        if(cohortState.concepts.types[index] === 'string' || cohortState.concepts.types[index] === 'object'){
-          cohortState.charts.push(_pieChart(cohortState.data.dimensions[label], cohortState.data.groups[label],
-            '#cohort-chart-' + cohortState.concepts.ids[index]));
-        }else if(cohortState.concepts.types[index] === 'number'){
-          var max = cohortState.data.dimensions[label].top(1)[0].labels[label];
-          var min = cohortState.data.dimensions[label].bottom(1)[0].labels[label];
-          cohortState.charts.push(_barChart(cohortState.data.dimensions[label], cohortState.data.groups[label],
-            '#cohort-chart-' + cohortState.concepts.ids[index], min, max, cohortState.concepts.names[index]));
         }
-        cohortState.chartId++;
       });
+
+      // Add all the subjects to a crossfilter instance
+      _saveFilters();
+
+      _populateCohortCrossfilter();
+
+      // Notify the applicable controller that the chart directive instances
+      // can be created
+      //$rootScope.$broadcast('prepareChartContainers', chartService.cs.labels);
+      GridsterService.resize('#main-chart-container', chartService.cs.labels, false);
+
+      _reapplyFilters();
+
+      _deferred.resolve();
+
+    }, function (err) {
+      //TODO: add alert
+      _deferred.reject('Cannot get data from the end-point.' + err);
+    });
+
+    return _deferred.promise;
+  };
+
+  /**
+   * Remove specified label
+   * @param label
+   */
+  chartService.removeLabel = function (label) {
+
+    // Remove dimension and group associated with the label
+    chartService.cs.dims[label.ids].dispose();
+    chartService.cs.numDim--;
+    chartService.cs.groups[label.ids].dispose();
+
+    // Remove label from subjects and remove subjects no longer associated
+    // with any label
+    for (var i = 0; i < chartService.cs.subjects.length; i++) {
+      delete chartService.cs.subjects[i].labels[label.ids];
+      if (_.size(chartService.cs.subjects[i].labels) === 0) {
+        chartService.cs.subjects.splice(i--, 1);
+      }
+    }
+
+    //Update crossfilter instance
+    _saveFilters();
+
+    _populateCohortCrossfilter();
+
+    //Remove the chart
+    var _i = _.findIndex(chartService.cs.charts, function (c) {
+      return c.id === label.ids;
+    });
+    if (_i >= 0) {
+      chartService.cs.charts.splice(_i, 1);
+    }
+
+    //Finally remove label
+    chartService.cs.labels = _.reject(chartService.cs.labels, function (el) {
+      return el.ids === label.ids;
+    });
+
+    //Update charts
+    $rootScope.$broadcast('prepareChartContainers', chartService.cs.labels);
+
+    _reapplyFilters();
+  };
+
+  var _createMultidimensionalChart = function (label, el) {
+    var _chart, _min, _max;
+
+    // Check if label0 or label1 has categorical values
+    if(label.label[0].type === 'string' || label.label[1].type === 'string'){
+      // Check if one of them is not categorical
+      if(label.label[0].type !== 'string' || label.label[1].type !== 'string'){
+        // Always categorical on X axis
+        var _valueX = label.label[0].type === 'string' ? 0 : 1;
+        var _valueY = _valueX === 0 ? 1 : 0;
+
+        chartService.cs.dims[label.ids] = chartService.cs.cross.dimension(function (d) {
+          return d.labels[label.ids] ? d.labels[label.ids][_valueX] : undefined;
+        });
+        chartService.cs.groups[label.ids] = chartService.cs.dims[label.ids].group().reduce(
+          function(p,v) {
+            p.push(v.labels[label.ids] ? +v.labels[label.ids][_valueY] : undefined);
+            return p;
+          },
+          function(p,v) {
+            p.splice(p.indexOf(v.labels[label.ids] ? +v.labels[label.ids][_valueY] : undefined), 1);
+            return p;
+          },
+          function() {
+            return [];
+          }
+        );
+
+        _max = chartService.cs.dims[label.label[_valueY].ids].top(1)[0].labels[label.label[_valueY].ids];
+        _min = chartService.cs.dims[label.label[_valueY].ids].bottom(1)[0].labels[label.label[_valueY].ids];
+
+        _chart = DcChartsService.getBoxPlot(chartService.cs.dims[label.ids], chartService.cs.groups[label.ids], el, {
+          xLab: label.label[_valueX].name,
+          yLab: label.label[_valueY].name,
+          min: _min,
+          max: _max
+        });
+        _chart.type = 'BOXPLOT';
+
+      } else {
+        // Both labels are categorical
+        chartService.cs.dims[label.ids] = chartService.cs.cross.dimension(function (d) {
+          return [d.labels[label.ids] ? d.labels[label.ids][0]: undefined,
+                  d.labels[label.ids] ? d.labels[label.ids][1]: undefined];
+        });
+        chartService.cs.groups[label.ids] = chartService.cs.dims[label.ids].group();
+
+        _chart = DcChartsService.getHeatMap(chartService.cs.dims[label.ids], chartService.cs.groups[label.ids], el, {
+          xLab: label.label[0].name,
+          yLab: label.label[1].name
+        });
+
+        _chart.type = 'HEATMAP';
+
+      }
+    } else {
+      // Both labels are numerical, create a scatter plot
+      chartService.cs.dims[label.ids] = chartService.cs.cross.dimension(function (d) {
+        return [d.labels[label.ids] ? d.labels[label.ids][0]: undefined,
+                d.labels[label.ids] ? d.labels[label.ids][1]: undefined];
+      });
+      chartService.cs.groups[label.ids] = chartService.cs.dims[label.ids].group();
+
+       _max = chartService.cs.dims[label.label[0].ids].top(1)[0].labels[label.label[0].ids];
+       _min = chartService.cs.dims[label.label[0].ids].bottom(1)[0].labels[label.label[0].ids];
+
+      _chart = DcChartsService.getScatterPlot(chartService.cs.dims[label.ids], chartService.cs.groups[label.ids], el, {
+        min: _min,
+        max: _max,
+        xLab: label.label[0].name,
+        yLab: label.label[1].name
+      });
+
+      _chart.type = 'SCATTER';
+    }
+
+    return _chart;
+  };
+
+  /**
+   * Create the charts for each selected label
+   * TODO: Leave the existing charts in place, and only add the new ones
+   * TODO: Enable removing specific charts
+   * @private
+   */
+  chartService.createCohortChart = function (label, el) {
+
+    var _defaultDim = function () {
+      chartService.cs.dims[label.ids] = chartService.cs.cross.dimension(function (d) {
+        return d.labels[label.ids] === undefined ? 'UnDef' : d.labels[label.ids];
+      });
+      chartService.cs.groups[label.ids] = chartService.cs.dims[label.ids].group();
+
+      // filter dimension
+      if (typeof label.filters !== 'undefined') {
+        if (label.filters.filters.length > 0) {
+          chartService.cs.dims[label.ids].filter(label.filters.filters[0]);
+        }
+      }
     };
 
-    /**
-     * Return the values for the current selection in cohort
-     * @returns {{selected: (*|{returns the sum total of matching records, observes all dimension's filters}), total: *}}
-     */
-    chartService.getSelectionValues = function (){
-      return {
-        selected: cohortState.data.cross.groupAll().value(),
-        total: cohortState.data.cross.size()
-      };
+    if (!label.resolved) {
+      var _chart;
+
+      if (label.type === 'combination') {
+        _chart = _createMultidimensionalChart(label, el);
+      } else {
+        // Create a number display if highdim
+        if (label.type === 'highdim') {
+          _defaultDim();
+          _chart = _numDisplay(chartService.cs.dims[label.ids], chartService.cs.groups[label.ids], el);
+          _chart.type = 'NUMBER';
+
+        // Create a PIECHART if categorical
+        } else if (label.type === 'string' || label.type === 'object') {
+          _defaultDim();
+          _chart = DcChartsService.getPieChart(chartService.cs.dims[label.ids], chartService.cs.groups[label.ids], el);
+          _chart.type = 'PIECHART';
+
+        // Create a BARCHART if numerical
+        } else if (label.type === 'number') {
+          _defaultDim();
+          _chart = DcChartsService.getBarChart(chartService.cs.dims[label.ids], chartService.cs.groups[label.ids], el,
+            {nodeTitle: label.name});
+          _chart.type = 'BARCHART';
+
+        // Create a BARCHART WITH BINS if floating point values
+        } else if (label.type === 'float'){
+          chartService.cs.dims[label.ids] = chartService.cs.cross.dimension(function (d) {
+            return d.labels[label.ids] === undefined ? 'UnDef' : d.labels[label.ids].toFixed(label.precision === 0 ? 0 : label.precision);
+          });
+          chartService.cs.groups[label.ids] = chartService.cs.dims[label.ids].group();
+          _chart = DcChartsService.getBarChart(chartService.cs.dims[label.ids], chartService.cs.groups[label.ids],
+            el, {nodeTitle: label.name, float: true, precision: label.precision});
+          _chart.type = 'BARCHART';
+
+        }
+      }
+
+      label.resolved = true;
+      _chart.id = label.ids;
+      _chart.tsLabel = label;
+
+      if (typeof label.filters !== 'undefined') {
+        if (label.filters.filters.length > 0) {
+          _chart.savedFilters = label.filters.filters;
+          _.each(_chart.savedFilters, function (f) {
+            _chart.filterAll();
+            _chart.filter(f);
+          });
+        }
+      }
+
+      chartService.cs.charts.push(_chart);
+      return _chart;
+    }
+  };
+
+  chartService.doResizeChart = function (id, height, width) {
+    var _CONF = {
+      RAD: 0.9, // Percentage to adjust the radius of the chart
+      LEG_H: 0.05,// Percentage to adjust legend position in Y
+      LEG_W: 0, // Percentage to adjust legend position in X
+      LEG_S: 0.03, // Legend size percentage of chart
+      LEG_B: 4, // Legend size base in px
+      LEG_G: 0.02, // Legen gap in percentage of chart height
+      MIN_S: (width > height ? height : width), // Smallest of width or heigth
+      TICK_X: 30, // Pixels per tick in x
+      TICK_Y: 30, // Pixels per tick in y
+      SLICE: 20, // Pixels per slice for pie charts
+      SP_DOT_SIZE: 4, // Pixels per width / heigth
+      BP_PIXELS_PER_GROUP: 110,
+      HM_LEFT_MARGIN: width/6,
+      HM_Y_LABELS_PIXELS: 10
     };
 
+    var _chart = _.findWhere(chartService.cs.charts, {id: id});
+    if(_chart) {
+
+      // Adjust width and height
+      _chart.width(width).height(height);
+
+      // If the chart has a radius (ie. pie chart)
+      if(_chart.type === 'PIECHART'){
+        //  set the radius to half the shortest dimension
+        _chart.radius((_CONF.MIN_S) / 2 * _CONF.RAD)
+        // Limit the number of slices in the chart
+        .slicesCap(Math.floor(_CONF.MIN_S/_CONF.SLICE))
+        //
+        .legend(dc.legend()
+          .x(width * _CONF.LEG_W)
+          .y(height * _CONF.LEG_H)
+          .itemHeight(_CONF.LEG_B+_CONF.LEG_S*_CONF.MIN_S)
+          .gap(_CONF.MIN_S*_CONF.LEG_G));
+
+      } else if (_chart.type === 'BARCHART') {
+        // Adjust number of ticks to not overlap
+        // Number of ticks per pixel
+        _chart.xAxis().ticks(Math.floor(width/_CONF.TICK_X));
+        _chart.yAxis().ticks(Math.floor(height/_CONF.TICK_Y));
+        _chart.rescale();
+
+      } else if (_chart.type === 'BOXPLOT') {
+        _chart.margins({top: 5, right: 5, bottom: 45, left: 40});
+
+        if(_chart.group().all().length > width/_CONF.BP_PIXELS_PER_GROUP){
+            _chart.xAxis().tickValues([]);
+            _chart.yAxis().ticks(3);
+        } else {
+          _chart.yAxis().ticks(Math.floor(height/_CONF.TICK_Y));
+          _chart.xAxis().tickValues(null);
+        }
+
+      } else if (_chart.type === 'HEATMAP') {
+        _chart
+          .keyAccessor(function(d) {
+            return d.key[0] ? d.key[0].slice(0, Math.floor(width/80)): undefined; })
+          .valueAccessor(function(d) {
+            return d.key[1] ? d.key[1].slice(0, Math.floor(width/50)): undefined; })
+          .colorAccessor(function(d) { return d.value; })
+          .margins({top: 5, right: 5, bottom: 40, left: _CONF.HM_LEFT_MARGIN});
+
+      } else if (_chart.type === 'SCATTER') {
+        // Adjust number of ticks to not overlap
+        // Number of ticks per pixel
+        _chart.xAxis().ticks(Math.floor(width/_CONF.TICK_X));
+        _chart.yAxis().ticks(Math.floor(height/_CONF.TICK_Y));
+        // Adjust the size of the dots
+        _chart.symbolSize(_CONF.SP_DOT_SIZE);
+        _chart.rescale();
+      }
+
+      _chart.render();
+    }
+  };
+
     /**
-     * ChartService
+     * Return active filters
      */
-    return chartService;
-  }]);
+    chartService.getCohortFilters = function () {
+      var _filters = [];
+
+      if (chartService.cs.charts) {
+        _.each(chartService.cs.charts, function (c, _index) {
+          _filters.push({
+            name : chartService.cs.labels[_index].name,
+            label :chartService.cs.labels[_index].label,
+            type : chartService.cs.labels[_index].type,
+            filters : c.filters()
+          });
+        });
+      }
+
+      return _filters;
+    };
+
+  /**
+   * ChartService
+   */
+  return chartService;
+
+}]);

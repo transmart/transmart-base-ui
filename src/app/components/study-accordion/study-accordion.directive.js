@@ -5,12 +5,11 @@ angular.module('transmartBaseUi')
   return {
     restrict: 'E',
     scope: {
-      studies: '=accStudies',
-      title: '=accTitle',
+      studies: '=studies',
+      title: '=title',
       saction: '&studyAction',
-      naction: '&nodeAction'
-
+      studyShown: '='
     },
-    templateUrl: '/app/main/sidebar/study.accordion.html'
+    templateUrl: 'app/components/study-accordion/study-accordion.tpl.html'
   };
 });

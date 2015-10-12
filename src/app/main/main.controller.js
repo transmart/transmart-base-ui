@@ -2,189 +2,165 @@
 
 angular.module('transmartBaseUi')
   .controller('MainCtrl',
-  ['$scope', 'Restangular', 'ChartService', 'AlertService', function ($scope, Restangular, ChartService, AlertService) {
+    ['$scope', '$rootScope', 'Restangular', 'ChartService', 'AlertService', '$location', '$stateParams',
+      '$state', 'StudyListService', 'CohortSelectionService', 'SummaryStatsService', 'GridsterService',
+      function ($scope, $rootScope, Restangular, ChartService, AlertService, $location, $stateParams,
+                $state, StudyListService, CohortSelectionService, SummaryStatsService, GridsterService)
+  {
 
-    $scope.dataLoading = false;
+    $scope.summaryStatistics = SummaryStatsService;
+
+    $scope.gridsterOpts = GridsterService.options;
+
+    $scope.cohortVal = {selected: 0, total: 0, subjects: []};
+
+    $scope.cs = ChartService.cs;
+
+    $scope.tabs = [
+      {title: 'Cohort Selection', active: true},
+      {title: 'Cohort Grid', active: false},
+      {title: 'Summary Statistics', active: false},
+      {title: 'Analysis', active: false}
+    ];
+
+    $scope.activateTab = function (tabTitle, tabAction) {
+        $scope.tabs.forEach(function (tab) {
+            if (tab.title !== tabTitle) {
+                tab.active = false;
+            } else {
+                tab.active = true;
+            }
+        });
+        $state.go('workspace', {action:tabAction});
+    };
 
     $scope.close = AlertService.remove;
     $scope.alerts = AlertService.get();
 
-    $scope.metadata = {
-      Title: 'Node title',
-      Organism: 'Homo sapiens',
-      Description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris faucibus ut nisl quis ullamcorper. Quisque in orci vitae nibh rhoncus blandit. Integer tincidunt nunc sit amet magna faucibus, eget pellentesque libero finibus. Sed eu cursus risus, ac pretium felis. In non turpis eros. Nam nec tellus venenatis, consectetur dui a, posuere dui. In id pellentesque elit, ac mattis orci. Donec aliquam feugiat neque nec efficitur. Donec fermentum posuere diam, quis semper felis aliquam vel. Praesent sit amet dapibus tortor. Aliquam sed quam non augue imperdiet scelerisque. Vivamus pretium pretium eros. Nullam finibus accumsan tempor. Duis mollis, ex nec maximus bibendum.'
-    };
-
-    $scope.selectedStudy = {};
-    $scope.observations = [];
-
+    /**
+     * Display summary statisctics for the selected study
+     * @param study
+     */
     $scope.displayStudySummaryStatistics = function (study) {
-
-      var _setLoadingAnim = function (data, chart) {
-        $scope.dataLoading = data;
-        $scope.chartLoading = chart;
-      };
-
-      angular.element('#node-charts-container').empty();
-      _setLoadingAnim(true, false);
-      $scope.selectednode = study;
-      $scope.selectedStudy.title = study.id;
-
-      ChartService.getSubjects(study).then(function(d) {
-
-        $scope.$apply(function () {
-          $scope.observations = d.chartData;
-          $scope.selectedStudy.subjects = d.subjects;
-          $scope.selectedStudy.title = study.id;
-
-          //console.log($scope.selectedStudy.subjects);
-
-          $scope.displayedCollection = [].concat($scope.selectedStudy.subjects);
-          _setLoadingAnim(false, true);
-
-        });
-        return $scope.observations;
-
-      }, function (err) {
-        AlertService.add('danger', err, 10000);
-      }).then (function (observations) {
-        //console.log(observations);
-        // then generate charts out of it
-        if (typeof observations !== 'undefined') {
-          ChartService.generateCharts(observations).then(function (charts) {
-            ChartService.renderAll(charts);
-          });
-        }
-      }).then (function () {
-        _setLoadingAnim(false, false);
+      $scope.summaryStatistics.isLoading = true;
+      $scope.summaryStatistics.selectedStudy.title = study.id;
+      SummaryStatsService.displaySummaryStatistics(study,
+        $scope.summaryStatistics.magicConcepts).then(function() {
+        $scope.summaryStatistics.isLoading = false;
       });
     };
 
-
     /**
-     *
-     * @param node
+     * Updates the bar graph selection values and the subjects displayed by the
+     * grid.
+     * @private
      */
-    $scope.displayNodeSummaryStatistics = function (node) {
-
-      $scope.selectedNode = node;
-
-      var _setLoadingAnim = function (data, chart) {
-        $scope.dataLoading = data;
-        $scope.chartLoading = chart;
-      };
-
-      _setLoadingAnim(true, false);
-      $scope.selectednode = node;
-
-      ChartService.getObservations(node).then(function (d) {
-          // at first, get the observation data for the selected node
-          $scope.$apply(function () {
-            $scope.observations = d;
-            _setLoadingAnim(false, true);
-            return $scope.observations;
-          });
-
-        }, function (err) {
-          AlertService.add('danger', err);
-        }
-      ).then(function () {
-          // then generate charts out of it
-          if (typeof $scope.observations !== 'undefined') {
-            ChartService.generateCharts($scope.observations).then(function (c) {
-              ChartService.renderAll(c);
-            });
-          }
-        })
-        .then (function () {
-        _setLoadingAnim(false, false);
-      });
-
+    var _updateCohortDisplay = function () {
+      $scope.cohortVal.selected = $scope.cs.cross.groupAll().value();
+      $scope.cohortVal.total = $scope.cs.cross.size();
+      $scope.cohortVal.subjects =  $scope.cs.mainDim.top(Infinity);
+      $scope.cohortVal.dimensions = $scope.cs.numDim;
+      $scope.cohortVal.maxdim = $scope.cs.maxDim;
+      $scope.cohortLabels = $scope.cs.labels;
     };
 
-    /*******************************************************************************************************************
-     * Cohort selection
-     */
+    $scope.$watchCollection('cs', function() {
+      _updateCohortDisplay();
+    });
 
-    /**
-     * Quantity of subjects remaining in cohort selection after filters are applied
-     * @type {number}
-     */
-    $scope.cohortSelected = 0;
+    // Every selected concept is represented by a label
+    $scope.cohortChartContainerLabels = GridsterService.cohortChartContainerLabels;
 
-    /**
-     * Initial quantity of subjects in selected nodes for cohort selection
-     * @type {number}
-     */
-    $scope.cohortTotal = 0;
-
-    /**
-     * Contains the active nodes after they are dropped
-     * @type {array}
-     */
-    $scope.activeNodeButtons = [];
-
-    /**
-     * Update quantity of containers necessary for displaying the graphs in cohort selection
-     */
-    $scope.$on('prepareChartContainers', function(event, names, ids) {
-      $scope.cohortChartContainerNames = names;
-      $scope.cohortChartContainerIds = ids;
+    $scope.$watch(function (x) {
+      return GridsterService.cohortChartContainerLabels;
+    }, function (r) {
+      $scope.cohortChartContainerLabels = GridsterService.cohortChartContainerLabels;
     });
 
     /**
-     * Callback for node drop
-     * @param event drop event
-     * @param info
-     * @param node Dropped node
+     * Update quantity of containers necessary for displaying the graphs in
+     * cohort selection.
+     * @param event Unused
+     * @param labels Corresponding to selected concepts
      */
-    $scope.onNodeDropEvent = function(event, info, node){
-      _addCohort(node);
-    };
+    $scope.$on('prepareChartContainers', function (event, labels) {
+      $scope.cohortChartContainerLabels = GridsterService.resize('#main-chart-container', labels, false);
+    });
 
-    $scope.removeNode = function (node){
-      ChartService.removeNode(node);
-      $scope.activeNodeButtons.splice($scope.activeNodeButtons.indexOf(node),1);
+    $scope.$on('gridster-resized', function (event, newS, obj) {
+      if (newS[0] < obj.currentSize - 20) {
+        $scope.cohortChartContainerLabels = GridsterService.resize('#main-chart-container', false, true);
+      }
+    });
+
+    /**
+     * Removes a label and thus a concept form the selection
+     * @param label Corresponding to concept to be removed
+     */
+    $scope.removeLabel = function (label) {
+      ChartService.removeLabel(label);
     };
 
     /**
-     * Reset the active nodes for cohort selection
+     * Remove all the concepts from the cohort selection
      */
-    $scope.resetActiveNodes = function(){
-      $scope.activeNodeButtons = [];
-      $scope.cohortSelected = 0;
-      $scope.cohortTotal = 0;
+    $scope.resetActiveLabels = function () {
+      CohortSelectionService.clearAll();
       ChartService.reset();
-      //$scope.$apply();
     };
 
     /**
-     * Add node dropped from concept tree
-     * @param node
+     * Callback for node drop
+     * @param event
+     * @param info
+     * @param node Dropped node from the study tree
+     */
+    $scope.onNodeDropEvent = function (event, info, node) {
+      // Makes the progress bar animated
+      $scope.cohortUpdating = true;
+      CohortSelectionService.nodes.push(node);
+      ChartService.addNodeToActiveCohortSelection(node).then(function () {
+        $scope.cohortUpdating = false;
+      });
+    };
+
+    /**
+     * When this controller is loaded, check the query params if it contains some actions.
+     * If it is, do the necessities.
      * @private
      */
-    var _addCohort = function (node) {
-      if($scope.activeNodeButtons.indexOf(node) === -1){
-        $scope.activeNodeButtons.push(node);
-        $scope.cohortUpdating = true;
+    var _initLoad = function () {
 
-        ChartService.addNodeToActiveCohortSelection(node).then(function(charts){
-          $scope.cohortSelected = ChartService.getSelectionValues().selected;
-          $scope.cohortTotal = ChartService.getSelectionValues().total;
+      var findURLQueryParams = $location.search();
 
-          // Update the selection value on filtering the charts
-          charts.forEach(function(chart){
-            chart.on('postRedraw', function (){
-              $scope.cohortSelected = ChartService.getSelectionValues().selected;
-              $scope.cohortTotal = ChartService.getSelectionValues().total;
-              $scope.$apply();
-            });
+      if (findURLQueryParams !== undefined) {
+        if (findURLQueryParams.action === 'summaryStats') {
+          if (findURLQueryParams.study) {
 
-            ChartService.renderAll(charts);
-            $scope.cohortUpdating = false;
-            //$scope.$apply();
-          });
-        });
+            // check if study by id already loaded in existing array
+            var _study = _.findWhere(StudyListService.getAll(),
+              {id: findURLQueryParams.study}
+            );
+
+            // display summary statistics if the study is existing
+            if (_study) {
+              $scope.displayStudySummaryStatistics(_study);
+            } else {
+              console.error('Cannot find study in existing loaded studies');
+              AlertService.add('danger', 'Cannot find study in existing loaded studies', 2000);
+            }
+          }
+          $scope.activateTab($scope.tabs[2].title, 'summaryStats');
+        } else if (findURLQueryParams.action === 'cohortGrid') {
+          $scope.activateTab($scope.tabs[1].title, 'cohortGrid');
+        } else {
+          $scope.activateTab($scope.tabs[0].title, 'cohortSelection');
+        }
       }
+      // register update cohort display function to be invoked when filter changed
+      ChartService.registerFilterEvent(_updateCohortDisplay);
     };
+
+    _initLoad();
+
   }]);

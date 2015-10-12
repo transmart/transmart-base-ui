@@ -5,35 +5,46 @@ angular.module('transmartBaseUi', [
   'ngCookies',
   'ngTouch',
   'ngSanitize',
-  'restangular',
   'ui.router',
   'ui.bootstrap',
   'restangular',
   'ui.tree',
   'smart-table',
   'angular-loading-bar',
-  'ngDragDrop'
+  'ngDragDrop',
+  'ngCsv',
+  'gridster',
+  'ui.layout'
 ])
-
   .config( ['$stateProvider', 'RestangularProvider', '$tooltipProvider', 'cfpLoadingBarProvider',
     function ($stateProvider, RestangularProvider, $tooltipProvider, cfpLoadingBarProvider) {
 
       $stateProvider
-        .state('main', {
-          url: '/',
-          templateUrl: 'app/main/main.html',
-          controller: 'MainCtrl'
+        .state('home', {
+          url: '/home',
+          templateUrl: 'app/home/home.html',
+          controller: 'HomeCtrl'
         })
-        .state('login', {
-          url: '/login',
-          templateUrl: 'app/components/login/login.html',
-          controller: 'LoginCtrl'
-        });
+        .state('workspace', {
+          url: '/workspace?action&study&cohorts',
+          templateUrl: 'app/main/main.html',
+          controller: 'MainCtrl',
+          reloadOnSearch: false
+        })
+        .state('connections', {
+          url: '/connections',
+          templateUrl: 'app/connections/connections.html',
+          controller: 'ConnectionsCtrl'
+        })
+        .state('help', {
+          url: '/help',
+          templateUrl: 'app/help/help.html'
+        })
+      ;
 
       // =========================
       // Set restful api base url
       // =========================
-      RestangularProvider.setBaseUrl('http://localhost:8001/rest');
       RestangularProvider.setDefaultHeaders(
         {'Accept': 'application/hal+json'}
       );
@@ -41,6 +52,8 @@ angular.module('transmartBaseUi', [
       // Set an interceptor in order to parse the API response
       // when getting a list of resources
       RestangularProvider.setResponseInterceptor(function(data, operation, what) {
+
+        //console.log(data);
 
         /**
          * Get the last token when requested model is a string path
@@ -82,24 +95,20 @@ angular.module('transmartBaseUi', [
 
       // Remove spinner from http request loading bar
       cfpLoadingBarProvider.includeSpinner = false;
+
   }])
 
   .run(['$rootScope', '$location', '$cookieStore', '$http', 'EndpointService',
     function ($rootScope, $location, $cookieStore, $http, EndpointService) {
 
-      EndpointService.addEndpoint('Local', 'http://localhost:8080/transmart-rest-api');
-
-      // keep user logged in after page refresh
+      // init globals
       $rootScope.globals = $cookieStore.get('globals') || {};
 
-      if ($rootScope.globals.currentUser) {
-        $http.defaults.headers.common.Authorization = 'Basic ' + $rootScope.globals.currentUser.authdata;
-      }
+      EndpointService.retrieveStoredEndpoints();
 
       $rootScope.$on('$locationChangeStart', function () {
-        // redirect to login page if not logged in
-        if ($location.path() !== '/login' && !$rootScope.globals.currentUser) {
-          $location.path('/login');
+        if ($location.path() === '') {
+          $location.path('/home');
         }
       });
     }]);

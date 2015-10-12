@@ -1,0 +1,87 @@
+<div class="main-container">
+  <div class="col-md-4">
+
+    <h3>Add data source</h3>
+    <hr/>
+
+    <!-- Alert ------------------------------------------------------------------------------------------------------>
+    <alert class="alert-div" ng-repeat="alert in alerts" type="{{alert.type}}" close="close(alert.id)">
+      {{alert.message}}
+    </alert>
+
+    <select class="form-control" ng-change="populateDefaultApi();"
+            ng-model="selectedConnection"
+            ng-options="connection.label for connection in connections">
+    </select>
+
+    <br>
+    <br>
+
+    <form name="formData.endpointForm" role="form">
+
+      <div class="form-group">
+
+        <input  type="text"
+                class="form-control"
+                placeholder="Title"
+                ng-model="formData.title">
+
+      </div>
+
+      <div class="form-group">
+        <input  type="text"
+                class="form-control"
+                placeholder="Data source URL address"
+                ng-model="formData.url">
+      </div>
+
+      <div class="form-group">
+        <button type="button"
+                class="form-control btn btn-default"
+                ng-disabled="!selectedConnection.isOAuth"
+                ng-click="navigateToAuthorizationPage()">
+                Get authorization code
+        </button>
+      </div>
+
+      <div class="form-group">
+        <input  type="text"
+                class="form-control"
+                placeholder="Authorization code"
+                ng-model="formData.requestToken">
+      </div>
+
+      <button class="btn btn-default" ng-click="clearSavedEndpoints()">
+        Clear saved
+      </button>
+      <button type="submit" class="btn btn-primary" ng-click="addResource()">
+        Save
+      </button>
+    </form>
+  </div>
+  <div class="col-md-8">
+    <h3>Active connections</h3>
+
+    <table class="table">
+      <tr>
+        <th>Status</th>
+        <th>Name</th>
+        <th>Url</th>
+        <th>Expiration</th>
+        <th></th>
+      </tr>
+
+      <tr ng-repeat="endpoint in endpoints">
+        <td>      <i class="glyphicon"
+                    ng-class="getStatusIcon(endpoint)"></i> </td>
+        <td>{{endpoint.title}}</td>
+        <td>{{endpoint.url}}</td>
+        <td>{{endpoint.expiresAt | date:'dd-M H:mm'}}</td>
+        <td><i class="glyphicon glyphicon-remove-circle text-danger"
+                ng-click="removeEndpoint(endpoint)"></td>
+      </tr>
+    </table>
+
+  </div>
+
+</div>

@@ -1,147 +1,88 @@
-<script type="text/ng-template" id="chart.html">
-    <div class="panel panel-default" style="width:300px;height:300px;float: left; margin-right: 5px; font-size: .8em;">
-      <div class="panel-heading"><h4>{{observation.title}}</h4></div>
-      <div class="panel-body">
-        <div id="chart_{{observation.id}}" style=""></div>
-      </div>
+
+    <div class="main-container as potato">
+      <!-- Alert ------------------------------------------------------------------------------------------------------>
+      <alert class="alert-div" ng-repeat="alert in alerts" type="{{alert.type}}" close="close(alert.id)">
+        {{alert.message}}
+      </alert>
+
+      <h3>Workspace</h3>
+      <tabset>
+
+        <!-- Cohort selection tab ------------------------------------------------------------------------------------->
+        <tab active="tabs[0].active" ng-click="activateTab(tabs[0].title, 'cohortSelection');">
+          <tab-heading>
+            <span>{{tabs[0].title}}</span>
+          </tab-heading>
+
+          <div class="well well-lg ts-node-well" data-drop="true" ng-model='droppedNode'
+               jqyoui-droppable="{multiple:true, onDrop:'onNodeDropEvent(droppedNode)'}">
+            <h5 ng-if="cohortChartContainerLabels.length == 0">
+              <small> Drag and drop some nodes here to add them.</small>
+            </h5>
+            <button type="button" class="btn btn-primary btn-sm ts-btn-node"
+                    ng-repeat="label in cohortChartContainerLabels"
+                    ng-click="removeLabel(label)">
+              <div class="ts-node-name">
+                {{label.name}}<br><span class="ts-smaller-font">{{label.study._embedded.ontologyTerm.name}}</span>
+              </div>
+
+              <div class="ts-node-close-x" aria-hidden="true">&times;</div>
+            </button>
+            <button ng-if="cohortChartContainerLabels.length >= 1" class="btn btn-danger ts-btn-node-reset"
+                    ng-click="resetActiveLabels()">
+              Reset<br>({{cohortVal.dimensions}}/{{cohortVal.maxdim}})
+            </button>
+          </div>
+
+          <div id="main-chart-container">
+            <progressbar max="100" value="cohortVal.selected/(cohortVal.total/100)"
+                         ng-class="{'progress-striped': cohortUpdating}" class="progress active" animate="true">
+              <div class="data-count">{{cohortVal.selected}}/{{cohortVal.total}}</div>
+            </progressbar>
+
+            <div gridster="gridsterOpts" id="ts-gridster-box">
+              <ul>
+                <li gridster-item="label" ng-repeat="label in cohortChartContainerLabels">
+                  <ts-cohort-chart class="chart-container"
+                                   ts-gridster-item="gridsterItem"
+                                   ts-gridster="gridster"
+                                   ts-label="label">
+                  </ts-cohort-chart>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </tab>
+
+        <!-- Cohort subjects tab -------------------------------------------------------------------------------------->
+        <tab active="tabs[1].active" ng-click="activateTab(tabs[1].title, 'cohortGrid');">
+          <tab-heading>
+            <span>{{tabs[1].title}}</span>
+          </tab-heading>
+          <cohort-grid cohort="cohortVal.subjects" headers="cohortLabels"></cohort-grid>
+        </tab>
+
+        <!-- Analysis tab -------------------------------------------------------------------------------------->
+        <tab active="tabs[3].active" ng-click="activateTab(tabs[3].title, 'analysis');">
+          <tab-heading>
+            <span>{{tabs[3].title}}</span>
+          </tab-heading>
+
+          <analysis></analysis>
+        </tab>
+
+        <!-- Summary Statistics tab ----------------------------------------------------------------------------------->
+        <!--<tab active="tabs[2].active" ng-click="activateTab(tabs[2].title, 'summaryStats');">-->
+          <!--<tab-heading>{{tabs[2].title}}</tab-heading>-->
+          <!--<h3>{{summaryStatistics.selectedStudy.title}}</h3>-->
+
+          <!--<div class="summary-div">-->
+            <!--<span ng-repeat="concept in summaryStatistics.magicConcepts" id="summary-chart-{{concept}}">-->
+              <!--<h6>{{summaryStatistics.titles[$index]}}</h6>-->
+            <!--</span>-->
+          <!--</div>-->
+        <!--</tab>-->
+
+      </tabset>
     </div>
-</script>
 
-<!--------------------------------------------------------------------------------------------------------------------->
-<!-- START Popover template -->
-
-<script type="text/ng-template" id="NodePopoverTemplate">
-  <div ng-click="$event.stopPropagation()">
-    <table >
-      <tr ng-repeat="(key, value) in metadata" class="popover-table-row">
-        <td ><b>{{key}}:&nbsp&nbsp</b></td>
-        <td></td>
-        <td>{{value}}</td>
-      </tr>
-    </table>
-  </div>
-</script>
-<!-- END Popover template -->
-<!--------------------------------------------------------------------------------------------------------------------->
-
-<div class="container-fluid" >
-  <div class="row">
-
-    <!--Side Bar-->
-    <div ng-include="'app/main/sidebar/sidebar.html'"></div>
-
-    <!--Main-->
-    <div class="col-sm-10 col-sm-offset-3 col-md-10 col-md-offset-2 main" >
-
-      <!-- Alert -->
-      <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="close(alert.id)">{{alert.message}}</alert>
-
-      <!--Welcome-->
-      <div ng-include="'app/main/welcome.html'" ng-show="!selectedStudy.title"></div>
-
-      <!--Selected Study-->
-      <div >
-        <h2>{{selectedStudy.title}}</h2>
-
-        <tabset ng-show="selectedStudy.title">
-
-          <!--Node Summary Tab-->
-          <tab>
-            <tab-heading>
-              <span ng-show="!selectedNode.title">Summary Statistics</span>
-              <span ng-show="selectedNode.title">
-                Selected node: <strong>{{selectedNode.title}}</strong> &nbsp;
-                <a href class="info info-icon glyphicon glyphicon-info-sign " ng-click="$event.stopPropagation()"
-                   popover-template="'NodePopoverTemplate'"
-                   popover-title="{{study._embedded.ontologyTerm.name}}" ng-show="selectedNode.title" style="float:right;">
-
-                </a>
-              </span>
-            </tab-heading>
-
-            <i class="glyphicon glyphicon-spin" ng-class="{'glyphicon-refresh': dataLoading}"></i>
-            <ts-chart ng-repeat="observation in observations"></ts-chart>
-
-          </tab>
-
-          <tab >
-            <tab-heading>
-              <span>Cohort</span>
-            </tab-heading>
-
-            <div class="well well-lg cwell" data-drop="true" ng-model='droppedNode'
-                 jqyoui-droppable="{multiple:true, onDrop:'onNodeDropEvent(droppedNode)'}">
-              <span ng-if="activeNodeButtons.length == 0">Drag and drop some nodes here to add them.</span>
-              <button type="button" class="btn btn-primary" ng-repeat="node in activeNodeButtons" ng-click="removeNode(node)">{{node.title}}</button>
-              <button ng-if="activeNodeButtons.length >= 1" class="btn btn-danger" ng-click="resetActiveNodes()">Reset</button>
-            </div>
-            <div>
-
-              <progressbar max="100"
-                           value="cohortSelected/(cohortTotal/100)"
-                           ng-class="{'progress-striped': cohortUpdating}"
-                           class="progress active"
-                           animate="true">
-                <div class="data-count">{{cohortSelected}}/{{cohortTotal}}</div>
-              </progressbar>
-
-              <ts-cohort-chart ng-repeat="name in cohortChartContainerNames" repeat-done></ts-cohort-chart>
-
-            </div>
-
-          </tab>
-
-          <tab heading="Subjects">
-            <!-- Selected Study Panel -->
-            <img ng-show="dataLoading" class="loading-img"/>
-            <style>
-              .st-sort-ascent:before{
-                content: '\25B2';
-              }
-              .st-sort-descent:before{
-                content: '\25BC';
-              }
-            </style>
-
-            <table st-table="displayedCollection" st-safe-src="selectedStudy.subjects" class="table table-striped">
-              <thead>
-              <tr>
-                <th st-sort="iD" st-sort-default="true">ID</th>
-                <th st-sort="sex">Sex</th>
-                <th st-sort="age">Age</th>
-                <th st-sort="race">Race</th>
-                <th st-sort="inTrialId">Trial ID</th>
-              </tr>
-              <tr>
-                <th colspan="1"><input st-search="" class="form-control" placeholder="ID search ..." type="text"/></th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th colspan="1"><input st-search="" class="form-control" placeholder="Trial ID search ..." type="text"/></th>
-              </tr>
-              </thead>
-              <tbody>
-              <tr ng-repeat="row in displayedCollection">
-                <td>{{row.id}}</td>
-                <td>{{row.sex}}</td>
-                <td>{{row.age}}</td>
-                <td>{{row.race}}</td>
-                <td>{{row.inTrialId}}</td>
-              </tr>
-              </tbody>
-              <tfoot>
-              <tr>
-                <td colspan="5" class="text-center">
-                  <div st-pagination="" st-items-by-page="8" ></div>
-                </td>
-              </tr>
-              </tfoot>
-            </table>
-
-          </tab>
-        </tabset>
-      </div>
-  </div> <!--end main-->
-  </div> <!--end row-->
-
-</div>

@@ -1,6 +1,9 @@
 # transmart-base-ui
 Boilerplate code for tranSMART UI
 
+## Demo
+http://transmart-gb.thehyve.net
+
 ## Pre-requisites
 Make sure you have npm installed
 https://docs.npmjs.com/getting-started/installing-node
@@ -20,11 +23,6 @@ $ bower install
 ```
 $ gulp serve
 ```
-- Launch proxy
-```
-$ node proxy.js
-```
-The application can be accessed at http://localhost:8001
 
 ### Use More Gulp tasks
 
