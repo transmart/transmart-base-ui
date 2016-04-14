@@ -31,6 +31,7 @@ angular.module('transmartBaseUi')
         if (_in >= 0) {
           service.endpoints.splice(_in, 1);
         }
+
         // Remove nested restangular object
         var _end = _.map(service.endpoints, function(e){
           var _n = _.clone(e);
@@ -62,12 +63,21 @@ angular.module('transmartBaseUi')
         url = _cleanUrl(url);
 
         var data = {
-          grant_type: 'authorization_code',
-          client_id: 'api-client',
-          client_secret: 'api-client',
+          grant_type: 'implicit',
+          client_id: 'glowingbear-js',
+          client_secret: '',
           code: requestToken,
           redirect_uri: url + '/oauth/verify'
         };
+
+        //var data = {
+        //  grant_type: 'authorization_code',
+        //  client_id: 'api-client',
+        //  client_secret: 'api-client',
+        //  code: requestToken,
+        //  redirect_uri: url + '/oauth/verify'
+        //};
+
         /*jshint undef: false */
         //data must be URL encoded to be passed to the POST body
         data = $.param(data);
@@ -115,15 +125,59 @@ angular.module('transmartBaseUi')
         return deferred.promise;
       };
 
+      /**
+       * Save selected endpoint to cookie
+       * @param endpoint
+         */
+      service.saveSelectedEndpoint = function (endpoint) {
+        $cookies.putObject('transmart-base-ui-v2.selectedEndpoint', endpoint);
+      };
+
+      /**
+       * Save authorized endpoint to cookie
+       * @param endpoint
+         */
+      service.saveAuthorizedEndpoint = function (endpoint) {
+        var time = new Date ();
+
+        endpoint.status = 'active';
+        endpoint.expiresAt = time.setSeconds(time.getSeconds() + endpoint.expires_in);
+
+        var storedEndpoints = $cookies.getObject('transmart-base-ui-v2.endpoints') || [];
+        storedEndpoints.push(endpoint);
+        $cookies.putObject('transmart-base-ui-v2.endpoints', storedEndpoints);
+
+        // Create new restangular instance
+        endpoint.restangular = _newRestangularConfig(endpoint);
+        endpoint.restangular.token = endpoint.access_token;
+
+        // Add endpoint to the list
+        service.endpoints.push(endpoint);
+
+        console.log(endpoint);
+
+        service.triggerNewEndpointEvent();
+      };
+
+
+      /**
+       * Get selected endpoint
+       * @returns {*}
+         */
+      service.getSelectedEndpoint = function () {
+        var storedEndpoints = $cookies.getObject('transmart-base-ui-v2.selectedEndpoint');
+        if (!storedEndpoints) {
+          throw new Error ('Cannot find selected endpoint');
+        }
+        return storedEndpoints;
+      };
+
       service.navigateToAuthorizationPage = function (url) {
         // Cut off any '/'
         if (url.substring(url.length - 1, url.length) === '/') {
           url = url.substring(0, url.length - 1);
         }
 
-        //var authorizationUrl = url +
-        //  '/oauth/authorize?response_type=code&client_id=api-client&client_secret=api-client&redirect_uri=' +
-        //  url + '/oauth/verify';
         var authorizationUrl = url +
           '/oauth/authorize?response_type=token&client_id=glowingbear-js&redirect_uri=http%3A%2F%2Flocalhost%3A8001%2Fconnections';
 
@@ -131,8 +185,8 @@ angular.module('transmartBaseUi')
       };
 
       service.retrieveStoredEndpoints = function () {
-          var storedEnpoints = $cookies.getObject('transmart-base-ui-v2.endpoints') || [];
-          storedEnpoints.forEach(function (endpoint) {
+          var storedEndpoints = $cookies.getObject('transmart-base-ui-v2.endpoints') || [];
+          storedEndpoints.forEach(function (endpoint) {
             endpoint.restangular = _newRestangularConfig(endpoint);
             service.endpoints.push(endpoint);
           });
@@ -148,7 +202,7 @@ angular.module('transmartBaseUi')
         return Restangular.withConfig(function (RestangularConfigurer) {
           RestangularConfigurer.setBaseUrl(end.url);
           RestangularConfigurer.setDefaultHeaders({
-            'Authorization': 'Bearer ' + end.accessToken,
+            'Authorization': 'Bearer ' + end.access_token,
             'Accept': 'application/hal+json'
           });
         });
