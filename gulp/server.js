@@ -38,7 +38,8 @@ var proxyMiddleware = require('http-proxy-middleware');
     browserSync.instance = browserSync.init({
       startPath: '/',
       server: server,
-      browser: browser
+      browser: browser,
+      port: 8001
     });
   }
 

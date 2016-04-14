@@ -2,11 +2,11 @@
   "name": "transmartBaseUi",
   "version": "0.0.0",
   "dependencies": {
+    "jquery": "~2.2",
     "angular-animate": "~1.5",
     "angular-cookies": "~1.5",
     "angular-touch": "~1.5",
     "angular-sanitize": "~1.5",
-    "jquery": "~2.2",
     "restangular": "~1.5.1",
     "angular-ui-router": "~0.2.13",
     "bootstrap": "~3.3.1",
@@ -36,7 +36,7 @@
 
   },
   "resolutions": {
-    "jquery": "~1.11.1",
+    "jquery": "~2.2",
     "angular": "~1.5.0",
     "angular-bootstrap": "~0.13.0"
   }

@@ -2,7 +2,7 @@
   "generator-gulp-angular": {
     "version": "1.0.2",
     "props": {
-      "angularVersion": "~1.4.3",
+      "angularVersion": "~1.5",
       "angularModules": [
         {
           "key": "animate",
@@ -30,7 +30,7 @@
         }
       ],
       "jQuery": {
-        "key": "jquery1"
+        "key": "jquery2"
       },
       "resource": {
         "key": "restangular",

@@ -4,14 +4,15 @@ angular.module('transmartBaseUi')
   .controller('ConnectionsCtrl', ['$scope', '$location', 'EndpointService', 'StudyListService', '$rootScope',
     function ($scope, $location, EndpointService, StudyListService, $rootScope) {
 
+      var fragment = $location.hash();
+
       $scope.formData = {};
 
       $scope.endpoints = EndpointService.getEndpoints();
 
       $scope.connections = [
-        {label: 'transmart-gb', url: 'http://transmart-gb.thehyve.net/transmart', isOAuth:  true}
-        //{label: 'localhost', url: 'http://localhost:8080/transmart-rest-api', isOAuth:  false},
-        //{label: 'local iMAC', url: 'http://10.8.10.198:8080/transmart-rest-api', isOAuth: false} // local dev
+        {label: 'transmart-gb', url: 'http://transmart-gb.thehyve.net/transmart', isOAuth:  true},
+        {label: 'localhost', url: 'http://localhost:8080/transmart', isOAuth:  true}
       ];
 
       $scope.selectedConnection = '';

@@ -121,11 +121,13 @@ angular.module('transmartBaseUi')
           url = url.substring(0, url.length - 1);
         }
 
+        //var authorizationUrl = url +
+        //  '/oauth/authorize?response_type=code&client_id=api-client&client_secret=api-client&redirect_uri=' +
+        //  url + '/oauth/verify';
         var authorizationUrl = url +
-          '/oauth/authorize?response_type=code&client_id=api-client&client_secret=api-client&redirect_uri=' +
-          url + '/oauth/verify';
+          '/oauth/authorize?response_type=token&client_id=glowingbear-js&redirect_uri=http%3A%2F%2Flocalhost%3A8001%2Fconnections';
 
-        $window.open(authorizationUrl, '_blank');
+        $window.open(authorizationUrl, '_self');
       };
 
       service.retrieveStoredEndpoints = function () {

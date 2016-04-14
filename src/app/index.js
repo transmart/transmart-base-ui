@@ -16,8 +16,13 @@ angular.module('transmartBaseUi', [
   'gridster',
   'ui.layout'
 ])
-  .config( ['$stateProvider', 'RestangularProvider', '$tooltipProvider', 'cfpLoadingBarProvider',
-    function ($stateProvider, RestangularProvider, $tooltipProvider, cfpLoadingBarProvider) {
+  .config( ['$stateProvider', 'RestangularProvider', '$tooltipProvider', 'cfpLoadingBarProvider', '$locationProvider',
+    function ($stateProvider, RestangularProvider, $tooltipProvider, cfpLoadingBarProvider, $locationProvider) {
+
+      $locationProvider.html5Mode({
+        enabled: true,
+        requireBase: false
+      });
 
       $stateProvider
         .state('home', {
