@@ -1,35 +1,20 @@
 'use strict';
 
 angular.module('transmartBaseUi')
-  .controller('ConnectionsCtrl', ['$scope', '$location', 'EndpointService', 'StudyListService', '$rootScope',
-    function ($scope, $location, EndpointService, StudyListService, $rootScope) {
+  .controller('ConnectionsCtrl', ['$scope', '$location', 'EndpointService', 'StudyListService', '$rootScope', 'AlertService',
+    function ($scope, $location, EndpointService, StudyListService, $rootScope, AlertService) {
 
-      var accessToken = $location.hash(), newConnection, selectedConnection;
+      // get access token info in uri
+      var oauthGrantFragment = $location.hash();
 
-      var _resetEndpointForm = function () {
-        $scope.formData.title = '';
-        $scope.formData.url = '';
-        $scope.formData.requestToken = '';
-      };
+      // alerts
+      $scope.close = AlertService.remove;
+      $scope.alerts = AlertService.get();
 
-      var _updateStudyContainer = function () {
-
-        StudyListService.emptyAll();
-
-        _.each($scope.endpoints, function (endpoint) {
-          StudyListService.loadStudyList(endpoint).then(function (studies) {
-            $rootScope.publicStudies = StudyListService.getPublicStudies();
-            $rootScope.privateStudies =  StudyListService.getPrivateStudies();
-          });
-        });
-
-        $scope.endpoints = EndpointService.getEndpoints();
-
-        _resetEndpointForm();
-      };
-
+      // form data obj
       $scope.formData = {};
 
+      // get list of stored endpoints (if any)
       $scope.endpoints = EndpointService.getEndpoints();
 
       // Predefined endpoints
@@ -41,16 +26,29 @@ angular.module('transmartBaseUi')
 
       $scope.selectedConnection = {};
 
-
       // when URI contains oauth2 response need to be handled
-      if (accessToken.length > 1) {
-            newConnection = JSON.parse('{"' + decodeURI(accessToken.replace(/&/g, "\",\"").replace(/=/g,"\":\"")) + '"}');
-            selectedConnection = EndpointService.getSelectedEndpoint();
-            angular.merge(newConnection, selectedConnection);
-            EndpointService.saveAuthorizedEndpoint(newConnection);
-            _updateStudyContainer();
+      if (oauthGrantFragment.length > 1) {
+
+            $scope.selectedConnection = EndpointService.updateEndpointCredentials(
+              EndpointService.getSelectedEndpoint(),
+              oauthGrantFragment
+            );
+
+            EndpointService.saveAuthorizedEndpoint($scope.selectedConnection);
+
             $scope.endpointTabOpen = false;
-            $location.url($location.path()); // uri fragments
+            $location.url($location.path());
+
+            StudyListService.emptyAll();
+
+            _.each($scope.endpoints, function (endpoint) {
+              StudyListService.loadStudyList(endpoint).then(function () {
+                $rootScope.publicStudies = StudyListService.getPublicStudies();
+                $rootScope.privateStudies =  StudyListService.getPrivateStudies();
+              });
+            });
+
+            $scope.endpoints = EndpointService.getEndpoints();
       }
 
       /**
@@ -67,29 +65,17 @@ angular.module('transmartBaseUi')
        * Navigate to authorization page
        */
       $scope.navigateToAuthorizationPage = function () {
+        // check selected connection
+
+        var isSelected = _.filter(EndpointService.getEndpoints(), {url:$scope.selectedConnection.url});
+
+        if (isSelected.length > 0) {
+          AlertService.add('warning', 'You are already connected to ' + $scope.selectedConnection.url);
+          return false;
+        }
+
         EndpointService.saveSelectedEndpoint($scope.selectedConnection);
         EndpointService.navigateToAuthorizationPage($scope.formData.url);
-      };
-
-      /**
-       * Add restful endpoint
-       */
-      $scope.addResource = function () {
-
-        if ($scope.formData.requestToken) {
-          EndpointService.addOAuthEndpoint($scope.formData.title, $scope.formData.url, $scope.formData.requestToken)
-            .then(function (d) {
-              _updateStudyContainer();
-            }, function(err) {
-              // TODO Error handling
-              console.error('Error', err);
-              _updateStudyContainer();
-            });
-        } else {
-          EndpointService.addEndpoint($scope.formData.title, $scope.formData.url);
-          _updateStudyContainer();
-        }
-        $scope.endpointTabOpen = false;
       };
 
       /**
@@ -103,17 +89,22 @@ angular.module('transmartBaseUi')
 
       /**
        * Remove an endpoint
-       * @param e
+       * @param endpoint
        */
-      $scope.removeEndpoint = function (e) {
-        EndpointService.remove(e);
+      $scope.removeEndpoint = function (endpoint) {
+        EndpointService.remove(endpoint);
 
         // delete study that has associated endpoint
-        StudyListService.removeStudiesByEndpoint(e);
+        StudyListService.removeStudiesByEndpoint(endpoint);
         $rootScope.publicStudies = StudyListService.getPublicStudies();
         $rootScope.privateStudies =  StudyListService.getPrivateStudies();
       };
 
+      /**
+       * Get status icon
+       * @param endpoint
+       * @returns {string}
+         */
       $scope.getStatusIcon = function (endpoint) {
         var glyphicon = 'glyphicon glyphicon-ban-circle';
         if (endpoint.status === 'active') {

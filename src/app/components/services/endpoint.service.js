@@ -70,14 +70,6 @@ angular.module('transmartBaseUi')
           redirect_uri: url + '/oauth/verify'
         };
 
-        //var data = {
-        //  grant_type: 'authorization_code',
-        //  client_id: 'api-client',
-        //  client_secret: 'api-client',
-        //  code: requestToken,
-        //  redirect_uri: url + '/oauth/verify'
-        //};
-
         /*jshint undef: false */
         //data must be URL encoded to be passed to the POST body
         data = $.param(data);
@@ -157,6 +149,22 @@ angular.module('transmartBaseUi')
         console.log(endpoint);
 
         service.triggerNewEndpointEvent();
+      };
+
+      /**
+       *
+       * @param endpoint
+       * @param strFragment
+       * @returns {*}
+         */
+      service.updateEndpointCredentials = function (endpoint, strFragment) {
+        var fragmentObj = JSON.parse('{"' +
+          decodeURI(
+            strFragment
+              .replace(/&/g, "\",\"") // replace '&' with ','
+              .replace(/=/g,"\":\"")) + '"}' // replace '=' with ':'
+        );
+        return angular.merge(fragmentObj, service.getSelectedEndpoint());
       };
 
 

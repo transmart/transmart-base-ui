@@ -1,9 +1,9 @@
 'use strict';
 
-describe('ConnectionsCtrlTests', function() {
+describe('ConnectionsCtrl', function() {
   beforeEach(module('transmartBaseUi'));
 
-  var $controller, scope, rootScope, EndpointService, location;
+  var $controller, scope, rootScope, EndpointService, AlertService, location;
 
   /**
    * dummy endpoints
@@ -36,59 +36,103 @@ describe('ConnectionsCtrlTests', function() {
       EndpointService = {
         getEndpoints : function() {},
         clearStoredEnpoints : function () {},
+        saveSelectedEndpoint : function () {},
         navigateToAuthorizationPage : function () {},
         remove: function (e) {}
       };
+
+      AlertService = {
+        remove : function () {
+
+        },
+        get : function () {
+
+        },
+        add : function () {
+
+        }
+      };
+
       spyOn(EndpointService, 'getEndpoints').and.returnValue(_dummyEndpoints);
       spyOn(EndpointService, 'clearStoredEnpoints');
+      spyOn(EndpointService, 'saveSelectedEndpoint');
       spyOn(EndpointService, 'navigateToAuthorizationPage');
       spyOn(EndpointService, 'remove');
+      spyOn(AlertService, 'add');
+      spyOn(AlertService, 'remove');
+      spyOn(AlertService, 'get');
 
-      $controller = _$controller_('ConnectionsCtrl', {
+    $controller = _$controller_('ConnectionsCtrl', {
           $scope: scope,
           $location: location,
-          EndpointService : EndpointService
+          EndpointService : EndpointService,
+          AlertService : AlertService
       });
   }));
 
-  it('is defined', function() {
+  it('should have initial variables to be defined', function() {
     expect($controller).toBeDefined();
     expect(scope.formData).toBeDefined();
     expect(scope.endpoints).toBeDefined();
     expect(scope.connections).toBeDefined();
+    expect(AlertService.get).toHaveBeenCalled();
   });
 
   it('should call EndpointService.getEndpoints fn', function() {
     expect(scope.endpoints.length).toBe(3);
   });
 
-  it('Should invoke EndpointService.clearStoredEnpoints', function () {
-    scope.clearSavedEndpoints();
-    expect(EndpointService.clearStoredEnpoints).toHaveBeenCalled();
+  describe ('$scope.clearSavedEndpoints', function () {
+    it('Should invoke EndpointService.clearStoredEnpoints', function () {
+      scope.clearSavedEndpoints();
+      expect(EndpointService.clearStoredEnpoints).toHaveBeenCalled();
+    });
   });
 
-  it('should invoke EndpointService.navigateToAuthorizationPage', function () {
-    scope.navigateToAuthorizationPage();
-    expect(EndpointService.navigateToAuthorizationPage).toHaveBeenCalled();
+  describe ('$scope.navigateToAuthorizationPage', function () {
+
+    it('should invoke EndpointService.navigateToAuthorizationPage', function () {
+      scope.navigateToAuthorizationPage();
+      expect(EndpointService.navigateToAuthorizationPage).toHaveBeenCalled();
+    });
+
+    it('should not navigate and store auth endpoint uri when already connected', function () {
+      // override existing spy
+      EndpointService.getEndpoints = jasmine.createSpy().and.returnValue([{
+        label : 'foo',
+        url : 'http://foo'
+      }]);
+
+      scope.selectedConnection = { url:'http://foo' };
+      scope.navigateToAuthorizationPage();
+      //expect(AlertService.add).toHaveBeenCalled();
+      expect(EndpointService.saveSelectedEndpoint).not.toHaveBeenCalled();
+      expect(EndpointService.navigateToAuthorizationPage).not.toHaveBeenCalled();
+    });
+
   });
 
-  it ('should populate selected endpoints to the form', function () {
-    scope.selectedConnection = {
-      label : 'foo',
-      url : 'http://foo'
-    };
+  describe ('$scope.populateDefaultApi', function () {
+    it ('should populate selected endpoints to the form', function () {
+      scope.selectedConnection = {
+        label : 'foo',
+        url : 'http://foo'
+      };
 
-    scope.populateDefaultApi();
-    expect(scope.formData.title).toBe('foo');
-    expect(scope.formData.url).toBe('http://foo');
-    expect(scope.formData.requestToken).toBe('');
+      scope.populateDefaultApi();
+      expect(scope.formData.title).toBe('foo');
+      expect(scope.formData.url).toBe('http://foo');
+      expect(scope.formData.requestToken).toBe('');
 
+    });
   });
 
-  it('should invoke EndpointService.remove', function () {
-    var _e = {};
-    scope.removeEndpoint(_e);
-    expect(EndpointService.remove).toHaveBeenCalled();
+  describe ('$scope.removeEndpoint', function () {
+    it('should invoke EndpointService.remove', function () {
+      var _e = {};
+      scope.removeEndpoint(_e);
+      expect(EndpointService.remove).toHaveBeenCalled();
+    });
   });
 
 });

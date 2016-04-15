@@ -1,13 +1,15 @@
 <div class="main-container">
+
+  <!-- Alert ------------------------------------------------------------------------------------------------------>
+  <alert class="alert-div" ng-repeat="alert in alerts" type="{{alert.type}}" close="close(alert.id)">
+    {{alert.message}}
+  </alert>
+
   <div class="col-md-4">
 
     <h3>Connect to endpoint</h3>
     <hr/>
 
-    <!-- Alert ------------------------------------------------------------------------------------------------------>
-    <alert class="alert-div" ng-repeat="alert in alerts" type="{{alert.type}}" close="close(alert.id)">
-      {{alert.message}}
-    </alert>
 
     <form name="formData.endpointForm" role="form">
       <select class="form-control" ng-change="populateDefaultApi();"
@@ -69,7 +71,7 @@
         <td>{{endpoint.url}}</td>
         <td>{{endpoint.expiresAt | date:'dd-M H:mm'}}</td>
         <td><i class="glyphicon glyphicon-remove-circle text-danger"
-               ng-click="removeEndpoint(endpoint)"></td>
+               ng-click="removeEndpoint(endpoint)"></i></td>
       </tr>
     </table>
       <button class="btn btn-default" ng-click="clearSavedEndpoints()">
