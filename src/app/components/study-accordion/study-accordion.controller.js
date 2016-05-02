@@ -3,7 +3,7 @@
 
 angular.module('transmartBaseUi')
   .controller('StudyCtrl',
-  ['$scope', '$modal','$location','$state', function ($scope, $modal, $location, $state) {
+  ['$scope', '$uibModal','$location','$state', function ($scope, $uibModal, $location, $state) {
 
     //------------------------------------------------------------------------------------------------------------------
     // Scope
@@ -184,7 +184,7 @@ angular.module('transmartBaseUi')
           _metadataObj.body = node._embedded.ontologyTerm.metadata;
         }
 
-        $modal.open({
+        $uibModal.open({
           animation: false, // IMPORTANT: Cannot use animation in angular 1.4.x
           controller: 'MetadataCtrl',
           templateUrl: 'app/components/metadata/metadata.html',

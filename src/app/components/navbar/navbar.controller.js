@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('transmartBaseUi')
-  .controller('NavbarCtrl', ['$scope', 'CohortSelectionService', 'EndpointService', 'ChartService', '$modal',
-    function ($scope, CohortSelectionService, EndpointService, ChartService, $modal) {
+  .controller('NavbarCtrl', ['$scope', 'CohortSelectionService', 'EndpointService', 'ChartService', '$uibModal',
+    function ($scope, CohortSelectionService, EndpointService, ChartService, $uibModal) {
 
     $scope.date = new Date();
 
@@ -39,7 +39,7 @@ angular.module('transmartBaseUi')
     ];
 
     $scope.openImportModal = function () {
-      $modal.open({
+      $uibModal.open({
         templateUrl: 'app/components/import-workspace/import-workspace.tpl.html',
         controller: 'ImportWorkspaceCtrl',
         animation:false
