@@ -3,8 +3,8 @@
 
 angular.module('transmartBaseUi')
   .factory('EndpointService',
-  ['$rootScope', '$http', '$q', 'Restangular', '$cookies', '$window',
-    function ($rootScope, $http, $q, Restangular, $cookies, $window) {
+  ['$rootScope', '$http', '$q', 'Restangular', '$cookies', '$window', '$location',
+    function ($rootScope, $http, $q, Restangular, $cookies, $window, $location) {
 
       var service = {
         endpoints : []
@@ -186,8 +186,12 @@ angular.module('transmartBaseUi')
           url = url.substring(0, url.length - 1);
         }
 
+        var currentHost = $location.host();
+        var currentPort = $location.port();
+
         var authorizationUrl = url +
-          '/oauth/authorize?response_type=token&client_id=glowingbear-js&redirect_uri=http%3A%2F%2Flocalhost%3A8001%2Fconnections';
+          '/oauth/authorize?response_type=token&client_id=glowingbear-js&redirect_uri=http%3A%2F%2F' +
+          currentHost + '%3A' + currentPort + '%2Fconnections';
 
         $window.open(authorizationUrl, '_self');
       };
