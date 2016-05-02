@@ -6,13 +6,13 @@
       </alert>
 
       <h3>Workspace</h3>
-      <tabset>
+      <uib-tabset>
 
         <!-- Cohort selection tab ------------------------------------------------------------------------------------->
-        <tab active="tabs[0].active" ng-click="activateTab(tabs[0].title, 'cohortSelection');">
-          <tab-heading>
+        <uib-tab active="tabs[0].active" ng-click="activateTab(tabs[0].title, 'cohortSelection');">
+          <uib-tab-heading>
             <span>{{tabs[0].title}}</span>
-          </tab-heading>
+          </uib-tab-heading>
 
           <div class="well well-lg" data-drop="true" ng-model='droppedNode'
                jqyoui-droppable="{multiple:true, onDrop:'onNodeDropEvent(droppedNode)'}">
@@ -37,10 +37,10 @@
           </div>
 
           <div id="main-chart-container">
-            <progressbar max="100" value="cohortVal.selected/(cohortVal.total/100)"
+            <uib-progressbar max="100" value="cohortVal.selected/(cohortVal.total/100)"
                          ng-class="{'progress-striped': cohortUpdating}" class="progress active" animate="true">
               <div class="data-count">{{cohortVal.selected}}/{{cohortVal.total}}</div>
-            </progressbar>
+            </uib-progressbar>
 
             <div gridster="gridsterOpts" id="ts-gridster-box">
               <ul>
@@ -54,25 +54,25 @@
               </ul>
             </div>
           </div>
-        </tab>
+        </uib-tab>
 
         <!-- Cohort subjects tab -------------------------------------------------------------------------------------->
-        <tab active="tabs[1].active" ng-click="activateTab(tabs[1].title, 'cohortGrid');">
-          <tab-heading>
+        <uib-tab active="tabs[1].active" ng-click="activateTab(tabs[1].title, 'cohortGrid');">
+          <uib-tab-heading>
             <span>{{tabs[1].title}}</span>
-          </tab-heading>
+          </uib-tab-heading>
           <cohort-grid cohort="cohortVal.subjects" headers="cohortLabels"></cohort-grid>
-        </tab>
+        </uib-tab>
 
         <!-- Analysis tab -------------------------------------------------------------------------------------->
-        <tab active="tabs[3].active" ng-click="activateTab(tabs[3].title, 'analysis');">
-          <tab-heading>
+        <uib-tab active="tabs[3].active" ng-click="activateTab(tabs[3].title, 'analysis');">
+          <uib-tab-heading>
             <span>{{tabs[3].title}}</span>
-          </tab-heading>
+          </uib-tab-heading>
 
           <analysis></analysis>
-        </tab>
+        </uib-tab>
 
-      </tabset>
+      </uib-tabset>
     </div>
 

@@ -13,11 +13,11 @@ describe('Metadata Controller Unit Testing', function() {
 
     };
 
-    $modalInstanceMock =  jasmine.createSpyObj('$modalInstance', ['dismiss']);
+    $modalInstanceMock =  jasmine.createSpyObj('$uibModalInstance', ['dismiss']);
 
     module(function ($provide) {
       $provide.value('metadata', metadataMock);
-      $provide.value('$modalInstance', $modalInstanceMock);
+      $provide.value('$uibModalInstance', $modalInstanceMock);
     });
 
   });
@@ -37,7 +37,7 @@ describe('Metadata Controller Unit Testing', function() {
       expect($scope.metadata).toBeDefined();
     });
 
-    it('should invoke $modalInstance.dismiss', function () {
+    it('should invoke $uibModalInstance.dismiss', function () {
       var $scope = {};
       $controller('MetadataCtrl', { $scope: $scope });
 

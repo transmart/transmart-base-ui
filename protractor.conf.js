@@ -14,6 +14,7 @@ exports.config = {
   },
 
   baseUrl: 'http://localhost:3000',
+
   // Spec patterns are relative to the current working directory when
   // protractor is called.
   specs: [paths.e2e + '/**/*.js'],

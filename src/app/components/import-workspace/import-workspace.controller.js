@@ -1,9 +1,9 @@
 'use strict';
 
 angular.module('transmartBaseUi')
-  .controller('ImportWorkspaceCtrl', ['$scope', '$modalInstance', 'ChartService', 'EndpointService',
+  .controller('ImportWorkspaceCtrl', ['$scope', '$uibModalInstance', 'ChartService', 'EndpointService',
     'CohortSelectionService', 'StudyListService', '$state',
-    function ($scope, $modalInstance, ChartService, EndpointService, CohortSelectionService, StudyListService, $state) {
+    function ($scope, $uibModalInstance, ChartService, EndpointService, CohortSelectionService, StudyListService, $state) {
 
     $scope.readContent = function ($fileContent){
       $scope.content = JSON.parse($fileContent);
@@ -11,7 +11,7 @@ angular.module('transmartBaseUi')
 
     $scope.ok = function () {
 
-      $modalInstance.close();
+      $uibModalInstance.close();
       $state.go('workspace'); // go to workspace
 
       // TODO add nodes via chart service
@@ -52,7 +52,7 @@ angular.module('transmartBaseUi')
     };
 
     $scope.cancel = function () {
-      $modalInstance.dismiss('cancel');
+      $uibModalInstance.dismiss('cancel');
     };
 
 }]);

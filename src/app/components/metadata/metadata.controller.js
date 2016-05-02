@@ -1,13 +1,13 @@
 'use strict';
 
 angular.module('transmartBaseUi')
-  .controller('MetadataCtrl', ['$scope', 'metadata', '$modalInstance',
-    function ($scope, metadata, $modalInstance) {
+  .controller('MetadataCtrl', ['$scope', 'metadata', '$uibModalInstance',
+    function ($scope, metadata, $uibModalInstance) {
 
         $scope.metadata = metadata;
 
         $scope.close = function () {
-          $modalInstance.dismiss('close');
+          $uibModalInstance.dismiss('close');
         };
 
 }]);
