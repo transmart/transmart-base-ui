@@ -180,18 +180,36 @@ angular.module('transmartBaseUi')
         return storedEndpoints;
       };
 
-      service.navigateToAuthorizationPage = function (url) {
+      /**
+       * Return redirect URI
+       * @param port {string}
+       * @param host {string}
+       * @param protocol {string}
+         * @returns {string}
+         */
+      service.getRedirectURI = function (protocol, host, port) {
+        if (['80', '443'].indexOf(port) >= 0) {
+          port = '';
+        } else {
+          port = '%3A' + port;
+        }
+        return protocol + '%3A%2F%2F' + host + port + '%2Fconnections';
+      };
+
+      /**
+       * Get oAuth url with params
+       * @param url
+         */
+      service.navigateToAuthorizationPage = function (url, resourceUri) {
+
         // Cut off any '/'
         if (url.substring(url.length - 1, url.length) === '/') {
           url = url.substring(0, url.length - 1);
         }
 
-        var currentHost = $location.host();
-        var currentPort = $location.port();
-
         var authorizationUrl = url +
-          '/oauth/authorize?response_type=token&client_id=glowingbear-js&redirect_uri=http%3A%2F%2F' +
-          currentHost + '%3A' + currentPort + '%2Fconnections';
+          '/oauth/authorize?response_type=token&client_id=glowingbear-js&redirect_uri=' +
+          this.getRedirectURI( resourceUri.protocol, resourceUri.host, resourceUri.port);
 
         $window.open(authorizationUrl, '_self');
       };

@@ -19,8 +19,8 @@ angular.module('transmartBaseUi')
 
       // Predefined endpoints
       $scope.connections = [
-        {title: 'transmart-gb', url: 'http://transmart-gb.thehyve.net/transmart', isOAuth:  true} //,
-        //{title: 'localhost', url: 'http://localhost:8080/transmart', isOAuth:  true}
+        {title: 'transmart-gb', url: 'http://transmart-gb.thehyve.net/transmart', isOAuth:  true} ,
+        {title: 'localhost', url: 'http://localhost:8080/transmart', isOAuth:  true}
       ];
 
       $scope.selectedConnection = {};
@@ -65,8 +65,10 @@ angular.module('transmartBaseUi')
        */
       $scope.navigateToAuthorizationPage = function () {
         // check selected connection
-
-        var isSelected = _.filter(EndpointService.getEndpoints(), {url:$scope.selectedConnection.url});
+        var currentHost = String($location.host()),
+          currentPort = String($location.port()),
+          currentProtocol = $location.protocol(),
+          isSelected = _.filter(EndpointService.getEndpoints(), {url:$scope.selectedConnection.url});
 
         if (isSelected.length > 0) {
           AlertService.add('warning', 'You are already connected to ' + $scope.selectedConnection.url);
@@ -74,7 +76,11 @@ angular.module('transmartBaseUi')
         }
 
         EndpointService.saveSelectedEndpoint($scope.selectedConnection);
-        EndpointService.navigateToAuthorizationPage($scope.formData.url);
+        EndpointService.navigateToAuthorizationPage($scope.formData.url, {
+          protocol : currentProtocol,
+          host:currentHost,
+          port:currentPort
+        });
       };
 
       /**
