@@ -14,14 +14,14 @@
     "angular": "~1.5.0",
     "dc.js": "~2",
     "angular-ui-tree": "~2",
-    "ng-table": "~0.5.4",
+    "ng-table": "~0.8.3",
     "angular-dragdrop": "~1.0.11",
     "underscore": "~1.8.3",
     "ng-csv": "~0.3.3",
     "angular-gridster": "~0.13.5",
     "angular-smart-table": "~2.1.8",
-    "angular-loading-bar": "~0.8.0",
-    "mdi": "~1.4.57",
+    "angular-loading-bar": "~0.9.0",
+    "mdi": "~1.5.54",
     "angular-ui-layout": "~1.4"
   },
   "devDependencies": {
@@ -29,20 +29,16 @@
     "angular": "~1.5.5",
     "angular-gridster": "~0.13.5",
     "angular-smart-table": "~2.1.8",
-    "angular-loading-bar": "~0.8.0",
-    "mdi": "~1.4.57",
+    "angular-loading-bar": "~0.9.0",
+    "mdi": "~1.5.54",
     "angular-ui-layout": "~1.4"
   },
   "overrides": {
     "bootstrap": {
       "main": [
-        "less/bootstrap.less",
-        "dist/fonts/glyphicons-halflings-regular.eot",
-        "dist/fonts/glyphicons-halflings-regular.svg",
-        "dist/fonts/glyphicons-halflings-regular.ttf",
-        "dist/fonts/glyphicons-halflings-regular.woff",
-        "dist/fonts/glyphicons-halflings-regular.woff2"
-      ]
+        "dist/js/bootstrap.js",
+        "dist/css/bootstrap.css",
+        "less/bootstrap.less"]
     }
   },
   "resolutions": {
