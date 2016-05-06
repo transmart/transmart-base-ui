@@ -89,3 +89,34 @@ The root directory generated for a app with name `gulpAngular` :
 * *browser sync* : full-featured development web server with livereload and devices sync
 * *angular-templatecache* : all HTML partials will be converted to JS to be bundled in the application
 * **TODO** lazy : don't process files which haven't changed when possible
+
+## Server Config
+
+Angular html5mode is enabled to remove hashtag in the typical AngularJS
+application. For that reason server side rewrites is needed. Following 
+is Apache Rewrites:
+
+```
+<VirtualHost *:80>
+    ServerName my-app
+
+    DocumentRoot /path/to/app
+
+    <Directory /path/to/app>
+        RewriteEngine on
+
+        # Don't rewrite files or directories
+        RewriteCond %{REQUEST_FILENAME} -f [OR]
+        RewriteCond %{REQUEST_FILENAME} -d
+        RewriteRule ^ - [L]
+
+        # Rewrite everything else to index.html to allow html5 state links
+        RewriteRule ^ index.html [L]
+    </Directory>
+</VirtualHost>
+```
+
+If you deploy it to another application server find the configuration 
+here:
+
+https://github.com/angular-ui/ui-router/wiki/Frequently-Asked-Questions#how-to-configure-your-server-to-work-with-html5mode
