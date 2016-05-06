@@ -2,11 +2,6 @@
 <script type="text/ng-template" id="tree-tooltip.html">
   <ul id="tree-tooltip">
     <li><a ng-click="displayMetadata(treeNode);"><i class="glyphicon glyphicon-info-sign"></i> &nbsp; Metadata </a></li>
-    <li ng-if="treeNode.isStudy">
-        <!--<a ng-click="displaySummaryStatistics(treeNode);" >-->
-            <!--<i class="glyphicon glyphicon-stats"></i>  &nbsp; Summary Statistic-->
-        <!--</a>-->
-    </li>
   </ul>
 </script>
 
@@ -14,7 +9,6 @@
 <!-- START Node template -->
 
 <script type="text/ng-template" id="nodes_renderer.html">
-
   <div ui-tree-handle class="tree-node tree-node-content" ng-click="populateChilds(node);"
        data-drag="node.type !== 'FAILED_CALL'" jqyoui-draggable="{placeholder: 'keep'}"
        data-jqyoui-options="{containment: 'document', appendTo: 'body', helper: 'clone'}" ng-model="node"
@@ -38,17 +32,12 @@
     <!--node title-->
     <a  uib-popover-template="'tree-tooltip.html'"
         popover-placement="right"
+        popover-trigger="outsideClick"
         ng-click="displayToolTip($event, node)"
         ng-class="{'text-grey': node.type === 'FAILED_CALL'}">
         {{node.title}}
       <span class="quantity-num">({{node.total}})</span>
     </a>
-
-    <!--&lt;!&ndash;spaces&ndash;&gt;-->
-    <!--&nbsp; &nbsp;-->
-
-    <!--total subjects-->
-    <!--<a class="quantity-num">({{node.total}})</a>-->
 
   </div>
 
@@ -84,8 +73,12 @@
            >
       </a>
       &nbsp;
-      <a uib-popover-template="'tree-tooltip.html'" popover-placement="right"
-         ng-click="displayToolTip($event, study)">{{study._embedded.ontologyTerm.name}}</a>
+      <a uib-popover-template="'tree-tooltip.html'"
+         popover-placement="right"
+         popover-trigger="outsideClick"
+         ng-click="displayToolTip($event, study)">
+          {{study._embedded.ontologyTerm.name}}
+      </a>
       <span class="glyphicon glyphicon-spin" ng-class="{'glyphicon-refresh': treeLoading}"></span>
     </span>
     </accordion-heading>
