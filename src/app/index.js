@@ -16,8 +16,8 @@ angular.module('transmartBaseUi', [
   'gridster',
   'ui.layout'
 ])
-  .config( ['$stateProvider', 'RestangularProvider', 'cfpLoadingBarProvider', '$locationProvider',
-    function ($stateProvider, RestangularProvider, cfpLoadingBarProvider, $locationProvider) {
+  .config( ['$stateProvider', 'RestangularProvider', 'cfpLoadingBarProvider', '$locationProvider', '$uibTooltipProvider',
+    function ($stateProvider, RestangularProvider, cfpLoadingBarProvider, $locationProvider, $uibTooltipProvider) {
 
       $locationProvider.html5Mode({
         enabled: true,
@@ -91,12 +91,12 @@ angular.module('transmartBaseUi', [
       });
 
       // Set default actions for popover
-      //$tooltipProvider.setTriggers({'click': 'never'});
-      //$tooltipProvider.options({
-      //  placement: 'right',
-      //  appendToBody: 'true',
-      //  trigger: 'click'
-      //});
+      $uibTooltipProvider.setTriggers({'click': 'never'});
+      $uibTooltipProvider.options({
+        placement: 'right',
+        appendToBody: 'true',
+        trigger: 'click'
+      });
 
       // Remove spinner from http request loading bar
       cfpLoadingBarProvider.includeSpinner = false;
