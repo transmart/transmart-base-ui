@@ -1,9 +1,9 @@
 <div class="main-container">
 
   <!-- Alert ------------------------------------------------------------------------------------------------------>
-  <alert class="alert-div" ng-repeat="alert in alerts" type="{{alert.type}}" close="close(alert.id)">
+  <uib-alert class="alert-div" ng-repeat="alert in alerts" type="{{alert.type}}" close="close(alert.id)">
     {{alert.message}}
-  </alert>
+  </uib-alert>
 
   <div class="col-md-4">
 
