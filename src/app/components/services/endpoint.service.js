@@ -3,8 +3,8 @@
 
 angular.module('transmartBaseUi')
   .factory('EndpointService',
-  ['$rootScope', '$http', '$q', 'Restangular', '$cookies', '$window',
-    function ($rootScope, $http, $q, Restangular, $cookies, $window) {
+  ['$rootScope', '$http', '$q', 'Restangular', '$cookies', '$window', '$location',
+    function ($rootScope, $http, $q, Restangular, $cookies, $window, $location) {
 
       var service = {
         endpoints : []
@@ -31,6 +31,7 @@ angular.module('transmartBaseUi')
         if (_in >= 0) {
           service.endpoints.splice(_in, 1);
         }
+
         // Remove nested restangular object
         var _end = _.map(service.endpoints, function(e){
           var _n = _.clone(e);
@@ -62,12 +63,13 @@ angular.module('transmartBaseUi')
         url = _cleanUrl(url);
 
         var data = {
-          grant_type: 'authorization_code',
-          client_id: 'api-client',
-          client_secret: 'api-client',
+          grant_type: 'implicit',
+          client_id: 'glowingbear-js',
+          client_secret: '',
           code: requestToken,
           redirect_uri: url + '/oauth/verify'
         };
+
         /*jshint undef: false */
         //data must be URL encoded to be passed to the POST body
         data = $.param(data);
@@ -115,22 +117,106 @@ angular.module('transmartBaseUi')
         return deferred.promise;
       };
 
-      service.navigateToAuthorizationPage = function (url) {
+      /**
+       * Save selected endpoint to cookie
+       * @param endpoint
+         */
+      service.saveSelectedEndpoint = function (endpoint) {
+        $cookies.putObject('transmart-base-ui-v2.selectedEndpoint', endpoint);
+      };
+
+      /**
+       * Save authorized endpoint to cookie
+       * @param endpoint
+         */
+      service.saveAuthorizedEndpoint = function (endpoint) {
+        var time = new Date ();
+
+        endpoint.status = 'active';
+        endpoint.expiresAt = time.setSeconds(time.getSeconds() + endpoint.expires_in);
+
+        var storedEndpoints = $cookies.getObject('transmart-base-ui-v2.endpoints') || [];
+        storedEndpoints.push(endpoint);
+        $cookies.putObject('transmart-base-ui-v2.endpoints', storedEndpoints);
+
+        // Create new restangular instance
+        endpoint.restangular = _newRestangularConfig(endpoint);
+        endpoint.restangular.token = endpoint.access_token;
+
+        // Add endpoint to the list
+        service.endpoints.push(endpoint);
+
+        console.log(endpoint);
+
+        service.triggerNewEndpointEvent();
+      };
+
+      /**
+       *
+       * @param endpoint
+       * @param strFragment
+       * @returns {*}
+         */
+      service.updateEndpointCredentials = function (endpoint, strFragment) {
+        var fragmentObj = JSON.parse('{"' +
+          decodeURI(
+            strFragment
+              .replace(/&/g, "\",\"") // replace '&' with ','
+              .replace(/=/g,"\":\"")) + '"}' // replace '=' with ':'
+        );
+        return angular.merge(fragmentObj, service.getSelectedEndpoint());
+      };
+
+
+      /**
+       * Get selected endpoint
+       * @returns {*}
+         */
+      service.getSelectedEndpoint = function () {
+        var storedEndpoints = $cookies.getObject('transmart-base-ui-v2.selectedEndpoint');
+        if (!storedEndpoints) {
+          throw new Error ('Cannot find selected endpoint');
+        }
+        return storedEndpoints;
+      };
+
+      /**
+       * Return redirect URI
+       * @param port {string}
+       * @param host {string}
+       * @param protocol {string}
+         * @returns {string}
+         */
+      service.getRedirectURI = function (protocol, host, port) {
+        if (['80', '443'].indexOf(port) >= 0) {
+          port = '';
+        } else {
+          port = '%3A' + port;
+        }
+        return protocol + '%3A%2F%2F' + host + port + '%2Fconnections';
+      };
+
+      /**
+       * Get oAuth url with params
+       * @param url
+         */
+      service.navigateToAuthorizationPage = function (url, resourceUri) {
+
         // Cut off any '/'
         if (url.substring(url.length - 1, url.length) === '/') {
           url = url.substring(0, url.length - 1);
         }
 
         var authorizationUrl = url +
-          '/oauth/authorize?response_type=code&client_id=api-client&client_secret=api-client&redirect_uri=' +
-          url + '/oauth/verify';
+          '/oauth/authorize?response_type=token&client_id=glowingbear-js&redirect_uri=' +
+          this.getRedirectURI( resourceUri.protocol, resourceUri.host, resourceUri.port);
 
-        $window.open(authorizationUrl, '_blank');
+        $window.open(authorizationUrl, '_self');
       };
 
       service.retrieveStoredEndpoints = function () {
-          var storedEnpoints = $cookies.getObject('transmart-base-ui-v2.endpoints') || [];
-          storedEnpoints.forEach(function (endpoint) {
+          var storedEndpoints = $cookies.getObject('transmart-base-ui-v2.endpoints') || [];
+          storedEndpoints.forEach(function (endpoint) {
             endpoint.restangular = _newRestangularConfig(endpoint);
             service.endpoints.push(endpoint);
           });
@@ -146,7 +232,7 @@ angular.module('transmartBaseUi')
         return Restangular.withConfig(function (RestangularConfigurer) {
           RestangularConfigurer.setBaseUrl(end.url);
           RestangularConfigurer.setDefaultHeaders({
-            'Authorization': 'Bearer ' + end.accessToken,
+            'Authorization': 'Bearer ' + end.access_token,
             'Accept': 'application/hal+json'
           });
         });

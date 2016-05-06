@@ -6,7 +6,7 @@ describe('Unit testing cohort-grid directive', function() {
   // Load the transmartBaseUi module, which contains the directive
   beforeEach(function() {module('transmartBaseUi');});
   // load all angular templates (a.k.a html files)
-  beforeEach(module('gulpAngular'));
+  beforeEach(module('transmartBaseUIHTML'));
 
   // Store references to $rootScope and $compile
   // so they are available to all tests in this describe block

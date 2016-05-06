@@ -23,7 +23,7 @@ describe('ImportWorkspaceCtrl unit test', function() {
       };
       var controller = $controller('ImportWorkspaceCtrl', {
         $scope: $scope,
-        $modalInstance: modalInstance
+        $uibModalInstance: modalInstance
       });
       spyOn(modalInstance, 'close');
       spyOn(modalInstance, 'dismiss');

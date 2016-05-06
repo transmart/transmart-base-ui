@@ -6,19 +6,21 @@
       </alert>
 
       <h3>Workspace</h3>
-      <tabset>
+      <uib-tabset>
 
         <!-- Cohort selection tab ------------------------------------------------------------------------------------->
-        <tab active="tabs[0].active" ng-click="activateTab(tabs[0].title, 'cohortSelection');">
-          <tab-heading>
+        <uib-tab active="tabs[0].active" ng-click="activateTab(tabs[0].title, 'cohortSelection');">
+          <uib-tab-heading>
             <span>{{tabs[0].title}}</span>
-          </tab-heading>
+          </uib-tab-heading>
 
-          <div class="well well-lg ts-node-well" data-drop="true" ng-model='droppedNode'
+          <div class="well well-lg" data-drop="true" ng-model='droppedNode'
                jqyoui-droppable="{multiple:true, onDrop:'onNodeDropEvent(droppedNode)'}">
-            <h5 ng-if="cohortChartContainerLabels.length == 0">
-              <small> Drag and drop some nodes here to add them.</small>
-            </h5>
+
+            <span ng-if="cohortChartContainerLabels.length == 0" class="ts-well-placeholder-text">
+              Drag and drop some nodes here to add them.
+            </span>
+
             <button type="button" class="btn btn-primary btn-sm ts-btn-node"
                     ng-repeat="label in cohortChartContainerLabels"
                     ng-click="removeLabel(label)">
@@ -35,10 +37,10 @@
           </div>
 
           <div id="main-chart-container">
-            <progressbar max="100" value="cohortVal.selected/(cohortVal.total/100)"
+            <uib-progressbar max="100" value="cohortVal.selected/(cohortVal.total/100)"
                          ng-class="{'progress-striped': cohortUpdating}" class="progress active" animate="true">
               <div class="data-count">{{cohortVal.selected}}/{{cohortVal.total}}</div>
-            </progressbar>
+            </uib-progressbar>
 
             <div gridster="gridsterOpts" id="ts-gridster-box">
               <ul>
@@ -52,37 +54,25 @@
               </ul>
             </div>
           </div>
-        </tab>
+        </uib-tab>
 
         <!-- Cohort subjects tab -------------------------------------------------------------------------------------->
-        <tab active="tabs[1].active" ng-click="activateTab(tabs[1].title, 'cohortGrid');">
-          <tab-heading>
+        <uib-tab active="tabs[1].active" ng-click="activateTab(tabs[1].title, 'cohortGrid');">
+          <uib-tab-heading>
             <span>{{tabs[1].title}}</span>
-          </tab-heading>
+          </uib-tab-heading>
           <cohort-grid cohort="cohortVal.subjects" headers="cohortLabels"></cohort-grid>
-        </tab>
+        </uib-tab>
 
         <!-- Analysis tab -------------------------------------------------------------------------------------->
-        <tab active="tabs[3].active" ng-click="activateTab(tabs[3].title, 'analysis');">
-          <tab-heading>
+        <uib-tab active="tabs[3].active" ng-click="activateTab(tabs[3].title, 'analysis');">
+          <uib-tab-heading>
             <span>{{tabs[3].title}}</span>
-          </tab-heading>
+          </uib-tab-heading>
 
           <analysis></analysis>
-        </tab>
+        </uib-tab>
 
-        <!-- Summary Statistics tab ----------------------------------------------------------------------------------->
-        <!--<tab active="tabs[2].active" ng-click="activateTab(tabs[2].title, 'summaryStats');">-->
-          <!--<tab-heading>{{tabs[2].title}}</tab-heading>-->
-          <!--<h3>{{summaryStatistics.selectedStudy.title}}</h3>-->
-
-          <!--<div class="summary-div">-->
-            <!--<span ng-repeat="concept in summaryStatistics.magicConcepts" id="summary-chart-{{concept}}">-->
-              <!--<h6>{{summaryStatistics.titles[$index]}}</h6>-->
-            <!--</span>-->
-          <!--</div>-->
-        <!--</tab>-->
-
-      </tabset>
+      </uib-tabset>
     </div>
 

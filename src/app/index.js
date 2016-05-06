@@ -16,8 +16,13 @@ angular.module('transmartBaseUi', [
   'gridster',
   'ui.layout'
 ])
-  .config( ['$stateProvider', 'RestangularProvider', '$tooltipProvider', 'cfpLoadingBarProvider',
-    function ($stateProvider, RestangularProvider, $tooltipProvider, cfpLoadingBarProvider) {
+  .config( ['$stateProvider', 'RestangularProvider', 'cfpLoadingBarProvider', '$locationProvider', '$uibTooltipProvider',
+    function ($stateProvider, RestangularProvider, cfpLoadingBarProvider, $locationProvider, $uibTooltipProvider) {
+
+      $locationProvider.html5Mode({
+        enabled: true,
+        requireBase: false
+      });
 
       $stateProvider
         .state('home', {
@@ -86,8 +91,8 @@ angular.module('transmartBaseUi', [
       });
 
       // Set default actions for popover
-      $tooltipProvider.setTriggers({'click': 'never'});
-      $tooltipProvider.options({
+      $uibTooltipProvider.setTriggers({'click': 'never'});
+      $uibTooltipProvider.options({
         placement: 'right',
         appendToBody: 'true',
         trigger: 'click'

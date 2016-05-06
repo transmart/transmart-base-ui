@@ -9,9 +9,9 @@
 
 
   <!-- START STUDIES -->
-  <accordion close-others="status.oneAtATime">
+  <uib-accordion close-others="status.oneAtATime">
 
-    <accordion-group  heading="Highlights"
+    <uib-accordion-group  heading="Highlights"
                       is-open="true"
                       ng-if="false">
       <span ng-if="publicStudies.length == 0 && privateStudies.length == 0">
@@ -20,7 +20,7 @@
       <span ng-if="publicStudies.length > 0 || privateStudies.length > 0">
         Browse studies by clicking the study headers below.
       </span>
-    </accordion-group>
+    </uib-accordion-group>
 
     <study-accordion  studies="publicStudies"
                       title="'Public studies'"
@@ -35,7 +35,7 @@
                       study-shown='searchTerm'>
     </study-accordion>
 
-  </accordion>
+  </uib-accordion>
 
 </div>
 <!--end tree-->

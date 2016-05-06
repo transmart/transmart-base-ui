@@ -27,8 +27,8 @@
 </script>
 
 
-<tabset  justified="true">
-  <tab  ng-repeat="step in analysis"
+<uib-tabset  justified="true">
+  <uib-tab  ng-repeat="step in analysis"
         heading="{{step.name[0]}}"
         active="step.active"
         ng-click="setTab($index)"
@@ -106,5 +106,5 @@
 
 
 
-  </tab>
-</tabset>
+  </uib-tab>
+</uib-tabset>

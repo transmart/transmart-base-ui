@@ -3,7 +3,7 @@
 
 angular.module('transmartBaseUi')
   .controller('StudyCtrl',
-  ['$scope', '$modal','$location','$state', function ($scope, $modal, $location, $state) {
+  ['$scope', '$uibModal','$location','$state', function ($scope, $uibModal, $location, $state) {
 
     //------------------------------------------------------------------------------------------------------------------
     // Scope
@@ -72,19 +72,7 @@ angular.module('transmartBaseUi')
 
     //------------------------------------------------------------------------------------------------------------------
     // Helper functions
-    //------------------------------------------------------------------------------------------------------------------
-
-    //TODO: Adjust to node depth
-    //$scope.$watch(function() {
-    //  $scope.divWidth = (angular.element(document.getElementById('sidebardiv')).width()-85)/10;
-    //});
-
-    // Hide popover on click outside
-    angular.element('html').on('click', function(e) {
-      if(!angular.element(e.target).parents().is('.popover.inner')) {
-        angular.element('.popover').hide();
-      }
-    });
+    //--------------------------------------displayToolTip----------------------------------------------------------------------------
 
     /**
      * Counts the subjects for a node
@@ -184,7 +172,7 @@ angular.module('transmartBaseUi')
           _metadataObj.body = node._embedded.ontologyTerm.metadata;
         }
 
-        $modal.open({
+        $uibModal.open({
           animation: false, // IMPORTANT: Cannot use animation in angular 1.4.x
           controller: 'MetadataCtrl',
           templateUrl: 'app/components/metadata/metadata.html',
