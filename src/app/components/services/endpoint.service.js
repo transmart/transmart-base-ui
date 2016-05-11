@@ -12,6 +12,9 @@ angular.module('transmartBaseUi')
 
       var _newEndpointEvents = [];
 
+      var cookieKeyForEndpoints = 'transmart-base-ui-v2.endpoints';
+      var cookieKeyForSelectedEndpoint = 'transmart-base-ui-v2.selectedEndpoint';
+
       service.triggerNewEndpointEvent = function () {
         _newEndpointEvents.forEach(function (func) {
           func();
@@ -39,7 +42,7 @@ angular.module('transmartBaseUi')
           return _n;
         });
 
-        $cookies.putObject('transmart-base-ui-v2.endpoints', _end);
+        $cookies.putObject(cookieKeyForEndpoints, _end);
       };
 
       service.addEndpoint = function (title, url) {
@@ -122,7 +125,7 @@ angular.module('transmartBaseUi')
        * @param endpoint
          */
       service.saveSelectedEndpoint = function (endpoint) {
-        $cookies.putObject('transmart-base-ui-v2.selectedEndpoint', endpoint);
+        $cookies.putObject(cookieKeyForSelectedEndpoint, endpoint);
       };
 
       /**
@@ -135,9 +138,9 @@ angular.module('transmartBaseUi')
         endpoint.status = 'active';
         endpoint.expiresAt = time.setSeconds(time.getSeconds() + endpoint.expires_in);
 
-        var storedEndpoints = $cookies.getObject('transmart-base-ui-v2.endpoints') || [];
+        var storedEndpoints = $cookies.getObject(cookieKeyForEndpoints) || [];
         storedEndpoints.push(endpoint);
-        $cookies.putObject('transmart-base-ui-v2.endpoints', storedEndpoints);
+        $cookies.putObject(cookieKeyForEndpoints, storedEndpoints);
 
         // Create new restangular instance
         endpoint.restangular = _newRestangularConfig(endpoint);
@@ -173,7 +176,7 @@ angular.module('transmartBaseUi')
        * @returns {*}
          */
       service.getSelectedEndpoint = function () {
-        var storedEndpoints = $cookies.getObject('transmart-base-ui-v2.selectedEndpoint');
+        var storedEndpoints = $cookies.getObject(cookieKeyForSelectedEndpoint);
         if (!storedEndpoints) {
           throw new Error ('Cannot find selected endpoint');
         }
@@ -215,7 +218,7 @@ angular.module('transmartBaseUi')
       };
 
       service.retrieveStoredEndpoints = function () {
-          var storedEndpoints = $cookies.getObject('transmart-base-ui-v2.endpoints') || [];
+          var storedEndpoints = $cookies.getObject(cookieKeyForEndpoints) || [];
           storedEndpoints.forEach(function (endpoint) {
             endpoint.restangular = _newRestangularConfig(endpoint);
             endpoints.push(endpoint);
@@ -223,7 +226,7 @@ angular.module('transmartBaseUi')
       };
 
       service.clearStoredEnpoints = function () {
-        $cookies.remove('transmart-base-ui-v2.endpoints');
+        $cookies.remove(cookieKeyForEndpoints);
         endpoints = [];
         service.triggerNewEndpointEvent();
       };
@@ -239,9 +242,9 @@ angular.module('transmartBaseUi')
       };
 
       var _saveEndpointToCookies = function (end) {
-        var storedEndpoints = $cookies.getObject('transmart-base-ui-v2.endpoints') || [];
+        var storedEndpoints = $cookies.getObject(cookieKeyForEndpoints) || [];
         storedEndpoints.push(end);
-        $cookies.putObject('transmart-base-ui-v2.endpoints', storedEndpoints);
+        $cookies.putObject(cookieKeyForEndpoints, storedEndpoints);
       };
 
       var _cleanUrl = function (url) {
