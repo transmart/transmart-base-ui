@@ -14,7 +14,7 @@ angular.module('transmartBaseUi')
        */
       $scope.loadStudies = function () {
 
-        var _endpoints = EndpointService.endpoints; // get available endpoints
+        var _endpoints = EndpointService.getEndpoints(); // get available endpoints
 
         _.each(_endpoints, function (endpoint) {
           StudyListService.loadStudyList(endpoint).then(function (result) {
