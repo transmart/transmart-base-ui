@@ -149,8 +149,6 @@ angular.module('transmartBaseUi')
         // Add endpoint to the list
         endpoints.push(endpoint);
 
-        console.log(endpoint);
-
         service.triggerNewEndpointEvent();
       };
 
@@ -176,11 +174,11 @@ angular.module('transmartBaseUi')
        * @returns {*}
          */
       service.getSelectedEndpoint = function () {
-        var storedEndpoints = $cookies.getObject(cookieKeyForSelectedEndpoint);
-        if (!storedEndpoints) {
+        var selectedEndpoint = $cookies.getObject(cookieKeyForSelectedEndpoint);
+        if (!selectedEndpoint) {
           throw new Error ('Cannot find selected endpoint');
         }
-        return storedEndpoints;
+        return selectedEndpoint;
       };
 
       /**
@@ -218,11 +216,11 @@ angular.module('transmartBaseUi')
       };
 
       service.retrieveStoredEndpoints = function () {
-          var storedEndpoints = $cookies.getObject(cookieKeyForEndpoints) || [];
-          storedEndpoints.forEach(function (endpoint) {
-            endpoint.restangular = _newRestangularConfig(endpoint);
-            endpoints.push(endpoint);
-          });
+        var storedEndpoints = $cookies.getObject(cookieKeyForEndpoints) || [];
+        storedEndpoints.forEach(function (endpoint) {
+          endpoint.restangular = _newRestangularConfig(endpoint);
+          endpoints.push(endpoint);
+        });
       };
 
       service.clearStoredEnpoints = function () {
@@ -231,19 +229,19 @@ angular.module('transmartBaseUi')
         service.triggerNewEndpointEvent();
       };
 
-      var _newRestangularConfig = function (end) {
+      var _newRestangularConfig = function (endpoint) {
         return Restangular.withConfig(function (RestangularConfigurer) {
-          RestangularConfigurer.setBaseUrl(end.url);
+          RestangularConfigurer.setBaseUrl(endpoint.url);
           RestangularConfigurer.setDefaultHeaders({
-            'Authorization': 'Bearer ' + end.access_token,
+            'Authorization': 'Bearer ' + endpoint.access_token,
             'Accept': 'application/hal+json'
           });
         });
       };
 
-      var _saveEndpointToCookies = function (end) {
+      var _saveEndpointToCookies = function (endpoint) {
         var storedEndpoints = $cookies.getObject(cookieKeyForEndpoints) || [];
-        storedEndpoints.push(end);
+        storedEndpoints.push(endpoint);
         $cookies.putObject(cookieKeyForEndpoints, storedEndpoints);
       };
 

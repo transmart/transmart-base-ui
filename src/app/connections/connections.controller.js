@@ -28,26 +28,25 @@ angular.module('transmartBaseUi')
       // when URI contains oauth2 response need to be handled
       if (oauthGrantFragment.length > 1) {
 
-            $scope.selectedConnection = EndpointService.updateEndpointCredentials(
-              EndpointService.getSelectedEndpoint(),
-              oauthGrantFragment
-            );
+        $scope.selectedConnection = EndpointService.updateEndpointCredentials(
+          EndpointService.getSelectedEndpoint(),
+          oauthGrantFragment
+        );
 
-            EndpointService.saveAuthorizedEndpoint($scope.selectedConnection);
+        EndpointService.saveAuthorizedEndpoint($scope.selectedConnection);
 
-            $scope.endpointTabOpen = false;
-            $location.url($location.path());
+        $scope.endpointTabOpen = false;
+        $location.url($location.path());
 
-            StudyListService.emptyAll();
+        StudyListService.emptyAll();
 
-            _.each($scope.endpoints, function (endpoint) {
-              StudyListService.loadStudyList(endpoint).then(function () {
-                $rootScope.publicStudies = StudyListService.getPublicStudies();
-                $rootScope.privateStudies =  StudyListService.getPrivateStudies();
-              });
-            });
+        _.each($scope.endpoints, function (endpoint) {
+          StudyListService.loadStudyList(endpoint).then(function () {
+            $rootScope.publicStudies = StudyListService.getPublicStudies();
+            $rootScope.privateStudies =  StudyListService.getPrivateStudies();
+          });
+        });
 
-            $scope.endpoints = EndpointService.getEndpoints();
       }
 
       /**
