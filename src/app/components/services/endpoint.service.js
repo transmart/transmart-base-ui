@@ -8,7 +8,11 @@ angular.module('transmartBaseUi')
 
       var service = {};
 
+      // Contains all the endpoints currently connected to
       var endpoints = [];
+
+      // Holds the endpoint which to save user specific settings to
+      var masterEndpoint = null;
 
       var _newEndpointEvents = [];
 
@@ -220,14 +224,46 @@ angular.module('transmartBaseUi')
         storedEndpoints.forEach(function (endpoint) {
           endpoint.restangular = _newRestangularConfig(endpoint);
           endpoints.push(endpoint);
+          if (endpoint.isMaster) {
+            masterEndpoint = endpoint;
+          }
         });
       };
 
       service.clearStoredEnpoints = function () {
         $cookies.remove(cookieKeyForEndpoints);
         endpoints = [];
+        service.addEndpoint(masterEndpoint);
         service.triggerNewEndpointEvent();
       };
+
+      service.connectToMasterEndpoint = function () {
+        var currentHost = String($location.host()),
+          currentPort = String($location.port()),
+          currentProtocol = $location.protocol();
+        // Remember which endpoint we're connecting to
+        service.saveSelectedEndpoint(masterEndpoint);
+        service.navigateToAuthorizationPage(masterEndpoint.url, {
+          protocol : currentProtocol,
+          host: currentHost,
+          port: currentPort
+        });
+      }
+
+      /** Initializes the master endpoint with the one specified if it
+       *  is not present yet.
+       * @param endpoint
+       */
+      service.initializeMasterEndpoint = function (endpoint) {
+        if (!masterEndpoint) {
+          masterEndpoint = endpoint;
+          service.connectToMasterEndpoint();
+        }
+      }
+
+      service.getMasterEndpoint = function () {
+        return masterEndpoint;
+      }
 
       var _newRestangularConfig = function (endpoint) {
         return Restangular.withConfig(function (RestangularConfigurer) {

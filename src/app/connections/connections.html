@@ -71,7 +71,7 @@
         <td>{{endpoint.url}}</td>
         <td>{{endpoint.expiresAt | date:'dd-M H:mm'}}</td>
         <td><i class="glyphicon glyphicon-remove-circle text-danger"
-               ng-click="removeEndpoint(endpoint)"></i></td>
+               ng-click="removeEndpoint(endpoint)" ng-show="!endpoint.isMaster"></i></td>
       </tr>
     </table>
       <button class="btn btn-default" ng-click="clearSavedEndpoints()">

@@ -109,7 +109,10 @@ angular.module('transmartBaseUi', [
       // init globals
       $rootScope.globals = $cookieStore.get('globals') || {};
 
-      EndpointService.retrieveStoredEndpoints();
+      EndpointService.retrieveStoredEndpoints(); // includes master endpoint
+      //TODO: make configurable or determine automatically:
+      var masterEndpoint = {title: 'transmart-gb', url: 'http://transmart-gb.thehyve.net/transmart', isOAuth: true, isMaster: true};
+      EndpointService.initializeMasterEndpoint(masterEndpoint);
 
       $rootScope.$on('$locationChangeStart', function () {
         if ($location.path() === '') {
