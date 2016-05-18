@@ -35,7 +35,7 @@ describe('ConnectionsCtrl', function() {
 
       EndpointService = {
         getEndpoints : function() {},
-        clearStoredEnpoints : function () {},
+        clearStoredEndpoints : function () {},
         saveSelectedEndpoint : function () {},
         navigateToAuthorizationPage : function () {},
         remove: function (e) {}
@@ -104,7 +104,7 @@ describe('ConnectionsCtrl', function() {
       }]);
 
       scope.selectedConnection = { url:'http://foo' };
-      scope.navigateToAuthorizationPage();
+      scope.navigateToAuthorizationPage(scope.selectedConnection);
       //expect(AlertService.add).toHaveBeenCalled();
       expect(EndpointService.saveSelectedEndpoint).not.toHaveBeenCalled();
       expect(EndpointService.navigateToAuthorizationPage).not.toHaveBeenCalled();
