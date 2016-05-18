@@ -20,7 +20,7 @@ angular.module('transmartBaseUi')
       // Predefined endpoints
       $scope.connections = [
         {title: 'transmart-gb', url: 'http://transmart-gb.thehyve.net/transmart', isOAuth:  true},
-        //{title: 'localhost', url: 'http://localhost:8080/transmart', isOAuth:  true}
+        {title: 'localhost', url: 'http://localhost:8080/transmart', isOAuth:  true}
       ];
 
       $scope.selectedConnection = {};
@@ -29,10 +29,9 @@ angular.module('transmartBaseUi')
       if (oauthGrantFragment.length > 1) {
 
         // Update the current endpoint with the received credentials and save it
-        $scope.selectedConnection = EndpointService.getSelectedEndpoint();
-        $scope.selectedConnection = EndpointService.mergeEndpointCredentials(
-          $scope.selectedConnection, oauthGrantFragment);
-        EndpointService.saveEndpoint($scope.selectedConnection);
+        $scope.selectedConnection = EndpointService.initializeEndpointWithCredentials(
+          EndpointService.getSelectedEndpoint(), oauthGrantFragment);
+        EndpointService.addEndpoint($scope.selectedConnection);
 
         $scope.endpointTabOpen = false;
         $location.url($location.path());
@@ -72,8 +71,7 @@ angular.module('transmartBaseUi')
           return false;
         }
 
-        EndpointService.saveSelectedEndpoint($scope.selectedConnection);
-        EndpointService.navigateToAuthorizationPage($scope.selectedConnection);
+        EndpointService.authorizeEndpoint($scope.selectedConnection);
       };
 
       /**
@@ -90,7 +88,7 @@ angular.module('transmartBaseUi')
        * @param endpoint
        */
       $scope.removeEndpoint = function (endpoint) {
-        EndpointService.remove(endpoint);
+        EndpointService.removeEndpoint(endpoint);
 
         // delete study that has associated endpoint
         StudyListService.removeStudiesByEndpoint(endpoint);

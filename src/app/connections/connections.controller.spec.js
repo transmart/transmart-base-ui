@@ -128,10 +128,10 @@ describe('ConnectionsCtrl', function() {
   });
 
   describe ('$scope.removeEndpoint', function () {
-    it('should invoke EndpointService.remove', function () {
+    it('should invoke EndpointService.removeEndpoint', function () {
       var _e = {};
       scope.removeEndpoint(_e);
-      expect(EndpointService.remove).toHaveBeenCalled();
+      expect(EndpointService.removeEndpoint).toHaveBeenCalled();
     });
   });
 

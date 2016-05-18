@@ -17,11 +17,28 @@ angular.module('transmartBaseUi')
       var cookieKeyForEndpoints = 'transmart-base-ui-v2.endpoints';
       var cookieKeyForSelectedEndpoint = 'transmart-base-ui-v2.selectedEndpoint';
 
+      /**
+       * Returns the current list of endpoints.
+       * @returns {Array}
+       */
       service.getEndpoints = function () {
         return endpoints;
       };
 
-      service.remove = function (endpoint) {
+      /**
+       * Adds the endpoint to the list and saves it in the cookies.
+       * @param endpoint
+       */
+      service.addEndpoint = function (endpoint) {
+        endpoints.push(endpoint);
+        service.saveEndpoint(endpoint);
+      };
+
+      /**
+       * Removes the specified endpoint from the list and cookies.
+       * @param endpoint
+       */
+      service.removeEndpoint = function (endpoint) {
         var _in = endpoints.indexOf(endpoint);
         if (_in >= 0) {
           endpoints.splice(_in, 1);
@@ -37,10 +54,45 @@ angular.module('transmartBaseUi')
         $cookies.putObject(cookieKeyForEndpoints, _end);
       };
 
-      service.addEndpoint = function (endpoint) {
-        endpoint.restangular = _newRestangularConfig(endpoint);
-        endpoints.push(endpoint);
-        service.saveEndpoint(endpoint);
+      /**
+       * Save authorized endpoint to cookies
+       * @param endpoint
+       */
+      service.saveEndpoint = function (endpoint) {
+        // Temporarily detach the restangular property, as it contains a circular reference
+        var restangular = endpoint.restangular;
+        delete endpoint.restangular;
+
+        // Store in cookies
+        var storedEndpoints = $cookies.getObject(cookieKeyForEndpoints) || [];
+        storedEndpoints.push(endpoint);
+        $cookies.putObject(cookieKeyForEndpoints, storedEndpoints);
+
+        // Re-attach the restangular instance
+        endpoint.restangular = restangular;
+      };
+
+      /**
+       * Initializes the list of endpoints and the master endpoint
+       * with what's stored in the cookies.
+       */
+      service.retrieveStoredEndpoints = function () {
+        var storedEndpoints = $cookies.getObject(cookieKeyForEndpoints) || [];
+        storedEndpoints.forEach(function (endpoint) {
+          endpoint.restangular = _newRestangularConfig(endpoint);
+          endpoints.push(endpoint);
+          if (endpoint.isMaster) {
+            masterEndpoint = endpoint;
+          }
+        });
+      };
+
+      /** Removes all stored endpoints, except for the master endpoint.
+       */
+      service.clearStoredEndpoints = function () {
+        $cookies.remove(cookieKeyForEndpoints);
+        endpoints = [];
+        service.addEndpoint(masterEndpoint);
       };
 
       /**
@@ -53,54 +105,46 @@ angular.module('transmartBaseUi')
       };
 
       /**
-       * Save authorized endpoint to cookie
-       * @param endpoint
-         */
-      service.saveEndpoint = function (endpoint) {
-        var time = new Date ();
-
-        endpoint.status = 'active';
-        endpoint.expiresAt = time.setSeconds(time.getSeconds() + endpoint.expires_in);
-
-        var restangular = endpoint.restangular || _newRestangularConfig(endpoint);
-        delete endpoint.restangular;
-
-        var storedEndpoints = $cookies.getObject(cookieKeyForEndpoints) || [];
-        storedEndpoints.push(endpoint);
-        $cookies.putObject(cookieKeyForEndpoints, storedEndpoints);
-
-        // Save the restangular reference in the endpoint
-        endpoint.restangular = restangular;
-        endpoint.restangular.token = endpoint.access_token;
-      };
-
-      /**
-       * Returns endpoint with merged credentials extracted from URI
-       * @param endpoint
-       * @param strFragment
+       * Get the currently selected endpoint from the cookies.
        * @returns {*}
-         */
-      service.mergeEndpointCredentials = function (endpoint, strFragment) {
-        var fragmentObj = JSON.parse('{"' +
-          decodeURI(
-            strFragment
-              .replace(/&/g, "\",\"") // replace '&' with ','
-              .replace(/=/g,"\":\"")) + '"}' // replace '=' with ':'
-        );
-        return angular.merge(fragmentObj, endpoint);
-      };
-
-
-      /**
-       * Get selected endpoint
-       * @returns {*}
-         */
+       */
       service.getSelectedEndpoint = function () {
         var selectedEndpoint = $cookies.getObject(cookieKeyForSelectedEndpoint);
         if (!selectedEndpoint) {
           throw new Error ('Cannot find selected endpoint');
         }
         return selectedEndpoint;
+      };
+
+      /**
+       * Initializes the master endpoint with the one specified if it
+       * is not present yet.
+       * @param endpoint
+       */
+      service.initializeMasterEndpoint = function (endpoint) {
+        if (!masterEndpoint) {
+          masterEndpoint = endpoint;
+          service.authorizeEndpoint(masterEndpoint);
+        }
+      };
+
+      /**
+       * Returns the master endpoint.
+       * @returns {*}
+       */
+      service.getMasterEndpoint = function () {
+        return masterEndpoint;
+      };
+
+      /**
+       * Stores the endpoint to cookies (for future reference) and
+       * navigates to the authorization page for the endpoint.
+       * @param endpoint
+       */
+      service.authorizeEndpoint = function (endpoint) {
+        // Remember which endpoint we're connecting to
+        service.saveSelectedEndpoint(endpoint);
+        service.navigateToAuthorizationPage(endpoint);
       };
 
       /**
@@ -120,8 +164,8 @@ angular.module('transmartBaseUi')
       };
 
       /**
-       * Get oAuth url with params
-       * @param url
+       * Navigate to the endpoint's authorization page.
+       * @param endpoint
          */
       service.navigateToAuthorizationPage = function (endpoint) {
         var currentHost = String($location.host()),
@@ -141,58 +185,61 @@ angular.module('transmartBaseUi')
         $window.open(authorizationUrl, '_self');
       };
 
-      service.retrieveStoredEndpoints = function () {
-        var storedEndpoints = $cookies.getObject(cookieKeyForEndpoints) || [];
-        storedEndpoints.forEach(function (endpoint) {
-          endpoint.restangular = _newRestangularConfig(endpoint);
-          endpoints.push(endpoint);
-          if (endpoint.isMaster) {
-            masterEndpoint = endpoint;
-          }
-        });
+      /**
+       * Sets up a new restangular instance using the specified credentials.
+       * @param endpoint
+       * @param oauthGrantFragment
+       */
+      service.initializeEndpointWithCredentials = function(endpoint, oauthGrantFragment) {
+        endpoint = mergeEndpointCredentials(endpoint, oauthGrantFragment);
+        endpoint.status = 'active';
+        var time = new Date ();
+        endpoint.expiresAt = time.setTime(time.getTime() + endpoint.expires_in * 1000);
+        endpoint.restangular = _newRestangularConfig(endpoint);
+        return endpoint;
+      }
+
+      /**
+       * Returns endpoint with merged credentials extracted from URI.
+       * @param endpoint
+       * @param strFragment
+       * @returns {*}
+       */
+      var mergeEndpointCredentials = function (endpoint, strFragment) {
+        var fragmentObj = JSON.parse('{"' +
+          decodeURI(
+            strFragment
+              .replace(/&/g, "\",\"") // replace '&' with ','
+              .replace(/=/g,"\":\"")) + '"}' // replace '=' with ':'
+        );
+        return angular.merge(fragmentObj, endpoint);
       };
 
-      service.clearStoredEndpoints = function () {
-        $cookies.remove(cookieKeyForEndpoints);
-        endpoints = [];
-        service.addEndpoint(masterEndpoint);
-      };
-
-      service.authorizeEndpoint = function (endpoint) {
-        // Remember which endpoint we're connecting to
-        service.saveSelectedEndpoint(endpoint);
-        service.navigateToAuthorizationPage(endpoint);
-      };
-
-      /** Initializes the master endpoint with the one specified if it
-       *  is not present yet.
+      /**
+       * Marks the endpoint as failing.
        * @param endpoint
        */
-      service.initializeMasterEndpoint = function (endpoint) {
-        if (!masterEndpoint) {
-          masterEndpoint = endpoint;
-          service.authorizeEndpoint(masterEndpoint);
-        }
-      };
-
-      service.getMasterEndpoint = function () {
-        return masterEndpoint;
-      };
-
       service.invalidateEndpoint = function (endpoint) {
         endpoint.status = 'error';
         //TODO: properly handle malfunctioning endpoint
         //service.navigateToAuthorizationPage(endpoint);
       };
 
+      /**
+       * Creates a new restangular instance based on the url and access token.
+       * @param endpoint
+       * @returns {*}
+       * @private
+       */
       var _newRestangularConfig = function (endpoint) {
-        return Restangular.withConfig(function (RestangularConfigurer) {
+        var restangular = Restangular.withConfig(function (RestangularConfigurer) {
           RestangularConfigurer.setBaseUrl(endpoint.url);
           RestangularConfigurer.setDefaultHeaders({
             'Authorization': 'Bearer ' + endpoint.access_token,
             'Accept': 'application/hal+json'
           });
         });
+        return restangular;
       };
 
       return service;
