@@ -13,7 +13,8 @@
           ng-class-even="popover-even-row">
         <td><b>{{key}}:</b></td>
         <td>&nbsp;&nbsp;</td>
-        <td>{{value}}</td>
+        <td ng-if="isURL(value)"><a href="{{value}}" target="_blank">{{value}}</a></td>
+        <td ng-if="!isURL(value)">{{value}}</td>
       </tr>
     </table>
   </div>
