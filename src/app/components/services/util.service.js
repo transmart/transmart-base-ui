@@ -1,7 +1,3 @@
-/**
- * Created by bo on 5/23/16.
- */
-
 'use strict';
 
 angular.module('transmartBaseUi').factory('UtilService', function () {

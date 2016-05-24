@@ -1,6 +1,3 @@
-/**
- * Created by bo on 5/24/16.
- */
 'use strict';
 
 describe('UtilService Unit Tests', function() {
