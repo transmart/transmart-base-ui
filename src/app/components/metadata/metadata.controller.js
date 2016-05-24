@@ -2,11 +2,11 @@
 
 var transmartBaseUi = angular.module('transmartBaseUi');
 
-transmartBaseUi.controller('MetadataCtrl', ['$scope', 'metadata', '$uibModalInstance','isURL',
-    function ($scope, metadata, $uibModalInstance, isURL) { 
+transmartBaseUi.controller('MetadataCtrl', ['$scope', 'metadata', '$uibModalInstance','UtilService',
+    function ($scope, metadata, $uibModalInstance, UtilService) {
 
         $scope.metadata = metadata;
-        $scope.isURL = isURL;
+        $scope.isURL = UtilService.isURL;
 
         $scope.close = function () {
           $uibModalInstance.dismiss('close');
