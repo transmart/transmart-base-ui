@@ -3,77 +3,54 @@
 angular.module('transmartBaseUi')
   .controller('MainCtrl',
     ['$scope', '$rootScope', 'Restangular', 'ChartService', 'AlertService', '$location', '$stateParams',
-      '$state', 'StudyListService', 'CohortSelectionService', 'SummaryStatsService', 'GridsterService',
+      '$state', 'StudyListService', 'CohortSelectionService', 'GridsterService',
       function ($scope, $rootScope, Restangular, ChartService, AlertService, $location, $stateParams,
-                $state, StudyListService, CohortSelectionService, SummaryStatsService, GridsterService)
+                $state, StudyListService, CohortSelectionService,  GridsterService)
   {
 
-    $scope.summaryStatistics = SummaryStatsService;
+    // Alerts
+    $scope.close = AlertService.remove;
+    $scope.alerts = AlertService.get();
 
+    // Gridster
     $scope.gridsterOpts = GridsterService.options;
 
+    // Cohort summary data
     $scope.cohortVal = {selected: 0, total: 0, subjects: []};
 
+    // Charts
     $scope.cs = ChartService.cs;
 
+    $scope.$watchCollection('cs', function() {
+      $scope.cohortVal = ChartService.summary();
+    });
+
+    // Tabs
     $scope.tabs = [
       {title: 'Cohort Selection', active: true},
       {title: 'Cohort Grid', active: false},
-      {title: 'Summary Statistics', active: false},
       {title: 'Analysis', active: false}
     ];
 
+    /**
+     * Activate tab
+     * @param tabTitle
+     * @param tabAction
+       */
     $scope.activateTab = function (tabTitle, tabAction) {
         $scope.tabs.forEach(function (tab) {
-            if (tab.title !== tabTitle) {
-                tab.active = false;
-            } else {
-                tab.active = true;
-            }
+            tab.active = tab.title === tabTitle;
         });
         $state.go('workspace', {action:tabAction});
     };
 
-    $scope.close = AlertService.remove;
-    $scope.alerts = AlertService.get();
-
-    /**
-     * Display summary statisctics for the selected study
-     * @param study
-     */
-    $scope.displayStudySummaryStatistics = function (study) {
-      $scope.summaryStatistics.isLoading = true;
-      $scope.summaryStatistics.selectedStudy.title = study.id;
-      SummaryStatsService.displaySummaryStatistics(study,
-        $scope.summaryStatistics.magicConcepts).then(function() {
-        $scope.summaryStatistics.isLoading = false;
-      });
-    };
-
-    /**
-     * Updates the bar graph selection values and the subjects displayed by the
-     * grid.
-     * @private
-     */
-    var _updateCohortDisplay = function () {
-      $scope.cohortVal.selected = $scope.cs.cross.groupAll().value();
-      $scope.cohortVal.total = $scope.cs.cross.size();
-      $scope.cohortVal.subjects =  $scope.cs.mainDim.top(Infinity);
-      $scope.cohortVal.dimensions = $scope.cs.numDim;
-      $scope.cohortVal.maxdim = $scope.cs.maxDim;
-      $scope.cohortLabels = $scope.cs.labels;
-    };
-
-    $scope.$watchCollection('cs', function() {
-      _updateCohortDisplay();
-    });
-
     // Every selected concept is represented by a label
     $scope.cohortChartContainerLabels = GridsterService.cohortChartContainerLabels;
 
-    $scope.$watch(function (x) {
+    // Watch labels container
+    $scope.$watch(function () {
       return GridsterService.cohortChartContainerLabels;
-    }, function (r) {
+    }, function () {
       $scope.cohortChartContainerLabels = GridsterService.cohortChartContainerLabels;
     });
 
@@ -134,31 +111,14 @@ angular.module('transmartBaseUi')
       var findURLQueryParams = $location.search();
 
       if (findURLQueryParams !== undefined) {
-        if (findURLQueryParams.action === 'summaryStats') {
-          if (findURLQueryParams.study) {
-
-            // check if study by id already loaded in existing array
-            var _study = _.findWhere(StudyListService.getAll(),
-              {id: findURLQueryParams.study}
-            );
-
-            // display summary statistics if the study is existing
-            if (_study) {
-              $scope.displayStudySummaryStatistics(_study);
-            } else {
-              console.error('Cannot find study in existing loaded studies');
-              AlertService.add('danger', 'Cannot find study in existing loaded studies', 2000);
-            }
-          }
-          $scope.activateTab($scope.tabs[2].title, 'summaryStats');
-        } else if (findURLQueryParams.action === 'cohortGrid') {
+        if (findURLQueryParams.action === 'cohortGrid') {
           $scope.activateTab($scope.tabs[1].title, 'cohortGrid');
         } else {
           $scope.activateTab($scope.tabs[0].title, 'cohortSelection');
         }
       }
       // register update cohort display function to be invoked when filter changed
-      ChartService.registerFilterEvent(_updateCohortDisplay);
+      ChartService.registerFilterEvent(ChartService.summary);
     };
 
     _initLoad();

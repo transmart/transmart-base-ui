@@ -607,6 +607,18 @@ angular.module('transmartBaseUi').factory('ChartService',
       return _filters;
     };
 
+
+    chartService.summary = function () {
+      return {
+        selected : chartService.cs.cross.groupAll().value(),
+        total : chartService.cs.cross.size(),
+        subjects :  chartService.cs.mainDim.top(Infinity),
+        dimensions : chartService.cs.numDim,
+        maxdim : chartService.cs.maxDim,
+        cohortLabels : chartService.cs.labels
+      };
+    };
+
   /**
    * ChartService
    */
