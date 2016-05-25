@@ -35,8 +35,8 @@
         popover-trigger="outsideClick"
         ng-click="displayToolTip($event, node)"
         ng-class="{'text-grey': node.type === 'FAILED_CALL'}">
-        {{node.title}}
-      <span class="quantity-num">({{node.total}})</span>
+
+      <span>{{node.title}} (<b>{{node.total}}</b>)</span>
     </a>
 
   </div>
