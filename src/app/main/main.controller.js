@@ -2,9 +2,9 @@
 
 angular.module('transmartBaseUi')
   .controller('MainCtrl',
-    ['$scope', '$rootScope', 'Restangular', 'ChartService', 'AlertService', '$location', '$stateParams',
+    ['$scope', '$rootScope', 'Restangular', 'ChartService', 'AlertService', '$location', '$stateParams', '$log',
       '$state', 'StudyListService', 'CohortSelectionService', 'GridsterService',
-      function ($scope, $rootScope, Restangular, ChartService, AlertService, $location, $stateParams,
+      function ($scope, $rootScope, Restangular, ChartService, AlertService, $location, $stateParams, $log,
                 $state, StudyListService, CohortSelectionService,  GridsterService)
   {
 
@@ -21,8 +21,16 @@ angular.module('transmartBaseUi')
     // Charts
     $scope.cs = ChartService.cs;
 
-    $scope.$watchCollection('cs', function() {
-      $scope.cohortVal = ChartService.summary();
+    $scope.$watchCollection('cs', function(newVal, oldVal) {
+      $log.info('watching  $scope.cs');
+      if (!_.isEqual(newVal, oldVal)) {
+        $log.info('somethin changes in $scope.cs');
+        $scope.cohortVal = ChartService.summary();
+        console.log($scope.cohortVal);
+      } else {
+        $log.debug(newVal);
+        $log.debug(oldVal);
+      }
     });
 
     // Tabs
@@ -50,8 +58,11 @@ angular.module('transmartBaseUi')
     // Watch labels container
     $scope.$watch(function () {
       return GridsterService.cohortChartContainerLabels;
-    }, function () {
-      $scope.cohortChartContainerLabels = GridsterService.cohortChartContainerLabels;
+    }, function (newVal, oldVal) {
+      if (!_.isEqual(newVal, oldVal)) {
+        $log.info('changes in GridsterService.cohortChartContainerLabels');
+        $scope.cohortChartContainerLabels = newVal;
+      }
     });
 
     /**
@@ -61,13 +72,8 @@ angular.module('transmartBaseUi')
      * @param labels Corresponding to selected concepts
      */
     $scope.$on('prepareChartContainers', function (event, labels) {
+      $log.info('On prepareChartContainers');
       $scope.cohortChartContainerLabels = GridsterService.resize('#main-chart-container', labels, false);
-    });
-
-    $scope.$on('gridster-resized', function (event, newS, obj) {
-      if (newS[0] < obj.currentSize - 20) {
-        $scope.cohortChartContainerLabels = GridsterService.resize('#main-chart-container', false, true);
-      }
     });
 
     /**
@@ -107,7 +113,7 @@ angular.module('transmartBaseUi')
      * @private
      */
     var _initLoad = function () {
-
+      $log.info('OnInit');
       var findURLQueryParams = $location.search();
 
       if (findURLQueryParams !== undefined) {

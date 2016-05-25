@@ -1,5 +1,4 @@
 'use strict';
-/* jshint undef: false */
 
 angular.module('transmartBaseUi').factory('ChartService',
   ['Restangular', '$q', '$rootScope', '$timeout', 'AlertService', 'DcChartsService', 'GridsterService',
@@ -157,7 +156,7 @@ angular.module('transmartBaseUi').factory('ChartService',
     $rootScope.$broadcast('prepareChartContainers', chartService.cs.labels);
   };
 
-  chartService.reset();
+  //chartService.reset();
 
   var _getType = function (value) {
     var _type = typeof value;
@@ -452,45 +451,41 @@ angular.module('transmartBaseUi').factory('ChartService',
       }
     };
 
-    if (!label.resolved) {
-      var _chart;
+    var _chart;
 
-      if (label.type === 'combination') {
-        _chart = _createMultidimensionalChart(label, el);
-      } else {
-        // Create a number display if highdim
-        if (label.type === 'highdim') {
-          _defaultDim();
-          _chart = _numDisplay(chartService.cs.dims[label.ids], chartService.cs.groups[label.ids], el);
-          _chart.type = 'NUMBER';
+    if (label.type === 'combination') {
+      _chart = _createMultidimensionalChart(label, el);
+    } else {
+      // Create a number display if highdim
+      if (label.type === 'highdim') {
+        _defaultDim();
+        _chart = _numDisplay(chartService.cs.dims[label.ids], chartService.cs.groups[label.ids], el);
+        _chart.type = 'NUMBER';
 
-        // Create a PIECHART if categorical
-        } else if (label.type === 'string' || label.type === 'object') {
-          _defaultDim();
-          _chart = DcChartsService.getPieChart(chartService.cs.dims[label.ids], chartService.cs.groups[label.ids], el);
-          _chart.type = 'PIECHART';
+      // Create a PIECHART if categorical
+      } else if (label.type === 'string' || label.type === 'object') {
+        _defaultDim();
+        _chart = DcChartsService.getPieChart(chartService.cs.dims[label.ids], chartService.cs.groups[label.ids], el);
+        _chart.type = 'PIECHART';
 
-        // Create a BARCHART if numerical
-        } else if (label.type === 'number') {
-          _defaultDim();
-          _chart = DcChartsService.getBarChart(chartService.cs.dims[label.ids], chartService.cs.groups[label.ids], el,
-            {nodeTitle: label.name});
-          _chart.type = 'BARCHART';
+      // Create a BARCHART if numerical
+      } else if (label.type === 'number') {
+        _defaultDim();
+        _chart = DcChartsService.getBarChart(chartService.cs.dims[label.ids], chartService.cs.groups[label.ids], el,
+          {nodeTitle: label.name});
+        _chart.type = 'BARCHART';
 
-        // Create a BARCHART WITH BINS if floating point values
-        } else if (label.type === 'float'){
-          chartService.cs.dims[label.ids] = chartService.cs.cross.dimension(function (d) {
-            return d.labels[label.ids] === undefined ? 'UnDef' : d.labels[label.ids].toFixed(label.precision === 0 ? 0 : label.precision);
-          });
-          chartService.cs.groups[label.ids] = chartService.cs.dims[label.ids].group();
-          _chart = DcChartsService.getBarChart(chartService.cs.dims[label.ids], chartService.cs.groups[label.ids],
-            el, {nodeTitle: label.name, float: true, precision: label.precision});
-          _chart.type = 'BARCHART';
+      // Create a BARCHART WITH BINS if floating point values
+      } else if (label.type === 'float'){
+        chartService.cs.dims[label.ids] = chartService.cs.cross.dimension(function (d) {
+          return d.labels[label.ids] === undefined ? 'UnDef' : d.labels[label.ids].toFixed(label.precision === 0 ? 0 : label.precision);
+        });
+        chartService.cs.groups[label.ids] = chartService.cs.dims[label.ids].group();
+        _chart = DcChartsService.getBarChart(chartService.cs.dims[label.ids], chartService.cs.groups[label.ids],
+          el, {nodeTitle: label.name, float: true, precision: label.precision});
+        _chart.type = 'BARCHART';
 
-        }
       }
-
-      label.resolved = true;
       _chart.id = label.ids;
       _chart.tsLabel = label;
 
@@ -582,7 +577,6 @@ angular.module('transmartBaseUi').factory('ChartService',
         _chart.symbolSize(_CONF.SP_DOT_SIZE);
         _chart.rescale();
       }
-
       _chart.render();
     }
   };
@@ -619,9 +613,13 @@ angular.module('transmartBaseUi').factory('ChartService',
       };
     };
 
-  /**
-   * ChartService
-   */
-  return chartService;
+
+    // init
+    chartService.reset();
+
+    /**
+     * ChartService
+     */
+    return chartService;
 
 }]);
