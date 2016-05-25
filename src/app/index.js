@@ -14,7 +14,8 @@ angular.module('transmartBaseUi', [
   'ngCsv',
   'gridster',
   'ui.layout',
-  'ui.grid'
+  'ui.grid',
+  'ui.grid.pagination'
 ])
   .config( ['$stateProvider', 'RestangularProvider', 'cfpLoadingBarProvider', '$locationProvider', '$uibTooltipProvider',
     function ($stateProvider, RestangularProvider, cfpLoadingBarProvider, $locationProvider, $uibTooltipProvider) {
