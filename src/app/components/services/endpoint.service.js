@@ -3,8 +3,8 @@
 
 angular.module('transmartBaseUi')
   .factory('EndpointService',
-  ['$rootScope', '$http', '$q', 'Restangular', '$cookies', '$window', '$location',
-    function ($rootScope, $http, $q, Restangular, $cookies, $window, $location) {
+  ['$rootScope', '$http', '$q', 'Restangular', '$cookies', '$window', '$location', 'masterEndpointConfig',
+    function ($rootScope, $http, $q, Restangular, $cookies, $window, $location, masterEndpointConfig) {
 
       var service = {};
 
@@ -92,7 +92,8 @@ angular.module('transmartBaseUi')
       service.clearStoredEndpoints = function () {
         $cookies.remove(cookieKeyForEndpoints);
         endpoints = [];
-        service.addEndpoint(masterEndpoint);
+        masterEndpoint = null;
+        service.initializeMasterEndpoint();
       };
 
       /**
@@ -121,10 +122,10 @@ angular.module('transmartBaseUi')
        * is not present yet.
        * @param endpoint
        */
-      service.initializeMasterEndpoint = function (endpoint) {
+      service.initializeMasterEndpoint = function () {
         if (!masterEndpoint) {
-          masterEndpoint = endpoint;
-          service.authorizeEndpoint(masterEndpoint);
+          masterEndpoint = masterEndpointConfig;
+          service.authorizeEndpoint(masterEndpointConfig);
         }
       };
 
@@ -221,8 +222,8 @@ angular.module('transmartBaseUi')
        */
       service.invalidateEndpoint = function (endpoint) {
         endpoint.status = 'error';
-        //TODO: properly handle malfunctioning endpoint
-        //service.navigateToAuthorizationPage(endpoint);
+        service.removeEndpoint(endpoint)
+        service.authorizeEndpoint(endpoint);
       };
 
       /**

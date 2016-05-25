@@ -1,0 +1,30 @@
+{
+  "development": {
+    "isTesting": false,
+    "masterEndpointConfig": {
+      "title": "transmart-gb",
+      "url": "http://transmart-gb.thehyve.net/transmart",
+      "isOAuth": true,
+      "isMaster": true
+    }
+  },
+  "testing": {
+    "isTesting": true,
+    "masterEndpointConfig": {
+      "title": "transmart-gb",
+      "url": "http://transmart-gb.thehyve.net/transmart",
+      "isOAuth": true,
+      "isMaster": true
+    }
+  },
+  "production": {
+    "isTesting": false,
+    "masterEndpointConfig": {
+      "title": "transmart-gb",
+      "url": "http://transmart-gb.thehyve.net/transmart",
+      "isOAuth": true,
+      "isMaster": true
+    }
+  }
+}
+
