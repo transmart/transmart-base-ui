@@ -103,13 +103,16 @@ angular.module('transmartBaseUi', [
 
   }])
 
-  .run(['$rootScope', '$location', '$cookieStore', '$http', 'EndpointService',
-    function ($rootScope, $location, $cookieStore, $http, EndpointService) {
+  .run(['$rootScope', '$location', '$cookieStore', '$http', 'EndpointService', 'isTesting',
+    function ($rootScope, $location, $cookieStore, $http, EndpointService, isTesting) {
 
       // init globals
       $rootScope.globals = $cookieStore.get('globals') || {};
 
-      EndpointService.retrieveStoredEndpoints();
+      EndpointService.retrieveStoredEndpoints(); // includes master endpoint
+      if (!isTesting) {
+        EndpointService.initializeMasterEndpoint();
+      }
 
       $rootScope.$on('$locationChangeStart', function () {
         if ($location.path() === '') {
