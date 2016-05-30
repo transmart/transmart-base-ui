@@ -61,7 +61,7 @@ angular.module('transmartBaseUi')
 
    $scope.exportToFile = function () {
      CohortSelectionService.exportToFile(
-       EndpointService.getEndpoints(),
+       EndpointService.endpoints,
        ChartService.getCohortFilters()
      );
    };
