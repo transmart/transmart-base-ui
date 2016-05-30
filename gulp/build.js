@@ -3,8 +3,6 @@
 var path = require('path');
 var gulp = require('gulp');
 var conf = require('./conf');
-var ngConstant = require('gulp-ng-constant');
-var rename = require('gulp-rename');
 
 var $ = require('gulp-load-plugins')({
   pattern: ['gulp-*', 'main-bower-files', 'uglify-save-license', 'del']
@@ -90,18 +88,6 @@ gulp.task('other', function () {
   ])
     .pipe(fileFilter)
     .pipe(gulp.dest(path.join(conf.paths.dist, '/')));
-});
-
-gulp.task('config', function () {
-  var config = require(path.join('..', conf.paths.src, 'app', 'config.json'));
-  return ngConstant({
-    name: "transmartBaseUi",
-    constants: config.development,
-    deps: false,
-    stream: true
-  })
-    .pipe(rename('config.js'))
-    .pipe(gulp.dest(path.join(conf.paths.src, 'app')));
 });
 
 gulp.task('clean', function () {

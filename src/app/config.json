@@ -1,5 +1,5 @@
 {
-  "development": {
+  "dev": {
     "isTesting": false,
     "masterEndpointConfig": {
       "title": "transmart-gb",
@@ -8,7 +8,7 @@
       "isMaster": true
     }
   },
-  "testing": {
+  "test": {
     "isTesting": true,
     "masterEndpointConfig": {
       "title": "transmart-gb",
@@ -17,7 +17,7 @@
       "isMaster": true
     }
   },
-  "production": {
+  "prod": {
     "isTesting": false,
     "masterEndpointConfig": {
       "title": "transmart-gb",
