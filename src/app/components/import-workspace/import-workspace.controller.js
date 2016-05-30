@@ -18,7 +18,7 @@ angular.module('transmartBaseUi')
       _.each($scope.content.nodes, function (node) {
 
         // check if endpoints are still connected
-        var _e = _.where(EndpointService.endpoints, {url : node.study.endpoint.url});
+        var _e = _.where(EndpointService.getEndpoints(), {url : node.study.endpoint.url});
 
         // if endpoints are still connected
         if (_e.length > 0) { // get restObj for each nodes
