@@ -69,7 +69,7 @@ angular.module('transmartBaseUi')
           enableFiltering: true
         };
 
-        $scope.$watch('cohorts',function () {
+        $scope.$watch('cohort',function () {
           console.log('Watcher registered change in cohorts');
         }, true);
 
@@ -79,6 +79,7 @@ angular.module('transmartBaseUi')
 
         $scope.$on('collectionUpdated', function (event, passedFromBroadcast) {
           console.log('collectionUpdated event fired');
+          //TODO: refactor the directive to either use only data from event or from data binding. Not both.
           var _cohorts = passedFromBroadcast[0];
           var _headers = passedFromBroadcast[1];
           $scope.gridOptions.data.length = 0;       // In order to make sure ui-grid is refreshed also when tables

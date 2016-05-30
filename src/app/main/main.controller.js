@@ -100,7 +100,6 @@ angular.module('transmartBaseUi')
      */
     $scope.removeLabel = function (label) {
       ChartService.removeLabel(label);
-      //$scope.$broadcast('collectionUpdated', [$scope.cohortVal.subjects, $scope.cohortLabels]);
     };
 
     /**
