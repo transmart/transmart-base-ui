@@ -65,15 +65,25 @@ angular.module('transmartBaseUi')
           paginationPageSizes: [10, 25, 50],
           paginationPageSize: 10,
           columnDefs: [],
-          data: []
+          data: [],
+          enableFiltering: true
         };
 
+        $scope.$watch('cohorts',function () {
+          console.log('Watcher registered change in cohorts');
+        }, true);
+
+        $scope.$watch('headers',function () {
+          console.log('Watcher registered change in headers');
+        });// if you set it to true it will cause maximum call stack exceeded exception
+
         $scope.$on('collectionUpdated', function (event, passedFromBroadcast) {
+          console.log('collectionUpdated event fired');
           var _cohorts = passedFromBroadcast[0];
           var _headers = passedFromBroadcast[1];
-          $scope.gridOptions.data.length = null;
-          $scope.gridOptions.columnDefs.length = null;
-          $timeout(function () {
+          $scope.gridOptions.data.length = 0;       // In order to make sure ui-grid is refreshed also when tables
+          $scope.gridOptions.columnDefs.length = 0; // are of the same length
+          $timeout(function () { // this is necessary for ui-grid to notice the change at all
             $scope.gridOptions.data = _to_table(_cohorts, _headers);
             $scope.gridOptions.columnDefs = prepareColumnDefs(_headers);
           });
