@@ -22,14 +22,8 @@ angular.module('transmartBaseUi')
     $scope.cs = ChartService.cs;
 
     $scope.$watchCollection('cs', function(newVal, oldVal) {
-      $log.info('watching  $scope.cs');
       if (!_.isEqual(newVal, oldVal)) {
-        $log.info('somethin changes in $scope.cs');
         $scope.cohortVal = ChartService.summary();
-        console.log($scope.cohortVal);
-      } else {
-        $log.debug(newVal);
-        $log.debug(oldVal);
       }
     });
 
@@ -60,7 +54,6 @@ angular.module('transmartBaseUi')
       return GridsterService.cohortChartContainerLabels;
     }, function (newVal, oldVal) {
       if (!_.isEqual(newVal, oldVal)) {
-        $log.info('changes in GridsterService.cohortChartContainerLabels');
         $scope.cohortChartContainerLabels = newVal;
       }
     });
@@ -72,7 +65,6 @@ angular.module('transmartBaseUi')
      * @param labels Corresponding to selected concepts
      */
     $scope.$on('prepareChartContainers', function (event, labels) {
-      $log.info('On prepareChartContainers');
       $scope.cohortChartContainerLabels = GridsterService.resize('#main-chart-container', labels, false);
     });
 
@@ -113,7 +105,6 @@ angular.module('transmartBaseUi')
      * @private
      */
     var _initLoad = function () {
-      $log.info('OnInit');
       var findURLQueryParams = $location.search();
 
       if (findURLQueryParams !== undefined) {
