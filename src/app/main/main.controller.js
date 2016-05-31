@@ -82,6 +82,7 @@ angular.module('transmartBaseUi')
     $scope.resetActiveLabels = function () {
       CohortSelectionService.clearAll();
       ChartService.reset();
+      $scope.$broadcast('collectionUpdated', [[], []]);
     };
 
     /**

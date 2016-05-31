@@ -9,12 +9,13 @@ angular.module('transmartBaseUi', [
   'ui.bootstrap',
   'restangular',
   'ui.tree',
-  'smart-table',
   'angular-loading-bar',
   'ngDragDrop',
   'ngCsv',
   'gridster',
-  'ui.layout'
+  'ui.layout',
+  'ui.grid',
+  'ui.grid.pagination'
 ])
   .config( ['$stateProvider', 'RestangularProvider', 'cfpLoadingBarProvider', '$locationProvider', '$uibTooltipProvider',
     function ($stateProvider, RestangularProvider, cfpLoadingBarProvider, $locationProvider, $uibTooltipProvider) {
