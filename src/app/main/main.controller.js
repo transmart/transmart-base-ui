@@ -62,6 +62,7 @@ angular.module('transmartBaseUi')
       $scope.cohortVal.dimensions = $scope.cs.numDim;
       $scope.cohortVal.maxdim = $scope.cs.maxDim;
       $scope.cohortLabels = $scope.cs.labels;
+      $scope.$broadcast('collectionUpdated', [$scope.cohortVal.subjects, $scope.cohortLabels]);
     };
 
     $scope.$watchCollection('cs', function() {
@@ -107,6 +108,7 @@ angular.module('transmartBaseUi')
     $scope.resetActiveLabels = function () {
       CohortSelectionService.clearAll();
       ChartService.reset();
+      $scope.$broadcast('collectionUpdated', [[], []]);
     };
 
     /**
