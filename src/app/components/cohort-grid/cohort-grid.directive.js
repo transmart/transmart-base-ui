@@ -72,21 +72,10 @@ angular.module('transmartBaseUi')
           }
         };
 
-
-        $scope.$watch('cohort', function () { // I am leaving these two watchers so that we can find out where the
-                                              // issue is with cohorts reset
-          console.log('Watcher registered change in cohorts');
-        }, true);
-
-        $scope.$watch('headers', function () { // I am leaving these two watchers so that we can find out where the
-                                               // issue is with cohorts reset
-          console.log('Watcher registered change in headers');
-        });// if you set it to true it will cause maximum call stack exceeded exception
         var WIDTH_PER_COLUMN = 200;
         $scope.style_modifiers = {'width': WIDTH_PER_COLUMN * 2}; // Starting value never really used
 
         $scope.$on('collectionUpdated', function (event, passedFromBroadcast) {
-          console.log('collectionUpdated event fired');
           //TODO: refactor the directive to either use only data from event or from data binding. Not both.
           var _cohorts = passedFromBroadcast[0];
           var _headers = passedFromBroadcast[1];
