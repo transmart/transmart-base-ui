@@ -35,10 +35,11 @@ describe('ConnectionsCtrl', function() {
 
       EndpointService = {
         getEndpoints : function() {},
-        clearStoredEnpoints : function () {},
+        clearStoredEndpoints : function () {},
         saveSelectedEndpoint : function () {},
         navigateToAuthorizationPage : function () {},
-        remove: function (e) {}
+        removeEndpoint: function (e) {},
+        authorizeEndpoint: function (endpoint) {},
       };
 
       AlertService = {
@@ -54,10 +55,11 @@ describe('ConnectionsCtrl', function() {
       };
 
       spyOn(EndpointService, 'getEndpoints').and.returnValue(_dummyEndpoints);
-      spyOn(EndpointService, 'clearStoredEnpoints');
+      spyOn(EndpointService, 'clearStoredEndpoints');
       spyOn(EndpointService, 'saveSelectedEndpoint');
       spyOn(EndpointService, 'navigateToAuthorizationPage');
-      spyOn(EndpointService, 'remove');
+      spyOn(EndpointService, 'removeEndpoint');
+      spyOn(EndpointService, 'authorizeEndpoint');
       spyOn(AlertService, 'add');
       spyOn(AlertService, 'remove');
       spyOn(AlertService, 'get');
@@ -83,17 +85,17 @@ describe('ConnectionsCtrl', function() {
   });
 
   describe ('$scope.clearSavedEndpoints', function () {
-    it('Should invoke EndpointService.clearStoredEnpoints', function () {
+    it('Should invoke EndpointService.clearStoredEndpoints', function () {
       scope.clearSavedEndpoints();
-      expect(EndpointService.clearStoredEnpoints).toHaveBeenCalled();
+      expect(EndpointService.clearStoredEndpoints).toHaveBeenCalled();
     });
   });
 
   describe ('$scope.navigateToAuthorizationPage', function () {
 
-    it('should invoke EndpointService.navigateToAuthorizationPage', function () {
+    it('should invoke EndpointService.authorizeEndpoint', function () {
       scope.navigateToAuthorizationPage();
-      expect(EndpointService.navigateToAuthorizationPage).toHaveBeenCalled();
+      expect(EndpointService.authorizeEndpoint).toHaveBeenCalled();
     });
 
     it('should not navigate and store auth endpoint uri when already connected', function () {
@@ -104,10 +106,10 @@ describe('ConnectionsCtrl', function() {
       }]);
 
       scope.selectedConnection = { url:'http://foo' };
-      scope.navigateToAuthorizationPage();
+      scope.navigateToAuthorizationPage(scope.selectedConnection);
       //expect(AlertService.add).toHaveBeenCalled();
       expect(EndpointService.saveSelectedEndpoint).not.toHaveBeenCalled();
-      expect(EndpointService.navigateToAuthorizationPage).not.toHaveBeenCalled();
+      expect(EndpointService.authorizeEndpoint).not.toHaveBeenCalled();
     });
 
   });
@@ -128,10 +130,10 @@ describe('ConnectionsCtrl', function() {
   });
 
   describe ('$scope.removeEndpoint', function () {
-    it('should invoke EndpointService.remove', function () {
+    it('should invoke EndpointService.removeEndpoint', function () {
       var _e = {};
       scope.removeEndpoint(_e);
-      expect(EndpointService.remove).toHaveBeenCalled();
+      expect(EndpointService.removeEndpoint).toHaveBeenCalled();
     });
   });
 
