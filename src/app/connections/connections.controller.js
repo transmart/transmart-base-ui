@@ -4,9 +4,6 @@ angular.module('transmartBaseUi')
   .controller('ConnectionsCtrl', ['$scope', '$location', 'EndpointService', 'StudyListService', '$rootScope', 'AlertService',
     function ($scope, $location, EndpointService, StudyListService, $rootScope, AlertService) {
 
-      // get access token info in uri
-      var oauthGrantFragment = $location.hash();
-
       // alerts
       $scope.close = AlertService.remove;
       $scope.alerts = AlertService.get();
@@ -24,30 +21,6 @@ angular.module('transmartBaseUi')
       ];
 
       $scope.selectedConnection = {};
-
-      // when URI contains oauth2 response need to be handled
-      if (oauthGrantFragment.length > 1) {
-
-        // Update the current endpoint with the received credentials and save it
-        $scope.selectedConnection = EndpointService.initializeEndpointWithCredentials(
-          EndpointService.getSelectedEndpoint(), oauthGrantFragment);
-        EndpointService.addEndpoint($scope.selectedConnection);
-
-        $scope.endpointTabOpen = false;
-        $location.url($location.path());
-
-        StudyListService.emptyAll();
-
-        _.each($scope.endpoints, function (endpoint) {
-          StudyListService.loadStudyList(endpoint).then(function () {
-            $rootScope.publicStudies = StudyListService.getPublicStudies();
-            $rootScope.privateStudies =  StudyListService.getPrivateStudies();
-          }, function () {
-            EndpointService.invalidateEndpoint(endpoint);
-          });
-        });
-
-      }
 
       /**
        * Empty endpoints

@@ -3,8 +3,8 @@
 
 angular.module('transmartBaseUi')
   .factory('EndpointService',
-  ['$rootScope', '$http', '$q', 'Restangular', '$cookies', '$window', '$location', 'masterEndpointConfig',
-    function ($rootScope, $http, $q, Restangular, $cookies, $window, $location, masterEndpointConfig) {
+  ['$rootScope', '$http', '$q', 'Restangular', '$cookies', '$window', '$location', 'masterEndpointConfig', 'isTesting',
+    function ($rootScope, $http, $q, Restangular, $cookies, $window, $location, masterEndpointConfig, isTesting) {
 
       var service = {};
 
@@ -16,6 +16,35 @@ angular.module('transmartBaseUi')
 
       var cookieKeyForEndpoints = 'transmart-base-ui-v2.endpoints';
       var cookieKeyForSelectedEndpoint = 'transmart-base-ui-v2.selectedEndpoint';
+
+
+      /**
+       * Initializes the endpoints by loading them from the cookies, checking
+       * if we're currently being redirected from an authorization page,
+       * saving the credentials if we are or making sure we connect to a master
+       * endpoint if we aren't.
+       */
+      service.initializeEndpoints = function() {
+        service.retrieveStoredEndpoints(); // includes master endpoint
+
+        // Check if there is an OAuth fragment, which indicates we're in the process
+        // of authorizing an endpoint.
+        var oauthGrantFragment = $location.hash();
+        if (oauthGrantFragment.length > 1) {
+
+          // Update the current endpoint with the received credentials and save it
+          var selectedConnection = service.initializeEndpointWithCredentials(
+            service.getSelectedEndpoint(), oauthGrantFragment);
+          service.addEndpoint(selectedConnection);
+
+          $location.url($location.path());
+        }
+        else {
+          if (!isTesting) {
+            service.initializeMasterEndpoint();
+          }
+        }
+      }
 
       /**
        * Returns the current list of endpoints.
