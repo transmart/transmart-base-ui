@@ -36,6 +36,15 @@ $ gulp serve
 
 More information on the gulp tasks in [this README.md](app/templates/gulp/README.md).
 
+### Configuration for development, testing and production
+
+There are different configurations available for development, testing and production:
+'dev', 'test' and 'prod'. Specify your environment by passing a parameter to gulp
+('dev' is the default):
+* 'gulp --env dev serve'
+* 'gulp --env test test'
+* 'gulp --env prod build'
+
 ## Directory structure
 
 [Best Practice Recommendations for Angular App Structure](https://docs.google.com/document/d/1XXMvReO8-Awi1EZXAXS4PzDzdNvV6pGcuaF4Q9821Es/pub)
