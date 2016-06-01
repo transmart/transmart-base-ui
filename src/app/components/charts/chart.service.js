@@ -1,5 +1,4 @@
 'use strict';
-/* jshint undef: false */
 
 angular.module('transmartBaseUi').factory('ChartService',
   ['Restangular', '$q', '$rootScope', '$timeout', 'AlertService', 'DcChartsService', 'GridsterService',
@@ -156,8 +155,6 @@ angular.module('transmartBaseUi').factory('ChartService',
 
     $rootScope.$broadcast('prepareChartContainers', chartService.cs.labels);
   };
-
-  chartService.reset();
 
   var _getType = function (value) {
     var _type = typeof value;
@@ -438,6 +435,8 @@ angular.module('transmartBaseUi').factory('ChartService',
    */
   chartService.createCohortChart = function (label, el) {
 
+    var _chart;
+
     var _defaultDim = function () {
       chartService.cs.dims[label.ids] = chartService.cs.cross.dimension(function (d) {
         return d.labels[label.ids] === undefined ? 'UnDef' : d.labels[label.ids];
@@ -452,83 +451,83 @@ angular.module('transmartBaseUi').factory('ChartService',
       }
     };
 
-    if (!label.resolved) {
-      var _chart;
 
-      if (label.type === 'combination') {
-        _chart = _createMultidimensionalChart(label, el);
-      } else {
-        // Create a number display if highdim
-        if (label.type === 'highdim') {
-          _defaultDim();
-          _chart = _numDisplay(chartService.cs.dims[label.ids], chartService.cs.groups[label.ids], el);
-          _chart.type = 'NUMBER';
+    if (label.type === 'combination') {
+      _chart = _createMultidimensionalChart(label, el);
+    } else {
+      // Create a number display if highdim
+      if (label.type === 'highdim') {
+        _defaultDim();
+        _chart = _numDisplay(chartService.cs.dims[label.ids], chartService.cs.groups[label.ids], el);
+        _chart.type = 'NUMBER';
 
         // Create a PIECHART if categorical
-        } else if (label.type === 'string' || label.type === 'object') {
-          _defaultDim();
-          _chart = DcChartsService.getPieChart(chartService.cs.dims[label.ids], chartService.cs.groups[label.ids], el);
-          _chart.type = 'PIECHART';
+      } else if (label.type === 'string' || label.type === 'object') {
+        _defaultDim();
+        _chart = DcChartsService.getPieChart(chartService.cs.dims[label.ids], chartService.cs.groups[label.ids], el);
+        _chart.type = 'PIECHART';
 
         // Create a BARCHART if numerical
-        } else if (label.type === 'number') {
-          _defaultDim();
-          _chart = DcChartsService.getBarChart(chartService.cs.dims[label.ids], chartService.cs.groups[label.ids], el,
-            {nodeTitle: label.name});
-          _chart.type = 'BARCHART';
+      } else if (label.type === 'number') {
+        _defaultDim();
+        _chart = DcChartsService.getBarChart(chartService.cs.dims[label.ids], chartService.cs.groups[label.ids], el,
+          {nodeTitle: label.name});
+        _chart.type = 'BARCHART';
 
         // Create a BARCHART WITH BINS if floating point values
-        } else if (label.type === 'float'){
-          chartService.cs.dims[label.ids] = chartService.cs.cross.dimension(function (d) {
-            return d.labels[label.ids] === undefined ? 'UnDef' : d.labels[label.ids].toFixed(label.precision === 0 ? 0 : label.precision);
-          });
-          chartService.cs.groups[label.ids] = chartService.cs.dims[label.ids].group();
-          _chart = DcChartsService.getBarChart(chartService.cs.dims[label.ids], chartService.cs.groups[label.ids],
-            el, {nodeTitle: label.name, float: true, precision: label.precision});
-          _chart.type = 'BARCHART';
+      } else if (label.type === 'float') {
+        chartService.cs.dims[label.ids] = chartService.cs.cross.dimension(function (d) {
+          return d.labels[label.ids] === undefined ? 'UnDef' : d.labels[label.ids].toFixed(label.precision === 0 ? 0 : label.precision);
+        });
+        chartService.cs.groups[label.ids] = chartService.cs.dims[label.ids].group();
+        _chart = DcChartsService.getBarChart(chartService.cs.dims[label.ids], chartService.cs.groups[label.ids],
+          el, {nodeTitle: label.name, float: true, precision: label.precision});
+        _chart.type = 'BARCHART';
 
-        }
       }
-
-      label.resolved = true;
-      _chart.id = label.ids;
-      _chart.tsLabel = label;
-
-      if (typeof label.filters !== 'undefined') {
-        if (label.filters.filters.length > 0) {
-          _chart.savedFilters = label.filters.filters;
-          _.each(_chart.savedFilters, function (f) {
-            _chart.filterAll();
-            _chart.filter(f);
-          });
-        }
-      }
-
-      chartService.cs.charts.push(_chart);
-      return _chart;
     }
+
+    _chart.id = label.ids;
+    _chart.tsLabel = label;
+
+    if (typeof label.filters !== 'undefined') {
+      if (label.filters.filters.length > 0) {
+        _chart.savedFilters = label.filters.filters;
+        _.each(_chart.savedFilters, function (f) {
+          _chart.filterAll();
+          _chart.filter(f);
+        });
+      }
+    }
+
+    _chart.render(); // render chart here
+
+    this.cs.charts.push(_chart);
+    return _chart;
   };
 
-  chartService.doResizeChart = function (id, height, width) {
-    var _CONF = {
-      RAD: 0.9, // Percentage to adjust the radius of the chart
-      LEG_H: 0.05,// Percentage to adjust legend position in Y
-      LEG_W: 0, // Percentage to adjust legend position in X
-      LEG_S: 0.03, // Legend size percentage of chart
-      LEG_B: 4, // Legend size base in px
-      LEG_G: 0.02, // Legen gap in percentage of chart height
-      MIN_S: (width > height ? height : width), // Smallest of width or heigth
-      TICK_X: 30, // Pixels per tick in x
-      TICK_Y: 30, // Pixels per tick in y
-      SLICE: 20, // Pixels per slice for pie charts
-      SP_DOT_SIZE: 4, // Pixels per width / heigth
-      BP_PIXELS_PER_GROUP: 110,
-      HM_LEFT_MARGIN: width/6,
-      HM_Y_LABELS_PIXELS: 10
-    };
+    chartService.resizeChart = function (_chart) {
 
-    var _chart = _.findWhere(chartService.cs.charts, {id: id});
-    if(_chart) {
+      var width = (_chart.gridInfo.sizeX * _chart.gridInfo.curColWidth) - 50;
+      var height =  (_chart.gridInfo.sizeY * _chart.gridInfo.curRowHeight) - 60;
+
+      var _CONF = {
+        RAD: 0.9, // Percentage to adjust the radius of the chart
+        LEG_H: 0.05,// Percentage to adjust legend position in Y
+        LEG_W: 0, // Percentage to adjust legend position in X
+        LEG_S: 0.03, // Legend size percentage of chart
+        LEG_B: 4, // Legend size base in px
+        LEG_G: 0.02, // Legend gap in percentage of chart height
+        MIN_S: (width > height ? height : width), // Smallest of width or height
+        TICK_X: 30, // Pixels per tick in x
+        TICK_Y: 30, // Pixels per tick in y
+        SLICE: 20, // Pixels per slice for pie charts
+        SP_DOT_SIZE: 4, // Pixels per width / height
+        BP_PIXELS_PER_GROUP: 110,
+        HM_LEFT_MARGIN: width/6,
+        HM_Y_LABELS_PIXELS: 10
+      };
+
 
       // Adjust width and height
       _chart.width(width).height(height);
@@ -537,14 +536,14 @@ angular.module('transmartBaseUi').factory('ChartService',
       if(_chart.type === 'PIECHART'){
         //  set the radius to half the shortest dimension
         _chart.radius((_CONF.MIN_S) / 2 * _CONF.RAD)
-        // Limit the number of slices in the chart
-        .slicesCap(Math.floor(_CONF.MIN_S/_CONF.SLICE))
-        //
-        .legend(dc.legend()
-          .x(width * _CONF.LEG_W)
-          .y(height * _CONF.LEG_H)
-          .itemHeight(_CONF.LEG_B+_CONF.LEG_S*_CONF.MIN_S)
-          .gap(_CONF.MIN_S*_CONF.LEG_G));
+          // Limit the number of slices in the chart
+          .slicesCap(Math.floor(_CONF.MIN_S/_CONF.SLICE))
+          //
+          .legend(dc.legend()
+            .x(width * _CONF.LEG_W)
+            .y(height * _CONF.LEG_H)
+            .itemHeight(_CONF.LEG_B+_CONF.LEG_S*_CONF.MIN_S)
+            .gap(_CONF.MIN_S*_CONF.LEG_G));
 
       } else if (_chart.type === 'BARCHART') {
         // Adjust number of ticks to not overlap
@@ -557,8 +556,8 @@ angular.module('transmartBaseUi').factory('ChartService',
         _chart.margins({top: 5, right: 5, bottom: 45, left: 40});
 
         if(_chart.group().all().length > width/_CONF.BP_PIXELS_PER_GROUP){
-            _chart.xAxis().tickValues([]);
-            _chart.yAxis().ticks(3);
+          _chart.xAxis().tickValues([]);
+          _chart.yAxis().ticks(3);
         } else {
           _chart.yAxis().ticks(Math.floor(height/_CONF.TICK_Y));
           _chart.xAxis().tickValues(null);
@@ -582,10 +581,8 @@ angular.module('transmartBaseUi').factory('ChartService',
         _chart.symbolSize(_CONF.SP_DOT_SIZE);
         _chart.rescale();
       }
-
       _chart.render();
-    }
-  };
+    };
 
     /**
      * Return active filters
@@ -607,9 +604,25 @@ angular.module('transmartBaseUi').factory('ChartService',
       return _filters;
     };
 
-  /**
-   * ChartService
-   */
-  return chartService;
+
+    chartService.summary = function () {
+      return {
+        selected : chartService.cs.cross.groupAll().value(),
+        total : chartService.cs.cross.size(),
+        subjects :  chartService.cs.mainDim.top(Infinity),
+        dimensions : chartService.cs.numDim,
+        maxdim : chartService.cs.maxDim,
+        cohortLabels : chartService.cs.labels
+      };
+    };
+
+
+    // init
+    chartService.reset();
+
+    /**
+     * ChartService
+     */
+    return chartService;
 
 }]);
