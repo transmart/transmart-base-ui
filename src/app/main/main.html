@@ -34,6 +34,9 @@
                     ng-click="resetActiveLabels()">
               Reset<br>({{cohortVal.dimensions}}/{{cohortVal.maxdim}})
             </button>
+            <button ng-if="cohortChartContainerLabels.length >= 1" class="btn" ng-click="openSaveCohortModal()">
+              Save cohort
+            </button>
           </div>
 
           <div id="main-chart-container">
