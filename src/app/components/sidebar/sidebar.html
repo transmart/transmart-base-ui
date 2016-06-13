@@ -4,12 +4,23 @@
   <input type="text"
          class="form-control"
          placeholder="Search term"
+         bu-enter-key ="addSearchKey();"
          ng-model="searchTerm"
          ng-disabled="publicStudies.length == 0 && privateStudies.length == 0">
 
+  <ul class="list-inline ts-selected-keywords">
+    <li ng-repeat="searchKey in searchKeys track by $index" class="label label-primary">
+      {{searchKey}}
+      <span class="glyphicon glyphicon-remove" aria-hidden="true" ng-click="removeSearchKey(searchKey);"></span>
+    </li>
+    <li  class="label label-danger" ng-if="searchKeys.length > 0">
+      Clear
+      <span class="glyphicon glyphicon-remove" aria-hidden="true" ng-click="removeAllSearchKeys();"></span>
+    </li>
+  </ul>
 
   <!-- START STUDIES -->
-  <uib-accordion close-others="status.oneAtATime">
+  <uib-accordion close-others="true">
 
     <uib-accordion-group heading="Highlights"
                          is-open="true"
