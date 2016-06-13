@@ -3,50 +3,76 @@
 angular.module('transmartBaseUi').factory('QueryBuilderService', ['JSON2XMLService',
   function(JSON2XMLService) {
 
-  var service = {
-  };
+  var service = {};
 
-  service.convertQueryToXML = function(query, name) {
+  service.convertQueryToXML = function(cohortFilters, name) {
     var xml = JSON2XMLService.json2xml({
         'query_definition': {
           'query_name': name,
-          'panel': {
-            'panel_number': 1,
-            'item': representCohortFiltersAsXML(query)
-          }
+          'panel': convertCohortFiltersToI2B2Structure(cohortFilters)
         }
       });
-    console.log(xml);
     return xml;
   };
 
-  function representCohortFiltersAsXML(cohortFilters) {
-    var items = [];
+  function convertCohortFiltersToI2B2Structure(cohortFilters) {
+    var panels = [];
+
     _.each(cohortFilters, function(cohortFilter) {
-      console.log(cohortFilter);
-      items.push(generatePanelItem(cohortFilter));
+      var items;
+
+      // Numbers and float are constrained by a range
+      if (cohortFilter.type == 'float' || cohortFilter.type == 'number') {
+        items = generatePanelItemsForNumericRanges(cohortFilter);
+      }
+
+      // Constrain by one or more categories
+      if (cohortFilter.type == 'string') {
+        items = generatePanelItemsForCategories(cohortFilter);
+      }
+
+      if (items.length > 0) {
+        panels.push({
+          'panel_number': panels.length + 1,
+          'invert': 0,
+          'total_item_occurrences': 1,
+          'item': items
+        });
+      }
+
     });
+    return panels;
+  };
+
+  function generatePanelItemsForNumericRanges(cohortFilter) {
+    var items = [];
+
+    _.each(cohortFilter.filters, function(filter) {
+      items.push({
+        'item_name': cohortFilter.name,
+        'item_key': '\\\\Public Studies' + cohortFilter.label,
+        'tooltip': cohortFilter.label,
+        'class': 'ENC',
+        'constrain_by_value': generateConstraintByValueBetween(filter[0], filter[1])
+      });
+    });
+
     return items;
   };
 
-  function generatePanelItem(cohortFilter) {
-    var item = {
-      'item_name': cohortFilter.name,
-      'item_key': '\\\\Public Studies' + cohortFilter.label,
-      'tooltip': cohortFilter.label,
-      'class': 'ENC',
-    }
+  function generatePanelItemsForCategories(cohortFilter) {
+    var items = [];
 
-    if (cohortFilter.type == 'float') {
-      if (cohortFilter.filters.length == 1) {
-        // the first filter will contain an array with a min and max value
-        var minValue = cohortFilter.filters[0][0];
-        var maxValue = cohortFilter.filters[0][1];
-        item['constrain_by_value'] = generateConstraintByValueBetween(minValue, maxValue);
-      }
-    }
+    _.each(cohortFilter.filters, function(filter) {
+      items.push({
+        'item_name': filter,
+        'item_key': '\\\\Public Studies' + cohortFilter.label + filter,
+        'tooltip': cohortFilter.label + filter,
+        'class': 'ENC',
+      });
+    });
 
-    return item;
+    return items;
   };
 
   function generateConstraintByValueBetween(value1, value2) {
