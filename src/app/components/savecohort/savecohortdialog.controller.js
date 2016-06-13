@@ -20,7 +20,7 @@ angular.module('transmartBaseUi')
           .then(function(result) {
             AlertService.add('success', 'Cohort saved OK: ' + result.setSize + ' included, id: ' + result.id);
           }, function(result) {
-            AlertService.add('error', 'There was an error saving the cohort: ' + result.data.message);
+            AlertService.add('danger', 'There was an error saving the cohort: ' + result.data.message);
         });
 
         $uibModalInstance.close();
