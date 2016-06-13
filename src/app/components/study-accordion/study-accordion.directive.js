@@ -16,9 +16,6 @@ angular.module('transmartBaseUi')
       // Scope
       //----------------------------------------------------------------------------------------------------------------
 
-      scope.tree = [{}];
-      scope.opened = false;
-      scope.treeLoading = false;
       scope.treeConfig = {
         drag: false,
         collapsed: true
@@ -58,13 +55,13 @@ angular.module('transmartBaseUi')
        * @param study
        */
       scope.getTree = function (study) {
-        scope.selectedStudy = study;
-        if(!scope.opened){
-          scope.tree = _getSingleTree(study);
-          scope.opened = true;
+        if (study.open === undefined || !study.open) {
+          study.tree = _getSingleTree(study);
+          study.open = true;
         } else {
-          scope.opened = false;
+          study.open = false;
         }
+
       };
 
       /**
@@ -110,7 +107,8 @@ angular.module('transmartBaseUi')
 
         if(!node.loaded){
 
-          scope.treeLoading = true;
+          node.study.treeLoading = true;
+
           _countSubjects(node);
 
           if(children){
@@ -137,19 +135,19 @@ angular.module('transmartBaseUi')
                 if (!end) {
                   _getNodeChildren(newNode, true);
                 } else {
-                  scope.treeLoading = false;
+                  node.study.treeLoading = false;
                 }
 
               }, function(){
                 newNode.type = 'FAILED_CALL';
                 node.nodes.push(newNode);
                 //scope.callFailure = true;
-                scope.treeLoading = false;
+                node.study.treeLoading = false;
                 node.loaded = true;
               });
             });
           } else {
-            scope.treeLoading = false;
+            node.study.treeLoading = false;
           }
         }
 
