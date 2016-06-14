@@ -5,17 +5,17 @@ angular.module('transmartBaseUi').factory('QueryBuilderService', ['JSON2XMLServi
 
   var service = {};
 
-  service.convertQueryToXML = function(cohortFilters, name) {
+  service.convertCohortFiltersToXML = function(cohortFilters, name) {
     var xml = JSON2XMLService.json2xml({
         'query_definition': {
           'query_name': name,
-          'panel': convertCohortFiltersToI2B2Structure(cohortFilters)
+          'panel': service.convertCohortFiltersToI2B2Structure(cohortFilters)
         }
       });
     return xml;
   };
 
-  function convertCohortFiltersToI2B2Structure(cohortFilters) {
+  service.convertCohortFiltersToI2B2Structure = function(cohortFilters) {
     var panels = [];
 
     _.each(cohortFilters, function(cohortFilter) {

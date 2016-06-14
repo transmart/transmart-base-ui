@@ -11,7 +11,7 @@ angular.module('transmartBaseUi')
        */
       $scope.ok = function () {
         var endpoint = EndpointService.getMasterEndpoint();
-        var i2b2Query = QueryBuilderService.convertQueryToXML(
+        var i2b2Query = QueryBuilderService.convertCohortFiltersToXML(
           ChartService.getCohortFilters(), $scope.cohortName);
 
         var patientSets = endpoint.restangular.all('patient_sets');
