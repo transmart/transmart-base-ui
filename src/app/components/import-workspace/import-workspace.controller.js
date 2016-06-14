@@ -18,7 +18,7 @@ angular.module('transmartBaseUi')
       _.each($scope.content.nodes, function (node) {
 
         // check if endpoints are still connected
-        var _e = _.where(EndpointService.getEndpoints(), {url : node.study.endpoint.url});
+        var _e = _.filter(EndpointService.getEndpoints(), {url : node.study.endpoint.url});
 
         // if endpoints are still connected
         if (_e.length > 0) { // get restObj for each nodes
@@ -28,7 +28,7 @@ angular.module('transmartBaseUi')
             node.restObj = d; // assign rest object to the imported node
 
             // assign study to the node
-            var _study = _.where(StudyListService.studyList, {id : node.study.id});
+            var _study = _.filter(StudyListService.studyList, {id : node.study.id});
 
             if (_study.length > 0) {
               node.study = _study[0];
