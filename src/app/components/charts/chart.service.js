@@ -179,7 +179,7 @@ angular.module('transmartBaseUi').factory('ChartService',
     var _addLabel = function (obs, node, filters) {
 
       // Check if label has already been added
-      var label = _.findWhere(chartService.cs.labels, {label: obs.label});
+      var label = _.find(chartService.cs.labels, {label: obs.label});
 
       if (!label) {
 
@@ -251,7 +251,7 @@ angular.module('transmartBaseUi').factory('ChartService',
     var _filter, _deferred = $q.defer();
 
     var _getFilter = function (label, filters) {
-      return _.findWhere(filters, {label:label});
+      return _.find(filters, {label:label});
     };
 
     // Get all observations under the selected concept
@@ -270,7 +270,7 @@ angular.module('transmartBaseUi').factory('ChartService',
           var _id = _addLabel(obs, node, _filter);
 
           // Check if the subject of the observation is already present
-          var found = _.findWhere(chartService.cs.subjects, {id: obs._embedded.subject.id});
+          var found = _.find(chartService.cs.subjects, {id: obs._embedded.subject.id});
 
           if (found){
             found.labels[_id] = obs.value;

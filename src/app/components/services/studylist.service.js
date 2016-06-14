@@ -19,15 +19,15 @@ angular.module('transmartBaseUi').factory('StudyListService', ['$q', function($q
   };
 
   service.getPublicStudies = function () {
-    return _.where(service.studyList, {type:'public'});
+    return _.filter(service.studyList, {type:'public'});
   };
 
   service.getPrivateStudies = function () {
-    return _.where(service.studyList, {type:'private'});
+    return _.filter(service.studyList, {type:'private'});
   };
 
   service.getOtherStudies = function () {
-    return _.where(service.studyList, {type:'other'});
+    return _.filter(service.studyList, {type:'other'});
   };
 
   service.loadStudyList = function (endpoint) {
