@@ -7,7 +7,6 @@ angular.module('transmartBaseUi')
     scope: {
       studies: '=studies',
       title: '=title',
-      saction: '&studyAction',
       studyShown: '='
     },
     templateUrl: 'app/components/study-accordion/study-accordion.tpl.html',
@@ -187,10 +186,6 @@ angular.module('transmartBaseUi')
             }
           }
         });
-      };
-
-      scope.displaySummaryStatistics = function (node) {
-        $state.go('workspace', {action : 'summaryStats', study : node.id}, {reload : true});
       };
 
     }
