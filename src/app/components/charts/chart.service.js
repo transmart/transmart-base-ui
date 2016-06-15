@@ -55,7 +55,6 @@ angular.module('transmartBaseUi').factory('ChartService',
   };
 
   /**
-  *
   * @param charts
   */
   chartService.renderAll = function (charts) {
@@ -606,7 +605,7 @@ angular.module('transmartBaseUi').factory('ChartService',
 
 
     chartService.summary = function () {
-      return {
+      var _summary = {
         selected : chartService.cs.cross.groupAll().value(),
         total : chartService.cs.cross.size(),
         subjects :  chartService.cs.mainDim.top(Infinity),
@@ -614,6 +613,9 @@ angular.module('transmartBaseUi').factory('ChartService',
         maxdim : chartService.cs.maxDim,
         cohortLabels : chartService.cs.labels
       };
+      chartService.cs.subjects = _summary.subjects;
+
+      return _summary;
     };
 
 
