@@ -59,8 +59,7 @@
 <div ng-repeat="study in studies"
       class="ts-study-accordion">
 
-  <uib-accordion-group  is-open="study.open"
-                    ng-if="studyShown === '' || study._embedded.ontologyTerm.name.includes(studyShown)">
+  <uib-accordion-group  is-open="study.open" ng-if="study.hide != true">
     <!--heading-->
     <uib-accordion-heading >
       <span ng-click="getTree(study);" >
