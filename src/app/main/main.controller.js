@@ -25,6 +25,7 @@ angular.module('transmartBaseUi')
       if (!_.isEqual(newVal, oldVal)) {
         $scope.cohortVal = ChartService.summary();
       }
+
     });
 
     // Tabs
