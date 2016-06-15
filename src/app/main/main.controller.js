@@ -3,9 +3,9 @@
 angular.module('transmartBaseUi')
   .controller('MainCtrl',
     ['$scope', '$rootScope', 'Restangular', 'ChartService', 'AlertService', '$location', '$stateParams', '$log',
-      '$state', 'StudyListService', 'CohortSelectionService', 'GridsterService',
+      '$state', 'StudyListService', 'CohortSelectionService', 'GridsterService', '$uibModal',
       function ($scope, $rootScope, Restangular, ChartService, AlertService, $location, $stateParams, $log,
-                $state, StudyListService, CohortSelectionService,  GridsterService)
+                $state, StudyListService, CohortSelectionService,  GridsterService, $uibModal)
   {
 
     // Alerts
@@ -99,6 +99,18 @@ angular.module('transmartBaseUi')
         $scope.cohortUpdating = false;
       });
     };
+
+    /**
+     * Saves the cohort by asking for a name, saving it to the backend
+     * and showing the resulting id
+     */
+    $scope.openSaveCohortModal = function() {
+      $uibModal.open({
+        templateUrl: 'app/components/savecohort/savecohortdialog.tpl.html',
+        controller: 'SaveCohortDialogCtrl',
+        animation:false
+      });
+    }
 
     /**
      * When this controller is loaded, check the query params if it contains some actions.
