@@ -1,9 +1,9 @@
 
     <div class="main-container as potato">
       <!-- Alert ------------------------------------------------------------------------------------------------------>
-      <alert class="alert-div" ng-repeat="alert in alerts" type="{{alert.type}}" close="close(alert.id)">
+      <uib-alert class="alert-div" ng-repeat="alert in alerts" type="{{alert.type}}" close="close(alert.id)">
         {{alert.message}}
-      </alert>
+      </uib-alert>
 
       <h3>Workspace</h3>
       <uib-tabset>
@@ -33,6 +33,9 @@
             <button ng-if="cohortChartContainerLabels.length >= 1" class="btn btn-danger ts-btn-node-reset"
                     ng-click="resetActiveLabels()">
               Reset<br>({{cohortVal.dimensions}}/{{cohortVal.maxdim}})
+            </button>
+            <button ng-if="cohortChartContainerLabels.length >= 1" class="btn" ng-click="openSaveCohortModal()">
+              Save cohort
             </button>
           </div>
 
