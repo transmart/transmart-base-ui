@@ -18,7 +18,13 @@ describe('QueryBuilderService Unit Tests', function() {
         type: 'string',
         label: '\\Public Studies\\GSE8581\\Subjects\\Organism\\',
         study: {
-          id: 'GSE8581'
+          id: 'GSE8581',
+          type: 'public',
+          _embedded: {
+            ontologyTerm: {
+              fullName: '\\Public Studies\\GSE8581\\'
+            }
+          }
         },
         filters: []
       }
@@ -29,8 +35,8 @@ describe('QueryBuilderService Unit Tests', function() {
       total_item_occurrences: 1,
       item: {
         item_name: "GSE8581",
-        item_key: "\\\\Public Studies\\Public Studies\\GSE8581",
-        tooltip: "\\Public Studies\\GSE8581",
+        item_key: "\\\\Public Studies\\Public Studies\\GSE8581\\",
+        tooltip: "\\Public Studies\\GSE8581\\",
         class: "ENC"
       }
     }]);
@@ -42,18 +48,27 @@ describe('QueryBuilderService Unit Tests', function() {
         name: 'Organism',
         type: 'string',
         label: '\\Public Studies\\GSE8581\\Subjects\\Organism\\',
+        study: {
+          type: 'public'
+        },
         filters: []
       },
       {
         name: 'Sex',
         type: 'string',
         label: '\\Public Studies\\GSE8581\\Subjects\\Sex\\',
+        study: {
+          type: 'public'
+        },
         filters: ['female']
       },
       {
         name: 'Diagnosis',
         type: 'string',
         label: '\\Public Studies\\GSE8581\\Subjects\\Diagnosis\\',
+        study: {
+          type: 'public'
+        },
         filters: ['carcinoid', 'hematoma']
       }
     ];
@@ -91,12 +106,18 @@ describe('QueryBuilderService Unit Tests', function() {
         name: 'Age',
         type: 'number',
         label: '\\Public Studies\\GSE8581\\Subjects\\Age\\',
+        study: {
+          type: 'public'
+        },
         filters: [[65, 70]]
       },
       {
         name: 'Height',
         type: 'number',
         label: '\\Public Studies\\GSE8581\\Subjects\\Height\\',
+        study: {
+          type: 'public'
+        },
         filters: []
       }
     ];
@@ -125,12 +146,18 @@ describe('QueryBuilderService Unit Tests', function() {
         name: 'Age',
         type: 'number',
         label: '\\Public Studies\\GSE8581\\Subjects\\Age\\',
+        study: {
+          type: 'public'
+        },
         filters: [[65, 70]]
       },
       {
         name: 'Diagnosis',
         type: 'string',
         label: '\\Public Studies\\GSE8581\\Subjects\\Diagnosis\\',
+        study: {
+          type: 'public'
+        },
         filters: ['carcinoid', 'hematoma']
       }
     ];

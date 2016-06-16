@@ -44,11 +44,13 @@ angular.module('transmartBaseUi').factory('QueryBuilderService', ['JSON2XMLServi
 
     // If we didn't find any filters, add the entire study as a filter
     if (panels.length == 0) {
+      var studyKey = cohortFilters[0].study._embedded.ontologyTerm.fullName;
       panels.push({
         'panel_number': 1,
         'invert': 0,
         'total_item_occurrences': 1,
-        'item': generatePanelItemForConcept('\\Public Studies\\' + cohortFilters[0].study.id, cohortFilters[0].study.id)
+        'item': generatePanelItemForConcept(studyKey,
+          cohortFilters[0].study.id, cohortFilters[0].study.type)
       });
     }
 
@@ -61,7 +63,7 @@ angular.module('transmartBaseUi').factory('QueryBuilderService', ['JSON2XMLServi
     _.each(cohortFilter.filters, function(filter) {
       items.push({
         'item_name': cohortFilter.name,
-        'item_key': '\\\\Public Studies' + cohortFilter.label,
+        'item_key': getStudyTypePrefix(cohortFilter.study.type) + cohortFilter.label,
         'tooltip': cohortFilter.label,
         'class': 'ENC',
         'constrain_by_value': generateConstraintByValueBetween(filter[0], filter[1])
@@ -74,7 +76,7 @@ angular.module('transmartBaseUi').factory('QueryBuilderService', ['JSON2XMLServi
   function generatePanelItemsForCategories(cohortFilter) {
     var items = [];
     _.each(cohortFilter.filters, function(filter) {
-      items.push(generatePanelItemForConcept(cohortFilter.label + filter, filter));
+      items.push(generatePanelItemForConcept(cohortFilter.label + filter, filter, cohortFilter.study.type));
     });
     return items;
   }
@@ -87,13 +89,22 @@ angular.module('transmartBaseUi').factory('QueryBuilderService', ['JSON2XMLServi
     }
   }
 
-  function generatePanelItemForConcept(concept, name) {
+  function generatePanelItemForConcept(key, name, studyType) {
     return {
       'item_name': name,
-      'item_key': '\\\\Public Studies' + concept,
-      'tooltip': concept,
+      'item_key': getStudyTypePrefix(studyType) + key,
+      'tooltip': key,
       'class': 'ENC',
     };
+  }
+
+  function getStudyTypePrefix(studyType) {
+    switch(studyType) {
+      case 'public':
+        return '\\\\Public Studies';
+      case 'private':
+        return '\\\\Private Studies';
+    }
   }
 
   return service;
