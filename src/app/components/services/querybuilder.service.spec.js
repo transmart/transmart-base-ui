@@ -29,7 +29,7 @@ describe('QueryBuilderService Unit Tests', function() {
         filters: []
       }
     ];
-    expect(QueryBuilderService.convertCohortFiltersToI2B2Structure(cohortFilters)).toEqual([{
+    expect(QueryBuilderService.convertCohortFiltersToI2B2Panels(cohortFilters)).toEqual([{
       panel_number: 1,
       invert: 0,
       total_item_occurrences: 1,
@@ -72,7 +72,7 @@ describe('QueryBuilderService Unit Tests', function() {
         filters: ['carcinoid', 'hematoma']
       }
     ];
-    expect(QueryBuilderService.convertCohortFiltersToI2B2Structure(cohortFilters)).toEqual([{
+    expect(QueryBuilderService.convertCohortFiltersToI2B2Panels(cohortFilters)).toEqual([{
         panel_number: 1,
         invert: 0,
         total_item_occurrences: 1,
@@ -121,7 +121,7 @@ describe('QueryBuilderService Unit Tests', function() {
         filters: []
       }
     ];
-    expect(QueryBuilderService.convertCohortFiltersToI2B2Structure(cohortFilters)).toEqual([{
+    expect(QueryBuilderService.convertCohortFiltersToI2B2Panels(cohortFilters)).toEqual([{
         panel_number: 1,
         invert: 0,
         total_item_occurrences: 1,

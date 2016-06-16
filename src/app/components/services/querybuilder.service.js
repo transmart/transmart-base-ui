@@ -1,21 +1,32 @@
 'use strict';
 
-angular.module('transmartBaseUi').factory('QueryBuilderService', ['JSON2XMLService',
-  function(JSON2XMLService) {
+angular.module('transmartBaseUi').factory('QueryBuilderService', ['JSON2XMLService', function(JSON2XMLService) {
 
   var service = {};
 
-  service.convertCohortFiltersToXML = function(cohortFilters, name) {
+  /**
+   * Converts the selections in the cohort filters to i2b2 query xml.
+   * @param cohortFilters
+   * @param name
+   * @returns {*}
+   */
+  service.convertCohortFiltersToXML = function(cohortFilters, queryName) {
     var xml = JSON2XMLService.json2xml({
         'query_definition': {
-          'query_name': name,
-          'panel': service.convertCohortFiltersToI2B2Structure(cohortFilters)
+          'query_name': queryName,
+          'panel': service.convertCohortFiltersToI2B2Panels(cohortFilters)
         }
       });
     return xml;
   };
 
-  service.convertCohortFiltersToI2B2Structure = function(cohortFilters) {
+  /**
+   * Converts the selections in the cohort filters to an array of panel
+   * object structures that translate directly to the i2b2 query xml format.
+   * @param cohortFilters
+   * @returns {Array}
+   */
+  service.convertCohortFiltersToI2B2Panels = function(cohortFilters) {
     var panels = [];
 
     _.each(cohortFilters, function(cohortFilter) {
@@ -57,6 +68,13 @@ angular.module('transmartBaseUi').factory('QueryBuilderService', ['JSON2XMLServi
     return panels;
   };
 
+  /**
+   * Generate a list of panel items that will be OR-ed in the query, based
+   * on the selected numeric ranges. In practice only one range will be selected,
+   * but multiple are supported.
+   * @param cohortFilter
+   * @returns {Array}
+   */
   function generatePanelItemsForNumericRanges(cohortFilter) {
     var items = [];
 
@@ -73,6 +91,12 @@ angular.module('transmartBaseUi').factory('QueryBuilderService', ['JSON2XMLServi
     return items;
   }
 
+  /**
+   * Generate a list of panel items that will be OR-ed in the query, based
+   * on the selected filters for the categories.
+   * @param cohortFilter
+   * @returns {Array}
+   */
   function generatePanelItemsForCategories(cohortFilter) {
     var items = [];
     _.each(cohortFilter.filters, function(filter) {
@@ -81,6 +105,12 @@ angular.module('transmartBaseUi').factory('QueryBuilderService', ['JSON2XMLServi
     return items;
   }
 
+  /**
+   * Generate a value constraint for numeric ranges.
+   * @param value1
+   * @param value2
+   * @returns {{value_operator: string, value_constraint: string, value_type: string}}
+   */
   function generateConstraintByValueBetween(value1, value2) {
     return {
       'value_operator': 'BETWEEN',
@@ -89,6 +119,14 @@ angular.module('transmartBaseUi').factory('QueryBuilderService', ['JSON2XMLServi
     }
   }
 
+  /**
+   * Generate a separate panel item for the specified concept. The type is
+   * used to generate the prefix.
+   * @param key
+   * @param name
+   * @param studyType
+   * @returns {{item_name: *, item_key: *, tooltip: *, class: string}}
+   */
   function generatePanelItemForConcept(key, name, studyType) {
     return {
       'item_name': name,
@@ -98,6 +136,12 @@ angular.module('transmartBaseUi').factory('QueryBuilderService', ['JSON2XMLServi
     };
   }
 
+  /**
+   * Returns the study prefix (Public Studies / Private Studies) based on the study type.
+   * @param studyType
+   * @returns {*}
+   */
+  //TODO: the study type should be handled transparently in the entire application and the hard-coded values should be removed
   function getStudyTypePrefix(studyType) {
     switch(studyType) {
       case 'public':
