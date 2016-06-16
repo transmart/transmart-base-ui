@@ -41,6 +41,17 @@ angular.module('transmartBaseUi').factory('QueryBuilderService', ['JSON2XMLServi
       }
 
     });
+
+    // If we didn't find any filters, add the entire study as a filter
+    if (panels.length == 0) {
+      panels.push({
+        'panel_number': 1,
+        'invert': 0,
+        'total_item_occurrences': 1,
+        'item': generatePanelItemForConcept('\\Public Studies\\' + cohortFilters[0].study.id, cohortFilters[0].study.id)
+      });
+    }
+
     return panels;
   };
 
@@ -58,22 +69,15 @@ angular.module('transmartBaseUi').factory('QueryBuilderService', ['JSON2XMLServi
     });
 
     return items;
-  };
+  }
 
   function generatePanelItemsForCategories(cohortFilter) {
     var items = [];
-
     _.each(cohortFilter.filters, function(filter) {
-      items.push({
-        'item_name': filter,
-        'item_key': '\\\\Public Studies' + cohortFilter.label + filter,
-        'tooltip': cohortFilter.label + filter,
-        'class': 'ENC',
-      });
+      items.push(generatePanelItemForConcept(cohortFilter.label + filter, filter));
     });
-
     return items;
-  };
+  }
 
   function generateConstraintByValueBetween(value1, value2) {
     return {
@@ -81,7 +85,16 @@ angular.module('transmartBaseUi').factory('QueryBuilderService', ['JSON2XMLServi
       'value_constraint': '' + value1 + ' and ' + value2,
       'value_type': 'NUMBER'
     }
-  };
+  }
+
+  function generatePanelItemForConcept(concept, name) {
+    return {
+      'item_name': name,
+      'item_key': '\\\\Public Studies' + concept,
+      'tooltip': concept,
+      'class': 'ENC',
+    };
+  }
 
   return service;
 }]);

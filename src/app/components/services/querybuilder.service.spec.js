@@ -11,6 +11,31 @@ describe('QueryBuilderService Unit Tests', function() {
     QueryBuilderService = _QueryBuilderService_;
   }));
 
+  it('should convert cohort filters without a selection to cover the entire study', function() {
+    var cohortFilters = [
+      {
+        name: 'Organism',
+        type: 'string',
+        label: '\\Public Studies\\GSE8581\\Subjects\\Organism\\',
+        study: {
+          id: 'GSE8581'
+        },
+        filters: []
+      }
+    ];
+    expect(QueryBuilderService.convertCohortFiltersToI2B2Structure(cohortFilters)).toEqual([{
+      panel_number: 1,
+      invert: 0,
+      total_item_occurrences: 1,
+      item: {
+        item_name: "GSE8581",
+        item_key: "\\\\Public Studies\\Public Studies\\GSE8581",
+        tooltip: "\\Public Studies\\GSE8581",
+        class: "ENC"
+      }
+    }]);
+  })
+
   it('should convert cohort filters with categories', function () {
     var cohortFilters = [
       {
