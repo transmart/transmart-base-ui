@@ -73,11 +73,17 @@ module.exports = function(config) {
     ],
 
     coverageReporter: {
-      type : 'html',
-      dir : 'coverage/'
+      reporters: [
+        // good old fashioned html
+        {type:'html', subdir:'.'},
+        // generates ./coverage/lcov.info
+        {type:'lcovonly', subdir: '.'},
+        // generates ./coverage/coverage-final.json
+        {type:'json', subdir: '.'},
+      ]
     },
 
-    reporters: ['progress'],
+    reporters: ['coverage'],
 
     proxies: {
       '/assets/': path.join('/base/', conf.paths.src, '/assets/')
