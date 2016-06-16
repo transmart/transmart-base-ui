@@ -103,14 +103,10 @@ angular.module('transmartBaseUi').factory('StudyListService', ['$q', function($q
 
     _.forOwn(obj, function (v, k) { // iterate through object's properties
       if (typeof v === 'string') { // only searching into string values
-        // match the keys
-        _.forEach(searchKeywords, function (searchKeyword) {
-          // search through study attributes
-          if (obj[k].match(new RegExp(searchKeyword, 'i')) !== null) { // partial match
-            isFound = true;
-            return false; // exit loop when found
-          }
-        });
+        isFound = _.findIndex(searchKeywords, function (searchKeyword) {
+            // search through study attributes
+            return obj[k].match(new RegExp(searchKeyword, 'i')) // partial match and case insensitive
+          }) >= 0;
       }
       if (isFound) return false; // exit loop when found
     });
