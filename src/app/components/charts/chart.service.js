@@ -595,6 +595,7 @@ angular.module('transmartBaseUi').factory('ChartService',
             name : chartService.cs.labels[_index].name,
             label :chartService.cs.labels[_index].label,
             type : chartService.cs.labels[_index].type,
+            study: chartService.cs.labels[_index].study,
             filters : c.filters()
           });
         });

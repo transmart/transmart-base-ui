@@ -11,28 +11,68 @@ describe('QueryBuilderService Unit Tests', function() {
     QueryBuilderService = _QueryBuilderService_;
   }));
 
+  it('should convert cohort filters without a selection to cover the entire study', function() {
+    var cohortFilters = [
+      {
+        name: 'Organism',
+        type: 'string',
+        label: '\\Public Studies\\GSE8581\\Subjects\\Organism\\',
+        study: {
+          id: 'GSE8581',
+          type: 'public',
+          _embedded: {
+            ontologyTerm: {
+              fullName: '\\Public Studies\\GSE8581\\'
+            }
+          }
+        },
+        filters: []
+      }
+    ];
+    expect(QueryBuilderService.convertCohortFiltersToI2B2Panels(cohortFilters)).toEqual([{
+      panel_number: 1,
+      invert: 0,
+      total_item_occurrences: 1,
+      item: {
+        item_name: "GSE8581",
+        item_key: "\\\\Public Studies\\Public Studies\\GSE8581\\",
+        tooltip: "\\Public Studies\\GSE8581\\",
+        class: "ENC"
+      }
+    }]);
+  })
+
   it('should convert cohort filters with categories', function () {
     var cohortFilters = [
       {
         name: 'Organism',
         type: 'string',
         label: '\\Public Studies\\GSE8581\\Subjects\\Organism\\',
+        study: {
+          type: 'public'
+        },
         filters: []
       },
       {
         name: 'Sex',
         type: 'string',
         label: '\\Public Studies\\GSE8581\\Subjects\\Sex\\',
+        study: {
+          type: 'public'
+        },
         filters: ['female']
       },
       {
         name: 'Diagnosis',
         type: 'string',
         label: '\\Public Studies\\GSE8581\\Subjects\\Diagnosis\\',
+        study: {
+          type: 'public'
+        },
         filters: ['carcinoid', 'hematoma']
       }
     ];
-    expect(QueryBuilderService.convertCohortFiltersToI2B2Structure(cohortFilters)).toEqual([{
+    expect(QueryBuilderService.convertCohortFiltersToI2B2Panels(cohortFilters)).toEqual([{
         panel_number: 1,
         invert: 0,
         total_item_occurrences: 1,
@@ -66,16 +106,22 @@ describe('QueryBuilderService Unit Tests', function() {
         name: 'Age',
         type: 'number',
         label: '\\Public Studies\\GSE8581\\Subjects\\Age\\',
+        study: {
+          type: 'public'
+        },
         filters: [[65, 70]]
       },
       {
         name: 'Height',
         type: 'number',
         label: '\\Public Studies\\GSE8581\\Subjects\\Height\\',
+        study: {
+          type: 'public'
+        },
         filters: []
       }
     ];
-    expect(QueryBuilderService.convertCohortFiltersToI2B2Structure(cohortFilters)).toEqual([{
+    expect(QueryBuilderService.convertCohortFiltersToI2B2Panels(cohortFilters)).toEqual([{
         panel_number: 1,
         invert: 0,
         total_item_occurrences: 1,
@@ -100,12 +146,18 @@ describe('QueryBuilderService Unit Tests', function() {
         name: 'Age',
         type: 'number',
         label: '\\Public Studies\\GSE8581\\Subjects\\Age\\',
+        study: {
+          type: 'public'
+        },
         filters: [[65, 70]]
       },
       {
         name: 'Diagnosis',
         type: 'string',
         label: '\\Public Studies\\GSE8581\\Subjects\\Diagnosis\\',
+        study: {
+          type: 'public'
+        },
         filters: ['carcinoid', 'hematoma']
       }
     ];
