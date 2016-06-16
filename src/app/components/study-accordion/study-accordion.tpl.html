@@ -56,43 +56,42 @@
 
 <span><h4>{{title}}</h4></span>
 
-<div  ng-repeat="study in studies"
-      ng-controller="StudyCtrl"
+<div ng-repeat="study in studies"
       class="ts-study-accordion">
 
-  <accordion-group  is-open="study.open"
-                    ng-if="studyShown === '' || study._embedded.ontologyTerm.name.includes(studyShown)">
+  <uib-accordion-group  is-open="study.open" ng-if="study.hide != true">
     <!--heading-->
-    <accordion-heading ng-click="getTree(study);" >
+    <uib-accordion-heading >
       <span ng-click="getTree(study);" >
-      <a class="glyphicon glyphicon-folder-close ts-node-icon"
-           ng-class="{
-             'glyphicon-folder-close' : !opened,
-             'glyphicon-folder-open' : opened
-           }"
-           >
-      </a>
-      &nbsp;
-      <a uib-popover-template="'tree-tooltip.html'"
-         popover-placement="right"
-         popover-trigger="outsideClick"
-         ng-click="displayToolTip($event, study)">
-          {{study._embedded.ontologyTerm.name}}
-      </a>
-      <span class="glyphicon glyphicon-spin" ng-class="{'glyphicon-refresh': treeLoading}"></span>
-    </span>
-    </accordion-heading>
+        <a class="glyphicon glyphicon-folder-close ts-node-icon"
+             ng-class="{
+               'glyphicon-folder-close' : !study.open,
+               'glyphicon-folder-open' : study.open
+             }"
+             >
+        </a>
+        &nbsp;
+        <a uib-popover-template="'tree-tooltip.html'"
+           popover-placement="right"
+           popover-trigger="outsideClick"
+           ng-click="displayToolTip($event, study)">
+            {{study._embedded.ontologyTerm.name}}
+        </a>
+        <span class="glyphicon glyphicon-spin" ng-class="{'glyphicon-refresh': study.treeLoading}"></span>
+      </span>
+    </uib-accordion-heading>
+
     <!--content-->
     <div ui-tree id="tree-root" data-drag-enabled="treeConfig.drag" data-drop-enabled="false" ng-if="!callFailure">
-      <ol ui-tree-nodes="" ng-model="tree.nodes">
-        <li ng-repeat="node in tree.nodes" ui-tree-node ng-include="'nodes_renderer.html'"
+      <ol ui-tree-nodes="" ng-model="study.tree.nodes">
+        <li ng-repeat="node in study.tree.nodes" ui-tree-node ng-include="'nodes_renderer.html'"
           data-collapsed="treeConfig.collapsed"></li>
       </ol>
     </div>
     <div ng-if="callFailure">
       <small>Data could not be loaded.</small>
     </div>
-  </accordion-group>
+  </uib-accordion-group>
 
 </div>
 
