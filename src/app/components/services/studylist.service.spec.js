@@ -410,7 +410,6 @@ describe('StudyListService', function () {
         var searchKeys = ['GSE', 'DDD', 'XXX'];
         StudyListService.studyList = dummyStudiesMore;
         StudyListService.showStudiesByKeys(searchKeys);
-        console.log(StudyListService.studyList[0].id);
         expect(StudyListService.studyList[0].hide).toBe(true);
     });
   });
