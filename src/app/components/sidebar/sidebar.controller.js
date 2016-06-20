@@ -55,7 +55,6 @@ angular.module('transmartBaseUi')
           StudyListService.loadStudyList(endpoint).then(function (result) {
             $rootScope.publicStudies = StudyListService.getPublicStudies();
             $rootScope.privateStudies =  StudyListService.getPrivateStudies();
-            console.log(StudyListService.studyList[0].endpoint);
           }, function () {
             EndpointService.invalidateEndpoint(endpoint);
           });
