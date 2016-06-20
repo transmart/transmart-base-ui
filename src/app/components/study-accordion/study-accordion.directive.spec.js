@@ -25,7 +25,7 @@ describe('Unit testing study accordion', function() {
 
   it('should renders study-accordion template', function() {
     // Check that the compiled element contains the templated content
-    expect(element.html()).toContain('<script type="text/ng-template" id="tree-tooltip.html">');
+    expect(element.html()).toContain('<script type="text/ng-template" id="tree-tooltip-metadata.html">');
     expect(element.html()).toContain('<script type="text/ng-template" id="nodes_renderer.html">');
   });
 
