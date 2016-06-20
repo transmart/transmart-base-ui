@@ -1,8 +1,7 @@
 'use strict';
 
 angular.module('transmartBaseUi')
-.directive('studyAccordion', ['$uibModal','$location','$state', 'UtilService',
-  function($uibModal, $location, $state, UtilService) {
+  .directive('studyAccordion', [ function() {
   return {
     restrict: 'E',
     scope: {
@@ -11,20 +10,24 @@ angular.module('transmartBaseUi')
       studyShown: '='
     },
     templateUrl: 'app/components/study-accordion/study-accordion.tpl.html',
-    link : function (scope, element, attrs, ctrls) {
+    controller : 'StudyAccordionCtrl as ctrl'
+  };
+}])
+  .controller('StudyAccordionCtrl', ['$scope', '$uibModal','$location','$state', 'UtilService' ,
+    function ($scope, $uibModal, $location, $state, UtilService) {
       //----------------------------------------------------------------------------------------------------------------
       // Scope
       //----------------------------------------------------------------------------------------------------------------
 
-      scope.treeConfig = {
+      $scope.treeConfig = {
         drag: false,
         collapsed: true
       };
-      scope.isURL = UtilService.isURL;
+      $scope.isURL = UtilService.isURL;
 
-      scope.callFailure = false;
+      $scope.callFailure = false;
 
-      scope.status = {
+      $scope.status = {
         isFirstOpen: false,
         isFirstDisabled: false,
         oneAtATime: true
@@ -53,7 +56,7 @@ angular.module('transmartBaseUi')
        * When a study is selected, get the tree
        * @param study
        */
-      scope.getTree = function (study) {
+      $scope.getTree = function (study) {
         if (study.open === undefined || !study.open) {
           study.tree = _getSingleTree(study);
           study.open = true;
@@ -67,7 +70,7 @@ angular.module('transmartBaseUi')
        * When a node is clicked, get children of the children
        * @param node
        */
-      scope.populateChilds = function (node) {
+      $scope.populateChilds = function (node) {
         node.nodes.forEach(function(child){
           _getNodeChildren(child, false, '');
         });
@@ -100,18 +103,18 @@ angular.module('transmartBaseUi')
        * @param prefix
        * @private
        */
-      var _getNodeChildren = function(node, end, prefix){
+      var _getNodeChildren = function (node, end, prefix) {
         prefix = prefix || '';
         var children = node.restObj ? node.restObj._links.children : undefined;
 
-        if(!node.loaded){
+        if (!node.loaded) {
 
           node.study.treeLoading = true;
 
           _countSubjects(node);
 
-          if(children){
-            children.forEach(function(child){
+          if (children) {
+            children.forEach(function (child) {
 
               var newNode = {
                 title: child.title,
@@ -120,12 +123,12 @@ angular.module('transmartBaseUi')
                 study: node.study
               };
 
-              node.restObj.one(prefix + child.title).get().then(function(childObj){
+              node.restObj.one(prefix + child.title).get().then(function (childObj) {
 
                 newNode.type = childObj.type ? childObj.type : 'UNDEF';
                 newNode.restObj = childObj;
 
-                if(newNode.type === 'CATEGORICAL_OPTION'){
+                if (newNode.type === 'CATEGORICAL_OPTION') {
                   node.type = 'CATEGORICAL_CONTAINER';
                 }
 
@@ -137,10 +140,10 @@ angular.module('transmartBaseUi')
                   node.study.treeLoading = false;
                 }
 
-              }, function() {
+              }, function () {
                 newNode.type = 'FAILED_CALL';
                 node.nodes.push(newNode);
-                scope.callFailure = true;
+                $scope.callFailure = true;
                 node.study.treeLoading = false;
                 node.loaded = true;
               });
@@ -155,19 +158,21 @@ angular.module('transmartBaseUi')
         }
       };
 
-      scope.displayMetadata = function (node) {
-        scope.metadataObj = {};
-        if (node.hasOwnProperty('restObj')) {
-          scope.metadataObj.title = node.title;
-          scope.metadataObj.fullname = node.restObj.fullName;
-          scope.metadataObj.body = node.restObj.metadata;
-        } else if (node.hasOwnProperty('_embedded')) {
-          scope.metadataObj.title = node._embedded.ontologyTerm.name;
-          scope.metadataObj.fullname = node._embedded.ontologyTerm.fullName;
-          scope.metadataObj.body = node._embedded.ontologyTerm.metadata;
+      $scope.displayMetadata = function (node) {
+
+        $scope.metadataObj = {};
+
+        if (node) {
+          if (node.hasOwnProperty('restObj')) {
+            $scope.metadataObj.title = node.title;
+            $scope.metadataObj.fullname = node.restObj.fullName;
+            $scope.metadataObj.body = node.restObj.metadata;
+          } else if (node.hasOwnProperty('_embedded')) {
+            $scope.metadataObj.title = node._embedded.ontologyTerm.name;
+            $scope.metadataObj.fullname = node._embedded.ontologyTerm.fullName;
+            $scope.metadataObj.body = node._embedded.ontologyTerm.metadata;
+          }
         }
       };
 
-    }
-  };
-}]);
+  }]);
