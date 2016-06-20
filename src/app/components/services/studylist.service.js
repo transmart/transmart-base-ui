@@ -74,7 +74,6 @@ angular.module('transmartBaseUi').factory('StudyListService', ['$q', function($q
         return  study.endpoint.url !== endpoint.url ? study : null;
       });
       service.studyList = studies;
-
     }
   };
 

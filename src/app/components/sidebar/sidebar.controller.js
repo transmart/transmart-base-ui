@@ -63,6 +63,7 @@ angular.module('transmartBaseUi')
 
       $scope.loadStudies();
 
+
     }])
   .directive('buEnterKey', function () {
     return {

@@ -16,8 +16,7 @@ angular.module('transmartBaseUi')
 
       // Predefined endpoints
       $scope.connections = [
-        {title: 'transmart-gb', url: 'http://transmart-gb.thehyve.net/transmart', isOAuth:  true},
-        //{title: 'localhost', url: 'http://localhost:8080/transmart', isOAuth:  true}
+        {title: 'transmart-gb', url: 'http://transmart-gb.thehyve.net/transmart', isOAuth:  true}
       ];
 
       $scope.selectedConnection = {};
