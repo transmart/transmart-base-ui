@@ -320,6 +320,9 @@ describe('StudyListService', function () {
       StudyListService.studyList = dummyStudies;
       var _publicStudies = StudyListService.getPublicStudies();
       expect(_publicStudies.length).toEqual(4)
+      _publicStudies.forEach(function (study) {
+        expect(study.type).toEqual('public');
+      });
     });
   });
 
@@ -328,14 +331,20 @@ describe('StudyListService', function () {
       StudyListService.studyList = dummyStudies;
       var _publicStudies = StudyListService.getPrivateStudies();
       expect(_publicStudies.length).toEqual(2)
+      _publicStudies.forEach(function (study) {
+        expect(study.type).toEqual('private');
+      });
     });
   });
 
   describe('getOtherStudies', function () {
-    it('should get only private studies', function () {
+    it('should get only other studies', function () {
       StudyListService.studyList = dummyStudies;
       var _publicStudies = StudyListService.getOtherStudies();
       expect(_publicStudies.length).toEqual(1)
+      _publicStudies.forEach(function (study) {
+        expect(study.type).toEqual('other')
+      });
     });
   });
 
