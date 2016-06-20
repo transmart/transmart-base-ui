@@ -60,6 +60,9 @@ angular.module('transmartBaseUi')
        */
       service.addEndpoint = function (endpoint) {
         endpoints.push(endpoint);
+        if (endpoint.isMaster) {
+          masterEndpoint = endpoint;
+        }
         service.saveEndpoint(endpoint);
       };
 
