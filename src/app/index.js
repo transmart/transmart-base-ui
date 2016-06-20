@@ -15,7 +15,8 @@ angular.module('transmartBaseUi', [
   'gridster',
   'ui.layout',
   'ui.grid',
-  'ui.grid.pagination'
+  'ui.grid.pagination',
+  'angular-click-outside'
 ])
   .config( ['$stateProvider', 'RestangularProvider', 'cfpLoadingBarProvider', '$locationProvider', '$uibTooltipProvider',
     function ($stateProvider, RestangularProvider, cfpLoadingBarProvider, $locationProvider, $uibTooltipProvider) {

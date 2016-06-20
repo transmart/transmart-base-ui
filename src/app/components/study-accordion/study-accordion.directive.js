@@ -1,7 +1,8 @@
 'use strict';
 
 angular.module('transmartBaseUi')
-.directive('studyAccordion', ['$uibModal','$location','$state', function($uibModal, $location, $state) {
+.directive('studyAccordion', ['$uibModal','$location','$state', 'UtilService',
+  function($uibModal, $location, $state, UtilService) {
   return {
     restrict: 'E',
     scope: {
@@ -19,10 +20,9 @@ angular.module('transmartBaseUi')
         drag: false,
         collapsed: true
       };
+      scope.isURL = UtilService.isURL;
 
       scope.callFailure = false;
-
-      scope.divWidth = 100;
 
       scope.status = {
         isFirstOpen: false,
@@ -137,10 +137,10 @@ angular.module('transmartBaseUi')
                   node.study.treeLoading = false;
                 }
 
-              }, function(){
+              }, function() {
                 newNode.type = 'FAILED_CALL';
                 node.nodes.push(newNode);
-                //scope.callFailure = true;
+                scope.callFailure = true;
                 node.study.treeLoading = false;
                 node.loaded = true;
               });
@@ -155,39 +155,30 @@ angular.module('transmartBaseUi')
         }
       };
 
-      scope.displayToolTip = function (e, node) {
-        e.stopPropagation(); // preventing selected accordion to expand.
-        scope.treeNode = node;
-        if (scope.treeNode.hasOwnProperty('_embedded')) {
-          scope.treeNode.isStudy = true;
-        }
-      };
-
       scope.displayMetadata = function (node) {
-        var _metadataObj = {};
-
+        scope.metadataObj = {};
         if (node.hasOwnProperty('restObj')) {
-          _metadataObj.title = node.title;
-          _metadataObj.fullname = node.restObj.fullName;
-          _metadataObj.body = node.restObj.metadata;
+          scope.metadataObj.title = node.title;
+          scope.metadataObj.fullname = node.restObj.fullName;
+          scope.metadataObj.body = node.restObj.metadata;
         } else if (node.hasOwnProperty('_embedded')) {
-          _metadataObj.title = node._embedded.ontologyTerm.name;
-          _metadataObj.fullname = node._embedded.ontologyTerm.fullName;
-          _metadataObj.body = node._embedded.ontologyTerm.metadata;
+          scope.metadataObj.title = node._embedded.ontologyTerm.name;
+          scope.metadataObj.fullname = node._embedded.ontologyTerm.fullName;
+          scope.metadataObj.body = node._embedded.ontologyTerm.metadata;
         }
-
-        $uibModal.open({
-          animation: false, // IMPORTANT: Cannot use animation in angular 1.4.x
-          controller: 'MetadataCtrl',
-          templateUrl: 'app/components/metadata/metadata.html',
-          resolve: {
-            metadata: function () {
-              return _metadataObj;
-            }
-          }
-        });
       };
 
     }
   };
-}]);
+}])
+  .directive('ngRightClick', function($parse) {
+    return function(scope, element, attrs) {
+      var fn = $parse(attrs.ngRightClick);
+      element.bind('contextmenu', function(event) {
+        scope.$apply(function() {
+          event.preventDefault();
+          fn(scope, {$event:event});
+        });
+      });
+    };
+  });
