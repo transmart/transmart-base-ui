@@ -172,6 +172,7 @@ angular.module('transmartBaseUi')
           _metadataObj.body = node.restObj.metadata;
         } else if (node.hasOwnProperty('_embedded')) {
           _metadataObj.title = node._embedded.ontologyTerm.name;
+          _metadataObj.id = node.id;
           _metadataObj.fullname = node._embedded.ontologyTerm.fullName;
           _metadataObj.body = node._embedded.ontologyTerm.metadata;
         }
