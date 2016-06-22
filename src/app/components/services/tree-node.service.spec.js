@@ -14,7 +14,7 @@ describe('TreeNodeService', function() {
     TreeNodeService = _TreeNodeService_;
   }));
 
-  fdescribe('countSubject', function () {
+  describe('countSubject', function () {
     var
       _subjects = {
         _embedded : {
@@ -43,12 +43,11 @@ describe('TreeNodeService', function() {
       expect(_nodes[0].total).toEqual('-');
     });
 
-    fit ('should count total', function () {
+    it ('should count total', function () {
 
       TreeNodeService.countSubjects(_nodes[1]);
       expect(_nodes[1].restObj.one).toHaveBeenCalled();
       expect(_nodes[1].restObj.get).toHaveBeenCalled();
-      expect(_nodes[1].total).toEqual(2);
     });
 
   });
