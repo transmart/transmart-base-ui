@@ -8,7 +8,15 @@ angular.module('transmartBaseUi')
       $rootScope.privateStudies = [];
 
       $scope.searchTerm = '';
+      // Default to false (OR)
+      $scope.searchMode = false;
+      $scope.operator = 'OR';
       $scope.searchKeys = [];
+
+      $scope.$watch('searchMode', function(newVal){
+        $scope.operator = newVal ? 'AND' : 'OR';
+        StudyListService.showStudiesByKeys($scope.searchKeys, $scope.operator);
+      });
 
       /**
        * Add search key, invoked when user press Enter key in search input box.
@@ -18,7 +26,7 @@ angular.module('transmartBaseUi')
           $scope.searchKeys.push($scope.searchTerm);
           $scope.searchTerm = '';
           // search metadata
-          StudyListService.showStudiesByKeys($scope.searchKeys);
+          StudyListService.showStudiesByKeys($scope.searchKeys, $scope.operator);
         }
       };
 
@@ -41,7 +49,7 @@ angular.module('transmartBaseUi')
         }
         // Re-display studies of remaining matched search keywords or show all studies when there's no search keys left
         $scope.searchKeys.length > 0 ?
-          StudyListService.showStudiesByKeys($scope.searchKeys) : StudyListService.showAll();
+          StudyListService.showStudiesByKeys($scope.searchKeys, $scope.operator) : StudyListService.showAll();
       };
 
       /**

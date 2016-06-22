@@ -1,6 +1,15 @@
 <div id="sidebardiv" ng-controller="SidebarCtrl" class="left-bar">
 
-  <label>Search studies</label>
+  <span class="search-header">
+    <label>Search studies</label>
+    <toggle-switch
+      ng-model="searchMode"
+      on-label="AND"
+      off-label="OR"
+      ng-show="searchKeys.length > 1">
+    </toggle-switch>
+  </span>
+
   <input type="text"
          class="form-control"
          placeholder="Search term"

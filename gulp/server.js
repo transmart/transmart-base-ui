@@ -32,6 +32,8 @@ function browserSyncInit(baseDir, browser) {
    * Example: $http.get('/users') requests will be automatically proxified.
    *
    * For more details and option, https://github.com/chimurai/http-proxy-middleware/blob/v0.9.0/README.md
+   *
+   * Bernd: Only use `changeOrigin: true` when a namebased address (non-IP) is used.
    */
   // server.middleware = proxyMiddleware('/users', {target: 'http://jsonplaceholder.typicode.com', changeOrigin: true});
 
