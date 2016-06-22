@@ -159,9 +159,6 @@ angular.module('transmartBaseUi')
       };
 
       $scope.displayMetadata = function (node) {
-
-        $scope.metadataObj = {};
-
         if (node) {
           if (node.hasOwnProperty('restObj')) {
             $scope.metadataObj.title = node.title;
