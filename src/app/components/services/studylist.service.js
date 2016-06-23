@@ -109,12 +109,9 @@ angular.module('transmartBaseUi').factory('StudyListService', ['$q', function($q
     _.forOwn(obj, function (v, k) { // iterate through object's properties
       var pair = [];
 
-      // Create KV search pair
+      // Only add string values of object's key and property to the search pair
       if (typeof v === 'string') { pair.push(v); }
-
-      if (typeof k === 'string' && !k.match(new RegExp('^_'))) {
-        pair.push(k);
-      }
+      if (typeof k === 'string') { pair.push(k); }
 
       _.each(pair, function(searchString) {
         var idx = hasKeywordByIndex(searchString, searchKeywords);
@@ -157,7 +154,7 @@ angular.module('transmartBaseUi').factory('StudyListService', ['$q', function($q
     _.forEach(this.studyList, function(s) {
       _.forEach(collectSearchTargetObjects(s), function (_obj) {       // Iterate through searching objects of a study
         s.hide = !containsSearchKeys(_obj, searchKeywords, operator);  // Hide the study when it does not contain search keywords
-        if (!s.hide) return false;
+        if (!s.hide) return false;                                     // Exit loop when it contains search keywords
       });
     });
   };
