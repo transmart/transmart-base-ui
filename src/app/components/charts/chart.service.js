@@ -255,7 +255,6 @@ angular.module('transmartBaseUi').factory('ChartService',
 
     // Get all observations under the selected concept
     node.restObj.one('observations').get().then(function (observations){
-
       observations = observations._embedded.observations;
 
       observations.forEach(function (obs) {
@@ -438,7 +437,7 @@ angular.module('transmartBaseUi').factory('ChartService',
 
     var _defaultDim = function () {
       chartService.cs.dims[label.ids] = chartService.cs.cross.dimension(function (d) {
-        return d.labels[label.ids] === undefined ? 'UnDef' : d.labels[label.ids];
+        return d.labels[label.ids] === undefined ? undefined : d.labels[label.ids];
       });
       chartService.cs.groups[label.ids] = chartService.cs.dims[label.ids].group();
 
@@ -449,7 +448,6 @@ angular.module('transmartBaseUi').factory('ChartService',
         }
       }
     };
-
 
     if (label.type === 'combination') {
       _chart = _createMultidimensionalChart(label, el);
