@@ -16,7 +16,8 @@ angular.module('transmartBaseUi', [
   'ui.layout',
   'ui.grid',
   'ui.grid.pagination',
-  'angular-click-outside'
+  'angular-click-outside',
+  'toggle-switch'
 ])
   .config( ['$stateProvider', 'RestangularProvider', 'cfpLoadingBarProvider', '$locationProvider', '$uibTooltipProvider',
     function ($stateProvider, RestangularProvider, cfpLoadingBarProvider, $locationProvider, $uibTooltipProvider) {
