@@ -96,33 +96,64 @@ angular.module('transmartBaseUi').factory('StudyListService', ['$q', function($q
    * Check if any search keywords are matched with searching target object's values.
    * @param obj - searching target object
    * @param searchKeywords - list of search keywords
-     */
-  var containsSearchKey = function (obj, searchKeywords) {
+   */
+  var containsSearchKeys = function (obj, searchKeywords, operator) {
     var isFound = false;
-
+    var keyMap = [];
+    var op = operator || 'OR';
+	  /**
+     * Perform both partial and case insensitive matching
+     * for string values and study object keys
+     */
     _.forOwn(obj, function (v, k) { // iterate through object's properties
-      if (typeof v === 'string') { // only searching into string values
-        isFound = _.findIndex(searchKeywords, function (searchKeyword) {
-            // search through study attributes
-            return obj[k].match(new RegExp(searchKeyword, 'i')) // partial match and case insensitive
-          }) >= 0;
-      }
-      if (isFound) return false; // exit loop when found
+      var pair = [];
+
+      // Only add string values of object's key and property to the search pair
+      if (typeof v === 'string') { pair.push(v); }
+      if (typeof k === 'string') { pair.push(k); }
+
+      _.each(pair, function(searchString) {
+        var idx = hasKeywordByIndex(searchString, searchKeywords);
+        if (idx >= 0) {
+          keyMap.push(searchKeywords[idx]);
+          isFound = true;
+        }
+      });
+
+      if (isFound && op === 'OR') { return false; }
     });
 
-    return isFound;
+    if (isFound && op === 'AND') {
+      return _.uniq(keyMap).length == searchKeywords.length;
+    }
+
+    if (isFound && op === 'OR') { return true; }
+
+    return false;
   };
 
+	/**
+   * Find the argumented string in one of the keywords
+   * and return the index of first matched keyword element.
+   * @param str - String to be searched for
+   * @param keywords - Array of keywords to search in
+   * @returns index {number}
+   */
+  var hasKeywordByIndex = function(str, keywords) {
+      return _.findIndex(keywords, function (searchKeyword) {
+          return str.match(new RegExp(searchKeyword, 'i'));
+        });
+  };
   /**
    * Filter studies by search keywords
    * @param searchKeywords
    * @returns {Array} - studies which contains search keywords
     */
-  service.showStudiesByKeys = function (searchKeywords) {
+  service.showStudiesByKeys = function (searchKeywords, operator) {
     _.forEach(this.studyList, function(s) {
-      _.forEach(collectSearchTargetObjects(s), function (_obj) {  // Iterate through searching objects of a study
-          s.hide = !containsSearchKey(_obj, searchKeywords);      // Hide the study when it does not contain search keywords
-          if (!s.hide) return false;                              // Exit loop when it contains search keywords
+      _.forEach(collectSearchTargetObjects(s), function (_obj) {       // Iterate through searching objects of a study
+        s.hide = !containsSearchKeys(_obj, searchKeywords, operator);  // Hide the study when it does not contain search keywords
+        if (!s.hide) return false;                                     // Exit loop when it contains search keywords
       });
     });
   };

@@ -155,7 +155,10 @@ describe('SidebarCtrl', function() {
   describe('addSearchKey', function () {
 
     beforeEach(function () {
+      StudyListService.studyList = [];
       StudyListService.studyList.push(dummyStudies[0]);
+      StudyListService.studyList.push(dummyStudies[1]);
+      StudyListService.studyList.push(dummyStudies[2]);
     });
 
     it('should add search key into searchKeys list and hide unmatched studies', function () {
@@ -191,6 +194,30 @@ describe('SidebarCtrl', function() {
       expect(scope.searchKeys.length).toEqual(1);
     });
 
+    it('should by default perform a OR-based search between two terms and show matched studies', function () {
+      scope.searchKeys = ['av'];
+      scope.searchTerm = 'GSE';
+      scope.addSearchKey();
+
+      expect(scope.searchKeys.length).toEqual(2);
+      expect(scope.operator).toEqual('OR');
+      expect(StudyListService.studyList[0].hide).toBe(false);
+      expect(StudyListService.studyList[1].hide).toBe(false);
+      expect(StudyListService.studyList[2].hide).toBe(false);
+    });
+
+    it('should by perform a AND-based search between two terms and show matched studies', function () {
+      scope.searchKeys = ['av'];
+      scope.searchTerm = 'GSE';
+      scope.operator = 'AND';
+      scope.addSearchKey();
+
+      expect(scope.searchKeys.length).toEqual(2);
+      expect(scope.operator).toEqual('AND');
+      expect(StudyListService.studyList[0].hide).toBe(true);
+      expect(StudyListService.studyList[1].hide).toBe(true);
+      expect(StudyListService.studyList[2].hide).toBe(true);
+    });
   });
 
   describe('removeAllSearchKeys', function () {
@@ -221,8 +248,6 @@ describe('SidebarCtrl', function() {
       StudyListService.studyList.push(dummyStudies[2]);
     });
 
-
-
     it('should remove a search key', function () {
       scope.searchKeys = ['GSE', 'DDD', 'XXX'];
       scope.addSearchKey();
@@ -235,7 +260,6 @@ describe('SidebarCtrl', function() {
     });
 
     it('should remove all search key', function () {
-
       // reset visibility flag to show
        StudyListService.studyList.forEach(function (s) {
          s.hide = false;
