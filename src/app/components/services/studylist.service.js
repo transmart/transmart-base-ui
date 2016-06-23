@@ -104,7 +104,7 @@ angular.module('transmartBaseUi').factory('StudyListService', ['$q', function($q
       if (typeof v === 'string') { // only searching into string values
         isFound = _.findIndex(searchKeywords, function (searchKeyword) {
             // search through study attributes
-            return obj[k].match(new RegExp(searchKeyword, 'i')) // partial match and case insensitive
+            return obj[k].match(new RegExp(searchKeyword, 'i')); // partial match and case insensitive
           }) >= 0;
       }
       if (isFound) return false; // exit loop when found
