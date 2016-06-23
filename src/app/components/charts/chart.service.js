@@ -435,9 +435,10 @@ angular.module('transmartBaseUi').factory('ChartService',
 
     var _chart;
 
-    var _defaultDim = function () {
+    var _defaultDim = function (_missingLabelId) {
       chartService.cs.dims[label.ids] = chartService.cs.cross.dimension(function (d) {
-        return d.labels[label.ids] === undefined ? undefined : d.labels[label.ids];
+        var lbl = _missingLabelId || undefined;
+        return d.labels[label.ids] === undefined ? lbl : d.labels[label.ids];
       });
       chartService.cs.groups[label.ids] = chartService.cs.dims[label.ids].group();
 
@@ -460,7 +461,7 @@ angular.module('transmartBaseUi').factory('ChartService',
 
         // Create a PIECHART if categorical
       } else if (label.type === 'string' || label.type === 'object') {
-        _defaultDim();
+        _defaultDim("N/A");
         _chart = DcChartsService.getPieChart(chartService.cs.dims[label.ids], chartService.cs.groups[label.ids], el);
         _chart.type = 'PIECHART';
 
@@ -474,7 +475,7 @@ angular.module('transmartBaseUi').factory('ChartService',
         // Create a BARCHART WITH BINS if floating point values
       } else if (label.type === 'float') {
         chartService.cs.dims[label.ids] = chartService.cs.cross.dimension(function (d) {
-          return d.labels[label.ids] === undefined ? 'UnDef' : d.labels[label.ids].toFixed(label.precision === 0 ? 0 : label.precision);
+          return d.labels[label.ids] === undefined ? undefined : d.labels[label.ids].toFixed(label.precision === 0 ? 0 : label.precision);
         });
         chartService.cs.groups[label.ids] = chartService.cs.dims[label.ids].group();
         _chart = DcChartsService.getBarChart(chartService.cs.dims[label.ids], chartService.cs.groups[label.ids],
