@@ -19,13 +19,13 @@
 <!-- START Node template -->
 
 <script type="text/ng-template" id="nodes_renderer.html">
-  <div ui-tree-handle class="tree-node tree-node-content" ng-dblclick="populateChilds(node);"
+  <div ui-tree-handle class="tree-node tree-node-content" ng-click="populateChilds(node);"
        data-drag="node.type !== 'FAILED_CALL'" jqyoui-draggable="{placeholder: 'keep'}"
        data-jqyoui-options="{containment: 'document', appendTo: 'body', helper: 'clone'}" ng-model="node"
        style="overflow-x: hidden !important; white-space: nowrap;">
 
     <!--icons-->
-    <a data-nodrag ng-dblclick="toggle(this)">
+    <a data-nodrag ng-click="toggle(this)">
       <i  class="ts-node-icon"
           ng-class="{ 'glyphicon glyphicon-folder-close': collapsed && node.type === 'UNKNOWN',
                       'glyphicon glyphicon-folder-open': !collapsed && node.type === 'UNKNOWN',
@@ -45,12 +45,14 @@
         popover-placement="right"
         popover-trigger="none"
         popover-is-open="popoverIsOpen"
-        ng-dblclick="toggle(this); popoverIsOpen = false"
+        ng-click="toggle(this); popoverIsOpen = false"
         ng-right-click="displayMetadata(node); popoverIsOpen = !popoverIsOpen"
         click-outside="popoverIsOpen = false"
         ng-class="{'text-grey': node.type === 'FAILED_CALL'}"
         >
-      <span>{{node.title}} (<b>{{node.total}}</b>)</span>
+        {{node.title}}
+        <b ng-show="!node.isLoading">({{node.total}})</b>
+        <span class="glyphicon glyphicon-spin" ng-class="{'glyphicon-refresh': node.isLoading}"></span>
     </a>
 
   </div>
@@ -71,10 +73,11 @@
 <span><h4>{{studyAccordionCtrl.title}}</h4></span>
 
 <div ng-repeat="study in studies" class="ts-study-accordion">
+
   <uib-accordion-group  is-open="study.open" ng-if="study.hide != true">
     <!--heading-->
     <uib-accordion-heading >
-      <span ng-click="getTree(study);" >
+      <span ng-click="populateChilds(study);" >
         <a class="glyphicon glyphicon-folder-close ts-node-icon"
              ng-class="{
                'glyphicon-folder-close' : !study.open,
@@ -90,17 +93,22 @@
            popover-is-open="headPopIsOpen"
            ng-right-click="displayMetadata(study); headPopIsOpen = !headPopIsOpen"
            click-outside="headPopIsOpen = false">
-            {{study._embedded.ontologyTerm.name}}
+          {{study._embedded.ontologyTerm.name}}
+          <b ng-show="!study.isLoading">({{study.total}})</b>
+          <span class="glyphicon glyphicon-spin" ng-class="{'glyphicon-refresh': study.isLoading}"></span>
         </a>
-        <span class="glyphicon glyphicon-spin" ng-class="{'glyphicon-refresh': study.treeLoading}"></span>
       </span>
     </uib-accordion-heading>
 
     <!--content-->
     <div ui-tree id="tree-root" data-drag-enabled="treeConfig.drag" data-drop-enabled="false" ng-if="!callFailure">
-      <ol ui-tree-nodes="" ng-model="study.tree.nodes">
-        <li ng-repeat="node in study.tree.nodes" ui-tree-node ng-include="'nodes_renderer.html'"
-          data-collapsed="treeConfig.collapsed"></li>
+      <ol ui-tree-nodes="" ng-model="study.nodes" ng-class="{hidden: collapsed}">
+        <li ng-repeat="node in study.nodes"
+            ui-tree-node
+            ng-include="'nodes_renderer.html'"
+            data-collapsed="treeConfig.collapsed">
+            {{node.title}}
+        </li>
       </ol>
     </div>
 

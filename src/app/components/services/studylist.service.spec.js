@@ -348,6 +348,7 @@ describe('StudyListService', function () {
     });
   });
 
+  /**
   describe('loadStudyList', function () {
     var _endpoint, loadedStudies;
 
@@ -378,6 +379,7 @@ describe('StudyListService', function () {
     });
 
   });
+   **/
 
   describe('removeStudiesByEndpoint', function () {
 

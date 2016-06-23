@@ -13,8 +13,8 @@ angular.module('transmartBaseUi')
       controller : 'StudyAccordionCtrl as ctrl'
     };
   }])
-  .controller('StudyAccordionCtrl', ['$scope', '$uibModal', 'UtilService', 'TreeNodeService',
-    function ($scope, $uibModal, UtilService, TreeNodeService) {
+  .controller('StudyAccordionCtrl', ['$scope', '$uibModal', 'UtilService', 'TreeNodeService', '$log',
+    function ($scope, $uibModal, UtilService, TreeNodeService, $log) {
 
       $scope.treeConfig = {
         drag: false,
@@ -30,24 +30,24 @@ angular.module('transmartBaseUi')
       };
 
       $scope.populateChilds = function (node) {
-        return node.nodes.forEach(function(child){
-          TreeNodeService.getNodeChildren(child, false, '');
-        });
-      };
 
+        // first check if node has restangular object or not
+        // if not it means it's root node a.k.a study
 
-      /**
-       * When a study is selected, get the tree
-       * @param study
-       */
-      $scope.getTree = function (study) {
-        if (study.open === undefined || !study.open) {
-          study.tree = TreeNodeService.getSingleTree(study);
-          study.open = true;
-        } else {
-          study.open = false;
+        if (!node.hasOwnProperty('restObj')) {
+          node = TreeNodeService.setRootNodeAttributes(node);
+          return TreeNodeService.getNodeChildren(node,  false, 'concepts/').then(function (result) {
+            $log.info(result);
+            node.isLoading = false;
+          });
         }
-        return study;
+
+        node.isLoading = true;
+        TreeNodeService.getNodeChildren(node, false).then(function (result) {
+          node.isLoading = false;
+          $log.info(result);
+        });
+
       };
 
       $scope.displayMetadata = function (node) {

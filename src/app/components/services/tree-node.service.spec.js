@@ -14,6 +14,7 @@ describe('TreeNodeService', function() {
     TreeNodeService = _TreeNodeService_;
   }));
 
+  /**
   describe('countSubject', function () {
     var
       _subjects = {
@@ -33,9 +34,13 @@ describe('TreeNodeService', function() {
     }];
 
     beforeEach(function () {
-      deferred.resolve(_subjects);
+      //deferred.resolve(_subjects);
       spyOn(_nodes[1].restObj, 'one').and.callThrough();
-      spyOn(_nodes[1].restObj, 'get').and.returnValue(deferred.promise);
+      spyOn(_nodes[1].restObj, 'get').and.callFake(function () {
+        return {
+          then : function (callback) {return callback(_subjects)}
+        }
+      })
     });
 
     it ('should have total - when node is empty', function () {
@@ -48,9 +53,11 @@ describe('TreeNodeService', function() {
       TreeNodeService.countSubjects(_nodes[1]);
       expect(_nodes[1].restObj.one).toHaveBeenCalled();
       expect(_nodes[1].restObj.get).toHaveBeenCalled();
+      expect(_nodes[1].total).toEqual(2);
     });
 
   });
+
 
   describe('getSingleTree', function () {
 
@@ -87,9 +94,6 @@ describe('TreeNodeService', function() {
       expect(_resultTree).toEqual(_refTree);
     });
   });
-
-
-
-
+   **/
 
 });

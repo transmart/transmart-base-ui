@@ -1,110 +1,80 @@
 'use strict';
 
-angular.module('transmartBaseUi').factory('TreeNodeService', [function() {
+angular.module('transmartBaseUi').factory('TreeNodeService', ['$q', function($q) {
 
   var service = {};
 
-  /**
-   * Counts the subjects for a node
-   * @param node
-   * @private
-   */
-  service.countSubjects = function(node) {
-    if (!node.hasOwnProperty('restObj')) {
-      node.total = '-';
-    }
-    else if (!node.hasOwnProperty('total')) {
-      node.restObj.one('subjects').get().then(function (subjects) {
-        node.total = subjects._embedded.subjects.length;
-      });
-    }
+  service.setRootNodeAttributes = function (rootNode) {
+    rootNode.restObj = rootNode;
+    rootNode.loaded = false;
+    rootNode.study = rootNode;
+    rootNode.title = 'ROOT';
+    rootNode.nodes = [];
+    rootNode._links.children = rootNode._embedded.ontologyTerm._links.children;
+    rootNode.isLoading = true;
+    return rootNode;
   };
 
-  /**
-   * Populates 2 levels of children for the node
-   * @param node
-   * @param end IF TRUE runs only for one level
-   * @param prefix
-   * @private
-   */
-  service.getNodeChildren = function (node, end, prefix) {
+  service.loadChildNode = function (node, link, prefix) {
+    var deferred = $q.defer();
 
+    var newNode = { // prepare the node skeleton
+      title: link.title,
+      nodes: [],
+      loaded: false,
+      study: node.study
+    };
+
+    var nodePromise = node.restObj.one(prefix + link.title);
+
+    nodePromise.get().then(function (childObj) { //
+      newNode.type = childObj.type ? childObj.type : 'UNDEF';
+      newNode.restObj = childObj;
+      if (newNode.type === 'CATEGORICAL_OPTION') {
+        node.type = 'CATEGORICAL_CONTAINER';
+      }
+      // Counting total number of subjects in a node
+      newNode.restObj.one('subjects').get().then(function (subjects) {
+        newNode.total = subjects._embedded.subjects.length;
+        deferred.resolve(newNode);
+      });
+    }, function (response) { // when it's failed
+      node.loaded = true;
+      newNode.type = 'FAILED_CALL';
+      newNode.total = '';
+      deferred.resolve(newNode);
+    });
+
+    return deferred.promise;
+  };
+
+  service.getNodeChildren = function (node, end, prefix) {
+    var deferred = $q.defer();
     prefix = prefix || '';
 
-    var children = node.restObj ? node.restObj._links.children : undefined;
+    if (!node.loaded) { // when the node is not yet loaded ..
 
-    if (!node.loaded) {
+      var childLinks = node.restObj._links.children; // check if it has child links
 
-      node.study.treeLoading = true;
-
-      this.countSubjects(node);
-
-      if (children) {
-
-        children.forEach(function (child) {
-
-          var newNode = {
-            title: child.title,
-            nodes: [],
-            loaded: false,
-            study: node.study
-          };
-
-          node.restObj.one(prefix + child.title).get().then(function (childObj) {
-
-            newNode.type = childObj.type ? childObj.type : 'UNDEF';
-            newNode.restObj = childObj;
-
-            if (newNode.type === 'CATEGORICAL_OPTION') {
-              node.type = 'CATEGORICAL_CONTAINER';
-            }
-
+      if (childLinks) {
+        // start to load its children
+        childLinks.forEach(function (link) {
+          service.loadChildNode (node, link, prefix).then(function (newNode) {
             node.nodes.push(newNode);
-
-            if (!end) {
-              service.getNodeChildren(newNode, true);
-            } else {
-              node.study.treeLoading = false;
-            }
-
-          }, function () {
-            newNode.type = 'FAILED_CALL';
-            node.nodes.push(newNode);
-            node.study.treeLoading = false;
             node.loaded = true;
+            if (childLinks.length === node.nodes.length) {
+              deferred.resolve(node.nodes);
+            }
           });
         });
-      } else {
-        node.study.treeLoading = false;
       }
+    } else {
+      deferred.resolve(true);
     }
 
-    if (!end) {
-      node.loaded = true;
-    }
-
+    return deferred.promise;
   };
 
-  /**
-   * Populates the first 2 levels of a study tree
-   * @param study
-   * @returns {{title: string, nodes: Array, restObj: *, loaded: boolean}}
-   * @private
-   */
-  service.getSingleTree = function(study) {
-    if (study) {
-      var _tree = {
-        'title': 'ROOT',
-        'nodes': [],
-        'restObj': study,
-        'loaded': false,
-        'study': study
-      };
-      study._links.children = study._embedded.ontologyTerm._links.children;
-      this.getNodeChildren(_tree, false, 'concepts/');
-      return _tree;
-    }
-  };
   return service;
 
 }]);
