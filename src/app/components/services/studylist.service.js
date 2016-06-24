@@ -121,7 +121,6 @@ angular.module('transmartBaseUi').factory('StudyListService', ['$q', function($q
       });
 
       if (isFound && op === 'OR') { return false; }
-
     });
 
     if (isFound && op === 'AND') {
