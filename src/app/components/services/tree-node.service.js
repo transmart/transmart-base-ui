@@ -15,7 +15,30 @@ angular.module('transmartBaseUi').factory('TreeNodeService', ['$q', function($q)
     return rootNode;
   };
 
-  service.loadChildNode = function (node, link, prefix) {
+  /**
+   *  TODO: Need rest call refactoring. This is not the most efficient way to count subjects in a node.
+   * @param newNode
+   * @returns {*}
+     */
+  service.getTotalSubjects = function (newNode) {
+    var deferred = $q.defer();
+    // Counting total number of subjects in a node
+    newNode.restObj.one('subjects').get().then(function (subjects) {
+      deferred.resolve(subjects._embedded.subjects.length);
+    }, function (){
+      deferred.reject('Cannot count subjects');
+    });
+    return deferred.promise;
+  };
+
+  /**
+   *
+   * @param node
+   * @param link
+   * @param prefix
+   * @returns {*}
+     */
+  service.loadNode = function (node, link, prefix) {
     var deferred = $q.defer();
 
     var newNode = { // prepare the node skeleton
@@ -33,11 +56,12 @@ angular.module('transmartBaseUi').factory('TreeNodeService', ['$q', function($q)
       if (newNode.type === 'CATEGORICAL_OPTION') {
         node.type = 'CATEGORICAL_CONTAINER';
       }
-      // Counting total number of subjects in a node
-      newNode.restObj.one('subjects').get().then(function (subjects) {
-        newNode.total = subjects._embedded.subjects.length;
+      // and also count how many subjects in this node
+      service.getTotalSubjects(newNode).then(function (total) {
+        newNode.total = total;
         deferred.resolve(newNode);
       });
+
     }, function (response) { // when it's failed
       node.loaded = true;
       newNode.type = 'FAILED_CALL';
@@ -59,7 +83,7 @@ angular.module('transmartBaseUi').factory('TreeNodeService', ['$q', function($q)
       if (childLinks) {
         // start to load its children
         childLinks.forEach(function (link) {
-          service.loadChildNode (node, link, prefix).then(function (newNode) {
+          service.loadNode (node, link, prefix).then(function (newNode) {
             node.nodes.push(newNode);
             node.loaded = true;
             if (childLinks.length === node.nodes.length) {

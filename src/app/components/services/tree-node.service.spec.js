@@ -14,86 +14,73 @@ describe('TreeNodeService', function() {
     TreeNodeService = _TreeNodeService_;
   }));
 
-  /**
-  describe('countSubject', function () {
-    var
-      _subjects = {
-        _embedded : {
-          subjects : ['1', '2']
-        }
-      },
-      _nodes = [{}, {
-      restObj : {
-        one : function (str) {
-            return this;
-        },
-        get : function () {
-
-        }
-      }
-    }];
-
-    beforeEach(function () {
-      //deferred.resolve(_subjects);
-      spyOn(_nodes[1].restObj, 'one').and.callThrough();
-      spyOn(_nodes[1].restObj, 'get').and.callFake(function () {
-        return {
-          then : function (callback) {return callback(_subjects)}
-        }
-      })
-    });
-
-    it ('should have total - when node is empty', function () {
-      TreeNodeService.countSubjects(_nodes[0]);
-      expect(_nodes[0].total).toEqual('-');
-    });
-
-    it ('should count total', function () {
-
-      TreeNodeService.countSubjects(_nodes[1]);
-      expect(_nodes[1].restObj.one).toHaveBeenCalled();
-      expect(_nodes[1].restObj.get).toHaveBeenCalled();
-      expect(_nodes[1].total).toEqual(2);
-    });
-
-  });
-
-
-  describe('getSingleTree', function () {
-
-    beforeEach(function () {
-      spyOn(TreeNodeService, 'getNodeChildren');
-    });
-
-    it('should return undefined when study is not defined', function () {
-      var _resultTree = TreeNodeService.getSingleTree();
-      expect(_resultTree).toBe(undefined);
-    });
-
-    it('should get tree', function () {
-      var _resultTree,
-        _study  = {
-        _links : {},
-        _embedded : {
-          ontologyTerm : {
-            _links : {children : {}}
+  describe('setRootNodeAttributes', function () {
+    it ('should set node attributes with some default values', function () {
+      var
+        _dummyNode = {
+          _links : {
+            children : []
+          },
+          _embedded : {
+            ontologyTerm : {
+              _links : {
+                children : []
+              }
             }
           }
         },
-        _refTree = {
-          'title': 'ROOT',
-          'nodes': [],
-          'restObj': _study,
-          'loaded': false,
-          'study': _study
-        };
+        _rootNode = TreeNodeService.setRootNodeAttributes(_dummyNode);
 
-      _resultTree = TreeNodeService.getSingleTree(_study);
+      expect(_rootNode.restObj).toEqual(_dummyNode);
+      expect(_rootNode.loaded).toEqual(false);
+      expect(_rootNode.study).toEqual(_dummyNode);
+      expect(_rootNode.title).toEqual('ROOT');
+      expect(_rootNode.nodes).toEqual([]);
+      expect(_rootNode._links.children).toEqual(_dummyNode._embedded.ontologyTerm._links.children);
+      expect(_rootNode.isLoading).toEqual(true);
 
-      expect(TreeNodeService.getNodeChildren).toHaveBeenCalledWith(_resultTree, false, 'concepts/');
-      expect(_resultTree).toEqual(_refTree);
     });
   });
-   **/
+
+  fdescribe('loadNode', function () {
+
+    var
+      _node = {
+        restObj : {
+          one : function (str) {
+            return this;
+          },
+          get : function () {
+
+          }
+        }
+      },
+      _link = {title:'dummy'},
+      _loadedNode = {
+        restObj : {
+          one : function (str) {
+            return this;
+          },
+          get : function () {
+
+          }
+        }
+      };
+
+    beforeEach(function () {
+      spyOn(_node.restObj, 'one').and.callThrough();
+      spyOn(_node.restObj, 'get').and.returnValue(deferred.promise);
+
+      TreeNodeService.loadNode(_node, _link, 'concepts/')
+    });
+
+    it('should track the one was called to get concept details', function () {
+      expect(_node.restObj.one).toHaveBeenCalledWith('concepts/' + _link.title);
+    });
+
+    it('should track the get was called', function () {
+      expect(_node.restObj.get).toHaveBeenCalled();
+    });
+  });
 
 });
