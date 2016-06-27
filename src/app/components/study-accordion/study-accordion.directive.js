@@ -36,16 +36,14 @@ angular.module('transmartBaseUi')
 
         if (!node.hasOwnProperty('restObj')) {
           node = TreeNodeService.setRootNodeAttributes(node);
-          return TreeNodeService.getNodeChildren(node,  false, 'concepts/').then(function (result) {
-            $log.info(result);
+          return TreeNodeService.getNodeChildren(node, 'concepts/').then(function (result) {
             node.isLoading = false;
           });
         }
 
         node.isLoading = true;
-        TreeNodeService.getNodeChildren(node, false).then(function (result) {
+        TreeNodeService.getNodeChildren(node).then(function (result) {
           node.isLoading = false;
-          $log.info(result);
         });
 
       };

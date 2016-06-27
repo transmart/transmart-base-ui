@@ -62,17 +62,17 @@ angular.module('transmartBaseUi').factory('TreeNodeService', ['$q', function($q)
         deferred.resolve(newNode);
       });
 
-    }, function (response) { // when it's failed
+    }, function (err) { // when it's failed
       node.loaded = true;
       newNode.type = 'FAILED_CALL';
       newNode.total = '';
-      deferred.resolve(newNode);
+      deferred.reject(newNode);
     });
 
     return deferred.promise;
   };
 
-  service.getNodeChildren = function (node, end, prefix) {
+  service.getNodeChildren = function (node, prefix) {
     var deferred = $q.defer();
     prefix = prefix || '';
 
@@ -83,13 +83,20 @@ angular.module('transmartBaseUi').factory('TreeNodeService', ['$q', function($q)
       if (childLinks) {
         // start to load its children
         childLinks.forEach(function (link) {
-          service.loadNode (node, link, prefix).then(function (newNode) {
-            node.nodes.push(newNode);
-            node.loaded = true;
-            if (childLinks.length === node.nodes.length) {
-              deferred.resolve(node.nodes);
-            }
-          });
+          service.loadNode (node, link, prefix)
+            .then(function (newNode) {
+              node.nodes.push(newNode);
+              node.loaded = true;
+          })
+            .catch(function (errNode) {
+              node.nodes.push(errNode);
+              node.loaded = false;
+            })
+            .finally(function () {
+              if (childLinks.length === node.nodes.length) {
+                deferred.resolve(node.nodes);
+              }
+            });
         });
       }
     } else {
