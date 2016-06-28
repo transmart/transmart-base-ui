@@ -45,7 +45,14 @@ angular.module('transmartBaseUi').factory('StudyListService', ['$q', function($q
       endpoint.status = 'active';
       // add study type based on root
       _.forEach(studies, function (study) {
+
         study.endpoint = endpoint; // Keep reference to endpoint
+        study.isLoading = true;
+        study.one('subjects').get().then(function (subjects) {
+          study.total = subjects._embedded.subjects.length;
+          study.isLoading = false;
+        });
+
         if (study._embedded.ontologyTerm.fullName.split('\\')[1] === 'Public Studies') {
           study.type = 'public';
         } else if (study._embedded.ontologyTerm.fullName.split('\\')[1] === 'Private Studies') {
