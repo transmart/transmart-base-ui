@@ -1,5 +1,5 @@
 <script type="text/ng-template" id="tree-tooltip-metadata.html">
-  <table style="font-size: .9em" click-outside="closeThis()">
+  <table class="tooltip-table" click-outside="closeThis()">
     <tr>
       <td><b>Fullname:</b></td>
       <td>&nbsp;&nbsp;</td>
@@ -19,10 +19,10 @@
 <!-- START Node template -->
 
 <script type="text/ng-template" id="nodes_renderer.html">
-  <div ui-tree-handle class="tree-node tree-node-content" ng-click="populateChilds(node);"
+  <div ui-tree-handle class="tree-node tree-node-content tree-node-custom" ng-click="populateChildren(node);"
        data-drag="node.type !== 'FAILED_CALL'" jqyoui-draggable="{placeholder: 'keep'}"
        data-jqyoui-options="{containment: 'document', appendTo: 'body', helper: 'clone'}" ng-model="node"
-       style="overflow-x: hidden !important; white-space: nowrap;">
+       >
 
     <!--icons-->
     <a data-nodrag ng-click="toggle(this)">
@@ -46,7 +46,7 @@
         popover-trigger="none"
         popover-is-open="popoverIsOpen"
         ng-click="toggle(this); popoverIsOpen = false"
-        ng-right-click="displayMetadata(node); popoverIsOpen = !popoverIsOpen"
+        base-ui-right-click="displayMetadata(node); popoverIsOpen = !popoverIsOpen"
         click-outside="popoverIsOpen = false"
         ng-class="{'text-grey': node.type === 'FAILED_CALL'}"
         >
@@ -77,7 +77,7 @@
   <uib-accordion-group  is-open="study.open" ng-if="study.hide != true">
     <!--heading-->
     <uib-accordion-heading >
-      <span ng-click="populateChilds(study);" >
+      <span ng-click="populateChildren(study);" >
         <a class="glyphicon glyphicon-folder-close ts-node-icon"
              ng-class="{
                'glyphicon-folder-close' : !study.open,
@@ -91,7 +91,7 @@
            popover-placement="right"
            popover-trigger="none"
            popover-is-open="headPopIsOpen"
-           ng-right-click="displayMetadata(study); headPopIsOpen = !headPopIsOpen"
+           base-ui-right-click="displayMetadata(study); headPopIsOpen = !headPopIsOpen"
            click-outside="headPopIsOpen = false">
           {{study._embedded.ontologyTerm.name}}
           <b ng-show="!study.isLoading">({{study.total}})</b>

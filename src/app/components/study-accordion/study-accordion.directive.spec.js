@@ -19,7 +19,7 @@ describe('studyAccordion', function() {
     controller = $controller('StudyAccordionCtrl', {$scope : scope});
   }));
 
-  describe('$scope.populateChilds', function () {
+  describe('$scope.populateChildren', function () {
     var _scope, deferred;
 
     beforeEach(function () {
@@ -37,7 +37,7 @@ describe('studyAccordion', function() {
           type : 'UNKNOWN'
         }
       ]};
-      _scope.populateChilds(_nodes);
+      _scope.populateChildren(_nodes);
       expect(TreeNodeService.setRootNodeAttributes).toHaveBeenCalled();
       expect(TreeNodeService.getNodeChildren).toHaveBeenCalled();
     });

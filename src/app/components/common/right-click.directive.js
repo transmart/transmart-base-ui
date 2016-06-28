@@ -1,9 +1,9 @@
 'use strict';
 
 angular.module('transmartBaseUi')
-.directive('ngRightClick', function($parse) {
+.directive('baseUiRightClick', function($parse) {
   return function(scope, element, attrs) {
-    var fn = $parse(attrs.ngRightClick);
+    var fn = $parse(attrs.baseUiRightClick);
     element.bind('contextmenu', function(event) {
       scope.$apply(function() {
         event.preventDefault();

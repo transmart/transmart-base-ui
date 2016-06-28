@@ -29,7 +29,7 @@ angular.module('transmartBaseUi')
         oneAtATime: true
       };
 
-      $scope.populateChilds = function (node) {
+      $scope.populateChildren = function (node) {
 
         // first check if node has restangular object or not
         // if not it means it's root node a.k.a study
