@@ -94,7 +94,6 @@
            base-ui-right-click="displayMetadata(study); headPopIsOpen = !headPopIsOpen"
            click-outside="headPopIsOpen = false">
           {{study._embedded.ontologyTerm.name}}
-          <b ng-show="!study.isLoading">({{study.total}})</b>
           <span class="glyphicon glyphicon-spin" ng-class="{'glyphicon-refresh': study.isLoading}"></span>
         </a>
       </span>
