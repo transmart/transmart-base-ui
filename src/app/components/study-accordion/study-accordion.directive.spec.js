@@ -1,32 +1,73 @@
 'use strict';
+describe('studyAccordion', function() {
+  var scope, template, controller, TreeNodeService, $q;
 
-describe('Unit testing study accordion', function() {
-  var $compile, scope, element;
-
-  // Load the transmartBaseUi module, which contains the directive
   beforeEach(function() {module('transmartBaseUi');});
+
   // load all angular templates (a.k.a html files)
   beforeEach(module('transmartBaseUIHTML'));
 
-  // Store references to $rootScope and $compile
-  // so they are available to all tests in this describe block
-  beforeEach(inject(function(_$compile_, _$rootScope_){
-    // The injector unwraps the underscores (_) from around the parameter names when matching
-    $compile = _$compile_;
-    scope = _$rootScope_;
-    scope.studies = [];
+  beforeEach(inject(function($compile, $rootScope, $controller, _TreeNodeService_, _$q_) {
+    scope = $rootScope.$new();
+    $q = _$q_;
+    TreeNodeService = _TreeNodeService_;
+
+    var element = angular.element("<study-accordion></study-accordion>");
+    template = $compile(element)(scope);
+    scope.$digest();
+
+    controller = $controller('StudyAccordionCtrl', {$scope : scope});
   }));
 
-  beforeEach(function() {
-    // Compile a piece of HTML containing the directive
-    element = $compile('<study-accordion></study-accordion>')(scope);
-    scope.$digest();
+  describe('$scope.populateChildren', function () {
+    var _scope, deferred;
+
+    beforeEach(function () {
+      _scope = scope;
+      deferred = $q.defer();
+      spyOn(TreeNodeService, 'setRootNodeAttributes');
+      spyOn(TreeNodeService, 'getNodeChildren').and.returnValue(deferred.promise);
+    });
+
+    it ('should invoke TreeNodeService.getNodeChildren when populating node children', function () {
+      var _nodes = { nodes : [
+        {
+          title : 'someTitle',
+          total : 999,
+          type : 'UNKNOWN'
+        }
+      ]};
+      _scope.populateChildren(_nodes);
+      expect(TreeNodeService.setRootNodeAttributes).toHaveBeenCalled();
+      expect(TreeNodeService.getNodeChildren).toHaveBeenCalled();
+    });
+
   });
 
-  it('should renders study-accordion template', function() {
-    // Check that the compiled element contains the templated content
-    expect(element.html()).toContain('<script type="text/ng-template" id="tree-tooltip.html">');
-    expect(element.html()).toContain('<script type="text/ng-template" id="nodes_renderer.html">');
+  describe('$scope.displayMetadata', function () {
+    var _scope, _nodes = [
+      {restObj : {fullName : 'restObj-fullname', metadata : 'restObj-metadata'}, title : 'restObj-title'},
+      {_embedded : {ontologyTerm : {name : '_embedded-name', fullName : '_embedded-fullname', metadata : '_embedded-metadata'}}}
+    ];
+
+    beforeEach(function () {
+      _scope = scope;
+    });
+
+    it ('should use metadata from restObj when node has restObj property', function () {
+        _scope.displayMetadata(_nodes[0]);
+        expect(_scope.metadataObj.title).toEqual('restObj-title');
+        expect(_scope.metadataObj.fullname).toEqual('restObj-fullname');
+        expect(_scope.metadataObj.body).toEqual('restObj-metadata');
+    });
+
+    it ('should use metadata from embedded.ontologyTerm when node has _embedded property', function () {
+        _scope.displayMetadata(_nodes[1]);
+        expect(_scope.metadataObj.title).toEqual('_embedded-name');
+        expect(_scope.metadataObj.fullname).toEqual('_embedded-fullname');
+        expect(_scope.metadataObj.body).toEqual('_embedded-metadata');
+    });
+
   });
 
 });
