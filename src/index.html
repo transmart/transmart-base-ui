@@ -21,15 +21,18 @@
   </head>
   <body>
     <!--[if lt IE 10]>
-      <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please
+      <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.
+    </p>
     <![endif]-->
 
     <!-- Navigator -->
     <div ng-include="'app/components/navbar/navbar.html'"></div>
 
-    <div ui-layout="{flow : 'column'}">
+    <!-- Contents -->
+    <div ui-layout="{flow : 'column'}" class="base-ui-contents">
 
-      <div ui-layout-container size="15%" min-size="0%">
+      <div ui-layout-container size="15%" min-size="0%" id="base">
         <!--Side Bar-->
         <div ng-include="'app/components/sidebar/sidebar.html'"></div>
       </div>
@@ -39,10 +42,8 @@
       </div>
     </div>
 
-    <!--<div ui-view></div>-->
-
     <!-- Footer -->
-    <div ng-include="'app/components/footer/footer.html'"></div>
+    <div ng-include="'app/components/footer/footer.html'" id="base-ui-footer"></div>
 
     <!-- build:js(src) scripts/vendor.js -->
     <!-- bower:js -->
