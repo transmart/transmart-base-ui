@@ -14,66 +14,7 @@ describe('StudyListService', function () {
     /* jshint ignore:end */
   };
 
-  var
-    _almostRealStudy = {
-      "id": "GSE8581",
-      "_links": {
-        "self": {
-          "href": "/studies/gse8581"
-        }
-      },
-      one : function (str) {
-        return this;
-      },
-      "get": function () {
-
-      },
-      "_embedded": {
-        "ontologyTerm": {
-          "name": "GSE8581",
-          "key": "\\\\Public Studies\\Public Studies\\GSE8581\\",
-          "fullName": "\\Public Studies\\GSE8581\\",
-          "type": "STUDY",
-          "metadata": {
-            "Status": "Public on May 31, 2008",
-            "TITLE": "Human Chronic Obstructive Pulmonary Disorder (COPD) Biomarker",
-            "Organism": "Homo sapiens",
-            "Title": "Human Chronic Obstructive Pulmonary Disorder (COPD) biomarker",
-            "Summary": "Chronic obstructive pulmonary disease (COPD) is an inflammatory lung disease with " +
-            "complex pathological features and largely unknown etiologies. Identification and validation of " +
-            "biomarkers for this disease could facilitate earlier diagnosis, appreciation of disease subtypes " +
-            "and/or determination of response to therapeutic intervention. To identify gene expression markers " +
-            "for COPD, we performed genome-wide expression profiling of lung tissue from 56 subjects using the " +
-            "Affymetrix U133 Plus 2.0 array. Lung function measurements from these subjects ranged from " +
-            "normal, un-obstructed to severely obstructed. Analysis of differential expression between cases " +
-            "(FEV1<70%, FEV1/FVC<0.7) and controls (FEV1>80%, FEV1/FVC>0.7) ...... A total of 31 probe sets " +
-            "were identified that showed evidence of significant correlation with quantitative traits and " +
-            "differential expression between cases and controls. Keywords: Disease state marker"
-          },
-          "_links": {
-            "self": {
-              "href": "/studies/gse8581/concepts/ROOT"
-            },
-            "observations": {
-              "href": "/studies/gse8581/concepts/ROOT/observations"
-            },
-            "children":
-              [
-                {
-                  "href": "/studies/gse8581/concepts/Endpoints",
-                  "title": "Endpoints"
-                },
-                {
-                  "href": "/studies/gse8581/concepts/Subjects",
-                  "title": "Subjects"
-                }
-              ]
-          }
-
-        }
-      }
-    },
-    _almostRealStudies = {
+  var _almostRealStudies = {
     "_links": {
       "self": {
         "href": "/studies"
@@ -81,7 +22,59 @@ describe('StudyListService', function () {
     },
     "_embedded": {
       "studies":
-        [_almostRealStudy ]
+        [
+          {
+            "id": "GSE8581",
+            "_links": {
+              "self": {
+                "href": "/studies/gse8581"
+              }
+            },
+            "_embedded": {
+              "ontologyTerm": {
+                "name": "GSE8581",
+                "key": "\\\\Public Studies\\Public Studies\\GSE8581\\",
+                "fullName": "\\Public Studies\\GSE8581\\",
+                "type": "STUDY",
+                "metadata": {
+                  "Status": "Public on May 31, 2008",
+                  "TITLE": "Human Chronic Obstructive Pulmonary Disorder (COPD) Biomarker",
+                  "Organism": "Homo sapiens",
+                  "Title": "Human Chronic Obstructive Pulmonary Disorder (COPD) biomarker",
+                  "Summary": "Chronic obstructive pulmonary disease (COPD) is an inflammatory lung disease with " +
+                  "complex pathological features and largely unknown etiologies. Identification and validation of " +
+                  "biomarkers for this disease could facilitate earlier diagnosis, appreciation of disease subtypes " +
+                  "and/or determination of response to therapeutic intervention. To identify gene expression markers " +
+                  "for COPD, we performed genome-wide expression profiling of lung tissue from 56 subjects using the " +
+                  "Affymetrix U133 Plus 2.0 array. Lung function measurements from these subjects ranged from " +
+                  "normal, un-obstructed to severely obstructed. Analysis of differential expression between cases " +
+                  "(FEV1<70%, FEV1/FVC<0.7) and controls (FEV1>80%, FEV1/FVC>0.7) ...... A total of 31 probe sets " +
+                  "were identified that showed evidence of significant correlation with quantitative traits and " +
+                  "differential expression between cases and controls. Keywords: Disease state marker"
+                },
+                "_links": {
+                  "self": {
+                    "href": "/studies/gse8581/concepts/ROOT"
+                  },
+                  "observations": {
+                    "href": "/studies/gse8581/concepts/ROOT/observations"
+                  },
+                  "children":
+                    [
+                      {
+                        "href": "/studies/gse8581/concepts/Endpoints",
+                        "title": "Endpoints"
+                      },
+                      {
+                        "href": "/studies/gse8581/concepts/Subjects",
+                        "title": "Subjects"
+                      }
+                    ]
+                }
+              }
+            }
+          },
+        ]
     }
   };
 
@@ -279,35 +272,6 @@ describe('StudyListService', function () {
     }
   ];
 
-  var _almostRealSubjects = {
-    "_links": {
-      "self": {
-        "href": "/studies/trait-cell-line/subjects"
-      }
-    },
-    "_embedded": {
-      "subjects": [
-        {
-          "religion": null,
-          "maritalStatus": null,
-          "race": "No information",
-          "id": 1000430139,
-          "birthDate": null,
-          "age": null,
-          "deathDate": null,
-          "trial": "TRAIT-CELL-LINE",
-          "inTrialId": "SW1398",
-          "sex": "UNKOWN",
-          "_links": {
-            "self": {
-              "href": "/studies/trait-cell-line/subjects/1000430139"
-            }
-          }
-        }
-      ]
-    }
-  };
-
   beforeEach(function () {
     module('transmartBaseUi');
   });
@@ -403,14 +367,12 @@ describe('StudyListService', function () {
           url: "http://www.somewebsite.net/transmart"
         };
 
-      httpBackend.whenGET('/studies/GSE8581/subjects').respond(_almostRealSubjects);
-
       StudyListService.studyList = [];
     });
 
-    it('should load studies', function () {
+    it('should load study', function () {
         loadedStudies = StudyListService.loadStudyList(_endpoint).then(function (res) {
-          expect(res.length).toEqual(1);
+          expect(res.length).toEqual(1)
         });
         httpBackend.flush();
     });
