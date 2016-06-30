@@ -1,14 +1,12 @@
 <!-- Export button ----------------------------------------------------------->
-<div class="btn-group ts-export-btn row"
-     uib-dropdown>
+<div class="btn-group ts-export-btn row" uib-dropdown>
   <button type="button"
           class="btn btn-primary btn-sm dropdown-toggle"
           uib-dropdown-toggle
           ng-disabled="cohort.length <= 0">
     Export cohort <span class="caret"></span>
   </button>
-  <ul class="dropdown-menu"
-      role="menu">
+  <ul class="dropdown-menu" role="menu">
     <li ng-csv="getCsvFormatted()"
         filename="cohort.csv"
         csv-header="csvHeaders">

@@ -5,28 +5,12 @@ angular.module('transmartBaseUi').factory('ChartService',
   function (Restangular, $q, $rootScope, $timeout, AlertService, DcChartsService, GridsterService) {
 
     var chartService = {
-      cs : {
-        subjects: [],
-        chartId: 0,
-        charts: [],
-        cross: crossfilter(),
-        dims: {},
-        numDim: 0,
-        maxDim: 20,
-        groups: {},
-        labels: []
-      } // cohort selection
-    };
-
-    var _filterEvent = function () {};
-
-    chartService.registerFilterEvent = function (func) {
-      _filterEvent = func;
+      cs : {}
     };
 
     chartService.triggerFilterEvent = function (chart, filter) {
-      if (filter !== null) { // only trigger when
-        _filterEvent();
+      if (filter !== null) { // only trigger when there's filter
+        chartService.updateDimensions();
       }
     };
 
@@ -133,17 +117,19 @@ angular.module('transmartBaseUi').factory('ChartService',
    * Reset the cohort chart service to initial state
    */
   chartService.reset = function () {
-    chartService.cs = {
-      subjects: [],
-      chartId: 0,
-      charts: [],
-      cross: crossfilter(),
-      dims: {},
-      numDim: 0,
-      maxDim: 20,
-      groups: {},
-      labels: []
-    };
+
+    chartService.cs.subjects = [];
+    chartService.cs.chartId = 0;
+    chartService.cs.charts = [];
+    chartService.cs.cross = crossfilter();
+    chartService.cs.dims = {};
+    chartService.cs.numDim = 0;
+    chartService.cs.maxDim = 20;
+    chartService.cs.groups = {};
+    chartService.cs.labels = [];
+    chartService.cs.selected = 0;
+    chartService.cs.total = 0;
+    chartService.cs.dimensions = 0;
 
     _groupingChart = {};
 
@@ -604,27 +590,18 @@ angular.module('transmartBaseUi').factory('ChartService',
     };
 
 
-    chartService.summary = function () {
-      var _summary = {
-        selected : chartService.cs.cross.groupAll().value(),
-        total : chartService.cs.cross.size(),
-        subjects :  chartService.cs.mainDim.top(Infinity),
-        dimensions : chartService.cs.numDim,
-        maxdim : chartService.cs.maxDim,
-        cohortLabels : chartService.cs.labels
-      };
-      chartService.cs.subjects = _summary.subjects;
-
-      return _summary;
+    /**
+     * Update dimension
+     */
+    chartService.updateDimensions = function () {
+      chartService.cs.selected =  chartService.cs.cross.groupAll().value();
+      chartService.cs.total = chartService.cs.cross.size();
+      chartService.cs.subjects =  chartService.cs.mainDim.top(Infinity);
+      chartService.cs.dimensions = chartService.cs.numDim;
+      chartService.cs.maxdim = chartService.cs.maxDim;
+      chartService.cs.cohortLabels = chartService.cs.labels;
     };
 
-
-    // init
-    chartService.reset();
-
-    /**
-     * ChartService
-     */
     return chartService;
 
 }]);

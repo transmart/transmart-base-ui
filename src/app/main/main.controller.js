@@ -8,6 +8,10 @@ angular.module('transmartBaseUi')
                 $state, StudyListService, CohortSelectionService,  GridsterService, $uibModal)
   {
 
+    var findURLQueryParams = $location.search();
+
+    ChartService.reset();
+
     // Alerts
     $scope.close = AlertService.remove;
     $scope.alerts = AlertService.get();
@@ -15,17 +19,13 @@ angular.module('transmartBaseUi')
     // Gridster
     $scope.gridsterOpts = GridsterService.options;
 
-    // Cohort summary data
-    $scope.cohortVal = {selected: 0, total: 0, subjects: []};
-
     // Charts
     $scope.cs = ChartService.cs;
 
-    $scope.$watchCollection('cs', function(newVal, oldVal) {
-      if (!_.isEqual(newVal, oldVal)) {
-        $scope.cohortVal = ChartService.summary();
-      }
-
+    $scope.$watchCollection(function () { return ChartService.cs.labels; }, function (newV, oldV) {
+        if (!_.isEqual(newV, oldV)) {
+          ChartService.updateDimensions();
+        }
     });
 
     // Tabs
@@ -39,13 +39,21 @@ angular.module('transmartBaseUi')
      * Activate tab
      * @param tabTitle
      * @param tabAction
-       */
+     */
     $scope.activateTab = function (tabTitle, tabAction) {
-        $scope.tabs.forEach(function (tab) {
-            tab.active = tab.title === tabTitle;
-        });
-        $state.go('workspace', {action:tabAction});
+      $scope.tabs.forEach(function (tab) {
+        tab.active = tab.title === tabTitle;
+      });
+      $state.go('workspace', {action:tabAction});
     };
+
+    if (findURLQueryParams !== undefined) {
+      if (findURLQueryParams.action === 'cohortGrid') {
+        $scope.activateTab($scope.tabs[1].title, 'cohortGrid');
+      } else {
+        $scope.activateTab($scope.tabs[0].title, 'cohortSelection');
+      }
+    }
 
     // Every selected concept is represented by a label
     $scope.cohortChartContainerLabels = GridsterService.cohortChartContainerLabels;
@@ -83,7 +91,7 @@ angular.module('transmartBaseUi')
     $scope.resetActiveLabels = function () {
       CohortSelectionService.clearAll();
       ChartService.reset();
-      $scope.$broadcast('collectionUpdated', [[], []]);
+      ChartService.updateDimensions();
     };
 
     /**
@@ -98,6 +106,7 @@ angular.module('transmartBaseUi')
       CohortSelectionService.nodes.push(node);
       ChartService.addNodeToActiveCohortSelection(node).then(function () {
         $scope.cohortUpdating = false;
+        ChartService.updateDimensions();
       });
     };
 
@@ -111,27 +120,6 @@ angular.module('transmartBaseUi')
         controller: 'SaveCohortDialogCtrl',
         animation:false
       });
-    }
-
-    /**
-     * When this controller is loaded, check the query params if it contains some actions.
-     * If it is, do the necessities.
-     * @private
-     */
-    var _initLoad = function () {
-      var findURLQueryParams = $location.search();
-
-      if (findURLQueryParams !== undefined) {
-        if (findURLQueryParams.action === 'cohortGrid') {
-          $scope.activateTab($scope.tabs[1].title, 'cohortGrid');
-        } else {
-          $scope.activateTab($scope.tabs[0].title, 'cohortSelection');
-        }
-      }
-      // register update cohort display function to be invoked when filter changed
-      ChartService.registerFilterEvent(ChartService.summary);
     };
-
-    _initLoad();
 
   }]);
