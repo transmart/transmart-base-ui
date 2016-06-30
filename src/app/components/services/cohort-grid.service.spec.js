@@ -15,12 +15,11 @@ describe('CohortGridService', function() {
   }));
 
   it ('should have predefined options', function () {
-    expect(CohortGridService.options.paginationPageSizes).toEqual([10, 25, 50]);
-    expect(CohortGridService.options.paginationPageSize).toEqual(10);
+    expect(CohortGridService.options.paginationPageSizes).toEqual([100, 200, 500]);
+    expect(CohortGridService.options.paginationPageSize).toEqual(100);
     expect(CohortGridService.options.columnDefs).toEqual([]);
     expect(CohortGridService.options.data).toEqual([]);
     expect(CohortGridService.options.enableFiltering).toEqual(true);
-    expect(CohortGridService.options.paginationPageSize).toEqual(10);
   });
 
   xdescribe('updateCohortGridView', function () {

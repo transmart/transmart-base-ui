@@ -8,7 +8,7 @@ angular.module('transmartBaseUi').factory('CohortGridService', ['$timeout', '$q'
       //enablePaginationControls: false,
       enableGridMenu: true,
       enableSelectAll: true,
-      exporterCsvFilename: 'myFile.csv',
+      exporterCsvFilename: 'cohort.csv',
       exporterCsvLinkElement: angular.element(document.querySelectorAll(".custom-csv-link-location")),
       exporterMenuPdf: false,
       paginationPageSizes: [100, 200, 500],
