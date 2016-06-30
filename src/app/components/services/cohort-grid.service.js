@@ -1,12 +1,18 @@
 'use strict';
 
-angular.module('transmartBaseUi').factory('CohortGridService', ['$timeout', function ($timeout) {
+angular.module('transmartBaseUi').factory('CohortGridService', ['$timeout', '$q', function ($timeout, $q) {
 
   var service = {
     WIDTH_PER_COLUMN : 200,
     options: {
-      paginationPageSizes: [10, 25, 50],
-      paginationPageSize: 10,
+      //enablePaginationControls: false,
+      enableGridMenu: true,
+      enableSelectAll: true,
+      exporterCsvFilename: 'myFile.csv',
+      exporterCsvLinkElement: angular.element(document.querySelectorAll(".custom-csv-link-location")),
+      exporterMenuPdf: false,
+      paginationPageSizes: [100, 200, 500],
+      paginationPageSize: 100,
       columnDefs: [],
       data: [],
       enableFiltering: true,
@@ -41,6 +47,7 @@ angular.module('transmartBaseUi').factory('CohortGridService', ['$timeout', func
   };
 
   service.updateCohortGridView = function (subjects, labels) {
+    var deferred = $q.defer();
     $timeout(function () { // this is necessary for ui-grid to notice the change at all
       service.options.data = service.convertToTable(subjects, labels); // cohorts and hears as they are cannot be displayed
       service.options.columnDefs = service.prepareColumnDefs(labels); // they need to be put in ng-grid format
@@ -48,9 +55,10 @@ angular.module('transmartBaseUi').factory('CohortGridService', ['$timeout', func
       $timeout(function () { // handleWindowResize needs to be called in yet another digest cycle than setting the
         // data,  columnDefs and the css width attribute
         service.options.gridApi.core.handleWindowResize();
-        return service.options.columnDefs.length * service.WIDTH_PER_COLUMN;
+        deferred.resolve(service.options.columnDefs.length * service.WIDTH_PER_COLUMN);
       });
     });
+    return deferred.promise;
   };
 
   return service;

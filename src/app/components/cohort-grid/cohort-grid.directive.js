@@ -17,13 +17,19 @@ angular.module('transmartBaseUi')
 
         $scope.$watchCollection('headers', function (newValue, oldValue) {
           if (!_.isEqual(newValue, oldValue)) {
-            $scope.style_modifiers.width = CohortGridService.updateCohortGridView($scope.cohort, newValue);
+              CohortGridService.updateCohortGridView($scope.cohort, newValue)
+                .then(function (res) {
+                  $scope.style_modifiers.width = res;
+              });
           }
         });
 
         $scope.$watchCollection('cohort', function (newValue, oldValue) {
           if (!_.isEqual(newValue, oldValue)) {
-            $scope.style_modifiers.width = CohortGridService.updateCohortGridView(newValue, $scope.headers);
+            CohortGridService.updateCohortGridView(newValue, $scope.headers)
+              .then(function (res) {
+                $scope.style_modifiers.width = res;
+              });
           }
         });
 
@@ -33,23 +39,6 @@ angular.module('transmartBaseUi')
           };
         };
 
-        $scope.getCsvFormatted = function () {
-          var formatted = [];
-          $scope.cohort.forEach(function (subject) {
-            var cleanSubject = {};
-            cleanSubject.id = subject.id;
-            $scope.headers.forEach(function (label) {
-              cleanSubject[label.name] = subject.labels[label.ids];
-            });
-            formatted.push(cleanSubject);
-          });
-          if (formatted.length > 0) {
-            $scope.csvHeaders = Object.keys(formatted[0]);
-          } else {
-            $scope.csvHeaders = [];
-          }
-          return formatted;
-        };
       }]
     };
   });

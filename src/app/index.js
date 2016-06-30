@@ -16,6 +16,9 @@ angular.module('transmartBaseUi', [
   'ui.layout',
   'ui.grid',
   'ui.grid.pagination',
+  'ui.grid.resizeColumns',
+  'ui.grid.exporter',
+  'ui.grid.selection',
   'angular-click-outside',
   'toggle-switch'
 ])
