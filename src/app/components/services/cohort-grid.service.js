@@ -22,6 +22,11 @@ angular.module('transmartBaseUi').factory('CohortGridService', ['$timeout', '$q'
     }
   };
 
+  /**
+   * Generate grid columns
+   * @param rawHeaders
+   * @returns {Array}
+     */
   service.prepareColumnDefs = function (rawHeaders) {
     var columnDefs = [];
     columnDefs.push({'field': 'id'});
@@ -33,9 +38,15 @@ angular.module('transmartBaseUi').factory('CohortGridService', ['$timeout', '$q'
     return columnDefs;
   };
 
-  service.convertToTable  = function (cohort, headers) {
+  /**
+   * Format data and labels for the gridview's data
+   * @param subjects
+   * @param headers
+   * @returns {Array}
+     */
+  service.convertToTable  = function (subjects, headers) {
     var formatted = [];
-    cohort.forEach(function (subject) {
+    subjects.forEach(function (subject) {
       var cleanSubject = {};
       cleanSubject.id = subject.id;
       headers.forEach(function (label) {
@@ -49,7 +60,7 @@ angular.module('transmartBaseUi').factory('CohortGridService', ['$timeout', '$q'
   service.updateCohortGridView = function (subjects, labels) {
     var deferred = $q.defer();
     $timeout(function () { // this is necessary for ui-grid to notice the change at all
-      service.options.data = service.convertToTable(subjects, labels); // cohorts and hears as they are cannot be displayed
+      service.options.data = service.convertToTable(subjects, labels); // cohorts & hears as they are cannot be displayed
       service.options.columnDefs = service.prepareColumnDefs(labels); // they need to be put in ng-grid format
       // as a % of screen - therefore it needs to be set dynamically after each change to number of columns
       $timeout(function () { // handleWindowResize needs to be called in yet another digest cycle than setting the
