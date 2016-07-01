@@ -1,11 +1,11 @@
 'use strict';
 
 angular.module('transmartBaseUi')
-  .controller('SidebarCtrl', ['$scope', 'StudyListService', 'EndpointService', '$rootScope',
-    function ($scope, StudyListService, EndpointService, $rootScope) {
+  .controller('SidebarCtrl', ['$scope', 'StudyListService', 'EndpointService',
+    function ($scope, StudyListService, EndpointService) {
 
-      $rootScope.publicStudies = [];
-      $rootScope.privateStudies = [];
+      $scope.publicStudies = [];
+      $scope.privateStudies = [];
 
       $scope.searchTerm = '';
       // Default to false (OR)
@@ -61,8 +61,8 @@ angular.module('transmartBaseUi')
 
         _.each(_endpoints, function (endpoint) {
           StudyListService.loadStudyList(endpoint).then(function (result) {
-            $rootScope.publicStudies = StudyListService.getPublicStudies();
-            $rootScope.privateStudies =  StudyListService.getPrivateStudies();
+            $scope.publicStudies = StudyListService.getPublicStudies();
+            $scope.privateStudies =  StudyListService.getPrivateStudies();
           }, function () {
             EndpointService.invalidateEndpoint(endpoint);
           });
