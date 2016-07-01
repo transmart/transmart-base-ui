@@ -64,7 +64,12 @@
           <uib-tab-heading>
             <span>{{tabs[1].title}}</span>
           </uib-tab-heading>
-          <cohort-grid cohort="cs.subjects" headers="cs.labels"></cohort-grid>
+          <!--Cohort grid-->
+          <cohort-grid cohort="cs.subjects" headers="cs.labels" ng-show="cs.labels.length > 0"></cohort-grid>
+          <!--Cohort grid no data message-->
+          <div class="form-group has-warning" ng-show="cs.labels.length <= 0">
+            <span class="help-block">No cohort selected.</span>
+          </div>
         </uib-tab>
 
         <!-- Analysis tab -------------------------------------------------------------------------------------->
