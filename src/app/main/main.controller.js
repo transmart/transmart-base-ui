@@ -2,13 +2,12 @@
 
 angular.module('transmartBaseUi')
   .controller('MainCtrl',
-    ['$scope', '$rootScope', 'Restangular', 'ChartService', 'AlertService', '$location', '$stateParams', '$log',
+    ['$scope', '$rootScope', 'Restangular', 'ChartService', 'AlertService', '$stateParams', '$log',
       '$state', 'StudyListService', 'CohortSelectionService', 'GridsterService', '$uibModal',
-      function ($scope, $rootScope, Restangular, ChartService, AlertService, $location, $stateParams, $log,
+      function ($scope, $rootScope, Restangular, ChartService, AlertService, $stateParams, $log,
                 $state, StudyListService, CohortSelectionService,  GridsterService, $uibModal)
   {
 
-    var findURLQueryParams = $location.search();
 
     ChartService.reset();
 
@@ -47,8 +46,8 @@ angular.module('transmartBaseUi')
       $state.go('workspace', {action:tabAction});
     };
 
-    if (findURLQueryParams !== undefined) {
-      if (findURLQueryParams.action === 'cohortGrid') {
+    if ($stateParams !== undefined) {
+      if ($stateParams.action === 'cohortGrid') {
         $scope.activateTab($scope.tabs[1].title, 'cohortGrid');
       } else {
         $scope.activateTab($scope.tabs[0].title, 'cohortSelection');
