@@ -1,26 +1,5 @@
-<!-- Export button ----------------------------------------------------------->
-<div class="btn-group ts-export-btn row"
-     uib-dropdown>
-  <button type="button"
-          class="btn btn-primary btn-sm dropdown-toggle"
-          uib-dropdown-toggle
-          ng-disabled="cohort.length <= 0">
-    Export cohort <span class="caret"></span>
-  </button>
-  <ul class="dropdown-menu"
-      role="menu">
-    <li ng-csv="getCsvFormatted()"
-        filename="cohort.csv"
-        csv-header="csvHeaders">
-      <a href="#">Csv</a>
-    </li>
-    <li ng-csv="getCsvFormatted()"
-        filename="cohort.txt"
-        csv-header="csvHeaders">
-      <a href="#">Text</a>
-    </li>
-  </ul>
+<div class="ts-cohort-grid-container">
+  <div class="ts-cohort-grid ng-style: style_modifiers" ui-grid="gridOptions"
+       ui-grid-pagination ui-grid-selection ui-grid-exporter ui-grid-resize-columns ui-grid-selection>
+  </div>
 </div>
-<br>
-<br>
-<table class="ts-cohort-grid ng-style: style_modifiers" ui-grid="gridOptions" ui-grid-pagination></table>

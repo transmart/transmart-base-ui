@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('transmartBaseUi')
-  .controller('ConnectionsCtrl', ['$scope', '$location', 'EndpointService', 'StudyListService', '$rootScope', 'AlertService',
-    function ($scope, $location, EndpointService, StudyListService, $rootScope, AlertService) {
+  .controller('ConnectionsCtrl', ['$scope', '$location', 'EndpointService', 'StudyListService', 'AlertService',
+    function ($scope, $location, EndpointService, StudyListService, AlertService) {
 
       // alerts
       $scope.close = AlertService.remove;
@@ -28,8 +28,8 @@ angular.module('transmartBaseUi')
       $scope.clearSavedEndpoints = function () {
         EndpointService.clearStoredEndpoints();
         $scope.endpoints = EndpointService.getEndpoints();
-        $rootScope.publicStudies = StudyListService.getPublicStudies();
-        $rootScope.privateStudies = StudyListService.getPrivateStudies();
+        $scope.publicStudies = StudyListService.getPublicStudies();
+        $scope.privateStudies = StudyListService.getPrivateStudies();
       };
 
       /**
@@ -65,8 +65,8 @@ angular.module('transmartBaseUi')
 
         // delete study that has associated endpoint
         StudyListService.removeStudiesByEndpoint(endpoint);
-        $rootScope.publicStudies = StudyListService.getPublicStudies();
-        $rootScope.privateStudies =  StudyListService.getPrivateStudies();
+        $scope.publicStudies = StudyListService.getPublicStudies();
+        $scope.privateStudies =  StudyListService.getPrivateStudies();
       };
 
       /**
