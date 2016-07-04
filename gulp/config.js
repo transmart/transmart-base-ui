@@ -10,9 +10,9 @@ gulp.task('config', function () {
   var config = require(path.join('..', conf.paths.src, 'app', 'config.json'));
   var environment = gutil.env.env ? gutil.env.env : 'dev';
   return ngConstant({
-    name: "transmartBaseUi",
+    name: "transmartBaseUiConstants",
     constants: config[environment],
-    deps: false,
+    deps: [],
     stream: true
   })
     .pipe(rename('config.js'))
