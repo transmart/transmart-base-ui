@@ -1,18 +1,18 @@
 'use strict';
 
-angular.module('transmartBaseUi').factory('CohortGridService', ['$timeout', '$q', function ($timeout, $q) {
+angular.module('transmartBaseUi').factory('CohortGridService', ['$timeout', function ($timeout) {
 
   var service = {
     WIDTH_PER_COLUMN : 200,
+    HEIGHT : 500,
     options: {
-      //enablePaginationControls: false,
       enableGridMenu: true,
       enableSelectAll: true,
       exporterCsvFilename: 'cohort.csv',
       exporterCsvLinkElement: angular.element(document.querySelectorAll(".custom-csv-link-location")),
       exporterMenuPdf: false,
-      paginationPageSizes: [100, 200, 500],
-      paginationPageSize: 100,
+      paginationPageSizes: [25, 50, 75],
+      paginationPageSize: 25,
       columnDefs: [],
       data: [],
       enableFiltering: true,
@@ -29,10 +29,10 @@ angular.module('transmartBaseUi').factory('CohortGridService', ['$timeout', '$q'
      */
   service.prepareColumnDefs = function (rawHeaders) {
     var columnDefs = [];
-    columnDefs.push({'field': 'id'});
+    columnDefs.push({'field': 'id', width: service.WIDTH_PER_COLUMN});
     rawHeaders.forEach(function (label) {
       if (_.find(columnDefs, {field: label.name}) == undefined) {
-        columnDefs.push({field: label.name});
+        columnDefs.push({field: label.name, width: service.WIDTH_PER_COLUMN});
       }
     });
     return columnDefs;
@@ -58,18 +58,10 @@ angular.module('transmartBaseUi').factory('CohortGridService', ['$timeout', '$q'
   };
 
   service.updateCohortGridView = function (subjects, labels) {
-    var deferred = $q.defer();
     $timeout(function () { // this is necessary for ui-grid to notice the change at all
-      service.options.data = service.convertToTable(subjects, labels); // cohorts & hears as they are cannot be displayed
-      service.options.columnDefs = service.prepareColumnDefs(labels); // they need to be put in ng-grid format
-      // as a % of screen - therefore it needs to be set dynamically after each change to number of columns
-      $timeout(function () { // handleWindowResize needs to be called in yet another digest cycle than setting the
-        // data,  columnDefs and the css width attribute
-        service.options.gridApi.core.handleWindowResize();
-        deferred.resolve(service.options.columnDefs.length * service.WIDTH_PER_COLUMN);
-      });
+      service.options.data = service.convertToTable(subjects, labels);
+      service.options.columnDefs = service.prepareColumnDefs(labels);
     });
-    return deferred.promise;
   };
 
   return service;

@@ -9,11 +9,9 @@ describe('CohortGridService', function() {
     module('transmartBaseUi');
   });
 
-  beforeEach(inject(function (_CohortGridService_, _$timeout_, _$q_) {
+  beforeEach(inject(function (_CohortGridService_, _$timeout_) {
     CohortGridService = _CohortGridService_;
     $timeout = _$timeout_;
-    $q = _$q_;
-    deferred = _$q_.defer();
   }));
 
   it ('should have predefined options', function () {
@@ -21,8 +19,8 @@ describe('CohortGridService', function() {
     expect(CohortGridService.options.enableSelectAll).toEqual(true);
     expect(CohortGridService.options.exporterCsvFilename).toEqual('cohort.csv');
     expect(CohortGridService.options.exporterMenuPdf).toEqual(false);
-    expect(CohortGridService.options.paginationPageSizes).toEqual([100, 200, 500]);
-    expect(CohortGridService.options.paginationPageSize).toEqual(100);
+    expect(CohortGridService.options.paginationPageSizes).toEqual([25, 50, 75]);
+    expect(CohortGridService.options.paginationPageSize).toEqual(25);
     expect(CohortGridService.options.columnDefs).toEqual([]);
     expect(CohortGridService.options.data).toEqual([]);
     expect(CohortGridService.options.enableFiltering).toEqual(true);
@@ -36,40 +34,48 @@ describe('CohortGridService', function() {
     });
 
     it ('should define columns from given labels', function () {
-      expect(_colDefs[0]).toEqual({field : 'id'});
+      expect(_colDefs[0]).toEqual({field: 'id', width: 200});
     });
 
     it ('should define columns from given labels', function () {
-      expect(_colDefs).toEqual([{field : 'id'}, {field : 'a'},  {field : 'b'},  {field : 'c'}]);
+      expect(_colDefs).toEqual([
+        {field : 'id', width: 200},
+        {field : 'a', width: 200},
+        {field : 'b', width: 200},
+        {field : 'c', width: 200}
+      ]);
     });
-
   });
 
-  xdescribe('convertToTable', function () {
+  describe('convertToTable', function () {
     var _formatted,
-      _labels = [{name:'a', ids:1}, {name:'b', ids:2}, {name:'c', ids:3}],
-      _subjects = [{id:1111, labels:[]}];
+      _labels = [{name:'a', ids:0}, {name:'b', ids:1}, {name:'c', ids:2}],
+      _subjects = [{id:1111, labels:['aa', 'bb', 'cc']}];
 
     beforeEach(function () {
       _formatted = CohortGridService.convertToTable(_subjects, _labels);
     });
 
-    it('', function () {
-        console.log(_formatted);
+    it('should format data to table format', function () {
+        expect(_formatted).toEqual([{id: 1111, a: 'aa', b: 'bb', c: 'cc'}])
     });
   });
 
   describe('updateCohortGridView', function () {
-    var _subjects = [{id:10101010, labels : []}], _labels = [{name:'foo', ids:0}], _res;
 
     beforeEach(function () {
-      spyOn(CohortGridService, 'updateCohortGridView').and.returnValue(deferred.promise);
+      spyOn(CohortGridService, 'convertToTable');
+      spyOn(CohortGridService, 'prepareColumnDefs');
+      CohortGridService.updateCohortGridView([], []);
+      $timeout.flush();
     });
 
-    it ('should return resolved value', function () {
-      deferred.resolve(999);
-      _res = CohortGridService.updateCohortGridView(_subjects, _labels);
-      expect(_res.$$state.value).toEqual(999);
+    it ('should invoke convertToTable', function () {
+      expect(CohortGridService.convertToTable).toHaveBeenCalled();
+    });
+
+    it ('should invoke prepareColumnDefs', function () {
+      expect(CohortGridService.prepareColumnDefs).toHaveBeenCalled();
     });
 
   });
