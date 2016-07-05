@@ -49,11 +49,11 @@ gulp.task('html', ['inject', 'partials'], function () {
     .pipe($.sourcemaps.write('maps'))
     .pipe(jsFilter.restore)
     .pipe(cssFilter)
-    // .pipe($.sourcemaps.init())
+    .pipe($.sourcemaps.init())
     .pipe($.replace('../../bower_components/bootstrap/fonts/', '../fonts/'))
     .pipe($.cssnano())
     .pipe($.rev())
-    // .pipe($.sourcemaps.write('maps'))
+    .pipe($.sourcemaps.write('maps'))
     .pipe(cssFilter.restore)
     .pipe($.revReplace())
     .pipe(htmlFilter)
@@ -68,23 +68,32 @@ gulp.task('html', ['inject', 'partials'], function () {
     .pipe($.size({ title: path.join(conf.paths.dist, '/'), showFiles: true }));
   });
 
+// Copy ui-grid fonts to styles/ folder
+// ui-grid fonts somehow seek font path to styles/ folder
+gulp.task('ui-grid-fonts', function () {
+  return gulp.src($.mainBowerFiles())
+    .pipe($.filter('**/ui-grid.{eot,otf,svg,ttf,woff,woff2}'))
+    .pipe($.flatten())
+    .pipe(gulp.dest(path.join(conf.paths.dist, '/styles/')));
+});
+
 // Only applies for fonts from bower dependencies
 // Custom fonts are handled by the "other" task
-gulp.task('fonts', function () {
+gulp.task('fonts', ['ui-grid-fonts'], function () {
   return gulp.src($.mainBowerFiles())
     .pipe($.filter('**/*.{eot,otf,svg,ttf,woff,woff2}'))
     .pipe($.flatten())
     .pipe(gulp.dest(path.join(conf.paths.dist, '/fonts/')));
 });
 
-gulp.task('other', function () {
+gulp.task('other', ['config'], function () {
   var fileFilter = $.filter(function (file) {
     return file.stat.isFile();
   });
 
   return gulp.src([
-    path.join(conf.paths.src, '/**/*'),
-    path.join('!' + conf.paths.src, '/**/*.{html,css,js,less}')
+    path.join(conf.paths.src, '/**/*.png'),
+    path.join(conf.paths.src, '/**/config.js')
   ])
     .pipe(fileFilter)
     .pipe(gulp.dest(path.join(conf.paths.dist, '/')));
@@ -94,4 +103,4 @@ gulp.task('clean', function () {
   return $.del([path.join(conf.paths.dist, '/'), path.join(conf.paths.tmp, '/')]);
 });
 
-gulp.task('build', ['config', 'html', 'fonts', 'other']);
+gulp.task('build', ['html', 'fonts', 'other']);
