@@ -13,23 +13,17 @@ angular.module('transmartBaseUi')
 
         $scope.displayedCollection = [].concat($scope.cohort);
         $scope.gridOptions = CohortGridService.options;
-        $scope.style_modifiers = {'width': CohortGridService.WIDTH_PER_COLUMN * 2}; // Starting value never really used
+        $scope.style_modifiers = {'height': CohortGridService.HEIGHT};
 
         $scope.$watchCollection('headers', function (newValue, oldValue) {
           if (!_.isEqual(newValue, oldValue)) {
-              CohortGridService.updateCohortGridView($scope.cohort, newValue)
-                .then(function (res) {
-                  $scope.style_modifiers.width = res;
-              });
+              CohortGridService.updateCohortGridView($scope.cohort, newValue);
           }
         });
 
         $scope.$watchCollection('cohort', function (newValue, oldValue) {
           if (!_.isEqual(newValue, oldValue)) {
-            CohortGridService.updateCohortGridView(newValue, $scope.headers)
-              .then(function (res) {
-                $scope.style_modifiers.width = res;
-              });
+            CohortGridService.updateCohortGridView(newValue, $scope.headers);
           }
         });
 
