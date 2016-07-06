@@ -73,34 +73,38 @@ angular.module('transmartBaseUi').factory('TreeNodeService', ['$q', function($q)
   };
 
   service.getNodeChildren = function (node, prefix) {
-    var deferred = $q.defer();
+    var childLinks, deferred = $q.defer();
     prefix = prefix || '';
 
-    if (!node.loaded) { // when the node is not yet loaded ..
+    if (node.loaded) {
+      deferred.resolve(node.loaded);
+      return deferred.promise;
+    }
 
-      var childLinks = node.restObj._links.children; // check if it has child links
+    childLinks = node.restObj._links.children; // check if it has child links
 
-      if (childLinks) {
-        // start to load its children
-        childLinks.forEach(function (link) {
-          service.loadNode (node, link, prefix)
-            .then(function (newNode) {
-              node.nodes.push(newNode);
-              node.loaded = true;
+    if (childLinks) {
+      // start to load its children
+      childLinks.forEach(function (link) {
+        service.loadNode(node, link, prefix)
+          .then(function (newNode) {
+            node.nodes.push(newNode);
+            node.loaded = true;
           })
-            .catch(function (errNode) {
-              node.nodes.push(errNode);
-              node.loaded = false;
-            })
-            .finally(function () {
-              if (childLinks.length === node.nodes.length) {
-                deferred.resolve(node.nodes);
-              }
-            });
-        });
-      }
+          .catch(function (errNode) {
+            node.nodes.push(errNode);
+            node.loaded = false;
+          })
+          .finally(function () {
+            if (childLinks.length === node.nodes.length) {
+              deferred.resolve(node.nodes);
+            }
+          });
+      });
     } else {
-      deferred.resolve(true);
+      // end of node
+      node.loaded = true;
+      deferred.resolve(node.loaded);
     }
 
     return deferred.promise;
