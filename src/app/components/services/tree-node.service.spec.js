@@ -215,6 +215,12 @@ describe('TreeNodeService', function() {
       };
     });
 
+    var flushHttoBackend = function () {
+      httpBackend.flush();
+      httpBackend.verifyNoOutstandingExpectation();
+      httpBackend.verifyNoOutstandingRequest();
+    };
+
     it ('should load child nodes', function () {
       httpBackend.when('GET', '/' + prefix + link.title).respond(_dummyNodeResponse);
       httpBackend.when('GET', '/' + prefix + link.title + '/subjects').respond(_subjects);
@@ -226,9 +232,10 @@ describe('TreeNodeService', function() {
         expect(res[0].loaded).toEqual(false);
       });
 
+      flushHttoBackend();
     });
 
-    it ('should load failed child nodes', function () {
+    it('should load failed child nodes', function () {
       httpBackend.when('GET', '/' + prefix + link.title).respond(404);
       httpBackend.when('GET', '/' + prefix + link.title + '/subjects').respond(404);
       spyOn(_dummyNode.restObj, 'one').and.callThrough();
@@ -243,19 +250,23 @@ describe('TreeNodeService', function() {
         // not failing because it should create failed node
       });
 
-      it ('should not load node when node is already loaded', function () {
-        _dummyNode.loaded = true;
-        TreeNodeService.getNodeChildren(_dummyNode).then(function (res) {
-          expect(res).toBeTruthy();
-        });
-
-      })
+      flushHttoBackend();
     });
 
-    afterEach(function() {
-      httpBackend.flush();
-      httpBackend.verifyNoOutstandingExpectation();
-      httpBackend.verifyNoOutstandingRequest();
+    it ('should not load node when node is already loaded', function () {
+      _dummyNode.loaded = true;
+      TreeNodeService.getNodeChildren(_dummyNode).then(function (res) {
+        expect(res).toBeTruthy();
+      });
+    });
+
+    it ('should not load node when node does not have children', function () {
+      _dummyNode.loaded = false;
+      _dummyNode.restObj._links.children = undefined;
+
+      TreeNodeService.getNodeChildren(_dummyNode).then(function (res) {
+        expect(res).toBeTruthy();
+      });
     });
   });
 
