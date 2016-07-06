@@ -27,7 +27,7 @@ angular.module('transmartBaseUi')
         }
 
         // on filtered
-        _chart.on('filtered', function () { 
+        _chart.on('filtered', function () {
           scope.$evalAsync(ChartService.triggerFilterEvent);
         });
 
@@ -72,6 +72,9 @@ angular.module('transmartBaseUi')
           });
         };
 
+        scope.removeChart = function(label) {
+          ChartService.removeLabel(label);
+        };
       }
     };
   }]);
