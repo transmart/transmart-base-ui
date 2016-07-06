@@ -27,8 +27,8 @@ angular.module('transmartBaseUi')
         }
 
         // on filtered
-        _chart.on('filtered', function () { 
-          scope.$evalAsync(ChartService.triggerFilterEvent);
+        _chart.on('filtered', function (chart, filter) {
+          scope.$evalAsync(ChartService.triggerFilterEvent(chart, filter));
         });
 
         // check if chart is number chart or not
