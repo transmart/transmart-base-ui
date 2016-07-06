@@ -241,9 +241,15 @@ describe('TreeNodeService', function() {
         expect(res[0].type).toEqual('FAILED_CALL');
       }, function (err) {
         // not failing because it should create failed node
-
       });
 
+      it ('should not load node when node is already loaded', function () {
+        _dummyNode.loaded = true;
+        TreeNodeService.getNodeChildren(_dummyNode).then(function (res) {
+          expect(res).toBeTruthy();
+        });
+
+      })
     });
 
     afterEach(function() {
