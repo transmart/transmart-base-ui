@@ -1,7 +1,9 @@
 {
   "name": "transmartBaseUi",
   "version": "0.0.0",
-  "dependencies": {},
+  "dependencies": {
+    "fs": "0.0.2"
+  },
   "scripts": {
     "test": "gulp test",
     "report-coverage": "codecov"
@@ -19,7 +21,7 @@
     "gulp-autoprefixer": "~3.1.0",
     "gulp-cssnano": "~2.1.1",
     "gulp-eslint": "~2.0.0",
-    "gulp-filter": "~4.0.0",
+    "gulp-filter": "~3.0.1",
     "gulp-flatten": "~0.2.0",
     "gulp-htmlmin": "~2.0.0",
     "gulp-inject": "~4.0.0",
@@ -49,8 +51,7 @@
     "main-bower-files": "~2.13.0",
     "phantomjs-prebuilt": "~2.1.7",
     "uglify-save-license": "~0.4.1",
-    "wiredep": "~4.0.0",
-    "wrench": "~1.5.8"
+    "wiredep": "~4.0.0"
   },
   "engines": {
     "node": ">=0.10.0"
