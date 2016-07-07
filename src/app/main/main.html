@@ -1,5 +1,5 @@
 
-    <div class="main-container as potato">
+    <div class="main-container">
       <!-- Alert ------------------------------------------------------------------------------------------------------>
       <uib-alert class="alert-div" ng-repeat="alert in alerts" type="{{alert.type}}" close="close(alert.id)">
         {{alert.message}}
@@ -40,10 +40,12 @@
           </div>
 
           <div id="main-chart-container">
-            <uib-progressbar max="100" value="cs.selected/(cs.total/100)"
-                         ng-class="{'progress-striped': cohortUpdating}" class="progress active" animate="true">
-              <div class="data-count">{{cs.selected}}/{{cs.total}}</div>
-            </uib-progressbar>
+            <div class="progress-container">
+              <uib-progressbar max="100" value="cs.selected/(cs.total/100)"
+                               ng-class="{'progress-striped': cohortUpdating}" class="progress active" animate="true">
+                <div class="data-count">{{cs.selected}}/{{cs.total}}</div>
+              </uib-progressbar>
+            </div>
 
             <div gridster="gridsterOpts" id="ts-gridster-box">
               <ul>
