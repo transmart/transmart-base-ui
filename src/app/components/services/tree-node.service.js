@@ -50,11 +50,12 @@ angular.module('transmartBaseUi').factory('TreeNodeService', ['$q', function($q)
 
     var nodePromise = node.restObj.one(prefix + link.title);
 
-    nodePromise.get().then(function (childObj) { //
+    nodePromise.get().then(function (childObj) {
       newNode.type = childObj.type ? childObj.type : 'UNDEF';
       newNode.restObj = childObj;
       if (newNode.type === 'CATEGORICAL_OPTION') {
         node.type = 'CATEGORICAL_CONTAINER';
+        newNode.parent = node;
       }
       // and also count how many subjects in this node
       service.getTotalSubjects(newNode).then(function (total) {
