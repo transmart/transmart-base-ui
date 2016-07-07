@@ -455,13 +455,14 @@ angular.module('transmartBaseUi').factory('ChartService',
       } else if (label.type === 'number') {
         _defaultDim(Infinity);
         var group = chartService.cs.dims[label.ids].group();
-        // Filter out all records that do not have a value (which are set to Infinity in the dimension)
-        var filteredGroup = {
-          all: function() {
+        // Filter out all records that do not have a value (which are set to Infinity in the dimension).
+        // To do this, we clone the group (we want to keep the methods) and override all().
+        var filteredGroup = {};
+        angular.copy(group, filteredGroup);
+        filteredGroup.all = function() {
             return group.all().filter(function(d) {
               return d.key != Infinity;
             });
-          }
         };
         chartService.cs.groups[label.ids] = filteredGroup
         _chart = DcChartsService.getBarChart(chartService.cs.dims[label.ids], filteredGroup, el,
