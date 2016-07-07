@@ -293,7 +293,6 @@ angular.module('transmartBaseUi').factory('ChartService',
        *
        */
       chartService.onNodeDrop = function (node) {
-<<<<<<< 1a8ead95f37f4aa20cb0eb5b09a7357c7bb755f4:src/app/components/charts/chart.service.js
         //if the dragged node is not at the leaf level
         if(node.type !== 'CATEGORICAL_OPTION') {
           if(chartService.nodes.indexOf(node) == -1) {
@@ -316,30 +315,6 @@ angular.module('transmartBaseUi').factory('ChartService',
             });
           }
         }
-=======
-          //if the dragged node is not at the leaf level
-          if(node.type !== 'CATEGORICAL_OPTION') {
-            if(chartService.nodes.indexOf(node) == -1) {
-              chartService.cohortUpdating = true;
-              chartService.nodes.push(node);
-              chartService.addNodeToActiveCohortSelection(node).then(function () {
-                chartService.cohortUpdating = false;
-                chartService.updateDimensions();
-              });
-            }
-          }
-          else {
-            //if the node's parent's chart has not been created, create it
-            if(chartService.nodes.indexOf(node.parent) == -1) {
-              chartService.cohortUpdating = true;
-              chartService.nodes.push(node);
-              chartService.addNodeToActiveCohortSelection(node).then(function () {
-                chartService.cohortUpdating = false;
-                chartService.updateDimensions();
-              });
-            }
-          }
->>>>>>> refactor chartservice and cohort-selection in accordance with node-drop behavior:src/app/components/services/chart.service.js
       }
 
       /**
