@@ -309,8 +309,8 @@ angular.module('transmartBaseUi').factory('ChartService',
           //if the node's parent's chart has not been created, create it
           if(chartService.nodes.indexOf(node.parent) == -1) {
             chartService.cohortUpdating = true;
-            chartService.nodes.push(node);
-            chartService.addNodeToActiveCohortSelection(node).then(function () {
+            chartService.nodes.push(node.parent);
+            chartService.addNodeToActiveCohortSelection(node.parent).then(function () {
               chartService.cohortUpdating = false;
               chartService.updateDimensions();
             });
