@@ -11,7 +11,7 @@ angular.module('transmartBaseUi')
 
     return {
       restrict: 'E',
-      templateUrl: 'app/components/cohort-charts/cohort-chart.tpl.html',
+      templateUrl: 'app/components/charts/cohort-chart.tpl.html',
       scope: _scope,
       link: function(scope, el) {
 

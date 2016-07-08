@@ -15,7 +15,7 @@ describe('ImportWorkspaceCtrl unit test', function() {
   describe('initial checks', function() {
     var $scope;
 
-    beforeEach(inject(function(){
+    beforeEach(inject(function(_$controller_, _ChartService_, _EndpointService_, _CohortSelectionService_){
       $scope = {
         content : {
           nodes : []
