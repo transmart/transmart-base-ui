@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('transmartBaseUi')
-  .directive('studyAccordion', [ function() {
+  .directive('studyAccordion', [function () {
     return {
       restrict: 'E',
       scope: {
@@ -10,7 +10,7 @@ angular.module('transmartBaseUi')
         studyShown: '='
       },
       templateUrl: 'app/components/study-accordion/study-accordion.tpl.html',
-      controller : 'StudyAccordionCtrl as ctrl'
+      controller: 'StudyAccordionCtrl as ctrl'
     };
   }])
   .controller('StudyAccordionCtrl', ['$scope', '$uibModal', 'UtilService', 'TreeNodeService', '$log',
@@ -21,7 +21,7 @@ angular.module('transmartBaseUi')
         collapsed: true
       };
 
-      $scope.isURL =  UtilService.isURL;
+      $scope.isURL = UtilService.isURL;
 
       $scope.status = {
         isFirstOpen: false,
@@ -64,4 +64,4 @@ angular.module('transmartBaseUi')
         }
       };
 
-  }]);
+    }]);
