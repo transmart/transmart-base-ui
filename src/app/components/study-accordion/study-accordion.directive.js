@@ -43,6 +43,7 @@ angular.module('transmartBaseUi')
 
         node.isLoading = true;
         TreeNodeService.getNodeChildren(node).then(function (result) {
+          console.log('after getNodeChildren')
           node.isLoading = false;
         });
 

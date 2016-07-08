@@ -27,8 +27,8 @@ angular.module('transmartBaseUi')
         }
 
         // on filtered
-        _chart.on('filtered', function () {
-          scope.$evalAsync(ChartService.triggerFilterEvent);
+        _chart.on('filtered', function (chart, filter) {
+          scope.$evalAsync(ChartService.triggerFilterEvent(chart, filter));
         });
 
         // check if chart is number chart or not
@@ -55,7 +55,7 @@ angular.module('transmartBaseUi')
 
             // Number of characters after which the title string will be cut off
             // 10 pixels per characters is assumed
-            scope.cutOff =  _chart.gridInfo.sizeX * _chart.gridInfo.curColWidth / 10;
+            scope.cutOff =  _chart.gridInfo.sizeX * (_chart.gridInfo.curColWidth - 5) / 10;
             ChartService.resizeChart(_chart);
           });
 
