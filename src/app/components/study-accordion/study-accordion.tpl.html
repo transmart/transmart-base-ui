@@ -44,10 +44,9 @@
         popover-title ="Metadata"
         popover-placement="right"
         popover-trigger="none"
-        popover-is-open="popoverIsOpen"
-        ng-click="toggle(this); popoverIsOpen = false"
-        base-ui-right-click="displayMetadata(node);"
-        click-outside="popoverIsOpen = false"
+        popover-is-open="node.isPopOpen"
+        base-ui-right-click="displayMetadata(node); "
+        click-outside="node.isPopOpen = false"
         ng-class="{'text-grey': node.type === 'FAILED_CALL'}"
         >
         {{node.title}}
@@ -90,9 +89,9 @@
            popover-title ="Metadata"
            popover-placement="right"
            popover-trigger="none"
-           popover-is-open="headPopIsOpen"
-           base-ui-right-click="displayMetadata(study); headPopIsOpen = !headPopIsOpen"
-           click-outside="headPopIsOpen = false">
+           popover-is-open="study.isPopOpen"
+           base-ui-right-click="displayMetadata(study);"
+           click-outside="study.isPopOpen = false">
           {{study._embedded.ontologyTerm.name}}
           <span class="glyphicon glyphicon-spin" ng-class="{'glyphicon-refresh': study.isLoading}"></span>
         </a>
