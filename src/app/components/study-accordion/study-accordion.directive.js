@@ -51,7 +51,7 @@ angular.module('transmartBaseUi')
 
       $scope.displayMetadata = function (node) {
         if (node) {
-          $scope.metadataObj = {};
+          $scope.clearMetadata();
           if (node.hasOwnProperty('restObj')) {
             $scope.metadataObj.title = node.title;
             $scope.metadataObj.fullname = node.restObj.fullName;
@@ -63,5 +63,12 @@ angular.module('transmartBaseUi')
           }
         }
       };
+
+      $scope.clearMetadata = function () {
+        $scope.metadataObj = {};
+        var query = document.getElementsByClassName("popover ng-isolate-scope right fade in");
+        var elms = angular.element(query);
+        elms.remove();
+      }
 
     }]);

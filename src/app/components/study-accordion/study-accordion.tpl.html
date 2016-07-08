@@ -46,7 +46,7 @@
         popover-trigger="none"
         popover-is-open="popoverIsOpen"
         ng-click="toggle(this); popoverIsOpen = false"
-        base-ui-right-click="displayMetadata(node); popoverIsOpen = !popoverIsOpen"
+        base-ui-right-click="displayMetadata(node);"
         click-outside="popoverIsOpen = false"
         ng-class="{'text-grey': node.type === 'FAILED_CALL'}"
         >
