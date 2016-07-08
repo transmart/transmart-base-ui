@@ -2,8 +2,8 @@
 
 angular.module('transmartBaseUi')
   .controller('ImportWorkspaceCtrl', ['$scope', '$uibModalInstance', 'ChartService', 'EndpointService',
-    'CohortSelectionService', 'StudyListService', '$state',
-    function ($scope, $uibModalInstance, ChartService, EndpointService, CohortSelectionService, StudyListService, $state) {
+    'StudyListService', '$state',
+    function ($scope, $uibModalInstance, ChartService, EndpointService, StudyListService, $state) {
 
     $scope.readContent = function ($fileContent){
       $scope.content = JSON.parse($fileContent);
@@ -32,7 +32,7 @@ angular.module('transmartBaseUi')
 
             if (_study.length > 0) {
               node.study = _study[0];
-              CohortSelectionService.nodes.push(node);
+              ChartService.nodes.push(node);
               ChartService.addNodeToActiveCohortSelection(node, $scope.content.filters).then(function () {
                 // and ..
               })
