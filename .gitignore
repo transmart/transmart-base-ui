@@ -1,0 +1,10 @@
+node_modules/
+bower_components/
+coverage/
+.DS_Store
+.idea/
+.sass-cache/
+.tmp/
+dist/
+transmart-base-ui.iml
+src/app/config.js
