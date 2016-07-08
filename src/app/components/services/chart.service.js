@@ -5,7 +5,9 @@ angular.module('transmartBaseUi').factory('ChartService',
   function (Restangular, $q, $rootScope, $timeout, AlertService, DcChartsService, GridsterService) {
 
     var chartService = {
-      cs : {}
+        cs: {},
+        nodes: [],
+        cohortUpdating: false
     };
 
     chartService.triggerFilterEvent = function (chart, filter) {
@@ -288,6 +290,34 @@ angular.module('transmartBaseUi').factory('ChartService',
     return _deferred.promise;
   };
 
+      /**
+       *
+       */
+      chartService.onNodeDrop = function (node) {
+        //if the dragged node is not at the leaf level
+        if(node.type !== 'CATEGORICAL_OPTION') {
+          if(chartService.nodes.indexOf(node) == -1) {
+            chartService.cohortUpdating = true;
+            chartService.nodes.push(node);
+            chartService.addNodeToActiveCohortSelection(node).then(function () {
+              chartService.cohortUpdating = false;
+              chartService.updateDimensions();
+            });
+          }
+        }
+        else {
+          //if the node's parent's chart has not been created, create it
+          if(chartService.nodes.indexOf(node.parent) == -1) {
+            chartService.cohortUpdating = true;
+            chartService.nodes.push(node);
+            chartService.addNodeToActiveCohortSelection(node).then(function () {
+              chartService.cohortUpdating = false;
+              chartService.updateDimensions();
+            });
+          }
+        }
+      }
+
   /**
    * Remove specified label
    * @param label
@@ -455,7 +485,7 @@ angular.module('transmartBaseUi').factory('ChartService',
       } else if (label.type === 'number') {
         _defaultDim(Infinity);
         var group = chartService.cs.dims[label.ids].group();
-        // Filter out all records that do not have a value (which are set to Infinity in the dimension).
+            // Filter out all records that do not have a value (which are set to Infinity in the dimension)
         // To do this, we clone the group (we want to keep the methods) and override all().
         var filteredGroup = {};
         angular.copy(group, filteredGroup);
@@ -612,6 +642,69 @@ angular.module('transmartBaseUi').factory('ChartService',
       chartService.cs.maxdim = chartService.cs.maxDim;
       chartService.cs.cohortLabels = chartService.cs.labels;
     };
+
+      /**
+       * Convert nodes to json
+       * @param nodes
+       * @returns {Array}
+       * @private
+       */
+      var _convertNodesToJSON = function (nodes) {
+
+        var nodesJSON = [];
+
+        _.each(nodes, function (node) {
+          var _node = {
+            title: node.title,
+            type: node.type,
+            _links: node.restObj._links,
+            loaded: node.loaded,
+            study: {
+              id: node.study.id,
+              type: node.study.type,
+              _links: node.study._links,
+              endpoint: {
+                url: node.study.endpoint.url,
+                title: node.study.endpoint.title
+              }
+            }
+          };
+
+          nodesJSON.push(_node);
+        }); //end each
+
+        return nodesJSON;
+      };
+
+      /**
+       * Clear all nodes
+       */
+      chartService.clearAllNodes = function () {
+        this.nodes = [];
+      };
+
+      /**
+       * Export json to file
+       */
+      chartService.exportToFile = function (endpoints, filters) {
+
+        var _obj = {
+          endpoints: [],
+          nodes: _convertNodesToJSON(service.nodes),
+          filters: filters
+        };
+
+        _.each(endpoints, function (e) {
+          _obj.endpoints.push({
+            title: e.title,
+            url: e.url
+          });
+        });
+
+        var _d = angular.toJson(_obj, true);
+        $window.open('data:text/csv;charset=utf-8,' + encodeURIComponent(_d));
+      };
+
 
     return chartService;
 
