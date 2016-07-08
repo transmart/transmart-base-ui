@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('transmartBaseUi')
-  .controller('NavbarCtrl', ['$scope', 'EndpointService', 'ChartService', '$uibModal',
-    function ($scope, EndpointService, ChartService, $uibModal) {
+  .controller('NavbarCtrl', ['$scope', 'CohortSelectionService', 'EndpointService', 'ChartService', '$uibModal',
+    function ($scope, CohortSelectionService, EndpointService, ChartService, $uibModal) {
 
     $scope.date = new Date();
 
@@ -60,7 +60,7 @@ angular.module('transmartBaseUi')
     };
 
    $scope.exportToFile = function () {
-     ChartService.exportToFile(
+     CohortSelectionService.exportToFile(
        EndpointService.getEndpoints(),
        ChartService.getCohortFilters()
      );

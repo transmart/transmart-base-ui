@@ -3,9 +3,9 @@
 angular.module('transmartBaseUi')
   .controller('MainCtrl',
     ['$scope', '$rootScope', 'Restangular', 'ChartService', 'AlertService', '$stateParams', '$log',
-      '$state', 'StudyListService', 'GridsterService', '$uibModal',
+      '$state', 'StudyListService', 'CohortSelectionService', 'GridsterService', '$uibModal',
       function ($scope, $rootScope, Restangular, ChartService, AlertService, $stateParams, $log,
-                $state, StudyListService,  GridsterService, $uibModal)
+                $state, StudyListService, CohortSelectionService,  GridsterService, $uibModal)
   {
 
 
@@ -88,7 +88,7 @@ angular.module('transmartBaseUi')
      * Remove all the concepts from the cohort selection
      */
     $scope.resetActiveLabels = function () {
-      ChartService.clearAllNodes();
+      CohortSelectionService.clearAll();
       ChartService.reset();
       ChartService.updateDimensions();
     };
@@ -100,7 +100,13 @@ angular.module('transmartBaseUi')
      * @param node Dropped node from the study tree
      */
     $scope.onNodeDropEvent = function (event, info, node) {
-      ChartService.onNodeDrop(node);
+      // Makes the progress bar animated
+      $scope.cohortUpdating = true;
+      CohortSelectionService.nodes.push(node);
+      ChartService.addNodeToActiveCohortSelection(node).then(function () {
+        $scope.cohortUpdating = false;
+        ChartService.updateDimensions();
+      });
     };
 
     /**
