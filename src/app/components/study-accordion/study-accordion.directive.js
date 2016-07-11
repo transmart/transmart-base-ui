@@ -44,7 +44,6 @@ angular.module('transmartBaseUi')
         TreeNodeService.getNodeChildren(node).then(function (result) {
           node.isLoading = false;
         });
-
       };
 
       $scope.prev_node = null;
@@ -65,6 +64,11 @@ angular.module('transmartBaseUi')
         var query = document.getElementsByClassName("popover");
         var elms = angular.element(query);
         elms.remove();
+
+        return {
+          isSame: isSame,
+          popover: elms
+        };
       }
 
       $scope.displayMetadata = function (node) {
