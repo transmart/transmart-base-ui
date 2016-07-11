@@ -70,16 +70,16 @@ angular.module('transmartBaseUi')
       $scope.displayMetadata = function (node) {
         if (node) {
           $scope.clearMetadata(node);
-          if (node.hasOwnProperty('restObj')) {
-            $scope.metadataObj.title = node.title;
-            $scope.metadataObj.fullname = node.restObj.fullName;
-            $scope.metadataObj.body = node.restObj.metadata;
-          } else if (node.hasOwnProperty('_embedded')) {
+          if (node.hasOwnProperty('_embedded')) {
             $scope.metadataObj.title = node._embedded.ontologyTerm.name;
             $scope.metadataObj.fullname = node._embedded.ontologyTerm.fullName;
             $scope.metadataObj.body = node._embedded.ontologyTerm.metadata;
           }
-
+          else if (node.hasOwnProperty('restObj')) {
+            $scope.metadataObj.title = node.title;
+            $scope.metadataObj.fullname = node.restObj.fullName;
+            $scope.metadataObj.body = node.restObj.metadata;
+          }
         }//if
       };
 
