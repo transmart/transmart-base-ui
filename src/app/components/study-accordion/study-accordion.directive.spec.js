@@ -123,6 +123,21 @@ describe('studyAccordion', function () {
       expect(_scope.metadataObj.body).toEqual('_embedded-metadata');
     });
 
+    it('should invoke $scope.clearMetadata when $scope.displayMetadata is called', function () {
+      _scope.displayMetadata(_nodes[1]);
+      expect(_scope.prev_node).not.toEqual(null);
+    });
+
+    it('should not invoke  $scope.displayMetadata as well as $scope.clearMetadata when node is null', function () {
+      _scope.displayMetadata(null);
+      expect(_scope.prev_node).toEqual(null);
+    });
+
+    it('should not invoke  $scope.displayMetadata as well as $scope.clearMetadata when node is undefined', function () {
+      _scope.displayMetadata(undefined);
+      expect(_scope.prev_node).toEqual(null);
+    });
+
   });
 
 });

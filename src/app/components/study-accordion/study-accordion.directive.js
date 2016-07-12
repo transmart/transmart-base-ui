@@ -62,12 +62,12 @@ angular.module('transmartBaseUi')
         //clear the html
         $scope.metadataObj = {};
         var query = document.getElementsByClassName("popover");
-        var elms = angular.element(query);
-        elms.remove();
+        var popoverElements = angular.element(query);
+        popoverElements.remove();
 
         return {
           isSame: isSame,
-          popover: elms
+          popover: popoverElements
         };
       }
 
