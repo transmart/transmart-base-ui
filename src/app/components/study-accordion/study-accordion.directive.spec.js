@@ -29,6 +29,7 @@ describe('studyAccordion', function () {
       deferred = $q.defer();
       spyOn(TreeNodeService, 'setRootNodeAttributes');
       spyOn(TreeNodeService, 'getNodeChildren').and.returnValue(deferred.promise);
+      spyOn(_scope, 'clearMetadata');
     });
 
     it('should invoke TreeNodeService.getNodeChildren when populating node children', function () {
@@ -107,6 +108,7 @@ describe('studyAccordion', function () {
 
     beforeEach(function () {
       _scope = scope;
+      _scope.metadataObj = {};
     });
 
     it('should use metadata from restObj when node has restObj property', function () {
@@ -124,20 +126,24 @@ describe('studyAccordion', function () {
     });
 
     it('should invoke $scope.clearMetadata when $scope.displayMetadata is called', function () {
-      _scope.displayMetadata(_nodes[1]);
-      expect(_scope.prev_node).not.toEqual(null);
+      spyOn(_scope, 'displayMetadata').and.callThrough();
+      spyOn(_scope, 'clearMetadata');
+      _scope.displayMetadata(_nodes[0]);
+      expect(_scope.displayMetadata).toHaveBeenCalled();
+      expect(_scope.clearMetadata).toHaveBeenCalled();
     });
 
-    it('should not invoke  $scope.displayMetadata as well as $scope.clearMetadata when node is null', function () {
+    it('should not invoke  $scope.displayMetadata when node is null or undefined', function () {
+      spyOn(_scope, 'displayMetadata').and.callThrough();
+      spyOn(_scope, 'clearMetadata');
       _scope.displayMetadata(null);
-      expect(_scope.prev_node).toEqual(null);
-    });
+      expect(_scope.clearMetadata).not.toHaveBeenCalled();
 
-    it('should not invoke  $scope.displayMetadata as well as $scope.clearMetadata when node is undefined', function () {
       _scope.displayMetadata(undefined);
-      expect(_scope.prev_node).toEqual(null);
+      expect(_scope.clearMetadata).not.toHaveBeenCalled();
     });
 
   });
+
 
 });
