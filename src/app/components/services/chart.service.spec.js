@@ -2,14 +2,15 @@
 
 describe('ChartService Unit Tests', function() {
 
-  var ChartService, window;
+  var ChartService, window, $rootScope;
   //--------------------------------------------------------------------------------------------------------------------
   // Setup
   beforeEach(function() {module('transmartBaseUi');});
 
-  beforeEach(inject(function (_ChartService_, _$window_) {
+  beforeEach(inject(function (_ChartService_, _$window_, _$rootScope_) {
     ChartService = _ChartService_;
     window = _$window_;
+    $rootScope = _$rootScope_;
   }));
 
   it('should have ChartService and its attributes defined', function () {
@@ -22,6 +23,133 @@ describe('ChartService Unit Tests', function() {
     expect(ChartService.nodes.length).toEqual(5);
     ChartService.clearAllNodes();
     expect(ChartService.nodes.length).toEqual(0);
+  });
+
+  describe ('removeLabel', function () {
+
+    beforeEach(function () {
+
+      ChartService.reset();
+      ChartService.cs.dims = [
+        {dispose : function (){}}
+      ];
+      ChartService.cs.groups = [
+        {dispose : function (){}}
+      ];
+      ChartService.cs.cross = {remove : function (){}};
+
+      spyOn(ChartService, 'updateDimensions');
+    });
+
+    it('should invoke removeChartFromCharts', function () {
+      spyOn(ChartService, 'removeChartFromCharts');
+      ChartService.removeLabel({ids:0});
+      expect(ChartService.removeChartFromCharts).toHaveBeenCalled();
+    });
+
+    it('should invoke removeLabelFromLabels', function () {
+      spyOn(ChartService, 'removeLabelFromLabels').and.returnValue([1]);
+      ChartService.removeLabel({ids:0});
+      expect(ChartService.removeLabelFromLabels).toHaveBeenCalled();
+    });
+
+    it('should invoke filterSubjectsByLabel', function () {
+      spyOn(ChartService, 'filterSubjectsByLabel');
+      ChartService.removeLabel({ids:0});
+      expect(ChartService.filterSubjectsByLabel).toHaveBeenCalled();
+    });
+
+    it('should invoke .cs.dims[0].dispose', function () {
+      spyOn(ChartService.cs.dims[0], 'dispose');
+      ChartService.removeLabel({ids:0});
+      expect(ChartService.cs.dims[0].dispose).toHaveBeenCalled();
+    });
+
+    it('should invoke .cs.groups[0].dispose', function () {
+      spyOn(ChartService.cs.groups[0], 'dispose');
+      ChartService.removeLabel({ids:0});
+      expect(ChartService.cs.groups[0].dispose).toHaveBeenCalled();
+    });
+
+    it('should invoke .cs.cross.remove', function () {
+      spyOn(ChartService, 'removeLabelFromLabels').and.returnValue([]);
+      spyOn(ChartService.cs.cross, 'remove');
+      ChartService.removeLabel({ids:0});
+      expect(ChartService.cs.cross.remove).toHaveBeenCalled();
+    });
+
+    it('should not invoke .cs.cross.remove', function () {
+      spyOn(ChartService, 'removeLabelFromLabels').and.returnValue([0]);
+      spyOn(ChartService.cs.cross, 'remove');
+      ChartService.removeLabel({ids:0});
+      expect(ChartService.cs.cross.remove).not.toHaveBeenCalled();
+    });
+
+    it('should invoke $broadcast', function () {
+      spyOn($rootScope, '$broadcast');
+      ChartService.removeLabel({ids:0});
+      expect($rootScope.$broadcast).toHaveBeenCalled();
+    });
+
+    it('should invoke dc.redrawAll', function () {
+      spyOn(dc, 'redrawAll');
+      ChartService.removeLabel({ids:0});
+      expect(dc.redrawAll).toHaveBeenCalled();
+    });
+
+    it('should invoke updateDimensions', function () {
+      ChartService.removeLabel({ids:0});
+      expect(ChartService.updateDimensions).toHaveBeenCalled();
+    });
+
+  });
+
+  describe('filterSubjectsByLabel', function () {
+    var _subjects, _label;
+
+    beforeEach(function () {
+      _subjects = [
+        {labels : ['label1']}
+      ];
+      _label = {ids : 0};
+    });
+
+    it('should invoke updateDimensions', function () {
+      ChartService.filterSubjectsByLabel(_subjects, _label);
+      expect(_subjects.labels).toEqual(undefined)
+    });
+  });
+
+  describe('removeLabelFromLabels', function () {
+    var _labels, _label;
+
+    beforeEach(function () {
+      _labels = [{ids : 0}, {ids :1}, {ids :2}];
+      _label = {ids : 0};
+    });
+
+    it('should return rejected label', function () {
+      var _res = ChartService.removeLabelFromLabels(_labels, _label);
+      expect(_res.length).toEqual(2);
+    });
+  });
+
+  describe('removeChartFromCharts', function () {
+    var _charts, _label, _filter = function (){};
+
+    beforeEach(function () {
+      _charts = [
+        {id : 0, filter : _filter},
+        {id : 1, filter : _filter},
+        {id : 2, filter : _filter}
+    ];
+      _label = {ids : 2};
+    });
+
+    it('should remove chart from charts', function () {
+      var _res = ChartService.removeChartFromCharts(_charts, _label);
+      expect(_res.length).toEqual(2);
+    });
   });
 
 });
