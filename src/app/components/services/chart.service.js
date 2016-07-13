@@ -140,6 +140,8 @@ angular.module('transmartBaseUi').factory('ChartService',
       return d.labels;
     });
 
+    chartService.cs.isInitialized = true;
+
     $rootScope.$broadcast('prepareChartContainers', chartService.cs.labels);
   };
 

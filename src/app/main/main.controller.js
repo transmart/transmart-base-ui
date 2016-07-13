@@ -7,7 +7,10 @@ angular.module('transmartBaseUi')
       function ($scope, $rootScope, Restangular, ChartService, AlertService, $stateParams, $log,
                 $state, StudyListService, GridsterService, $uibModal) {
 
-        ChartService.reset();
+        // Initialize the chart service only if uninitialized
+        if (!ChartService.cs.isInitialized) {
+          ChartService.reset();
+        }
 
         // Alerts
         $scope.close = AlertService.remove;
