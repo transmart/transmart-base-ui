@@ -1,4 +1,5 @@
-[![codecov.io](https://codecov.io/gh/thehyve/transmart-base-ui/codecov.io/coverage.svg?branch=fix-remove-filtered-chart)](https://codecov.io/gh/thehyve/transmart-base-ui/codecov.io?branch=fix-remove-filtered-chart)
+[![Build Status](https://travis-ci.org/thehyve/transmart-base-ui.svg)](https://travis-ci.org/thehyve/transmart-base-ui)
+[![codecov.io](https://codecov.io/gh/thehyve/transmart-base-ui/branch/fix-remove-filtered-chart/graphs/badge.svg)](https://codecov.io/gh/thehyve/transmart-base-ui/branch/fix-remove-filtered-chart)
 
 # transmart-base-ui
 Boilerplate code for tranSMART UI
