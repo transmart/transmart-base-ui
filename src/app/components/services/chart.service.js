@@ -318,7 +318,7 @@ angular.module('transmartBaseUi').factory('ChartService',
      * @param label
      * @returns {Array}
        */
-    chartService.removeLabelFromLabels = function (labels, label) {
+    var _removeLabelFromLabels = function (labels, label) {
       return _.reject(labels, function (el) {
         return el.ids === label.ids;
       });
@@ -330,7 +330,7 @@ angular.module('transmartBaseUi').factory('ChartService',
      * @param label
      * @returns {Array}
        */
-    chartService.removeChartFromCharts = function (charts, label) {
+    var _removeChartFromCharts = function (charts, label) {
       return _.filter(charts, function (chartToBeRemoved) {
         if (chartToBeRemoved.id === label.ids) {
           chartToBeRemoved.filter(null); // clear filter
@@ -346,10 +346,10 @@ angular.module('transmartBaseUi').factory('ChartService',
     chartService.removeLabel = function (label) {
       if (label) {
         // Remove associated chart from cs.charts
-        this.cs.charts = this.removeChartFromCharts(this.cs.charts, label);
+        this.cs.charts = _removeChartFromCharts(this.cs.charts, label);
 
         // Remove label from cs.labels
-        this.cs.labels = this.removeLabelFromLabels(this.cs.labels, label);
+        this.cs.labels = _removeLabelFromLabels(this.cs.labels, label);
 
         // Remove label from cs.subjects and remove subjects no longer associated
         // with any label

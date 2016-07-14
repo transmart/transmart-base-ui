@@ -120,36 +120,4 @@ describe('ChartService Unit Tests', function() {
     });
   });
 
-  describe('removeLabelFromLabels', function () {
-    var _labels, _label;
-
-    beforeEach(function () {
-      _labels = [{ids : 0}, {ids :1}, {ids :2}];
-      _label = {ids : 0};
-    });
-
-    it('should return rejected label', function () {
-      var _res = ChartService.removeLabelFromLabels(_labels, _label);
-      expect(_res.length).toEqual(2);
-    });
-  });
-
-  describe('removeChartFromCharts', function () {
-    var _charts, _label, _filter = function (){};
-
-    beforeEach(function () {
-      _charts = [
-        {id : 0, filter : _filter},
-        {id : 1, filter : _filter},
-        {id : 2, filter : _filter}
-    ];
-      _label = {ids : 2};
-    });
-
-    it('should remove chart from charts', function () {
-      var _res = ChartService.removeChartFromCharts(_charts, _label);
-      expect(_res.length).toEqual(2);
-    });
-  });
-
 });
