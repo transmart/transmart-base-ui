@@ -93,40 +93,46 @@ describe('ChartService Unit Tests', function() {
   });
 
   describe('filterSubjectsByLabel', function () {
-    var _subjects1, _subjects2 , _label;
+    var _subjects, _label, _labelNo;
 
     beforeEach(function () {
-      _subjects1 = [
+      _subjects = [
         {
           subject: 1,
           labels : ['label1', 'label2', 'label3']
-        }
-      ];
-
-      _subjects2 = [
+        },
         {
           subject: 2,
           labels : ['label1']
         }
       ];
-
       _label = {ids : 0};
+      _labelNo = {ids : 99};
     });
 
     it('should remove label from subject labels' , function () {
-      var _res = ChartService.filterSubjectsByLabel(_subjects1, _label);
+      var _res = ChartService.filterSubjectsByLabel(_subjects, _label);
       expect(_res[0].labels[0]).not.toContain('label1');
     });
 
     it('should not remove subject from subject array if subject still has labels' , function () {
-      var _res = ChartService.filterSubjectsByLabel(_subjects1, _label);
+      var _res = ChartService.filterSubjectsByLabel(_subjects, _label);
       expect(_res[0].subject).toEqual(1)
     });
 
-    it('should  remove subject from subject array if subject still has empty labels' , function () {
-      var _res = ChartService.filterSubjectsByLabel(_subjects2, _label);
-      expect(_res.length).toEqual(0)
+    it('should remove subject from subject array if subject has empty labels' , function () {
+      var _subject2Tmp = _subjects[1],
+          _res = ChartService.filterSubjectsByLabel(_subjects, _label);
+      expect(_res).not.toContain(_subject2Tmp);
     });
+
+    it('should not remove any subject labels nor subject if label does not exist in any subject labels' , function () {
+      var _res = ChartService.filterSubjectsByLabel(_subjects, _labelNo);
+      expect(_res.length).toEqual(2);
+      expect(_res[0].labels.length).toEqual(3);
+      expect(_res[1].labels.length).toEqual(1);
+    });
+
   });
 
 });
