@@ -41,18 +41,6 @@ describe('ChartService Unit Tests', function() {
       spyOn(ChartService, 'updateDimensions');
     });
 
-    it('should invoke removeChartFromCharts', function () {
-      spyOn(ChartService, 'removeChartFromCharts');
-      ChartService.removeLabel({ids:0});
-      expect(ChartService.removeChartFromCharts).toHaveBeenCalled();
-    });
-
-    it('should invoke removeLabelFromLabels', function () {
-      spyOn(ChartService, 'removeLabelFromLabels').and.returnValue([1]);
-      ChartService.removeLabel({ids:0});
-      expect(ChartService.removeLabelFromLabels).toHaveBeenCalled();
-    });
-
     it('should invoke filterSubjectsByLabel', function () {
       spyOn(ChartService, 'filterSubjectsByLabel');
       ChartService.removeLabel({ids:0});
@@ -72,14 +60,14 @@ describe('ChartService Unit Tests', function() {
     });
 
     it('should invoke .cs.cross.remove', function () {
-      spyOn(ChartService, 'removeLabelFromLabels').and.returnValue([]);
+      ChartService.cs.labels = [{ids:0}];
       spyOn(ChartService.cs.cross, 'remove');
       ChartService.removeLabel({ids:0});
       expect(ChartService.cs.cross.remove).toHaveBeenCalled();
     });
 
     it('should not invoke .cs.cross.remove', function () {
-      spyOn(ChartService, 'removeLabelFromLabels').and.returnValue([0]);
+      ChartService.cs.labels = [{ids:0}, {ids:1}];
       spyOn(ChartService.cs.cross, 'remove');
       ChartService.removeLabel({ids:0});
       expect(ChartService.cs.cross.remove).not.toHaveBeenCalled();
