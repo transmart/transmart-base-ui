@@ -93,18 +93,39 @@ describe('ChartService Unit Tests', function() {
   });
 
   describe('filterSubjectsByLabel', function () {
-    var _subjects, _label;
+    var _subjects1, _subjects2 , _label;
 
     beforeEach(function () {
-      _subjects = [
-        {labels : ['label1']}
+      _subjects1 = [
+        {
+          subject: 1,
+          labels : ['label1', 'label2', 'label3']
+        }
       ];
+
+      _subjects2 = [
+        {
+          subject: 2,
+          labels : ['label1']
+        }
+      ];
+
       _label = {ids : 0};
     });
 
-    it('should invoke updateDimensions', function () {
-      ChartService.filterSubjectsByLabel(_subjects, _label);
-      expect(_subjects.labels).toEqual(undefined)
+    fit('should remove label from subject labels' , function () {
+      var _res = ChartService.filterSubjectsByLabel(_subjects1, _label);
+      expect(_res[0].labels[0]).not.toContain('label1');
+    });
+
+    fit('should not remove subject from subject array if subject still has labels' , function () {
+      var _res = ChartService.filterSubjectsByLabel(_subjects1, _label);
+      expect(_res[0].subject).toEqual(1)
+    });
+
+    fit('should  remove subject from subject array if subject still has empty labels' , function () {
+      var _res = ChartService.filterSubjectsByLabel(_subjects2, _label);
+      expect(_res.length).toEqual(0)
     });
   });
 

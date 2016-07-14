@@ -303,12 +303,14 @@ angular.module('transmartBaseUi').factory('ChartService',
      * @returns {*}
        */
     chartService.filterSubjectsByLabel = function (subjects, label) {
-      for (var i = 0; i < subjects.length; i++) {
-        delete subjects[i].labels[label.ids];
-        if (_.size(subjects[i].labels) === 0) {
-          subjects.splice(i--, 1);
+      subjects.forEach(function (subject, subjectIdx) {
+         subject.labels = _.filter (subject.labels, function (subjectLabel, subjectLabelIdx) {
+          return  subjectLabelIdx !== label.ids;
+        });
+        if (subject.labels.length < 1) {
+          subjects.splice(subjectIdx, 1);
         }
-      }
+      });
       return subjects;
     };
 
