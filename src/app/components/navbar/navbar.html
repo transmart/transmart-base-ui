@@ -6,17 +6,8 @@
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-6">
       <ul class="nav navbar-nav">
         <li ng-class="{'active' : nav.isActive}"><a ui-sref="home">Home</a></li>
-        <li><a id="split-button" ui-sref="workspace"  class="caret-before">Workspace &nbsp;</a></li>
-        <li uib-dropdown>
-          <a uib-dropdown-toggle class="caret-after"><span class="caret"></span></a>
-          <ul class="dropdown-menu pull-right">
-            <li>
-              <a ng-click="exportToFile()">Export To File</a>
-              <a ng-click="openImportModal()">Import from File</a>
-            </li>
-          </ul>
-        </li>
-        <li class=""><a ui-sref="connections">Data Sources</a></li>
+        <li ng-class="{'active' : nav.isActive}"><a ui-sref="workspace">Workspace &nbsp;</a></li>
+        <li ng-class="{'active' : nav.isActive}"><a ui-sref="connections">Data Sources</a></li>
       </ul>
 
       <ul class="nav navbar-nav navbar-right">

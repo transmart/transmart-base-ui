@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/thehyve/transmart-base-ui.svg)](https://travis-ci.org/thehyve/transmart-base-ui)
+[![codecov.io](https://codecov.io/gh/thehyve/transmart-base-ui/branch/dev/graphs/badge.svg)](https://codecov.io/gh/thehyve/transmart-base-ui/branch/dev)
+
 # transmart-base-ui
 Boilerplate code for tranSMART UI
 

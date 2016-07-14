@@ -10,9 +10,14 @@ angular.module('transmartBaseUi').factory('ChartService',
         cohortUpdating: false
     };
 
+    /**
+     * Triggered when chart is on filter
+     * @param chart
+     * @param filter
+     */
     chartService.triggerFilterEvent = function (chart, filter) {
-      if (filter !== null) { // only trigger when there's filter
-        chartService.updateDimensions();
+      if (chart.filters().length > 0) {
+        this.updateDimensions(); // update when there's filter
       }
     };
 
@@ -40,43 +45,21 @@ angular.module('transmartBaseUi').factory('ChartService',
       return what.indexOf('\\') === -1 ? what : _t[_t.length - 2];
   };
 
-  /**
-  * @param charts
-  */
-  chartService.renderAll = function (charts) {
-    if(!charts){
-      charts = chartService.cs.charts;
-    }
-    angular.forEach(charts, function (chart) {
-      if(!chart.rendered){
-        chart.render();
-        chart.rendered = true;
+
+    /**
+     * Render all visible charts
+     * @param charts
+     */
+    chartService.renderAll = function (charts) {
+      if (!charts) {
+        charts = this.cs.charts;
       }
-    });
-  };
-
-  var _saveFilters = function(){
-    chartService.cs.charts.forEach(function(chart){
-      chart.savedFilters = chart.filters();
-    });
-  };
-
-  var _reapplyFilters = function(){
-    chartService.cs.charts.forEach(function(chart){
-      chart.savedFilters.forEach(function(filter){
-        chart.filter(filter);
+      angular.forEach(charts, function (chart) {
+        if (!chart.rendered) {
+          chart.render();
+          chart.rendered = true;
+        }
       });
-    });
-    dc.redrawAll();
-  };
-
-    chartService.reapplyFilters = function () {
-      chartService.cs.charts.forEach(function(chart){
-        chart.savedFilters.forEach(function(filter){
-          chart.filter(filter);
-        });
-      });
-      dc.redrawAll();
     };
 
   var _groupCharts = function (chart1, chart2) {
@@ -115,35 +98,34 @@ angular.module('transmartBaseUi').factory('ChartService',
     }
   };
 
-  /**
-   * Reset the cohort chart service to initial state
-   */
-  chartService.reset = function () {
+    /**
+     * Reset the cohort chart service to initial state
+     */
+    chartService.reset = function () {
 
-    chartService.cs.subjects = [];
-    chartService.cs.chartId = 0;
-    chartService.cs.charts = [];
-    chartService.cs.cross = crossfilter();
-    chartService.cs.dims = {};
-    chartService.cs.numDim = 0;
-    chartService.cs.maxDim = 20;
-    chartService.cs.groups = {};
-    chartService.cs.labels = [];
-    chartService.cs.selected = 0;
-    chartService.cs.total = 0;
-    chartService.cs.dimensions = 0;
+      this.cs.subjects = [];
+      this.cs.chartId = 0;
+      this.cs.charts = [];
+      this.cs.cross = crossfilter();
+      this.cs.dims = {};
+      this.cs.maxDim = 20;
+      this.cs.groups = {};
+      this.cs.labels = [];
+      this.cs.selected = 0;
+      this.cs.total = 0;
+      this.cs.dimensions = 0;
 
-    _groupingChart = {};
+      _groupingChart = {};
 
-    // Main dimension used to get selection values
-    chartService.cs.mainDim = chartService.cs.cross.dimension(function (d) {
-      return d.labels;
-    });
+      // Preserve main dimension
+      this.cs.mainDim = this.cs.cross.dimension(function (d) {
+        return d.labels;
+      });
 
-    chartService.cs.isInitialized = true;
+      chartService.cs.isInitialized = true;
 
-    $rootScope.$broadcast('prepareChartContainers', chartService.cs.labels);
-  };
+      $rootScope.$broadcast('prepareChartContainers', chartService.cs.labels);
+    };
 
   var _getType = function (value) {
     var _type = typeof value;
@@ -173,9 +155,7 @@ angular.module('transmartBaseUi').factory('ChartService',
       if (!label) {
 
         //Check that the maximum number of dimensions has not been reached
-        if (chartService.cs.numDim < chartService.cs.maxDim) {
-
-          chartService.cs.numDim++;
+        if (chartService.cs.labels.length < chartService.cs.maxDim) {
           // Create the new label object
 
           label = {
@@ -233,6 +213,7 @@ angular.module('transmartBaseUi').factory('ChartService',
   /**
    * Fetch the data for the selected node
    * @param node
+   * @param filters
    * @returns {*}
    */
   chartService.addNodeToActiveCohortSelection = function (node, filters) {
@@ -270,22 +251,17 @@ angular.module('transmartBaseUi').factory('ChartService',
         }
       });
 
-      // Add all the subjects to a crossfilter instance
-      _saveFilters();
-
       _populateCohortCrossfilter();
 
       // Notify the applicable controller that the chart directive instances
       // can be created
-      //$rootScope.$broadcast('prepareChartContainers', chartService.cs.labels);
       GridsterService.resize('#main-chart-container', chartService.cs.labels, false);
 
-      _reapplyFilters();
+      dc.redrawAll();
 
       _deferred.resolve();
 
     }, function (err) {
-      //TODO: add alert
       _deferred.reject('Cannot get data from the end-point.' + err);
     });
 
@@ -306,8 +282,7 @@ angular.module('transmartBaseUi').factory('ChartService',
               chartService.updateDimensions();
             });
           }
-        }
-        else {
+        } else {
           //if the node's parent's chart has not been created, create it
           if(chartService.nodes.indexOf(node.parent) == -1) {
             chartService.cohortUpdating = true;
@@ -318,51 +293,91 @@ angular.module('transmartBaseUi').factory('ChartService',
             });
           }
         }
+      };
+
+
+    /**
+     * Remove label from subjects and remove subjects no longer associated with any given label
+     * @param subjects
+     * @param label
+     * @returns {*}
+       */
+    chartService.filterSubjectsByLabel = function (subjects, label) {
+      subjects.forEach(function (subject, subjectIdx) {
+         subject.labels = _.filter (subject.labels, function (subjectLabel, subjectLabelIdx) {
+          return  subjectLabelIdx !== label.ids;
+        });
+        if (subject.labels.length < 1) {
+          subjects.splice(subjectIdx, 1);
+        }
+      });
+      return subjects;
+    };
+
+    /**
+     * Remove a label from label collection
+     * @param labels
+     * @param label
+     * @returns {Array}
+       */
+    var _removeLabelFromLabels = function (labels, label) {
+      return _.reject(labels, function (el) {
+        return el.ids === label.ids;
+      });
+    };
+
+    /**
+     * Remove a chart from chart collection
+     * @param charts
+     * @param label
+     * @returns {Array}
+       */
+    var _removeChartFromCharts = function (charts, label) {
+      return _.filter(charts, function (chartToBeRemoved) {
+        if (chartToBeRemoved.id === label.ids) {
+          chartToBeRemoved.filter(null); // clear filter
+        }
+        return chartToBeRemoved.id !== label.ids;
+      });
+    };
+
+    /**
+     * Remove label from cohort selection
+     * @param label
+       */
+    chartService.removeLabel = function (label) {
+      if (label) {
+        // Remove associated chart from cs.charts
+        this.cs.charts = _removeChartFromCharts(this.cs.charts, label);
+
+        // Remove label from cs.labels
+        this.cs.labels = _removeLabelFromLabels(this.cs.labels, label);
+
+        // Remove label from cs.subjects and remove subjects no longer associated
+        // with any label
+        this.cs.subjects = this.filterSubjectsByLabel (this.cs.subjects, label);
+
+        // Remove dimension and group associated with the label
+        this.cs.dims[label.ids].dispose();
+        this.cs.groups[label.ids].dispose();
+
+        // Remove data in crossfilter if no more label is selected
+        if (this.cs.labels.length < 1) {
+          // Removes all records that match the current filter
+          chartService.cs.cross.remove();
+        }
+
+        // Update charts
+        $rootScope.$broadcast('prepareChartContainers', this.cs.labels);
+
+        // Redraw all charts
+        dc.redrawAll();
+
+        // Update dimension summary
+        this.updateDimensions();
       }
+    };
 
-  /**
-   * Remove specified label
-   * @param label
-   */
-  chartService.removeLabel = function (label) {
-
-    // Remove dimension and group associated with the label
-    chartService.cs.dims[label.ids].dispose();
-    chartService.cs.numDim--;
-    chartService.cs.groups[label.ids].dispose();
-
-    // Remove label from subjects and remove subjects no longer associated
-    // with any label
-    for (var i = 0; i < chartService.cs.subjects.length; i++) {
-      delete chartService.cs.subjects[i].labels[label.ids];
-      if (_.size(chartService.cs.subjects[i].labels) === 0) {
-        chartService.cs.subjects.splice(i--, 1);
-      }
-    }
-
-    //Update crossfilter instance
-    _saveFilters();
-
-    _populateCohortCrossfilter();
-
-    //Remove the chart
-    var _i = _.findIndex(chartService.cs.charts, function (c) {
-      return c.id === label.ids;
-    });
-    if (_i >= 0) {
-      chartService.cs.charts.splice(_i, 1);
-    }
-
-    //Finally remove label
-    chartService.cs.labels = _.reject(chartService.cs.labels, function (el) {
-      return el.ids === label.ids;
-    });
-
-    //Update charts
-    $rootScope.$broadcast('prepareChartContainers', chartService.cs.labels);
-
-    _reapplyFilters();
-  };
 
   var _createMultidimensionalChart = function (label, el) {
     var _chart, _min, _max;
@@ -517,16 +532,6 @@ angular.module('transmartBaseUi').factory('ChartService',
     _chart.id = label.ids;
     _chart.tsLabel = label;
 
-    if (typeof label.filters !== 'undefined') {
-      if (label.filters.filters.length > 0) {
-        _chart.savedFilters = label.filters.filters;
-        _.each(_chart.savedFilters, function (f) {
-          _chart.filterAll();
-          _chart.filter(f);
-        });
-      }
-    }
-
     _chart.render(); // render chart here
 
     this.cs.charts.push(_chart);
@@ -637,12 +642,10 @@ angular.module('transmartBaseUi').factory('ChartService',
      * Update dimension
      */
     chartService.updateDimensions = function () {
-      chartService.cs.selected =  chartService.cs.cross.groupAll().value();
-      chartService.cs.total = chartService.cs.cross.size();
-      chartService.cs.subjects =  chartService.cs.mainDim.top(Infinity);
-      chartService.cs.dimensions = chartService.cs.numDim;
-      chartService.cs.maxdim = chartService.cs.maxDim;
-      chartService.cs.cohortLabels = chartService.cs.labels;
+      this.cs.selected =  this.cs.cross.groupAll().value();
+      this.cs.total = this.cs.cross.size();
+      this.cs.subjects =  this.cs.mainDim.top(Infinity);
+      this.cs.cohortLabels = this.cs.labels;
     };
 
       /**

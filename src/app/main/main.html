@@ -32,7 +32,7 @@
             </button>
             <button ng-if="cohortChartContainerLabels.length >= 1" class="btn btn-danger ts-btn-node-reset"
                     ng-click="resetActiveLabels()">
-              Reset<br>({{cs.dimensions}}/{{cs.maxDim}})
+              Reset<br>({{cs.labels.length}}/{{cs.maxDim}})
             </button>
             <button ng-if="cohortChartContainerLabels.length >= 1" class="btn" ng-click="openSaveCohortModal()">
               Save cohort
