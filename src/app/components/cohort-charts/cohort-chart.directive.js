@@ -75,6 +75,10 @@ angular.module('transmartBaseUi')
         scope.removeChart = function(label) {
           ChartService.removeLabel(label);
         };
+
+        scope.clearFilter = function (label) {
+          return ChartService.clearChartFilterByLabel(label);
+        }
       }
     };
   }]);

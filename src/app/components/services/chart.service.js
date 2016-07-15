@@ -342,6 +342,23 @@ angular.module('transmartBaseUi').factory('ChartService',
       };
 
       /**
+       * Clear chart's filter
+       * @param charts
+       * @param label
+       * @returns {*}
+         */
+      chartService.clearChartFilterByLabel = function (label) {
+        var chart;
+        chart = _.find(this.cs.charts, {id:label.ids});
+        if (chart) {
+          chart.filter(null);
+          dc.redrawAll();
+          this.updateDimensions();
+        }
+        return chart;
+      };
+
+      /**
        * Remove label from cohort selection
        * @param label
        */
