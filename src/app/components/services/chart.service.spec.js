@@ -135,4 +135,45 @@ describe('ChartService Unit Tests', function() {
 
   });
 
+  describe('clearChartFilter', function () {
+    var _charts, _label, _labelNotExist, _filter = function (x){};
+
+    beforeEach(function () {
+      _charts = [
+        {id : 0, filter: _filter},
+        {id : 1, filter: _filter},
+        {id : 2, filter: _filter}
+      ];
+      _label = {ids : 2};
+      _labelNotExist = {ids : 3};
+
+      ChartService.cs.charts = _charts;
+
+      spyOn(ChartService, 'updateDimensions');
+    });
+
+    it('should return undefined when label does not match with the charts', function () {
+      var _res = ChartService.clearChartFilterByLabel(_labelNotExist);
+      expect(_res).toEqual(undefined);
+    });
+
+    it('should clear filter on a chart by given label', function () {
+      spyOn(_charts[2], 'filter');
+      ChartService.clearChartFilterByLabel(_label);
+      expect(_charts[2].filter).toHaveBeenCalledWith(null);
+    });
+
+    it('should invoke dc.redrawAll', function () {
+      spyOn(dc, 'redrawAll');
+      ChartService.clearChartFilterByLabel(_label);
+      expect(dc.redrawAll).toHaveBeenCalled();
+    });
+
+    it('should invoke updateDimensions', function () {
+      ChartService.clearChartFilterByLabel(_label);
+      expect(ChartService.updateDimensions).toHaveBeenCalled();
+    });
+
+  });
+
 });
