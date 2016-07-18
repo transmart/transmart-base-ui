@@ -34,7 +34,6 @@ angular.module('transmartBaseUi')
                 $scope.tabs = [
                     {title: 'Cohort Selection', active: true},
                     {title: 'Cohort Grid', active: false},
-                    {title: 'Analysis', active: false}
                 ];
 
                 /**
