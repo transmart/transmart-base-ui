@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('transmartBaseUi')
-  .controller('FooterCtrl',['$scope', function ($scope) {
+    .controller('FooterCtrl', ['$scope', function ($scope) {
 
-    $scope.version = 'v0.0.1-alpha';
+        $scope.version = 'v0.0.1-alpha';
 
-  }]);
+    }]);

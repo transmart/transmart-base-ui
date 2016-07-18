@@ -1,89 +1,93 @@
 'use strict';
 
 angular.module('transmartBaseUi')
-  .controller('ConnectionsCtrl', ['$scope', '$location', 'EndpointService', 'StudyListService', 'AlertService',
-    function ($scope, $location, EndpointService, StudyListService, AlertService) {
+    .controller('ConnectionsCtrl', ['$scope', '$location', 'EndpointService', 'StudyListService', 'AlertService',
+        function ($scope, $location, EndpointService, StudyListService, AlertService) {
 
-      // alerts
-      $scope.close = AlertService.remove;
-      $scope.alerts = AlertService.get();
+            // alerts
+            $scope.close = AlertService.remove;
+            $scope.alerts = AlertService.get();
 
-      // form data obj
-      $scope.formData = {};
+            // form data obj
+            $scope.formData = {};
 
-      // get list of stored endpoints (if any)
-      $scope.endpoints = EndpointService.getEndpoints();
+            // get list of stored endpoints (if any)
+            $scope.endpoints = EndpointService.getEndpoints();
 
-      // Predefined endpoints
-      $scope.connections = [
-        {title: 'transmart-gb', url: 'http://transmart-gb.thehyve.net/transmart', isOAuth:  true},
-        {title: 'transmart-test-translocation', url: 'http://transmart-test-translocation.thehyve.net/transmart', isOAuth:  true}
-      ];
+            // Predefined endpoints
+            $scope.connections = [
+                {title: 'transmart-gb', url: 'http://transmart-gb.thehyve.net/transmart', isOAuth: true},
+                {
+                    title: 'transmart-test-translocation',
+                    url: 'http://transmart-test-translocation.thehyve.net/transmart',
+                    isOAuth: true
+                }
+            ];
 
-      $scope.selectedConnection = {};
+            $scope.selectedConnection = {};
 
-      /**
-       * Empty endpoints
-       */
-      $scope.clearSavedEndpoints = function () {
-        EndpointService.clearStoredEndpoints();
-        $scope.endpoints = EndpointService.getEndpoints();
-        $scope.publicStudies = StudyListService.getPublicStudies();
-        $scope.privateStudies = StudyListService.getPrivateStudies();
-      };
+            /**
+             * Empty endpoints
+             */
+            $scope.clearSavedEndpoints = function () {
+                EndpointService.clearStoredEndpoints();
+                $scope.endpoints = EndpointService.getEndpoints();
+                $scope.publicStudies = StudyListService.getPublicStudies();
+                $scope.privateStudies = StudyListService.getPrivateStudies();
+            };
 
-      /**
-       * Navigate to authorization page
-       */
-      $scope.navigateToAuthorizationPage = function () {
-        // check selected connection
-        var isSelected = _.filter(EndpointService.getEndpoints(), {url:$scope.selectedConnection.url});
+            /**
+             * Navigate to authorization page
+             */
+            $scope.navigateToAuthorizationPage = function () {
+                // check selected connection
+                var isSelected = _.filter(EndpointService.getEndpoints(), {url: $scope.selectedConnection.url});
 
-        if (isSelected.length > 0) {
-          AlertService.add('warning', 'You are already connected to ' + $scope.selectedConnection.url);
-          return false;
-        }
+                if (isSelected.length > 0) {
+                    AlertService.add('warning', 'You are already connected to ' + $scope.selectedConnection.url);
+                    return false;
+                }
 
-        EndpointService.authorizeEndpoint($scope.selectedConnection);
-      };
+                EndpointService.authorizeEndpoint($scope.selectedConnection);
+            };
 
-      /**
-       * Populate selected endpoint
-       */
-      $scope.populateDefaultApi = function () {
-        $scope.formData.title = $scope.selectedConnection.label;
-        $scope.formData.url = $scope.selectedConnection.url;
-        $scope.formData.requestToken = '';
-      };
+            /**
+             * Populate selected endpoint
+             */
+            $scope.populateDefaultApi = function () {
+                $scope.formData.title = $scope.selectedConnection.label;
+                $scope.formData.url = $scope.selectedConnection.url;
+                $scope.formData.requestToken = '';
+            };
 
-      /**
-       * Remove an endpoint
-       * @param endpoint
-       */
-      $scope.removeEndpoint = function (endpoint) {
-        EndpointService.removeEndpoint(endpoint);
+            /**
+             * Remove an endpoint
+             * @param endpoint
+             */
+            $scope.removeEndpoint = function (endpoint) {
+                EndpointService.removeEndpoint(endpoint);
 
-        // delete study that has associated endpoint
-        StudyListService.removeStudiesByEndpoint(endpoint);
-        $scope.publicStudies = StudyListService.getPublicStudies();
-        $scope.privateStudies =  StudyListService.getPrivateStudies();
-      };
+                // delete study that has associated endpoint
+                StudyListService.removeStudiesByEndpoint(endpoint);
+                $scope.publicStudies = StudyListService.getPublicStudies();
+                $scope.privateStudies = StudyListService.getPrivateStudies();
+            };
 
-      /**
-       * Get status icon
-       * @param endpoint
-       * @returns {string}
-         */
-      $scope.getStatusIcon = function (endpoint) {
-        var glyphicon = 'glyphicon glyphicon-ban-circle';
-        if (endpoint.status === 'active') {
-          glyphicon = 'glyphicon-ok text-success';
-        } else if (endpoint.status === 'error') {
-          glyphicon = 'glyphicon-warning-sign text-warning';
-        } else if (endpoint.status === 'local') {
-          glyphicon = 'glyphicon glyphicon-hdd text-success';
-        }
-        return glyphicon;
-      };
+            /**
+             * Get status icon
+             * @param endpoint
+             * @returns {string}
+             */
+            $scope.getStatusIcon = function (endpoint) {
+                var glyphicon = 'glyphicon glyphicon-ban-circle';
+                if (endpoint.status === 'active') {
+                    glyphicon = 'glyphicon-ok text-success';
+                } else if (endpoint.status === 'error') {
+                    glyphicon = 'glyphicon-warning-sign text-warning';
+                } else if (endpoint.status === 'local') {
+                    glyphicon = 'glyphicon glyphicon-hdd text-success';
+                }
+                return glyphicon;
+            };
 
-}]);
+        }]);

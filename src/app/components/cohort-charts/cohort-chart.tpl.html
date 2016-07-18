@@ -1,40 +1,40 @@
-  <div class="panel panel-default chart-container"
-        id="cohort-chart-panel-{{tsLabel.ids}}">
+<div class="panel panel-default chart-container"
+     id="cohort-chart-panel-{{tsLabel.ids}}">
 
     <div class="panel-heading chart-drag-handle">
-      <span class="ts-study-title">{{title | cutstring:false:cutOff:' ...'}}</span>
-      <i class="glyphicon glyphicon-remove pull-right ts-icon ts-remove-chart"
-         ng-click="removeChart(tsLabel)">
-      </i>
-      <i class="glyphicon glyphicon-refresh pull-right ts-icon ts-remove-chart"
-         ng-click="clearFilter(tsLabel)"
-         uib-tooltip="Clear filter"
-         tooltip-trigger="mouseenter"
-         popupDelay="1000"></i>
-      <i class="glyphicon glyphicon-link pull-right ts-icon"
-          ng-click="groupAction()"
-          ng-class="{'text-success': groupOn}"
-          ng-if="showGroupIcon"
-          uib-tooltip="Click two concepts to produce a combination chart."
-          tooltip-trigger="mouseenter"
-          popupDelay="1000"></i>
+        <span class="ts-study-title">{{title | cutstring:false:cutOff:' ...'}}</span>
+        <i class="glyphicon glyphicon-remove pull-right ts-icon ts-remove-chart"
+           ng-click="removeChart(tsLabel)">
+        </i>
+        <i class="glyphicon glyphicon-refresh pull-right ts-icon ts-remove-chart"
+           ng-click="clearFilter(tsLabel)"
+           uib-tooltip="Clear filter"
+           tooltip-trigger="mouseenter"
+           popupDelay="1000"></i>
+        <i class="glyphicon glyphicon-link pull-right ts-icon"
+           ng-click="groupAction()"
+           ng-class="{'text-success': groupOn}"
+           ng-if="showGroupIcon"
+           uib-tooltip="Click two concepts to produce a combination chart."
+           tooltip-trigger="mouseenter"
+           popupDelay="1000"></i>
     </div>
 
     <!-- Body ---------------------------------------------------------------->
     <div class="panel-body inner-chart">
 
-      <!-- Number chart only ------------------------------------------------->
-      <div ng-if="isNumberChart">
+        <!-- Number chart only ------------------------------------------------->
+        <div ng-if="isNumberChart">
         <span class="number-display-title">
           HIGH DIMENSIONAL CONCEPT
         </span>
-        <br>
+            <br>
         <span>
           Subjects selected:
         </span>
-      </div>
-      <!---------------------------------------------------------------------->
+        </div>
+        <!---------------------------------------------------------------------->
 
     </div>
     <!------------------------------------------------------------------------>
-  </div>
+</div>
