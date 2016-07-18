@@ -2,7 +2,7 @@
 
 angular.module('transmartBaseUi')
     .controller('NavbarCtrl', ['$scope', 'EndpointService', 'ChartService', '$uibModal',
-        function ($scope, EndpointService, ChartService, $uibModal) {
+        function ($scope, EndpointService, ChartService) {
 
             $scope.date = new Date();
 
@@ -14,20 +14,6 @@ angular.module('transmartBaseUi')
                 },
                 {
                     label: 'Workspace',
-                    children: [
-                        {
-                            label: 'Open',
-                            path: 'workspace'
-                        },
-                        {
-                            label: 'Export To File',
-                            action: 'exportToFile'
-                        },
-                        {
-                            label: 'Import from File',
-                            action: 'importToFile'
-                        }
-                    ],
                     isActive: false
                 },
                 {
@@ -37,14 +23,6 @@ angular.module('transmartBaseUi')
                     isActive: false
                 }
             ];
-
-            $scope.openImportModal = function () {
-                $uibModal.open({
-                    templateUrl: 'app/components/import-workspace/import-workspace.tpl.html',
-                    controller: 'ImportWorkspaceCtrl',
-                    animation: false
-                });
-            };
 
             $scope.setActiveNavItem = function (idx) {
                 for (var i = 0; i < $scope.navigations.length; i++) {
