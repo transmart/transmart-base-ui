@@ -1,6 +1,6 @@
 'use strict';
 /* jshint undef: false */
 
-describe('StudyListService Unit Tests', function() {
+describe('StudyListService Unit Tests', function () {
 
 });

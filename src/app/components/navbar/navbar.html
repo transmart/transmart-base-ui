@@ -1,19 +1,20 @@
 <nav class="navbar navbar-fixed-top navbar-inverse" ng-controller="NavbarCtrl">
-  <div class="container-fluid">
-    <div class="navbar-header">
-    <a ui-sref="home"><img class="navbar-brand" ng-src="/assets/images/transmart-logo.png"/></a>
-    </div>
-    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-6">
-      <ul class="nav navbar-nav">
-        <li ng-class="{'active' : nav.isActive}"><a ui-sref="home">Home</a></li>
-        <li ng-class="{'active' : nav.isActive}"><a ui-sref="workspace">Workspace &nbsp;</a></li>
-        <li ng-class="{'active' : nav.isActive}"><a ui-sref="connections">Data Sources</a></li>
-      </ul>
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a ui-sref="home"><img class="navbar-brand" ng-src="/assets/images/transmart-logo.png"/></a>
+        </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-6">
+            <ul class="nav navbar-nav">
+                <li ng-class="{'active' : nav.isActive}"><a ui-sref="home">Home</a></li>
+                <li ng-class="{'active' : nav.isActive}"><a ui-sref="workspace">Workspace &nbsp;</a></li>
+                <li ng-class="{'active' : nav.isActive}"><a ui-sref="connections">Data Sources</a></li>
+            </ul>
 
-      <ul class="nav navbar-nav navbar-right">
-        <li><a ui-sref="help"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span> Help</a></li>
-      </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a ui-sref="help"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span>
+                    Help</a></li>
+            </ul>
 
+        </div>
     </div>
-  </div>
 </nav>

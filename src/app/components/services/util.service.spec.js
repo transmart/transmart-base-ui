@@ -1,6 +1,6 @@
 'use strict';
 
-describe('UtilService Unit Tests', function() {
+describe('UtilService Unit Tests', function () {
 
     beforeEach(function () {
         module('transmartBaseUi');
