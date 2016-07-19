@@ -6,8 +6,11 @@ angular.module('transmartBaseUi').factory('ChartService',
 
             var chartService = {
                 cs: {},
-                nodes: [],
-                cohortUpdating: false
+                cohortUpdating: false,
+                // the filters store a map --
+                // key: chart.tsLabel.label (or node.restObj.fullName, the two are the same),
+                // val: an array of filters of that chart
+                filters: {}
             };
 
             /**
@@ -266,33 +269,6 @@ angular.module('transmartBaseUi').factory('ChartService',
                 });
 
                 return _deferred.promise;
-            };
-
-            /**
-             *
-             */
-            chartService.onNodeDrop = function (node) {
-                //if the dragged node is not at the leaf level
-                if (node.type !== 'CATEGORICAL_OPTION') {
-                    if (chartService.nodes.indexOf(node) == -1) {
-                        chartService.cohortUpdating = true;
-                        chartService.nodes.push(node);
-                        chartService.addNodeToActiveCohortSelection(node).then(function () {
-                            chartService.cohortUpdating = false;
-                            chartService.updateDimensions();
-                        });
-                    }
-                } else {
-                    //if the node's parent's chart has not been created, create it
-                    if (chartService.nodes.indexOf(node.parent) == -1) {
-                        chartService.cohortUpdating = true;
-                        chartService.nodes.push(node.parent);
-                        chartService.addNodeToActiveCohortSelection(node.parent).then(function () {
-                            chartService.cohortUpdating = false;
-                            chartService.updateDimensions();
-                        });
-                    }
-                }
             };
 
 
@@ -669,6 +645,67 @@ angular.module('transmartBaseUi').factory('ChartService',
                 this.cs.cohortLabels = this.cs.labels;
             };
 
+
+            /**
+             * Filter the charts in cohort-selection
+             * with the chart's name defined in its 'tsLabel.label'
+             * @param chart_name
+             */
+            chartService.filterChart = function (chart_name) {
+                //if the chart has filter(s)
+                if (chart_name in chartService.filters) {
+                    //find the chart by name
+                    var found_chart = null;
+                    chartService.cs.charts.forEach(function (_chart) {
+                        if (_chart.tsLabel.label === chart_name) {
+                            found_chart = _chart;
+                        }
+                    });
+                    if(found_chart !== null) {
+                        var filtering_words = [[chartService.filters[chart_name]]];
+                        found_chart.filterAll();
+                        found_chart.filter(filtering_words);
+                        found_chart.render();
+                    }
+                }
+            }
+
+
+
+            /**
+             * Handle node drop from study-accordion to cohort-selection panel
+             * @param node
+             */
+            chartService.onNodeDrop = function (node) {
+                if (node.type === 'CATEGORICAL_OPTION') { //leaf node for pie chart
+                    chartService.cohortUpdating = true;
+                    //update the filters
+                    var chart_name = node.parent.restObj.fullName;
+                    var filter_word = node.title;
+                    if (chart_name in chartService.filters) {
+                        var chart_filters = chartService.filters[chart_name];
+                        if (chart_filters.indexOf(filter_word) == -1) chart_filters.push(filter_word);
+                    }
+                    else {
+                        chartService.filters[chart_name] = [];
+                        chartService.filters[chart_name].push(filter_word);
+                    }
+                    chartService.filterChart(chart_name);
+
+                    chartService.addNodeToActiveCohortSelection(node.parent).then(function () {
+                        chartService.cohortUpdating = false;
+                        chartService.updateDimensions(); console.log(chartService.filters);
+                    });
+                }
+                else { //
+                    chartService.cohortUpdating = true;
+                    chartService.addNodeToActiveCohortSelection(node).then(function () {
+                        chartService.cohortUpdating = false;
+                        chartService.updateDimensions();
+                    });
+                }
+            };
+
             /**
              * Convert nodes to json
              * @param nodes
@@ -700,13 +737,6 @@ angular.module('transmartBaseUi').factory('ChartService',
                 }); //end each
 
                 return nodesJSON;
-            };
-
-            /**
-             * Clear all nodes
-             */
-            chartService.clearAllNodes = function () {
-                this.nodes = [];
             };
 
             /**
