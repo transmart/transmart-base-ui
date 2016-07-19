@@ -34,23 +34,23 @@ angular.module('transmartBaseUi', [
             $stateProvider
                 .state('home', {
                     url: '/home',
-                    templateUrl: 'app/home/home.html',
+                    templateUrl: 'app/containers/home/home.html',
                     controller: 'HomeCtrl'
                 })
                 .state('workspace', {
                     url: '/workspace?action&study&cohorts',
-                    templateUrl: 'app/main/main.html',
+                    templateUrl: 'app/containers/main/main.html',
                     controller: 'MainCtrl',
                     reloadOnSearch: false
                 })
                 .state('connections', {
                     url: '/connections',
-                    templateUrl: 'app/connections/connections.html',
+                    templateUrl: 'app/containers/connections/connections.html',
                     controller: 'ConnectionsCtrl'
                 })
                 .state('help', {
                     url: '/help',
-                    templateUrl: 'app/help/help.html'
+                    templateUrl: 'app/containers/help/help.html'
                 })
             ;
 
