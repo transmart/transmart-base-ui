@@ -4,13 +4,11 @@ angular.module('transmartBaseUi').factory('ChartService',
     ['Restangular', '$q', '$rootScope', '$timeout', 'AlertService', 'DcChartsService', 'GridsterService',
         function (Restangular, $q, $rootScope, $timeout, AlertService, DcChartsService, GridsterService) {
 
+            var filtering_word = null;
+
             var chartService = {
                 cs: {},
-                cohortUpdating: false,
-                // the filters store a map --
-                // key: chart.tsLabel.label (or node.restObj.fullName, the two are the same),
-                // val: an array of filters of that chart
-                filters: {}
+                cohortUpdating: false
             };
 
             /**
@@ -220,6 +218,7 @@ angular.module('transmartBaseUi').factory('ChartService',
              * @returns {*}
              */
             chartService.addNodeToActiveCohortSelection = function (node, filters) {
+                chartService.cohortUpdating = true;
 
                 var _filter, _deferred = $q.defer();
 
@@ -264,13 +263,15 @@ angular.module('transmartBaseUi').factory('ChartService',
 
                     _deferred.resolve();
 
+                    chartService.cohortUpdating = false;
+                    chartService.updateDimensions();
+
                 }, function (err) {
                     _deferred.reject('Cannot get data from the end-point.' + err);
                 });
 
                 return _deferred.promise;
             };
-
 
             /**
              * Remove label from subjects and remove subjects no longer associated with any given label
@@ -528,6 +529,13 @@ angular.module('transmartBaseUi').factory('ChartService',
                 _chart.render(); // render chart here
 
                 this.cs.charts.push(_chart);
+
+                /*
+                 * when a sub-categorical label is dropped and the corresponding (parent) pie-chart is created,
+                 * apply the filter of the sub-category on the chart
+                 */
+                if (filtering_word !== null) _filterChart(_chart, filtering_word);
+
                 return _chart;
             };
 
@@ -561,7 +569,7 @@ angular.module('transmartBaseUi').factory('ChartService',
                 if (_chart.type === 'PIECHART') {
                     //  set the radius to half the shortest dimension
                     _chart.radius((_CONF.MIN_S) / 2 * _CONF.RAD)
-                        // Limit the number of slices in the chart
+                    // Limit the number of slices in the chart
                         .slicesCap(Math.floor(_CONF.MIN_S / _CONF.SLICE))
                         //
                         .legend(dc.legend()
@@ -646,30 +654,21 @@ angular.module('transmartBaseUi').factory('ChartService',
             };
 
 
-            /**
-             * Filter the charts in cohort-selection
-             * with the chart's name defined in its 'tsLabel.label'
-             * @param chart_name
-             */
-            chartService.filterChart = function (chart_name) {
-                //if the chart has filter(s)
-                if (chart_name in chartService.filters) {
-                    //find the chart by name
-                    var found_chart = null;
-                    chartService.cs.charts.forEach(function (_chart) {
-                        if (_chart.tsLabel.label === chart_name) {
-                            found_chart = _chart;
-                        }
-                    });
-                    if(found_chart !== null) {
-                        var filtering_words = [[chartService.filters[chart_name]]];
-                        found_chart.filterAll();
-                        found_chart.filter(filtering_words);
-                        found_chart.render();
+            function _findChartByName(chart_name) {
+                var found_chart = null;
+                chartService.cs.charts.forEach(function (_chart) {
+                    if (_chart.tsLabel.label == chart_name) {
+                        found_chart = _chart;
                     }
-                }
+                });
+                return found_chart;
             }
 
+            function _filterChart(_chart, word) {
+                _chart.filter(word);
+                _chart.render();
+                chartService.updateDimensions();
+            }
 
 
             /**
@@ -678,31 +677,18 @@ angular.module('transmartBaseUi').factory('ChartService',
              */
             chartService.onNodeDrop = function (node) {
                 if (node.type === 'CATEGORICAL_OPTION') { //leaf node for pie chart
-                    chartService.cohortUpdating = true;
-                    //update the filters
-                    var chart_name = node.parent.restObj.fullName;
-                    var filter_word = node.title;
-                    if (chart_name in chartService.filters) {
-                        var chart_filters = chartService.filters[chart_name];
-                        if (chart_filters.indexOf(filter_word) == -1) chart_filters.push(filter_word);
+                    filtering_word = node.title;
+                    var _chart = _findChartByName(node.parent.restObj.fullName);
+                    if (_chart == null) {
+                        chartService.addNodeToActiveCohortSelection(node.parent);
                     }
                     else {
-                        chartService.filters[chart_name] = [];
-                        chartService.filters[chart_name].push(filter_word);
+                        _filterChart(_chart, filtering_word);
                     }
-                    chartService.filterChart(chart_name);
-
-                    chartService.addNodeToActiveCohortSelection(node.parent).then(function () {
-                        chartService.cohortUpdating = false;
-                        chartService.updateDimensions(); console.log(chartService.filters);
-                    });
                 }
-                else { //
-                    chartService.cohortUpdating = true;
-                    chartService.addNodeToActiveCohortSelection(node).then(function () {
-                        chartService.cohortUpdating = false;
-                        chartService.updateDimensions();
-                    });
+                else {
+                    filtering_word = null;
+                    chartService.addNodeToActiveCohortSelection(node);
                 }
             };
 
