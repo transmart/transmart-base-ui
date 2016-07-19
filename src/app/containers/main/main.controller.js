@@ -111,7 +111,7 @@ angular.module('transmartBaseUi')
                  */
                 $scope.openSaveCohortModal = function () {
                     $uibModal.open({
-                        templateUrl: 'app/components/savecohort/savecohortdialog.tpl.html',
+                        templateUrl: 'app/components/save-cohort/save-cohort-dialog.tpl.html',
                         controller: 'SaveCohortDialogCtrl',
                         animation: false
                     });
