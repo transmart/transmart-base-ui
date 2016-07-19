@@ -44,7 +44,7 @@ angular.module('transmartBaseUi')
                             service.initializeMasterEndpoint();
                         }
                     }
-                }
+                };
 
                 /**
                  * Returns the current list of endpoints.
