@@ -678,12 +678,12 @@ angular.module('transmartBaseUi').factory('ChartService',
             chartService.onNodeDrop = function (node) {
                 if (node.type === 'CATEGORICAL_OPTION') { //leaf node for pie chart
                     filteringWord = node.title;
-                    var _chart = _findChartByName(node.parent.restObj.fullName);
-                    if (_chart == null) {
+                    var chart = _findChartByName(node.parent.restObj.fullName);
+                    if (chart == null) {
                         chartService.addNodeToActiveCohortSelection(node.parent);
                     }
                     else {
-                        _filterChart(_chart, filteringWord);
+                        _filterChart(chart, filteringWord);
                     }
                 }
                 else {
