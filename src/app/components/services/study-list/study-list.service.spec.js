@@ -3,7 +3,7 @@
 
 describe('StudyListService', function () {
 
-    var StudyListService, httpBackend, Restangular;
+    var StudyListService, httpBackend, ResourceService;
 
     var emptyResponse = {
         /* jshint ignore:start */
@@ -307,11 +307,11 @@ describe('StudyListService', function () {
         module('transmartBaseUi');
     });
 
-    beforeEach(inject(function (_StudyListService_, _$httpBackend_, _Restangular_) {
+    beforeEach(inject(function (_StudyListService_, _$httpBackend_, _ResourceService_) {
         httpBackend = _$httpBackend_;
         httpBackend.whenGET('/studies').respond(_almostRealStudies);
         StudyListService = _StudyListService_;
-        Restangular = _Restangular_;
+        ResourceService = _ResourceService_;
     }));
 
     afterEach(function () {
@@ -372,7 +372,7 @@ describe('StudyListService', function () {
         it('should get only other studies', function () {
             StudyListService.studyList = dummyStudies;
             var _publicStudies = StudyListService.getOtherStudies();
-            expect(_publicStudies.length).toEqual(1)
+            expect(_publicStudies.length).toEqual(1);
             _publicStudies.forEach(function (study) {
                 expect(study.type).toEqual('other')
             });
@@ -390,7 +390,11 @@ describe('StudyListService', function () {
                 expires_in: "29288",
                 isMaster: true,
                 isOAuth: true,
-                restangular: Restangular,
+                restangular: {
+                    all : function (s) { return this},
+                    getList : function () {return this},
+                    then :  function () {}
+                },
                 scope: "write read",
                 status: "active",
                 title: "transmart-gb",
@@ -405,9 +409,10 @@ describe('StudyListService', function () {
 
         it('should load studies', function () {
             loadedStudies = StudyListService.loadStudyList(_endpoint).then(function (res) {
+                console.log(res);
                 expect(res.length).toEqual(1);
             });
-            httpBackend.flush();
+            //httpBackend.flush();
         });
 
     });

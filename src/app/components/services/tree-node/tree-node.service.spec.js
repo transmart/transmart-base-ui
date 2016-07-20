@@ -7,7 +7,7 @@ describe('TreeNodeService', function () {
         module('transmartBaseUi');
     });
 
-    var $q, deferred, TreeNodeService, httpBackend, Restangular, RestangularCopy;
+    var $q, deferred, TreeNodeService, httpBackend, ResourceService, ResourceServiceCopy;
     var
         _dummyNode,
         _dummyNodeResponse = {
@@ -88,16 +88,16 @@ describe('TreeNodeService', function () {
         };
 
 
-    beforeEach(inject(function (_$q_, _TreeNodeService_, _$httpBackend_, _Restangular_) {
+    beforeEach(inject(function (_$q_, _TreeNodeService_, _$httpBackend_, _ResourceService_) {
         $q = _$q_;
         httpBackend = _$httpBackend_;
         deferred = _$q_.defer();
         TreeNodeService = _TreeNodeService_;
-        Restangular = _Restangular_;
-        RestangularCopy = angular.copy(Restangular, RestangularCopy);
+        ResourceService = _ResourceService_;
+        ResourceServiceCopy = angular.copy(ResourceService, ResourceServiceCopy);
         // set dummy node
         _dummyNode = {
-            restObj: RestangularCopy,
+            restObj: ResourceServiceCopy,
             _links: {
                 children: []
             },

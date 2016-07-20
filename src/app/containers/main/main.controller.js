@@ -2,9 +2,9 @@
 
 angular.module('transmartBaseUi')
     .controller('MainCtrl',
-        ['$scope', '$rootScope', 'Restangular', 'ChartService', 'AlertService', '$stateParams', '$log',
+        ['$scope', '$rootScope', 'ChartService', 'AlertService', '$stateParams', '$log',
             '$state', 'StudyListService', 'GridsterService', '$uibModal',
-            function ($scope, $rootScope, Restangular, ChartService, AlertService, $stateParams, $log,
+            function ($scope, $rootScope, ChartService, AlertService, $stateParams, $log,
                       $state, StudyListService, GridsterService, $uibModal) {
 
                 // Initialize the chart service only if uninitialized
