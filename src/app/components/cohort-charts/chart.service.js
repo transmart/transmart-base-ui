@@ -4,7 +4,7 @@ angular.module('transmartBaseUi').factory('ChartService',
     ['Restangular', '$q', '$rootScope', '$timeout', 'AlertService', 'DcChartsService', 'GridsterService',
         function (Restangular, $q, $rootScope, $timeout, AlertService, DcChartsService, GridsterService) {
 
-            var filtering_word = null;
+            var filteringWord = null;
 
             var chartService = {
                 cs: {},
@@ -534,7 +534,7 @@ angular.module('transmartBaseUi').factory('ChartService',
                  * when a sub-categorical label is dropped and the corresponding (parent) pie-chart is created,
                  * apply the filter of the sub-category on the chart
                  */
-                if (filtering_word !== null) _filterChart(_chart, filtering_word);
+                if (filteringWord !== null) _filterChart(_chart, filteringWord);
 
                 return _chart;
             };
@@ -654,14 +654,14 @@ angular.module('transmartBaseUi').factory('ChartService',
             };
 
 
-            function _findChartByName(chart_name) {
-                var found_chart = null;
+            function _findChartByName(chartName) {
+                var foundChart = null;
                 chartService.cs.charts.forEach(function (_chart) {
-                    if (_chart.tsLabel.label == chart_name) {
-                        found_chart = _chart;
+                    if (_chart.tsLabel.label == chartName) {
+                        foundChart = _chart;
                     }
                 });
-                return found_chart;
+                return foundChart;
             }
 
             function _filterChart(_chart, word) {
@@ -677,17 +677,17 @@ angular.module('transmartBaseUi').factory('ChartService',
              */
             chartService.onNodeDrop = function (node) {
                 if (node.type === 'CATEGORICAL_OPTION') { //leaf node for pie chart
-                    filtering_word = node.title;
+                    filteringWord = node.title;
                     var _chart = _findChartByName(node.parent.restObj.fullName);
                     if (_chart == null) {
                         chartService.addNodeToActiveCohortSelection(node.parent);
                     }
                     else {
-                        _filterChart(_chart, filtering_word);
+                        _filterChart(_chart, filteringWord);
                     }
                 }
                 else {
-                    filtering_word = null;
+                    filteringWord = null;
                     chartService.addNodeToActiveCohortSelection(node);
                 }
             };
