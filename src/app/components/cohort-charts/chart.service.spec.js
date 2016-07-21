@@ -221,12 +221,17 @@ describe('ChartService Unit Tests', function () {
         });
 
         it('should invoke addNodeToActiveCohortSelection when a pieNode is newly dropped', function () {
+            var filters = [{
+                label: 'parent/restobj/fullname',
+                filterWords: [undefined]
+            }];
+
             spyOn(ChartService, 'onNodeDrop').and.callThrough();
             spyOn(ChartService, 'addNodeToActiveCohortSelection');
 
             ChartService.onNodeDrop(pieNode);
             expect(ChartService.onNodeDrop).toHaveBeenCalledWith(pieNode);
-            expect(ChartService.addNodeToActiveCohortSelection).toHaveBeenCalled();
+            expect(ChartService.addNodeToActiveCohortSelection).toHaveBeenCalledWith(node, filters);
         });
 
         it('should not invoke addNodeToActiveCohortSelection upon when the pie-chart exists', function () {
@@ -240,7 +245,7 @@ describe('ChartService Unit Tests', function () {
 
             ChartService.onNodeDrop(pieNode);
             expect(ChartService.onNodeDrop).toHaveBeenCalledWith(pieNode);
-            expect(ChartService.addNodeToActiveCohortSelection).not.toHaveBeenCalledWith(node);
+            expect(ChartService.addNodeToActiveCohortSelection).not.toHaveBeenCalled();
         });
 
         it('should invoke addNodeToActiveCohortSelection with node when the node is dropped', function () {
