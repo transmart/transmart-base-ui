@@ -2,29 +2,23 @@
 
 describe('ChartService Unit Tests', function () {
 
-    var ChartService, window, $rootScope;
-    //--------------------------------------------------------------------------------------------------------------------
+    var ChartService, window, $rootScope, Restangular, httpBackend;
+    //------------------------------------------------------------------------------------------------------------------
     // Setup
     beforeEach(function () {
         module('transmartBaseUi');
     });
 
-    beforeEach(inject(function (_ChartService_, _$window_, _$rootScope_) {
+    beforeEach(inject(function (_ChartService_, _$window_, _$rootScope_, _Restangular_, _$httpBackend_) {
         ChartService = _ChartService_;
         window = _$window_;
         $rootScope = _$rootScope_;
+        Restangular = angular.copy(_Restangular_, Restangular);
+        httpBackend = _$httpBackend_;
     }));
 
     it('should have ChartService and its attributes defined', function () {
         expect(ChartService).toBeDefined();
-        expect(ChartService.nodes).toBeDefined();
-    });
-
-    it('should clear all nodes in ChartService', function () {
-        ChartService.nodes = ['node1', 'node2', 'node3', 'node4', 'node5'];
-        expect(ChartService.nodes.length).toEqual(5);
-        ChartService.clearAllNodes();
-        expect(ChartService.nodes.length).toEqual(0);
     });
 
     describe('removeLabel', function () {
@@ -188,4 +182,80 @@ describe('ChartService Unit Tests', function () {
 
     });
 
+    describe('addNodeToActiveCohortSelection', function () {
+        var node = {};
+
+        beforeEach(function () {
+            node.restObj = Restangular;
+        });
+
+        it('should make restangular call when adding node to active cohort selection', function () {
+            spyOn(ChartService, 'addNodeToActiveCohortSelection').and.callThrough();
+            spyOn(node.restObj, 'one').and.callThrough();
+
+            ChartService.addNodeToActiveCohortSelection(node);
+            expect(ChartService.addNodeToActiveCohortSelection).toHaveBeenCalledWith(node);
+            expect(node.restObj.one).toHaveBeenCalled();
+        });
+    });
+
+    describe('onNodeDrop', function () {
+        var pieNode = {}, node = {},
+            chart = {
+                filter: function (word) {
+                },
+                render: function () {
+                }
+            },
+            chartName = "parent/restobj/fullname";
+
+        beforeEach(function () {
+            pieNode.type = 'CATEGORICAL_OPTION';
+            pieNode.parent = node;
+
+            node.type = '';
+            node.restObj = {};
+            node.restObj.fullName = chartName;
+
+            ChartService.cs.charts = [];
+        });
+
+        it('should invoke addNodeToActiveCohortSelection when a pieNode is newly dropped', function () {
+            var filters = [{
+                label: 'parent/restobj/fullname',
+                filterWords: [undefined]
+            }];
+
+            spyOn(ChartService, 'onNodeDrop').and.callThrough();
+            spyOn(ChartService, 'addNodeToActiveCohortSelection');
+
+            ChartService.onNodeDrop(pieNode);
+            expect(ChartService.onNodeDrop).toHaveBeenCalledWith(pieNode);
+            expect(ChartService.addNodeToActiveCohortSelection).toHaveBeenCalledWith(node, filters);
+        });
+
+        it('should not invoke addNodeToActiveCohortSelection upon when the pie-chart exists', function () {
+            chart.tsLabel = {};
+            chart.tsLabel.label = chartName;
+            ChartService.cs.charts.push(chart);
+
+            spyOn(ChartService, 'onNodeDrop').and.callThrough();
+            spyOn(ChartService, 'addNodeToActiveCohortSelection');
+            spyOn(ChartService, 'updateDimensions');
+
+            ChartService.onNodeDrop(pieNode);
+            expect(ChartService.onNodeDrop).toHaveBeenCalledWith(pieNode);
+            expect(ChartService.addNodeToActiveCohortSelection).not.toHaveBeenCalled();
+        });
+
+        it('should invoke addNodeToActiveCohortSelection with node when the node is dropped', function () {
+            spyOn(ChartService, 'onNodeDrop').and.callThrough();
+            spyOn(ChartService, 'addNodeToActiveCohortSelection');
+
+            ChartService.onNodeDrop(node);
+            expect(ChartService.onNodeDrop).toHaveBeenCalledWith(node);
+            expect(ChartService.addNodeToActiveCohortSelection).toHaveBeenCalledWith(node);
+        });
+
+    });
 });
