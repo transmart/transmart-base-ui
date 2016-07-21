@@ -4,8 +4,6 @@ angular.module('transmartBaseUi').factory('ChartService',
     ['Restangular', '$q', '$rootScope', '$timeout', 'AlertService', 'DcChartsService', 'GridsterService',
         function (Restangular, $q, $rootScope, $timeout, AlertService, DcChartsService, GridsterService) {
 
-            var filteringWord = null;
-
             var chartService = {
                 cs: {},
                 cohortUpdating: false
@@ -148,10 +146,12 @@ angular.module('transmartBaseUi').factory('ChartService',
              * @param value
              * @private
              */
-            var _addLabel = function (obs, node, filters) {
+            var _addLabel = function (obs, node, filterObj) {
 
                 // Check if label has already been added
                 var label = _.find(chartService.cs.labels, {label: obs.label});
+                var filters;
+                if(filterObj) filters = filterObj.filterWords;
 
                 if (!label) {
 
@@ -468,13 +468,6 @@ angular.module('transmartBaseUi').factory('ChartService',
                         return d.labels[label.ids] === undefined ? lbl : d.labels[label.ids];
                     });
                     chartService.cs.groups[label.ids] = chartService.cs.dims[label.ids].group();
-
-                    // filter dimension
-                    if (typeof label.filters !== 'undefined') {
-                        if (label.filters.filters.length > 0) {
-                            chartService.cs.dims[label.ids].filter(label.filters.filters[0]);
-                        }
-                    }
                 };
 
                 if (label.type === 'combination') {
@@ -534,7 +527,9 @@ angular.module('transmartBaseUi').factory('ChartService',
                  * when a sub-categorical label is dropped and the corresponding (parent) pie-chart is created,
                  * apply the filter of the sub-category on the chart
                  */
-                if (filteringWord !== null) _filterChart(_chart, filteringWord);
+                if(label.filters !== undefined) {
+                    _filterChart(_chart, label.filters);
+                }
 
                 return _chart;
             };
@@ -644,7 +639,7 @@ angular.module('transmartBaseUi').factory('ChartService',
 
 
             /**
-             * Update dimension
+             * Update dimensions
              */
             chartService.updateDimensions = function () {
                 this.cs.selected = this.cs.cross.groupAll().value();
@@ -654,6 +649,14 @@ angular.module('transmartBaseUi').factory('ChartService',
             };
 
 
+            /**
+             * @param chartName
+             *      - The chart name as the search word for the chart with tsLabel with the same string
+             * @returns {*} foundChart
+             *      - The found chart in ChartService.cs.charts, with matching name chartName
+             *      - If not found, return null
+             * @private
+             */
             function _findChartByName(chartName) {
                 var foundChart = null;
                 chartService.cs.charts.forEach(function (_chart) {
@@ -664,30 +667,40 @@ angular.module('transmartBaseUi').factory('ChartService',
                 return foundChart;
             }
 
-            function _filterChart(_chart, word) {
-                _chart.filter(word);
+            /**
+             * Give a chart instance (normally a pie chart), filter it based on 'words',
+             * and update the Crossfilter dimensions
+             * @param _chart - The chart instance in ChartService.cs.charts
+             * @param word - The filtering word that filters the chart
+             * @private
+             */
+            function _filterChart(_chart, words) {
+                _chart.filter(words);
                 _chart.render();
                 chartService.updateDimensions();
             }
 
 
             /**
-             * Handle node drop from study-accordion to cohort-selection panel
+             * Handle node drop from study-accordion to cohort-selection panel.
+             * Remark: node.restObj.fullName is equivalent to chart.tsLabel.label
              * @param node
              */
             chartService.onNodeDrop = function (node) {
                 if (node.type === 'CATEGORICAL_OPTION') { //leaf node for pie chart
-                    filteringWord = node.title;
                     var chart = _findChartByName(node.parent.restObj.fullName);
                     if (chart == null) {
-                        chartService.addNodeToActiveCohortSelection(node.parent);
+                        var filters = [{
+                            label: node.parent.restObj.fullName,
+                            filterWords: [node.title]
+                        }];
+                        chartService.addNodeToActiveCohortSelection(node.parent, filters);
                     }
                     else {
-                        _filterChart(chart, filteringWord);
+                        _filterChart(chart, node.title);
                     }
                 }
                 else {
-                    filteringWord = null;
                     chartService.addNodeToActiveCohortSelection(node);
                 }
             };

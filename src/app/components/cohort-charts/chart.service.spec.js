@@ -202,8 +202,10 @@ describe('ChartService Unit Tests', function () {
     describe('onNodeDrop', function () {
         var pieNode = {}, node = {},
             chart = {
-                filter: function(word) {},
-                render: function() {}
+                filter: function (word) {
+                },
+                render: function () {
+                }
             },
             chartName = "parent/restobj/fullname";
 
@@ -218,16 +220,16 @@ describe('ChartService Unit Tests', function () {
             ChartService.cs.charts = [];
         });
 
-        it('should invoke addNodeToActiveCohortSelection with node when a pieNode is newly dropped', function () {
+        it('should invoke addNodeToActiveCohortSelection when a pieNode is newly dropped', function () {
             spyOn(ChartService, 'onNodeDrop').and.callThrough();
             spyOn(ChartService, 'addNodeToActiveCohortSelection');
 
             ChartService.onNodeDrop(pieNode);
             expect(ChartService.onNodeDrop).toHaveBeenCalledWith(pieNode);
-            expect(ChartService.addNodeToActiveCohortSelection).toHaveBeenCalledWith(node);
+            expect(ChartService.addNodeToActiveCohortSelection).toHaveBeenCalled();
         });
 
-        it('should not invoke addNodeToActiveCohortSelection with node when a pieNode is dropped, with existing chart', function () {
+        it('should not invoke addNodeToActiveCohortSelection upon when the pie-chart exists', function () {
             chart.tsLabel = {};
             chart.tsLabel.label = chartName;
             ChartService.cs.charts.push(chart);
