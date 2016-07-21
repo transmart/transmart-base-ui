@@ -3,29 +3,31 @@
 angular.module('transmartBaseUi')
     .config(function ($stateProvider) {
         $stateProvider
-            .state('home', {
+            .state('workspace', {
                 parent: 'site',
-                url: '/',
+                url: '/workspace',
                 views: {
                     '@': {
-                        templateUrl: 'app/containers/home/home.html'
+                        templateUrl: 'app/containers/workspace/workspace.html'
                     },
-                    'navbar@home': {
+                    'navbar@workspace': {
                         templateUrl: 'app/components/navbar/navbar.html',
                         controller: 'NavbarCtrl'
 //                        controllerAs: 'hnc'
                     },
-                    'content@home': {
-                        templateUrl: 'app/containers/home/home.content.html',
-                        controller: 'HomeCtrl'
-//                        controllerAs: 'cts'
+                    'sidebar@workspace': {
+                        templateUrl: 'app/components/sidebar/sidebar.html',
+                        controller: 'SidebarCtrl'
                     },
-                    'footer@home': {
+                    'content@workspace': {
+                        templateUrl: 'app/containers/workspace/analysis/analysis.html',
+                        controller: 'AnalysisCtrl'
+                    },
+                    'footer@workspace': {
                         templateUrl: 'app/components/footer/footer.html',
                         controller: 'FooterCtrl'
 //                        controllerAs: 'ctf'
                     }
-
                 }
             });
     });

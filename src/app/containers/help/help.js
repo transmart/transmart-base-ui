@@ -3,24 +3,22 @@
 angular.module('transmartBaseUi')
     .config(function ($stateProvider) {
         $stateProvider
-            .state('home', {
+            .state('help', {
                 parent: 'site',
-                url: '/',
+                url: '/help',
                 views: {
                     '@': {
-                        templateUrl: 'app/containers/home/home.html'
+                        templateUrl: 'app/containers/help/help.html'
                     },
-                    'navbar@home': {
+                    'navbar@help': {
                         templateUrl: 'app/components/navbar/navbar.html',
                         controller: 'NavbarCtrl'
 //                        controllerAs: 'hnc'
                     },
-                    'content@home': {
-                        templateUrl: 'app/containers/home/home.content.html',
-                        controller: 'HomeCtrl'
-//                        controllerAs: 'cts'
+                    'content@help': {
+                        templateUrl: 'app/containers/help/help.content.html'
                     },
-                    'footer@home': {
+                    'footer@help': {
                         templateUrl: 'app/components/footer/footer.html',
                         controller: 'FooterCtrl'
 //                        controllerAs: 'ctf'

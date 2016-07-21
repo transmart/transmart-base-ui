@@ -23,36 +23,22 @@ angular.module('transmartBaseUi', [
         'toggle-switch',
         'transmartBaseUiConstants'
     ])
-    .config(['$stateProvider', 'RestangularProvider', 'cfpLoadingBarProvider', '$locationProvider', '$uibTooltipProvider',
-        function ($stateProvider, RestangularProvider, cfpLoadingBarProvider, $locationProvider, $uibTooltipProvider) {
+    .config(['$stateProvider',  '$urlRouterProvider', 'RestangularProvider', 'cfpLoadingBarProvider', '$locationProvider', '$uibTooltipProvider',
+        function ($stateProvider, $urlRouterProvider, RestangularProvider, cfpLoadingBarProvider, $locationProvider, $uibTooltipProvider) {
 
             $locationProvider.html5Mode({
                 enabled: true,
                 requireBase: false
             });
 
-            $stateProvider
-                .state('home', {
-                    url: '/home',
-                    templateUrl: 'app/containers/home/home.html',
-                    controller: 'HomeCtrl'
-                })
-                .state('workspace', {
-                    url: '/workspace?action&study&cohorts',
-                    templateUrl: 'app/containers/main/main.html',
-                    controller: 'MainCtrl',
-                    reloadOnSearch: false
-                })
-                .state('connections', {
-                    url: '/connections',
-                    templateUrl: 'app/containers/connections/connections.html',
-                    controller: 'ConnectionsCtrl'
-                })
-                .state('help', {
-                    url: '/help',
-                    templateUrl: 'app/containers/help/help.html'
-                })
-            ;
+            //Abstract root state.
+            $stateProvider.state('site', {
+                abstract: true,
+                template: '<div ui-view></div>'
+            });
+
+            // Default route
+            $urlRouterProvider.otherwise('/');
 
             // =========================
             // Set restful api base url
@@ -117,10 +103,4 @@ angular.module('transmartBaseUi', [
             $rootScope.globals = $cookieStore.get('globals') || {};
 
             EndpointService.initializeEndpoints();
-
-            $rootScope.$on('$locationChangeStart', function () {
-                if ($location.path() === '') {
-                    $location.path('/home');
-                }
-            });
         }]);
