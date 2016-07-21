@@ -13,7 +13,6 @@ angular.module('transmartBaseUi')
                     'navbar@workspace': {
                         templateUrl: 'app/components/navbar/navbar.html',
                         controller: 'NavbarCtrl'
-//                        controllerAs: 'hnc'
                     },
                     'sidebar@workspace': {
                         templateUrl: 'app/components/sidebar/sidebar.html',
@@ -26,7 +25,6 @@ angular.module('transmartBaseUi')
                     'footer@workspace': {
                         templateUrl: 'app/components/footer/footer.html',
                         controller: 'FooterCtrl'
-//                        controllerAs: 'ctf'
                     }
                 }
             });
