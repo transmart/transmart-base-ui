@@ -90,7 +90,6 @@ angular.module('transmartBaseUi')
                  * Remove all the concepts from the cohort selection
                  */
                 $scope.resetActiveLabels = function () {
-                    ChartService.clearAllNodes();
                     ChartService.reset();
                     ChartService.updateDimensions();
                 };
