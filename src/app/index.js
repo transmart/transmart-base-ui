@@ -41,12 +41,12 @@ angular.module('transmartBaseUi', [
                 template: '<div ui-view> </div>',
                 views: {
                     'navbar@': {
-                        templateUrl: 'app/components/navbar/navbar.html'
+                        templateUrl: 'app/components/navbar/navbar.html',
+                        controller: 'NavbarCtrl'
                     },
                     'footer@': {
                         templateUrl: 'app/components/footer/footer.html',
-                        controller: 'FooterCtrl',
-                        controllerAs: 'fc'
+                        controller: 'FooterCtrl'
                     }
                 }
             });
