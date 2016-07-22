@@ -15,7 +15,8 @@ angular.module('transmartBaseUi')
                     },
                     'content@home': {
                         templateUrl: 'app/containers/home/home.content.html',
-                        controller: 'HomeCtrl'
+                        controller: 'HomeCtrl',
+                        controllerAs: 'hc'
                     }
                 }
             });
