@@ -7,9 +7,9 @@ describe('TreeNodeService', function () {
         module('transmartBaseUi');
     });
 
-    var $q, deferred, TreeNodeService, httpBackend, ResourceService, ResourceServiceCopy;
+    var $q, deferred, TreeNodeService, httpBackend, ResourceService;
     var
-        _dummyNode,
+        _dummyNode, _restangular,
         _dummyNodeResponse = {
             "name": "Endpoints",
             "key": "\\\\Public Studies\\Public Studies\\GSE8581\\Endpoints\\",
@@ -94,10 +94,10 @@ describe('TreeNodeService', function () {
         deferred = _$q_.defer();
         TreeNodeService = _TreeNodeService_;
         ResourceService = _ResourceService_;
-        ResourceServiceCopy = angular.copy(ResourceService, ResourceServiceCopy);
+        _restangular = ResourceService.createResourceServiceByEndpoint({});
         // set dummy node
         _dummyNode = {
-            restObj: ResourceServiceCopy,
+            restObj: _restangular,
             _links: {
                 children: []
             },
@@ -131,7 +131,7 @@ describe('TreeNodeService', function () {
 
         it('should return total number of subjects in a node', function () {
             httpBackend.when('GET', '/subjects').respond(_subjects);
-            spyOn(_dummyNode.restObj, 'one').and.callThrough();
+            //spyOn(_dummyNode.restObj, 'one');
             TreeNodeService.getTotalSubjects(_dummyNode).then(function (s) {
                 expect(s).toEqual(2);
             });
