@@ -1,26 +1,26 @@
 <div class="main-container">
-    <uib-alert class="alert-div" ng-repeat="alert in alerts" type="{{alert.type}}" close="close(alert.id)">
+    <uib-alert class="alert-div" ng-repeat="alert in wa.alerts" type="{{alert.type}}" close="wa.close(alert.id)">
         {{alert.message}}
     </uib-alert>
 
     <h3>Workspace</h3>
     <uib-tabset>
 
-        <uib-tab active="tabs[0].active" ng-click="activateTab(tabs[0].title, 'cohortSelection');">
+        <uib-tab active="wa.tabs[0].active" ng-click="wa.activateTab(tabs[0].title, 'cohortSelection');">
             <uib-tab-heading>
-                <span>{{tabs[0].title}}</span>
+                <span>{{wa.tabs[0].title}}</span>
             </uib-tab-heading>
 
-            <div class="well well-lg" data-drop="true" ng-model='droppedNode'
-                 jqyoui-droppable="{multiple:true, onDrop:'onNodeDropEvent(droppedNode)'}">
+            <div class="well well-lg" data-drop="true" ng-model='wa.droppedNode'
+                 jqyoui-droppable="{multiple:true, onDrop:'wa.onNodeDropEvent(wa.droppedNode)'}">
 
-            <span ng-if="cohortChartContainerLabels.length == 0" class="ts-well-placeholder-text">
+            <span ng-if="wa.cohortChartContainerLabels.length == 0" class="ts-well-placeholder-text">
               Drag and drop some nodes here to add them.
             </span>
 
                 <button type="button" class="btn btn-primary btn-sm ts-btn-node"
-                        ng-repeat="label in cohortChartContainerLabels"
-                        ng-click="removeLabel(label)">
+                        ng-repeat="label in wa.cohortChartContainerLabels"
+                        ng-click="wa.removeLabel(label)">
                     <div class="ts-node-name">
                         {{label.name}}<br><span
                         class="ts-smaller-font">{{label.study._embedded.ontologyTerm.name}}</span>
@@ -28,27 +28,27 @@
 
                     <div class="ts-node-close-x" aria-hidden="true">&times;</div>
                 </button>
-                <button ng-if="cohortChartContainerLabels.length >= 1" class="btn btn-danger ts-btn-node-reset"
-                        ng-click="resetActiveLabels()">
-                    Reset<br>({{cs.labels.length}}/{{cs.maxDim}})
+                <button ng-if="wa.cohortChartContainerLabels.length >= 1" class="btn btn-danger ts-btn-node-reset"
+                        ng-click="wa.resetActiveLabels()">
+                    Reset<br>({{wa.cs.labels.length}}/{{wa.cs.maxDim}})
                 </button>
-                <button ng-if="cohortChartContainerLabels.length >= 1" class="btn" ng-click="openSaveCohortModal()">
+                <button ng-if="wa.cohortChartContainerLabels.length >= 1" class="btn" ng-click="wa.openSaveCohortModal()">
                     Save cohort
                 </button>
             </div>
 
             <div id="main-chart-container">
                 <div class="progress-container">
-                    <uib-progressbar max="100" value="cs.selected/(cs.total/100)"
-                                     ng-class="{'progress-striped': cohortUpdating}" class="progress active"
+                    <uib-progressbar max="100" value="wa.cs.selected/(wa.cs.total/100)"
+                                     ng-class="{'progress-striped': wa.cohortUpdating}" class="progress active"
                                      animate="true">
-                        <div class="data-count">{{cs.selected}}/{{cs.total}}</div>
+                        <div class="data-count">{{wa.cs.selected}}/{{wa.cs.total}}</div>
                     </uib-progressbar>
                 </div>
 
                 <div gridster="gridsterOpts" id="ts-gridster-box">
                     <ul>
-                        <li gridster-item="label" ng-repeat="label in cohortChartContainerLabels">
+                        <li gridster-item="label" ng-repeat="label in wa.cohortChartContainerLabels">
                             <ts-cohort-chart class="chart-container"
                                              ts-gridster-item="gridsterItem"
                                              ts-gridster="gridster"
@@ -60,14 +60,14 @@
             </div>
         </uib-tab>
 
-        <uib-tab active="tabs[1].active" ng-click="activateTab(tabs[1].title, 'cohortGrid');">
+        <uib-tab active="wa.tabs[1].active" ng-click="wa.activateTab(tabs[1].title, 'cohortGrid');">
             <uib-tab-heading>
-                <span>{{tabs[1].title}}</span>
+                <span>{{wa.tabs[1].title}}</span>
             </uib-tab-heading>
             <!--Cohort grid-->
-            <cohort-grid cohort="cs.subjects" headers="cs.labels" ng-show="cs.labels.length > 0"></cohort-grid>
+            <cohort-grid cohort="wa.cs.subjects" headers="wa.cs.labels" ng-show="wa.cs.labels.length > 0"></cohort-grid>
             <!--Cohort grid no data message-->
-            <div class="form-group has-warning" ng-show="cs.labels.length <= 0">
+            <div class="form-group has-warning" ng-show="wa.cs.labels.length <= 0">
                 <span class="help-block">No cohort selected.</span>
             </div>
         </uib-tab>

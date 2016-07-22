@@ -15,11 +15,13 @@ angular.module('transmartBaseUi')
                     },
                     'sidebar@workspace': {
                         templateUrl: 'app/components/sidebar/sidebar.html',
-                        controller: 'SidebarCtrl'
+                        controller: 'SidebarCtrl',
+                        controllerAs: 'ws'
                     },
                     'content@workspace': {
                         templateUrl: 'app/containers/workspace/analysis/analysis.html',
-                        controller: 'AnalysisCtrl'
+                        controller: 'AnalysisCtrl',
+                        controllerAs: 'wa'
                     }
                 }
             });

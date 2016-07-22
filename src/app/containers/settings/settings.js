@@ -12,9 +12,6 @@ angular.module('transmartBaseUi')
                 views: {
                     '@': {
                         templateUrl: 'app/containers/settings/settings.html'
-                    },
-                    'content@settings': {
-                        templateUrl: 'app/containers/settings/settings.html'
                     }
                 }
             })
@@ -24,7 +21,8 @@ angular.module('transmartBaseUi')
                 views: {
                     'content@settings': {
                         templateUrl: 'app/containers/settings/connections/connections.html',
-                        controller: 'ConnectionsCtrl'
+                        controller: 'ConnectionsCtrl',
+                        controllerAs: 'sc'
                     }
                 }
             });
