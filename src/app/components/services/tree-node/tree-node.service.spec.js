@@ -131,7 +131,6 @@ describe('TreeNodeService', function () {
 
         it('should return total number of subjects in a node', function () {
             httpBackend.when('GET', '/subjects').respond(_subjects);
-            //spyOn(_dummyNode.restObj, 'one');
             TreeNodeService.getTotalSubjects(_dummyNode).then(function (s) {
                 expect(s).toEqual(2);
             });

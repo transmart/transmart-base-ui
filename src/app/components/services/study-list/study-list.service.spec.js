@@ -409,10 +409,8 @@ describe('StudyListService', function () {
 
         it('should load studies', function () {
             loadedStudies = StudyListService.loadStudyList(_endpoint).then(function (res) {
-                console.log(res);
                 expect(res.length).toEqual(1);
             });
-            //httpBackend.flush();
         });
 
     });
