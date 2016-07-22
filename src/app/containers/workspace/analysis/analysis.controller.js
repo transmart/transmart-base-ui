@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('transmartBaseUi')
-    .controller('MainCtrl',
+    .controller('AnalysisCtrl',
         ['$scope', '$rootScope', 'ChartService', 'AlertService', '$stateParams', '$log',
             '$state', 'StudyListService', 'GridsterService', '$uibModal',
             function ($scope, $rootScope, ChartService, AlertService, $stateParams, $log,
