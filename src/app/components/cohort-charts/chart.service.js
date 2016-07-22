@@ -9,17 +9,6 @@ angular.module('transmartBaseUi').factory('ChartService',
                 cohortUpdating: false
             };
 
-            /**
-             * Triggered when chart is on filter
-             * @param chart
-             * @param filter
-             */
-            chartService.triggerFilterEvent = function (chart, filter) {
-                if (chart.filters().length > 0) {
-                    this.updateDimensions(); // update when there's filter
-                }
-            };
-
             var _numDisplay = function (cDimension, cGroup, el) {
                 var _number = dc.numberDisplay(el);
                 _number.group(cGroup)

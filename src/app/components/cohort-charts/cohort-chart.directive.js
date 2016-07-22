@@ -26,9 +26,9 @@ angular.module('transmartBaseUi')
                     _chart.gridInfo = _cached.gridInfo; // get cached gridster info
                 }
 
-                // on filtered
+                // TODO: the params chart and filter are not used so far, but I am keeping them here for potential future usage
                 _chart.on('filtered', function (chart, filter) {
-                    scope.$evalAsync(ChartService.triggerFilterEvent(chart, filter));
+                    scope.$evalAsync(ChartService.updateDimensions());
                 });
 
                 // check if chart is number chart or not
