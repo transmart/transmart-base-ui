@@ -10,16 +10,8 @@ angular.module('transmartBaseUi')
                     '@': {
                         templateUrl: 'app/containers/settings/settings.html'
                     },
-                    'navbar@settings': {
-                        templateUrl: 'app/components/navbar/navbar.html',
-                        controller: 'NavbarCtrl'
-                    },
                     'content@settings': {
                         templateUrl: 'app/containers/settings/settings.html'
-                    },
-                    'footer@settings': {
-                        templateUrl: 'app/components/footer/footer.html',
-                        controller: 'FooterCtrl'
                     }
                 }
             })

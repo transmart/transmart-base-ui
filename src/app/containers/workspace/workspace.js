@@ -10,10 +10,6 @@ angular.module('transmartBaseUi')
                     '@': {
                         templateUrl: 'app/containers/workspace/workspace.html'
                     },
-                    'navbar@workspace': {
-                        templateUrl: 'app/components/navbar/navbar.html',
-                        controller: 'NavbarCtrl'
-                    },
                     'sidebar@workspace': {
                         templateUrl: 'app/components/sidebar/sidebar.html',
                         controller: 'SidebarCtrl'
@@ -21,10 +17,6 @@ angular.module('transmartBaseUi')
                     'content@workspace': {
                         templateUrl: 'app/containers/workspace/analysis/analysis.html',
                         controller: 'AnalysisCtrl'
-                    },
-                    'footer@workspace': {
-                        templateUrl: 'app/components/footer/footer.html',
-                        controller: 'FooterCtrl'
                     }
                 }
             });

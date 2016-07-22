@@ -10,19 +10,10 @@ angular.module('transmartBaseUi')
                     '@': {
                         templateUrl: 'app/containers/home/home.html'
                     },
-                    'navbar@home': {
-                        templateUrl: 'app/components/navbar/navbar.html',
-                        controller: 'NavbarCtrl'
-                    },
                     'content@home': {
                         templateUrl: 'app/containers/home/home.content.html',
                         controller: 'HomeCtrl'
-                    },
-                    'footer@home': {
-                        templateUrl: 'app/components/footer/footer.html',
-                        controller: 'FooterCtrl'
                     }
-
                 }
             });
     });

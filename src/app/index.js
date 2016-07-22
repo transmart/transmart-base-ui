@@ -34,7 +34,17 @@ angular.module('transmartBaseUi', [
             //Abstract root state.
             $stateProvider.state('site', {
                 abstract: true,
-                template: '<div ui-view></div>'
+                templateUrl: 'app/site.html',
+                views: {
+                    'navbar@': {
+                        templateUrl: 'app/components/navbar/navbar.html',
+                        controller: 'NavbarCtrl'
+                    },
+                    'footer@': {
+                        templateUrl: 'app/components/footer/footer.html',
+                        controller: 'FooterCtrl'
+                    }
+                }
             });
 
             // Default route
@@ -103,4 +113,10 @@ angular.module('transmartBaseUi', [
             $rootScope.globals = $cookieStore.get('globals') || {};
 
             EndpointService.initializeEndpoints();
+
+            /*$rootScope.$on('$locationChangeStart', function () {
+                if ($location.path() === '') {
+                    $location.path('/home');
+                }
+            });*/
         }]);
