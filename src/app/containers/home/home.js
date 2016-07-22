@@ -1,5 +1,8 @@
 'use strict';
 
+/**
+ * State configuration definition for 'home'
+ */
 angular.module('transmartBaseUi')
     .config(function ($stateProvider) {
         $stateProvider
