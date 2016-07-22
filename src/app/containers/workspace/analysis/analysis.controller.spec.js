@@ -16,7 +16,7 @@ describe('MainCtrl', function () {
 
         beforeEach(function () {
             $scope = {};
-            controller = $controller('MainCtrl', {$scope: $scope});
+            controller = $controller('AnalysisCtrl', {$scope: $scope});
         });
     });
 
