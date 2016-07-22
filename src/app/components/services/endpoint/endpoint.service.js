@@ -3,8 +3,10 @@
 
 angular.module('transmartBaseUi')
     .factory('EndpointService',
-        ['$rootScope', '$http', '$q', 'Restangular', '$cookies', '$window', '$location', 'masterEndpointConfig', 'isTesting',
-            function ($rootScope, $http, $q, Restangular, $cookies, $window, $location, masterEndpointConfig, isTesting) {
+        ['$rootScope', '$http', '$q', 'ResourceService', '$cookies', '$window', '$location', 'masterEndpointConfig',
+            'isTesting',
+            function ($rootScope, $http, $q, ResourceService, $cookies, $window, $location, masterEndpointConfig,
+                      isTesting) {
 
                 var service = {};
 
@@ -111,7 +113,7 @@ angular.module('transmartBaseUi')
                 service.retrieveStoredEndpoints = function () {
                     var storedEndpoints = $cookies.getObject(cookieKeyForEndpoints) || [];
                     storedEndpoints.forEach(function (endpoint) {
-                        endpoint.restangular = _newRestangularConfig(endpoint);
+                        endpoint.restangular = ResourceService.createResourceServiceByEndpoint(endpoint);
                         endpoints.push(endpoint);
                         if (endpoint.isMaster) {
                             masterEndpoint = endpoint;
@@ -228,9 +230,9 @@ angular.module('transmartBaseUi')
                     endpoint.status = 'active';
                     var time = new Date();
                     endpoint.expiresAt = time.setTime(time.getTime() + endpoint.expires_in * 1000);
-                    endpoint.restangular = _newRestangularConfig(endpoint);
+                    endpoint.restangular = ResourceService.createResourceServiceByEndpoint(endpoint);
                     return endpoint;
-                }
+                };
 
                 /**
                  * Returns endpoint with merged credentials extracted from URI.
@@ -254,25 +256,8 @@ angular.module('transmartBaseUi')
                  */
                 service.invalidateEndpoint = function (endpoint) {
                     endpoint.status = 'error';
-                    service.removeEndpoint(endpoint)
+                    service.removeEndpoint(endpoint);
                     service.authorizeEndpoint(endpoint);
-                };
-
-                /**
-                 * Creates a new restangular instance based on the url and access token.
-                 * @param endpoint
-                 * @returns {*}
-                 * @private
-                 */
-                var _newRestangularConfig = function (endpoint) {
-                    var restangular = Restangular.withConfig(function (RestangularConfigurer) {
-                        RestangularConfigurer.setBaseUrl(endpoint.url);
-                        RestangularConfigurer.setDefaultHeaders({
-                            'Authorization': 'Bearer ' + endpoint.access_token,
-                            'Accept': 'application/hal+json'
-                        });
-                    });
-                    return restangular;
                 };
 
                 return service;
