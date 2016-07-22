@@ -1,5 +1,9 @@
 'use strict';
 
+/**
+ * Configuration for tranSMART-ui module
+ * Injection of dependencies and base configuration
+ */
 angular.module('transmartBaseUi', [
         'ngAnimate',
         'ngCookies',
@@ -31,10 +35,10 @@ angular.module('transmartBaseUi', [
                 requireBase: false
             });
 
-            //Abstract root state.
+            // Abstract root state defining navbar and footer and an unnamed ui-view for child view injection.
             $stateProvider.state('site', {
                 abstract: true,
-                templateUrl: 'app/site.html',
+                template: '<div ui-view> </div>',
                 views: {
                     'navbar@': {
                         templateUrl: 'app/components/navbar/navbar.html',
@@ -61,8 +65,6 @@ angular.module('transmartBaseUi', [
             // when getting a list of resources
             RestangularProvider.setResponseInterceptor(function (data, operation, what) {
 
-                //console.log(data);
-
                 /**
                  * Get the last token when requested model is a string path
                  * @param what
@@ -88,7 +90,7 @@ angular.module('transmartBaseUi', [
                 return data;
             });
 
-            //// Using self link for self reference resources
+            // Using self link for self reference resources
             RestangularProvider.setRestangularFields({
                 selfLink: 'self.link'
             });
@@ -113,10 +115,4 @@ angular.module('transmartBaseUi', [
             $rootScope.globals = $cookieStore.get('globals') || {};
 
             EndpointService.initializeEndpoints();
-
-            /*$rootScope.$on('$locationChangeStart', function () {
-                if ($location.path() === '') {
-                    $location.path('/home');
-                }
-            });*/
         }]);
