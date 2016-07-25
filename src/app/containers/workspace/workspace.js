@@ -18,8 +18,9 @@ angular.module('transmartBaseUi')
                         controller: 'SidebarCtrl'
                     },
                     'content@workspace': {
-                        templateUrl: 'app/containers/workspace/analysis/analysis.html',
-                        controller: 'AnalysisCtrl'
+                        templateUrl: 'app/containers/workspace/cohort-selection/cohort-selection.html',
+                        controller: 'CohortSelectionCtrl',
+                        controllerAs: 'wa'
                     }
                 }
             });

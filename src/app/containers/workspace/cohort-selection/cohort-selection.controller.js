@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('transmartBaseUi')
-    .controller('AnalysisCtrl',
-        ['$scope', '$rootScope', 'ChartService', 'AlertService', '$stateParams', '$log',
+    .controller('CohortSelectionCtrl',
+        ['$scope', '$rootScope', 'Restangular', 'ChartService', 'AlertService', '$stateParams', '$log',
             '$state', 'StudyListService', 'GridsterService', '$uibModal',
             function ($scope, $rootScope, ChartService, AlertService, $stateParams, $log,
                       $state, StudyListService, GridsterService, $uibModal) {
@@ -25,6 +25,7 @@ angular.module('transmartBaseUi')
                 $scope.$watchCollection(function () {
                     return ChartService.cs.labels;
                 }, function (newV, oldV) {
+                    console.log("Labels updated");
                     if (!_.isEqual(newV, oldV)) {
                         ChartService.updateDimensions();
                     }
@@ -75,7 +76,7 @@ angular.module('transmartBaseUi')
                  * @param labels Corresponding to selected concepts
                  */
                 $scope.$on('prepareChartContainers', function (event, labels) {
-                    $scope.cohortChartContainerLabels = GridsterService.resize('#main-chart-container', labels, false);
+                    wa.cohortChartContainerLabels = GridsterService.resize('#main-chart-container', labels, false);
                 });
 
                 /**
