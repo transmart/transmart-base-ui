@@ -664,8 +664,8 @@ angular.module('transmartBaseUi').factory('ChartService',
                 _chart.filter(words);
                 _chart.render();
                 chartService.updateDimensions();
+                dc.renderAll();
             }
-
 
             /**
              * Handle node drop from study-accordion to cohort-selection panel.
