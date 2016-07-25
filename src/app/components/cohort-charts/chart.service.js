@@ -9,17 +9,6 @@ angular.module('transmartBaseUi').factory('ChartService',
                 cohortUpdating: false
             };
 
-            /**
-             * Triggered when chart is on filter
-             * @param chart
-             * @param filter
-             */
-            chartService.triggerFilterEvent = function (chart, filter) {
-                if (chart.filters().length > 0) {
-                    this.updateDimensions(); // update when there's filter
-                }
-            };
-
             var _numDisplay = function (cDimension, cGroup, el) {
                 var _number = dc.numberDisplay(el);
                 _number.group(cGroup)
@@ -197,8 +186,6 @@ angular.module('transmartBaseUi').factory('ChartService',
                 _.each(chartService.cs.dims, function (dim) {
                     dim.filterAll();
                 });
-                dc.filterAll();
-                dc.redrawAll();
             };
 
             /**
@@ -261,10 +248,10 @@ angular.module('transmartBaseUi').factory('ChartService',
 
                     dc.redrawAll();
 
-                    _deferred.resolve();
-
                     chartService.cohortUpdating = false;
                     chartService.updateDimensions();
+
+                    _deferred.resolve();
 
                 }, function (err) {
                     _deferred.reject('Cannot get data from the end-point.' + err);
@@ -459,7 +446,6 @@ angular.module('transmartBaseUi').factory('ChartService',
              * @private
              */
             chartService.createCohortChart = function (label, el) {
-
                 var _chart;
 
                 var _defaultDim = function (_missingLabelId) {
@@ -678,8 +664,8 @@ angular.module('transmartBaseUi').factory('ChartService',
                 _chart.filter(words);
                 _chart.render();
                 chartService.updateDimensions();
+                dc.renderAll();
             }
-
 
             /**
              * Handle node drop from study-accordion to cohort-selection panel.

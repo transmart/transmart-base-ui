@@ -22,13 +22,8 @@ angular.module('transmartBaseUi')
                 // always create new chart even it's been cached
                 _chart = ChartService.createCohortChart(scope.tsLabel, _bodyDiv);
 
-                if (_cached) {
-                    _chart.gridInfo = _cached.gridInfo; // get cached gridster info
-                }
-
-                // on filtered
                 _chart.on('filtered', function (chart, filter) {
-                    scope.$evalAsync(ChartService.triggerFilterEvent(chart, filter));
+                    ChartService.updateDimensions();
                 });
 
                 // check if chart is number chart or not
