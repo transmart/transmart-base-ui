@@ -19,7 +19,6 @@ angular.module('transmartBaseUi')
                 var cookieKeyForEndpoints = 'transmart-base-ui-v2.endpoints';
                 var cookieKeyForSelectedEndpoint = 'transmart-base-ui-v2.selectedEndpoint';
 
-
                 /**
                  * Initializes the endpoints by loading them from the cookies, checking
                  * if we're currently being redirected from an authorization page,

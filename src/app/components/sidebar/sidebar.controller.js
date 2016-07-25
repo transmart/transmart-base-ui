@@ -7,11 +7,11 @@ angular.module('transmartBaseUi')
             $scope.publicStudies = [];
             $scope.privateStudies = [];
 
-            $scope.searchTerm = '';
-            // Default to false (OR)
-            $scope.searchMode = false;
-            $scope.operator = 'OR';
-            $scope.searchKeys = [];
+            ws.searchTerm = '';
+            // Default to false (OR) for toggle switch
+            ws.searchMode = false;
+            ws.operator = 'OR';
+            ws.searchKeys = [];
 
             $scope.$watch('searchMode', function (newVal) {
                 $scope.operator = newVal ? 'AND' : 'OR';
@@ -55,8 +55,7 @@ angular.module('transmartBaseUi')
             /**
              * Load studies from available endpoints
              */
-            $scope.loadStudies = function () {
-
+            ws.loadStudies = function () {
                 var _endpoints = EndpointService.getEndpoints(); // get available endpoints
 
                 _.each(_endpoints, function (endpoint) {
