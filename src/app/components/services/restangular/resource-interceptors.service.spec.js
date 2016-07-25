@@ -1,6 +1,6 @@
 'use strict';
 
-describe('ResourceService', function () {
+describe('ResourceInterceptors', function () {
     var ResourceInterceptors;
 
     // Load the transmartBaseUi module, which contains the directive
