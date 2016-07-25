@@ -622,7 +622,6 @@ angular.module('transmartBaseUi').factory('ChartService',
                 return _filters;
             };
 
-
             /**
              * Update dimensions
              */
@@ -632,7 +631,6 @@ angular.module('transmartBaseUi').factory('ChartService',
                 this.cs.subjects = this.cs.mainDim.top(Infinity);
                 this.cs.cohortLabels = this.cs.labels;
             };
-
 
             /**
              * @param chartName

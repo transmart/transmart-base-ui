@@ -25,7 +25,6 @@ angular.module('transmartBaseUi')
                 $scope.$watchCollection(function () {
                     return ChartService.cs.labels;
                 }, function (newV, oldV) {
-                    console.log("Labels updated");
                     if (!_.isEqual(newV, oldV)) {
                         ChartService.updateDimensions();
                     }
