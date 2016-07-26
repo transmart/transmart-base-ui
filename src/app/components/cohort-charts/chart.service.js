@@ -667,7 +667,7 @@ angular.module('transmartBaseUi').factory('ChartService',
                         dc.renderAll();
                     }
                 }
-                else {
+                else if(_.isArray(word)){
                     word.forEach(function (_word) {
                         _filterChart(chart, _word);
                     });
