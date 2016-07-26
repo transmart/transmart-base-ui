@@ -656,8 +656,8 @@ angular.module('transmartBaseUi').factory('ChartService',
 
             /**
              * Give a chart instance (normally a pie chart), filter it based on a single word
-             * @param _chart - The chart instance in ChartService.cs.charts
-             * @param words - The filtering word that filters the chart
+             * @param chart - The chart instance in ChartService.cs.charts
+             * @param word - The filtering word that filters the chart
              * @private
              */
             function _filterChartWithOneWord(chart, word) {
@@ -670,7 +670,7 @@ angular.module('transmartBaseUi').factory('ChartService',
 
             /**
              * Give a chart instance (normally a pie chart), filter it based on an array of words
-             * @param _chart - The chart instance in ChartService.cs.charts
+             * @param chart - The chart instance in ChartService.cs.charts
              * @param words - The filtering words that filter the chart
              * @private
              */
