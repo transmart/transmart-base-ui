@@ -656,20 +656,20 @@ angular.module('transmartBaseUi').factory('ChartService',
             /**
              * Give a chart instance (normally a pie chart), filter it based on an array of words
              * @param chart - The chart instance in ChartService.cs.charts
-             * @param words - The filtering words that filter the chart
+             * @param criteria - The filtering words that filter the chart
              * @private
              */
-            function _filterChart(chart, word) {
-                if(_.isString(word)) {
-                    if(chart.filters().indexOf(word) == -1) {
-                        chart.filter(word);
+            function _filterChart(chart, criteria) {
+                if(_.isString(criteria)) {
+                    if(chart.filters().indexOf(criteria) == -1) {
+                        chart.filter(criteria);
                         chartService.updateDimensions();
                         dc.renderAll();
                     }
                 }
-                else if(_.isArray(word)){
-                    word.forEach(function (_word) {
-                        _filterChart(chart, _word);
+                else if(_.isArray(criteria)){
+                    criteria.forEach(function (word) {
+                        _filterChart(chart, word);
                     });
                 }
 
