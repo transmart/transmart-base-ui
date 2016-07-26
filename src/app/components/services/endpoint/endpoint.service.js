@@ -3,8 +3,10 @@
 
 angular.module('transmartBaseUi')
     .factory('EndpointService',
-        ['$rootScope', '$http', '$q', 'Restangular', '$cookies', '$window', '$location', 'masterEndpointConfig', 'isTesting',
-            function ($rootScope, $http, $q, Restangular, $cookies, $window, $location, masterEndpointConfig, isTesting) {
+        ['$rootScope', '$http', '$q', 'ResourceService', '$cookies', '$window', '$location', 'masterEndpointConfig',
+            'isTesting',
+            function ($rootScope, $http, $q, ResourceService, $cookies, $window, $location, masterEndpointConfig,
+                      isTesting) {
 
                 var service = {};
 
@@ -25,7 +27,7 @@ angular.module('transmartBaseUi')
                  * endpoint if we aren't.
                  */
                 service.initializeEndpoints = function () {
-                    service.retrieveStoredEndpoints(); // includes master endpoint
+                    service.retrieveStoredEndpoints(cookieKeyForEndpoints); // includes master endpoint
 
                     // Check if there is an OAuth fragment, which indicates we're in the process
                     // of authorizing an endpoint.
@@ -34,7 +36,9 @@ angular.module('transmartBaseUi')
 
                         // Update the current endpoint with the received credentials and save it
                         var selectedConnection = service.initializeEndpointWithCredentials(
-                            service.getSelectedEndpoint(), oauthGrantFragment);
+                            service.getSelectedEndpoint(),
+                            oauthGrantFragment
+                        );
                         service.addEndpoint(selectedConnection);
 
                         $location.url($location.path());
@@ -108,15 +112,16 @@ angular.module('transmartBaseUi')
                  * Initializes the list of endpoints and the master endpoint
                  * with what's stored in the cookies.
                  */
-                service.retrieveStoredEndpoints = function () {
-                    var storedEndpoints = $cookies.getObject(cookieKeyForEndpoints) || [];
+                service.retrieveStoredEndpoints = function (strCookieKey) {
+                    var storedEndpoints = $cookies.getObject(strCookieKey) || [];
                     storedEndpoints.forEach(function (endpoint) {
-                        endpoint.restangular = _newRestangularConfig(endpoint);
+                        endpoint.restangular = ResourceService.createResourceServiceByEndpoint(endpoint);
                         endpoints.push(endpoint);
                         if (endpoint.isMaster) {
                             masterEndpoint = endpoint;
                         }
                     });
+                    return storedEndpoints;
                 };
 
                 /** Removes all stored endpoints, except for the master endpoint.
@@ -228,9 +233,9 @@ angular.module('transmartBaseUi')
                     endpoint.status = 'active';
                     var time = new Date();
                     endpoint.expiresAt = time.setTime(time.getTime() + endpoint.expires_in * 1000);
-                    endpoint.restangular = _newRestangularConfig(endpoint);
+                    endpoint.restangular = ResourceService.createResourceServiceByEndpoint(endpoint);
                     return endpoint;
-                }
+                };
 
                 /**
                  * Returns endpoint with merged credentials extracted from URI.
@@ -254,25 +259,8 @@ angular.module('transmartBaseUi')
                  */
                 service.invalidateEndpoint = function (endpoint) {
                     endpoint.status = 'error';
-                    service.removeEndpoint(endpoint)
+                    service.removeEndpoint(endpoint);
                     service.authorizeEndpoint(endpoint);
-                };
-
-                /**
-                 * Creates a new restangular instance based on the url and access token.
-                 * @param endpoint
-                 * @returns {*}
-                 * @private
-                 */
-                var _newRestangularConfig = function (endpoint) {
-                    var restangular = Restangular.withConfig(function (RestangularConfigurer) {
-                        RestangularConfigurer.setBaseUrl(endpoint.url);
-                        RestangularConfigurer.setDefaultHeaders({
-                            'Authorization': 'Bearer ' + endpoint.access_token,
-                            'Accept': 'application/hal+json'
-                        });
-                    });
-                    return restangular;
                 };
 
                 return service;

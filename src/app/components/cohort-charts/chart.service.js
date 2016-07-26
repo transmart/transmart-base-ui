@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('transmartBaseUi').factory('ChartService',
-    ['Restangular', '$q', '$rootScope', '$timeout', 'AlertService', 'DcChartsService', 'GridsterService',
-        function (Restangular, $q, $rootScope, $timeout, AlertService, DcChartsService, GridsterService) {
+    ['$q', '$rootScope', '$timeout', 'AlertService', 'DcChartsService', 'GridsterService',
+        function ($q, $rootScope, $timeout, AlertService, DcChartsService, GridsterService) {
 
             var chartService = {
                 cs: {},
