@@ -514,7 +514,7 @@ angular.module('transmartBaseUi').factory('ChartService',
                  * apply the filter of the sub-category on the chart
                  */
                 if (label.filters !== undefined) {
-                    _filterChartWithWords(_chart, label.filters);
+                    _filterChart(_chart, label.filters);
                 }
 
                 return _chart;
@@ -653,31 +653,26 @@ angular.module('transmartBaseUi').factory('ChartService',
                 return foundChart;
             }
 
-
-            /**
-             * Give a chart instance (normally a pie chart), filter it based on a single word
-             * @param chart - The chart instance in ChartService.cs.charts
-             * @param word - The filtering word that filters the chart
-             * @private
-             */
-            function _filterChartWithOneWord(chart, word) {
-                if(chart.filters().indexOf(word) == -1) {
-                    chart.filter(word);
-                    chartService.updateDimensions();
-                    dc.renderAll();
-                }
-            }
-
             /**
              * Give a chart instance (normally a pie chart), filter it based on an array of words
              * @param chart - The chart instance in ChartService.cs.charts
              * @param words - The filtering words that filter the chart
              * @private
              */
-            function _filterChartWithWords(chart, words) {
-                words.forEach(function (word) {
-                   _filterChartWithOneWord(chart, word);
-                });
+            function _filterChart(chart, word) {
+                if(_.isString(word)) {
+                    if(chart.filters().indexOf(word) == -1) {
+                        chart.filter(word);
+                        chartService.updateDimensions();
+                        dc.renderAll();
+                    }
+                }
+                else {
+                    word.forEach(function (_word) {
+                        _filterChart(chart, _word);
+                    });
+                }
+
             }
 
             /**
@@ -696,7 +691,7 @@ angular.module('transmartBaseUi').factory('ChartService',
                         chartService.addNodeToActiveCohortSelection(node.parent, filters);
                     }
                     else {
-                        _filterChartWithOneWord(chart, node.title);
+                        _filterChart(chart, node.title);
                     }
                 }
                 else {
