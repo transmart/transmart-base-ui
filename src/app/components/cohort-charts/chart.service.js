@@ -140,7 +140,7 @@ angular.module('transmartBaseUi').factory('ChartService',
                 // Check if label has already been added
                 var label = _.find(chartService.cs.labels, {label: obs.label});
                 var filters;
-                if(filterObj) filters = filterObj.filterWords;
+                if (filterObj) filters = filterObj.filterWords;
 
                 if (!label) {
 
@@ -513,7 +513,7 @@ angular.module('transmartBaseUi').factory('ChartService',
                  * when a sub-categorical label is dropped and the corresponding (parent) pie-chart is created,
                  * apply the filter of the sub-category on the chart
                  */
-                if(label.filters !== undefined) {
+                if (label.filters !== undefined) {
                     _filterChart(_chart, label.filters);
                 }
 
@@ -654,17 +654,25 @@ angular.module('transmartBaseUi').factory('ChartService',
             }
 
             /**
-             * Give a chart instance (normally a pie chart), filter it based on 'words',
-             * and update the Crossfilter dimensions
-             * @param _chart - The chart instance in ChartService.cs.charts
-             * @param word - The filtering word that filters the chart
+             * Give a chart instance (normally a pie chart), filter it based on an array of words
+             * @param chart - The chart instance in ChartService.cs.charts
+             * @param criteria - The filtering words that filter the chart
              * @private
              */
-            function _filterChart(_chart, words) {
-                _chart.filter(words);
-                _chart.render();
-                chartService.updateDimensions();
-                dc.renderAll();
+            function _filterChart(chart, criteria) {
+                if(_.isString(criteria)) {
+                    if(chart.filters().indexOf(criteria) == -1) {
+                        chart.filter(criteria);
+                        chartService.updateDimensions();
+                        dc.renderAll();
+                    }
+                }
+                else if(_.isArray(criteria)){
+                    criteria.forEach(function (word) {
+                        _filterChart(chart, word);
+                    });
+                }
+
             }
 
             /**
