@@ -660,11 +660,14 @@ angular.module('transmartBaseUi').factory('ChartService',
              * @param word - The filtering word that filters the chart
              * @private
              */
-            function _filterChart(_chart, words) {
-                _chart.filter(words);
-                _chart.render();
-                chartService.updateDimensions();
-                dc.renderAll();
+            function _filterChart(_chart, word) {
+                //only perform the filtering if the chart has not been filtered by the same criteria
+                if(_chart.filters().indexOf(word) == -1) {
+                    _chart.filter(word);
+                    _chart.render();
+                    chartService.updateDimensions();
+                    dc.renderAll();
+                }
             }
 
             /**
