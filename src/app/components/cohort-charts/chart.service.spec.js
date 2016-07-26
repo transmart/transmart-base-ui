@@ -237,6 +237,9 @@ describe('ChartService Unit Tests', function () {
         it('should not invoke addNodeToActiveCohortSelection upon when the pie-chart exists', function () {
             chart.tsLabel = {};
             chart.tsLabel.label = chartName;
+            chart.filters = function () {
+                return [];
+            }
             ChartService.cs.charts.push(chart);
 
             spyOn(ChartService, 'onNodeDrop').and.callThrough();
