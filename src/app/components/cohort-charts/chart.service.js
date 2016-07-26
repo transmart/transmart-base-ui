@@ -140,7 +140,7 @@ angular.module('transmartBaseUi').factory('ChartService',
                 // Check if label has already been added
                 var label = _.find(chartService.cs.labels, {label: obs.label});
                 var filters;
-                if(filterObj) filters = filterObj.filterWords;
+                if (filterObj) filters = filterObj.filterWords;
 
                 if (!label) {
 
@@ -513,8 +513,8 @@ angular.module('transmartBaseUi').factory('ChartService',
                  * when a sub-categorical label is dropped and the corresponding (parent) pie-chart is created,
                  * apply the filter of the sub-category on the chart
                  */
-                if(label.filters !== undefined) {
-                    _filterChart(_chart, label.filters);
+                if (label.filters !== undefined) {
+                    _filterChartWithWords(_chart, label.filters);
                 }
 
                 return _chart;
@@ -653,21 +653,31 @@ angular.module('transmartBaseUi').factory('ChartService',
                 return foundChart;
             }
 
+
             /**
-             * Give a chart instance (normally a pie chart), filter it based on 'words',
-             * and update the Crossfilter dimensions
+             * Give a chart instance (normally a pie chart), filter it based on a single word
              * @param _chart - The chart instance in ChartService.cs.charts
-             * @param word - The filtering word that filters the chart
+             * @param words - The filtering word that filters the chart
              * @private
              */
-            function _filterChart(_chart, word) {
-                //only perform the filtering if the chart has not been filtered by the same criteria
-                if(_chart.filters().indexOf(word) == -1) {
-                    _chart.filter(word);
-                    _chart.render();
+            function _filterChartWithOneWord(chart, word) {
+                if(chart.filters().indexOf(word) == -1) {
+                    chart.filter(word);
                     chartService.updateDimensions();
                     dc.renderAll();
                 }
+            }
+
+            /**
+             * Give a chart instance (normally a pie chart), filter it based on an array of words
+             * @param _chart - The chart instance in ChartService.cs.charts
+             * @param words - The filtering words that filter the chart
+             * @private
+             */
+            function _filterChartWithWords(chart, words) {
+                words.forEach(function (word) {
+                   _filterChartWithOneWord(chart, word);
+                });
             }
 
             /**
@@ -686,7 +696,7 @@ angular.module('transmartBaseUi').factory('ChartService',
                         chartService.addNodeToActiveCohortSelection(node.parent, filters);
                     }
                     else {
-                        _filterChart(chart, node.title);
+                        _filterChartWithOneWord(chart, node.title);
                     }
                 }
                 else {
