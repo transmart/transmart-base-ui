@@ -7,7 +7,7 @@ describe('ConnectionsCtrl', function () {
 
     /**
      * dummy endpoints
-     * @type {*[]}
+     * @type {Array}
      * @private
      */
     var _dummyEndpoints = [
@@ -113,7 +113,6 @@ describe('ConnectionsCtrl', function () {
 
             ctrl.selectedConnection = {url: 'http://foo'};
             ctrl.navigateToAuthorizationPage(ctrl.selectedConnection);
-            //expect(AlertService.add).toHaveBeenCalled();
             expect(EndpointService.saveSelectedEndpoint).not.toHaveBeenCalled();
             expect(EndpointService.authorizeEndpoint).not.toHaveBeenCalled();
         });

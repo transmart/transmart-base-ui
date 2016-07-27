@@ -1,5 +1,10 @@
 'use strict';
 
+/**
+ * @memberof transmartBaseUi
+ * @ngdoc controller
+ * @name SaveCohortDialogCtrl
+ */
 angular.module('transmartBaseUi')
     .controller('SaveCohortDialogCtrl', ['$scope', '$uibModalInstance', 'EndpointService', 'ChartService', 'QueryBuilderService', 'AlertService',
         function ($scope, $uibModalInstance, EndpointService, ChartService, QueryBuilderService, AlertService) {
@@ -8,6 +13,7 @@ angular.module('transmartBaseUi')
 
             /**
              * Saves the currently selected cohort to the backend.
+             * @memberof SaveCohortDialogCtrl
              */
             $scope.ok = function () {
                 //TODO: currently the cohort selection is saved to the master endpoint. Should it be saved to the endpoints corresponding to the concepts/filters instead?

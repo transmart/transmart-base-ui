@@ -1,5 +1,11 @@
 'use strict';
 
+/**
+ * @memberof transmartBaseUi
+ * @ngdoc factory
+ * @name ChartService
+ * @description handles cohort chart creation and user-interaction
+ */
 angular.module('transmartBaseUi').factory('ChartService',
     ['$q', '$rootScope', '$timeout', 'AlertService', 'DcChartsService', 'GridsterService',
         function ($q, $rootScope, $timeout, AlertService, DcChartsService, GridsterService) {
@@ -24,9 +30,9 @@ angular.module('transmartBaseUi').factory('ChartService',
 
             /**
              * Get the last token when requested model is a string path
-             * @param what
+             * @memberof ChartService
+             * @param {String} what
              * @returns {*}
-             * @private
              */
             var _getLastToken = function (what) {
                 var _t = what.split('\\').slice(1);
@@ -36,6 +42,7 @@ angular.module('transmartBaseUi').factory('ChartService',
 
             /**
              * Render all visible charts
+             * @memberof ChartService
              * @param charts
              */
             chartService.renderAll = function (charts) {
@@ -88,6 +95,7 @@ angular.module('transmartBaseUi').factory('ChartService',
 
             /**
              * Reset the cohort chart service to initial state
+             * @memberof ChartService
              */
             chartService.reset = function () {
 
@@ -133,7 +141,6 @@ angular.module('transmartBaseUi').factory('ChartService',
              * Add new label to list and check data type
              * @param label
              * @param value
-             * @private
              */
             var _addLabel = function (obs, node, filterObj) {
 
@@ -180,7 +187,7 @@ angular.module('transmartBaseUi').factory('ChartService',
             /**
              * Remove all the filters applied to the label dimensions
              * TODO: Add the possibility to reapply removed filters
-             * @private
+             * @memberof ChartService
              */
             var _removeAllLabelFilters = function () {
                 _.each(chartService.cs.dims, function (dim) {
@@ -190,7 +197,7 @@ angular.module('transmartBaseUi').factory('ChartService',
 
             /**
              * Create the Crossfilter instance from the subject data
-             * @private
+             * @memberof ChartService
              */
             var _populateCohortCrossfilter = function () {
                 _removeAllLabelFilters();
@@ -200,8 +207,9 @@ angular.module('transmartBaseUi').factory('ChartService',
 
             /**
              * Fetch the data for the selected node
-             * @param node
-             * @param filters
+             * @memberof ChartService
+             * @param {Object} node
+             * @param {Array} filters
              * @returns {*}
              */
             chartService.addNodeToActiveCohortSelection = function (node, filters) {
@@ -261,8 +269,9 @@ angular.module('transmartBaseUi').factory('ChartService',
 
             /**
              * Remove label from subjects and remove subjects no longer associated with any given label
-             * @param subjects
-             * @param label
+             * @memberof ChartService
+             * @param {Array} subjects
+             * @param {String} label
              * @returns {*}
              */
             chartService.filterSubjectsByLabel = function (subjects, label) {
@@ -279,8 +288,9 @@ angular.module('transmartBaseUi').factory('ChartService',
 
             /**
              * Remove a label from label collection
-             * @param labels
-             * @param label
+             * @memberof ChartService
+             * @param {Array} labels
+             * @param {Object} label
              * @returns {Array}
              */
             var _removeLabelFromLabels = function (labels, label) {
@@ -291,8 +301,9 @@ angular.module('transmartBaseUi').factory('ChartService',
 
             /**
              * Remove a chart from chart collection
-             * @param charts
-             * @param label
+             * @memberof ChartService
+             * @param {Array} charts
+             * @param {Object} label
              * @returns {Array}
              */
             var _removeChartFromCharts = function (charts, label) {
@@ -306,8 +317,9 @@ angular.module('transmartBaseUi').factory('ChartService',
 
             /**
              * Clear chart's filter
-             * @param charts
-             * @param label
+             * @memberof ChartService
+             * @param  {Array}charts
+             * @param {Object} label
              * @returns {*}
              */
             chartService.clearChartFilterByLabel = function (label) {
@@ -323,7 +335,8 @@ angular.module('transmartBaseUi').factory('ChartService',
 
             /**
              * Remove label from cohort selection
-             * @param label
+             * @memberof ChartService
+             * @param {Object} label
              */
             chartService.removeLabel = function (label) {
                 if (label) {
@@ -442,7 +455,6 @@ angular.module('transmartBaseUi').factory('ChartService',
              * Create the charts for each selected label
              * TODO: Leave the existing charts in place, and only add the new ones
              * TODO: Enable removing specific charts
-             * @private
              */
             chartService.createCohortChart = function (label, el) {
                 var _chart;
@@ -603,6 +615,7 @@ angular.module('transmartBaseUi').factory('ChartService',
 
             /**
              * Return active filters
+             * @memberof ChartService
              */
             chartService.getCohortFilters = function () {
                 var _filters = [];
@@ -624,6 +637,7 @@ angular.module('transmartBaseUi').factory('ChartService',
 
             /**
              * Update dimensions
+             * @memberof ChartService
              */
             chartService.updateDimensions = function () {
                 this.cs.selected = this.cs.cross.groupAll().value();
@@ -633,12 +647,9 @@ angular.module('transmartBaseUi').factory('ChartService',
             };
 
             /**
-             * @param chartName
-             *      - The chart name as the search word for the chart with tsLabel with the same string
-             * @returns {*} foundChart
-             *      - The found chart in ChartService.cs.charts, with matching name chartName
-             *      - If not found, return null
-             * @private
+             * @memberof ChartService
+             * @param {String} chartName - The chart name as the search word for the chart with tsLabel with the same string
+             * @returns {*} - The found chart in ChartService.cs.charts, with matching name chartName, if not found, return null
              */
             function _findChartByName(chartName) {
                 var foundChart = null;
@@ -652,9 +663,9 @@ angular.module('transmartBaseUi').factory('ChartService',
 
             /**
              * Give a chart instance (normally a pie chart), filter it based on an array of words
-             * @param chart - The chart instance in ChartService.cs.charts
-             * @param criteria - The filtering words that filter the chart
-             * @private
+             * @memberof ChartService
+             * @param {Object} chart - The chart instance in ChartService.cs.charts
+             * @param {Array} criteria - The filtering words that filter the chart
              */
             function _filterChart(chart, criteria) {
                 if(_.isString(criteria)) {
@@ -675,7 +686,8 @@ angular.module('transmartBaseUi').factory('ChartService',
             /**
              * Handle node drop from study-accordion to cohort-selection panel.
              * Remark: node.restObj.fullName is equivalent to chart.tsLabel.label
-             * @param node
+             * @memberof ChartService
+             * @param {Object} node
              */
             chartService.onNodeDrop = function (node) {
                 if (node.type === 'CATEGORICAL_OPTION') { //leaf node for pie chart
@@ -698,9 +710,9 @@ angular.module('transmartBaseUi').factory('ChartService',
 
             /**
              * Convert nodes to json
-             * @param nodes
+             * @memberof ChartService
+             * @param {Array} nodes
              * @returns {Array}
-             * @private
              */
             var _convertNodesToJSON = function (nodes) {
 
@@ -731,6 +743,7 @@ angular.module('transmartBaseUi').factory('ChartService',
 
             /**
              * Export json to file
+             * @memberof ChartService
              */
             chartService.exportToFile = function (endpoints, filters) {
 

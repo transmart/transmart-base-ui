@@ -1,5 +1,10 @@
 'use strict';
 
+/**
+ * @memberof transmartBaseUi
+ * @ngdoc controller
+ * @name FooterCtrl
+ */
 angular.module('transmartBaseUi')
     .controller('FooterCtrl', ['$scope', function ($scope) {
 

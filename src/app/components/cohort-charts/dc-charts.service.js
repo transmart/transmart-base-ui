@@ -1,11 +1,17 @@
 'use strict';
 
+/**
+ * @memberof transmartBaseUi
+ * @ngdoc factory
+ * @name DcChartsService
+ */
 angular.module('transmartBaseUi').factory('DcChartsService', [function () {
 
     var service = {};
 
     /**
      * Create dc.js bar chart
+     * @memberof DcChartsService
      * @param cDimension
      * @param cGroup
      * @param el
@@ -46,6 +52,7 @@ angular.module('transmartBaseUi').factory('DcChartsService', [function () {
 
     /**
      * Create dc.js box plot
+     * @memberof DcChartsService
      */
     service.getBoxPlot = function (cDimension, cGroup, el, opt) {
         opt = opt || {};
@@ -70,6 +77,7 @@ angular.module('transmartBaseUi').factory('DcChartsService', [function () {
 
     /**
      * Create dc.js pie chart
+     * @memberof DcChartsService
      * @param cDimension
      * @param cGroup
      * @param el
@@ -99,6 +107,7 @@ angular.module('transmartBaseUi').factory('DcChartsService', [function () {
 
     /**
      * Create dc.js Scatter Plot
+     * @memberof DcChartsService
      * @param cDimension
      * @param cGroup
      * @param el
@@ -130,6 +139,7 @@ angular.module('transmartBaseUi').factory('DcChartsService', [function () {
 
     /**
      * Create dc.js Heatmap
+     * @memberof DcChartsService
      * @param cDimension
      * @param cGroup
      * @param el
@@ -165,7 +175,8 @@ angular.module('transmartBaseUi').factory('DcChartsService', [function () {
 
     /**
      * Render all
-     * @param charts
+     * @memberof DcChartsService
+     * @param {Array} charts
      */
     service.renderAll = function (charts) {
         angular.forEach(charts, function (chart) {

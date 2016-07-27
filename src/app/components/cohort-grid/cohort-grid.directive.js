@@ -1,5 +1,10 @@
 'use strict';
 
+/**
+ * @memberof transmartBaseUi
+ * @ngdoc directive
+ * @name cohortGrid
+ */
 angular.module('transmartBaseUi')
     .directive('cohortGrid', function () {
         return {

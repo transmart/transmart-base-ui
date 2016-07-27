@@ -1,5 +1,10 @@
 'use strict';
 
+/**
+ * @memberof transmartBaseUi
+ * @ngdoc factory
+ * @name ResourceService
+ */
 angular.module('transmartBaseUi')
     .factory('ResourceService', function (Restangular, ResourceInterceptors) {
 

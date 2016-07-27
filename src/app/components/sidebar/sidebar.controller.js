@@ -1,5 +1,10 @@
 'use strict';
 
+/**
+ * @memberof transmartBaseUi
+ * @ngdoc controller
+ * @name SidebarCtrl
+ */
 angular.module('transmartBaseUi')
     .controller('SidebarCtrl', ['$scope', 'StudyListService', 'EndpointService',
         function ($scope, StudyListService, EndpointService) {
@@ -22,6 +27,7 @@ angular.module('transmartBaseUi')
 
             /**
              * Add search key, invoked when user press Enter key in search input box.
+             * @memberof SidebarCtrl
              */
             ws.addSearchKey = function () {
                 if (ws.searchKeys.indexOf(ws.searchTerm) < 0 && ws.searchTerm.trim() !== '') {
@@ -34,6 +40,7 @@ angular.module('transmartBaseUi')
 
             /**
              * Clear all search keys
+             * @memberof SidebarCtrl
              */
             ws.removeAllSearchKeys = function () {
                 ws.searchKeys = [];
@@ -42,6 +49,7 @@ angular.module('transmartBaseUi')
 
             /**
              * Remove a search key
+             * @memberof SidebarCtrl
              * @param searchKey
              */
             ws.removeSearchKey = function (searchKey) {
@@ -56,6 +64,7 @@ angular.module('transmartBaseUi')
 
             /**
              * Load studies from available endpoints
+             * @memberof SidebarCtrl
              */
             ws.loadStudies = function () {
                 var _endpoints = EndpointService.getEndpoints(); // get available endpoints

@@ -1,6 +1,11 @@
 'use strict';
 
 angular.module('transmartBaseUi')
+    /**
+     * @memberof transmartBaseUi
+     * @ngdoc directive
+     * @name studyAccordion
+     */
     .directive('studyAccordion', [function () {
         return {
             restrict: 'E',
@@ -13,6 +18,11 @@ angular.module('transmartBaseUi')
             controller: 'StudyAccordionCtrl as ctrl'
         };
     }])
+    /**
+     * @memberof transmartBaseUi
+     * @ngdoc controller
+     * @name StudyAccordionCtrl
+     */
     .controller('StudyAccordionCtrl', ['$scope', '$uibModal', 'UtilService', 'TreeNodeService', '$log',
         function ($scope, $uibModal, UtilService, TreeNodeService, $log) {
 
