@@ -85,7 +85,8 @@ describe('StudyListService', function () {
 
     /**
      * Super dummy studies only have id and type
-     * @type {*[]}
+     * {id: number, b: string, c: boolean}}
+     * @type {Array}
      */
     var dummyStudies = [
         {id: 1, type: 'public', hide: false},

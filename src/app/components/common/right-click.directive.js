@@ -1,5 +1,10 @@
 'use strict';
 
+/**
+ * @memberof transmartBaseUi
+ * @ngdoc directive
+ * @name baseUiRightClick
+ */
 angular.module('transmartBaseUi')
     .directive('baseUiRightClick', function ($parse) {
         return function (scope, element, attrs) {

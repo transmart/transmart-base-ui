@@ -1,7 +1,11 @@
 'use strict';
 
-/** Angular JSON2XML service based on json2xml function by Stefan Goessner.
+/**
+ * Angular JSON2XML service based on json2xml function by Stefan Goessner.
  *  http://goessner.net/download/prj/jsonxml/json2xml.js
+ * @memberof transmartBaseUi
+ * @ngdoc factory
+ * @name JSON2XMLService
  */
 angular.module('transmartBaseUi').factory('JSON2XMLService', [function () {
 

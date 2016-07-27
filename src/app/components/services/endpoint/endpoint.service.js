@@ -1,6 +1,11 @@
 'use strict';
 /*jshint camelcase: false */
 
+/**
+ * @memberof transmartBaseUi
+ * @ngdoc factory
+ * @name EndpointService
+ */
 angular.module('transmartBaseUi')
     .factory('EndpointService',
         ['$rootScope', '$http', '$q', 'ResourceService', '$cookies', '$window', '$location', 'masterEndpointConfig',
@@ -25,6 +30,7 @@ angular.module('transmartBaseUi')
                  * if we're currently being redirected from an authorization page,
                  * saving the credentials if we are or making sure we connect to a master
                  * endpoint if we aren't.
+                 * @memberof EndpointService
                  */
                 service.initializeEndpoints = function () {
                     service.retrieveStoredEndpoints(cookieKeyForEndpoints); // includes master endpoint
@@ -52,6 +58,7 @@ angular.module('transmartBaseUi')
 
                 /**
                  * Returns the current list of endpoints.
+                 * @memberof EndpointService
                  * @returns {Array}
                  */
                 service.getEndpoints = function () {
@@ -60,6 +67,7 @@ angular.module('transmartBaseUi')
 
                 /**
                  * Adds the endpoint to the list and saves it in the cookies.
+                 * @memberof EndpointService
                  * @param endpoint
                  */
                 service.addEndpoint = function (endpoint) {
@@ -72,6 +80,7 @@ angular.module('transmartBaseUi')
 
                 /**
                  * Removes the specified endpoint from the list and cookies.
+                 * @memberof EndpointService
                  * @param endpoint
                  */
                 service.removeEndpoint = function (endpoint) {
@@ -92,6 +101,7 @@ angular.module('transmartBaseUi')
 
                 /**
                  * Save authorized endpoint to cookies
+                 * @memberof EndpointService
                  * @param endpoint
                  */
                 service.saveEndpoint = function (endpoint) {
@@ -111,6 +121,7 @@ angular.module('transmartBaseUi')
                 /**
                  * Initializes the list of endpoints and the master endpoint
                  * with what's stored in the cookies.
+                 * @memberof EndpointService
                  */
                 service.retrieveStoredEndpoints = function (strCookieKey) {
                     var storedEndpoints = $cookies.getObject(strCookieKey) || [];
@@ -124,7 +135,9 @@ angular.module('transmartBaseUi')
                     return storedEndpoints;
                 };
 
-                /** Removes all stored endpoints, except for the master endpoint.
+                /**
+                 * Removes all stored endpoints, except for the master endpoint.
+                 * @memberof EndpointService
                  */
                 service.clearStoredEndpoints = function () {
                     $cookies.remove(cookieKeyForEndpoints);
@@ -136,6 +149,7 @@ angular.module('transmartBaseUi')
                 /**
                  * Save selected endpoint to cookie, so we know which endpoint we were
                  * connecting to when the page is reloaded.
+                 * @memberof EndpointService
                  * @param endpoint
                  */
                 service.saveSelectedEndpoint = function (endpoint) {
@@ -144,6 +158,7 @@ angular.module('transmartBaseUi')
 
                 /**
                  * Get the currently selected endpoint from the cookies.
+                 * @memberof EndpointService
                  * @returns {*}
                  */
                 service.getSelectedEndpoint = function () {
@@ -157,6 +172,7 @@ angular.module('transmartBaseUi')
                 /**
                  * Initializes the master endpoint with the one specified if it
                  * is not present yet.
+                 * @memberof EndpointService
                  * @param endpoint
                  */
                 service.initializeMasterEndpoint = function () {
@@ -168,6 +184,7 @@ angular.module('transmartBaseUi')
 
                 /**
                  * Returns the master endpoint.
+                 * @memberof EndpointService
                  * @returns {*}
                  */
                 service.getMasterEndpoint = function () {
@@ -177,6 +194,7 @@ angular.module('transmartBaseUi')
                 /**
                  * Stores the endpoint to cookies (for future reference) and
                  * navigates to the authorization page for the endpoint.
+                 * @memberof EndpointService
                  * @param endpoint
                  */
                 service.authorizeEndpoint = function (endpoint) {
@@ -187,6 +205,7 @@ angular.module('transmartBaseUi')
 
                 /**
                  * Return redirect URI
+                 * @memberof EndpointService
                  * @param port {string}
                  * @param host {string}
                  * @param protocol {string}
@@ -203,6 +222,7 @@ angular.module('transmartBaseUi')
 
                 /**
                  * Navigate to the endpoint's authorization page.
+                 * @memberof EndpointService
                  * @param endpoint
                  */
                 service.navigateToAuthorizationPage = function (endpoint) {
@@ -225,6 +245,7 @@ angular.module('transmartBaseUi')
 
                 /**
                  * Sets up a new restangular instance using the specified credentials.
+                 * @memberof EndpointService
                  * @param endpoint
                  * @param oauthGrantFragment
                  */
@@ -239,6 +260,7 @@ angular.module('transmartBaseUi')
 
                 /**
                  * Returns endpoint with merged credentials extracted from URI.
+                 * @memberof EndpointService
                  * @param endpoint
                  * @param strFragment
                  * @returns {*}
@@ -255,6 +277,7 @@ angular.module('transmartBaseUi')
 
                 /**
                  * Marks the endpoint as failing.
+                 * @memberof EndpointService
                  * @param endpoint
                  */
                 service.invalidateEndpoint = function (endpoint) {

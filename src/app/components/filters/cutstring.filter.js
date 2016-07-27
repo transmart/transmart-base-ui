@@ -1,5 +1,10 @@
 'use strict';
 
+/**
+ * @memberof transmartBaseUi
+ * @ngdoc filter
+ * @name cutstring
+ */
 angular.module('transmartBaseUi').filter('cutstring', function () {
     return function (value, wordwise, max, tail) {
         if (!value) {

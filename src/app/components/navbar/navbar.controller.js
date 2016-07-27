@@ -1,5 +1,10 @@
 'use strict';
 
+/**
+ * @memberof transmartBaseUi
+ * @ngdoc controller
+ * @name NavbarCtrl
+ */
 angular.module('transmartBaseUi')
     .controller('NavbarCtrl', ['$scope', 'EndpointService', 'ChartService', '$uibModal',
         function ($scope, EndpointService, ChartService) {

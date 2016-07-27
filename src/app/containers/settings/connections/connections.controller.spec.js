@@ -7,7 +7,7 @@ describe('ConnectionsCtrl', function () {
 
     /**
      * dummy endpoints
-     * @type {*[]}
+     * @type {Array}
      * @private
      */
     var _dummyEndpoints = [

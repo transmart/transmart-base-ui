@@ -1,5 +1,10 @@
 'use strict';
 
+/**
+ * @memberof transmartBaseUi
+ * @ngdoc factory
+ * @name GridsterService
+ */
 angular.module('transmartBaseUi').factory('GridsterService', ['$q', function ($q) {
 
     var service = {
