@@ -4,7 +4,7 @@ describe('Unit testing for HomeCtrl', function () {
 
     beforeEach(module('transmartBaseUi'));
 
-    var $scope, $rootScope, controller, CreateTarget;
+    var $scope, ctrl, $rootScope, controller;
 
     beforeEach(function () {
         inject(function ($injector) {
@@ -13,18 +13,15 @@ describe('Unit testing for HomeCtrl', function () {
 
             var $controller = $injector.get('$controller');
 
-            CreateTarget = function () {
-                $controller('HomeCtrl', {$scope: $scope});
-            };
+            ctrl = $controller('HomeCtrl', {$scope: $scope});
         });
     });
 
     describe('test cases', function () {
 
         it('should define tutorial', function () {
-            controller = new CreateTarget();
             $rootScope.$broadcast('howManyStudiesLoaded', true);
-            expect($scope.tutorial).toBeDefined();
+            expect(ctrl.tutorial).toBeDefined();
         });
 
     });
