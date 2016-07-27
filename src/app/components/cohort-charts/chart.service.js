@@ -66,7 +66,7 @@ angular.module('transmartBaseUi').factory('ChartService',
                     }
                 });
                 chartService.cs.labels.push(_combinationLabel);
-                $rootScope.$broadcast('prepareChartContainers', this.cs.labels);
+                $rootScope.$broadcast('prepareChartContainers', chartService.cs.labels);
             };
 
             var _groupingChart = {};
