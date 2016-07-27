@@ -1,5 +1,11 @@
 'use strict';
 
+/**
+ * @memberof transmartBaseUi
+ * @ngdoc directive
+ * @name tsCohortChart
+ * @description handles cohort chart creation and user-interaction
+ */
 angular.module('transmartBaseUi')
     .directive('tsCohortChart', ['ChartService', function (ChartService) {
 
@@ -59,6 +65,7 @@ angular.module('transmartBaseUi')
 
                 /**
                  * Group charts
+                 * @memberof tsCohortChart
                  */
                 scope.groupAction = function () {
                     scope.groupOn = true;

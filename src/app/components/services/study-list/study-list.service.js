@@ -1,5 +1,10 @@
 'use strict';
 
+/**
+ * @memberof transmartBaseUi
+ * @ngdoc factory
+ * @name StudyListService
+ */
 angular.module('transmartBaseUi').factory('StudyListService', ['$q', function ($q) {
 
     var service = {
@@ -12,6 +17,7 @@ angular.module('transmartBaseUi').factory('StudyListService', ['$q', function ($
 
     /**
      * Show all studies
+     * @memberof StudyListService
      */
     service.showAll = function () {
         _.forEach(this.studyList, function (s) {
@@ -21,6 +27,7 @@ angular.module('transmartBaseUi').factory('StudyListService', ['$q', function ($
 
     /**
      * Get all studies
+     * @memberof StudyListService
      * @returns {Array}
      */
     service.getAll = function () {
@@ -70,6 +77,7 @@ angular.module('transmartBaseUi').factory('StudyListService', ['$q', function ($
 
     /**
      * Remove study(s) by endpoint
+     * @memberof StudyListService
      * @param endpoint
      */
     service.removeStudiesByEndpoint = function (endpoint) {
@@ -84,6 +92,7 @@ angular.module('transmartBaseUi').factory('StudyListService', ['$q', function ($
     /**
      * Get list of searching targets in a study object. By default it should be only ontology object.
      * When ontology object contains metadata, it should include metadata object as searching target.
+     * @memberof StudyListService
      * @param study - study
      * @returns {Array} - list of searching targets
      */
@@ -98,6 +107,7 @@ angular.module('transmartBaseUi').factory('StudyListService', ['$q', function ($
 
     /**
      * Check if any search keywords are matched with searching target object's values.
+     * @memberof StudyListService
      * @param obj - searching target object
      * @param searchKeywords - list of search keywords
      */
@@ -147,6 +157,7 @@ angular.module('transmartBaseUi').factory('StudyListService', ['$q', function ($
     /**
      * Find the argumented string in one of the keywords
      * and return the index of first matched keyword element.
+     * @memberof StudyListService
      * @param str - String to be searched for
      * @param keywords - Array of keywords to search in
      * @returns index {number}
@@ -158,6 +169,7 @@ angular.module('transmartBaseUi').factory('StudyListService', ['$q', function ($
     };
     /**
      * Filter studies by search keywords
+     * @memberof StudyListService
      * @param searchKeywords
      * @returns {Array} - studies which contains search keywords
      */

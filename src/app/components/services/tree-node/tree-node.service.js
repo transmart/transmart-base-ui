@@ -1,5 +1,10 @@
 'use strict';
 
+/**
+ * @memberof transmartBaseUi
+ * @ngdoc factory
+ * @name TreeNodeService
+ */
 angular.module('transmartBaseUi').factory('TreeNodeService', ['$q', function ($q) {
 
     var service = {};
@@ -17,6 +22,7 @@ angular.module('transmartBaseUi').factory('TreeNodeService', ['$q', function ($q
 
     /**
      *  TODO: Need rest call refactoring. This is not the most efficient way to count subjects in a node.
+     * @memberof TreeNodeService
      * @param newNode
      * @returns {*}
      */
@@ -32,7 +38,7 @@ angular.module('transmartBaseUi').factory('TreeNodeService', ['$q', function ($q
     };
 
     /**
-     *
+     * @memberof TreeNodeService
      * @param node
      * @param link
      * @param prefix

@@ -1,5 +1,10 @@
 'use strict';
 
+/**
+ * @memberof transmartBaseUi
+ * @ngdoc factory
+ * @name CohortGridService
+ */
 angular.module('transmartBaseUi').factory('CohortGridService', ['$timeout', function ($timeout) {
 
     var service = {
@@ -24,6 +29,7 @@ angular.module('transmartBaseUi').factory('CohortGridService', ['$timeout', func
 
     /**
      * Generate grid columns
+     * @memberof CohortGridService
      * @param rawHeaders
      * @returns {Array}
      */
@@ -40,6 +46,7 @@ angular.module('transmartBaseUi').factory('CohortGridService', ['$timeout', func
 
     /**
      * Format data and labels for the gridview's data
+     * @memberof CohortGridService
      * @param subjects
      * @param headers
      * @returns {Array}

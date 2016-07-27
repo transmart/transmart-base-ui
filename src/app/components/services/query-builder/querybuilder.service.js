@@ -1,11 +1,17 @@
 'use strict';
 
+/**
+ * @memberof transmartBaseUi
+ * @ngdoc factory
+ * @name QueryBuilderService
+ */
 angular.module('transmartBaseUi').factory('QueryBuilderService', ['JSON2XMLService', function (JSON2XMLService) {
 
     var service = {};
 
     /**
      * Converts the selections in the cohort filters to i2b2 query xml.
+     * @memberof QueryBuilderService
      * @param cohortFilters
      * @param name
      * @returns {*}
@@ -23,6 +29,7 @@ angular.module('transmartBaseUi').factory('QueryBuilderService', ['JSON2XMLServi
     /**
      * Converts the selections in the cohort filters to an array of panel
      * object structures that translate directly to the i2b2 query xml format.
+     * @memberof QueryBuilderService
      * @param cohortFilters
      * @returns {Array}
      */
@@ -72,6 +79,7 @@ angular.module('transmartBaseUi').factory('QueryBuilderService', ['JSON2XMLServi
      * Generate a list of panel items that will be OR-ed in the query, based
      * on the selected numeric ranges. In practice only one range will be selected,
      * but multiple are supported.
+     * @memberof QueryBuilderService
      * @param cohortFilter
      * @returns {Array}
      */
@@ -94,6 +102,7 @@ angular.module('transmartBaseUi').factory('QueryBuilderService', ['JSON2XMLServi
     /**
      * Generate a list of panel items that will be OR-ed in the query, based
      * on the selected filters for the categories.
+     * @memberof QueryBuilderService
      * @param cohortFilter
      * @returns {Array}
      */
@@ -107,6 +116,7 @@ angular.module('transmartBaseUi').factory('QueryBuilderService', ['JSON2XMLServi
 
     /**
      * Generate a value constraint for numeric ranges.
+     * @memberof QueryBuilderService
      * @param value1
      * @param value2
      * @returns {{value_operator: string, value_constraint: string, value_type: string}}
@@ -122,6 +132,7 @@ angular.module('transmartBaseUi').factory('QueryBuilderService', ['JSON2XMLServi
     /**
      * Generate a separate panel item for the specified concept. The type is
      * used to generate the prefix.
+     * @memberof QueryBuilderService
      * @param key
      * @param name
      * @param studyType
@@ -138,6 +149,7 @@ angular.module('transmartBaseUi').factory('QueryBuilderService', ['JSON2XMLServi
 
     /**
      * Returns the study prefix (Public Studies / Private Studies) based on the study type.
+     * @memberof QueryBuilderService
      * @param studyType
      * @returns {*}
      */

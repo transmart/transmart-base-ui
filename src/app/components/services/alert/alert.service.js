@@ -1,5 +1,10 @@
 'use strict';
 
+/**
+ * @memberof transmartBaseUi
+ * @ngdoc factory
+ * @name AlertService
+ */
 angular.module('transmartBaseUi').factory('AlertService', ['$interval', function ($interval) {
     var service = {};
     var alerts = [];
