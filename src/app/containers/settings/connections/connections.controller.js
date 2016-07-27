@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('transmartBaseUi')
-    .controller('ConnectionsCtrl', ['$scope', '$location', 'EndpointService', 'StudyListService', 'AlertService',
-        function ($scope, $location, EndpointService, StudyListService, AlertService) {
+    .controller('ConnectionsCtrl', ['$location', 'EndpointService', 'StudyListService', 'AlertService',
+        function ($location, EndpointService, StudyListService, AlertService) {
 
             var sc = this;
 
