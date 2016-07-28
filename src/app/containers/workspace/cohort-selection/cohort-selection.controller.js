@@ -7,7 +7,7 @@ angular.module('transmartBaseUi')
             function ($scope, ChartService, AlertService, $stateParams, $log,
                       $state, StudyListService, GridsterService, $uibModal) {
 
-                var wcs = this;
+                var vm = this;
 
                 // Initialize the chart service only if uninitialized
                 if (!ChartService.cs.isInitialized) {
@@ -15,14 +15,14 @@ angular.module('transmartBaseUi')
                 }
 
                 // Alerts
-                wcs.close = AlertService.remove;
-                wcs.alerts = AlertService.get();
+                vm.close = AlertService.remove;
+                vm.alerts = AlertService.get();
 
                 // Gridster
-                wcs.gridsterOpts = GridsterService.options;
+                vm.gridsterOpts = GridsterService.options;
 
                 // Charts
-                wcs.cs = ChartService.cs;
+                vm.cs = ChartService.cs;
 
                 $scope.$watchCollection(function () {
                     return ChartService.cs.labels;
@@ -33,7 +33,7 @@ angular.module('transmartBaseUi')
                 });
 
                 // Tabs
-                wcs.tabs = [
+                vm.tabs = [
                     {title: 'Cohort Selection', active: true},
                     {title: 'Cohort Grid', active: false}
                 ];
@@ -43,8 +43,8 @@ angular.module('transmartBaseUi')
                  * @param tabTitle
                  * @param tabAction
                  */
-                wcs.activateTab = function (tabTitle, tabAction) {
-                    wcs.tabs.forEach(function (tab) {
+                vm.activateTab = function (tabTitle, tabAction) {
+                    vm.tabs.forEach(function (tab) {
                         tab.active = tab.title === tabTitle;
                     });
                     $state.go('workspace', {action: tabAction});
@@ -52,21 +52,21 @@ angular.module('transmartBaseUi')
 
                 if ($stateParams !== undefined) {
                     if ($stateParams.action === 'cohortGrid') {
-                        wcs.activateTab(wcs.tabs[1].title, 'cohortGrid');
+                        vm.activateTab(vm.tabs[1].title, 'cohortGrid');
                     } else {
-                        wcs.activateTab(wcs.tabs[0].title, 'cohortSelection');
+                        vm.activateTab(vm.tabs[0].title, 'cohortSelection');
                     }
                 }
 
                 // Every selected concept is represented by a label
-                wcs.cohortChartContainerLabels = GridsterService.cohortChartContainerLabels;
+                vm.cohortChartContainerLabels = GridsterService.cohortChartContainerLabels;
 
                 // Watch labels container
                 $scope.$watch(function () {
                     return GridsterService.cohortChartContainerLabels;
                 }, function (newVal, oldVal) {
                     if (!_.isEqual(newVal, oldVal)) {
-                        wcs.cohortChartContainerLabels = newVal;
+                        vm.cohortChartContainerLabels = newVal;
                     }
                 });
 
@@ -77,21 +77,21 @@ angular.module('transmartBaseUi')
                  * @param labels Corresponding to selected concepts
                  */
                 $scope.$on('prepareChartContainers', function (event, labels) {
-                    wcs.cohortChartContainerLabels = GridsterService.resize('#main-chart-container', labels, false);
+                    vm.cohortChartContainerLabels = GridsterService.resize('#main-chart-container', labels, false);
                 });
 
                 /**
                  * Removes a label and thus a concept form the selection
                  * @param label Corresponding to concept to be removed
                  */
-                wcs.removeLabel = function (label) {
+                vm.removeLabel = function (label) {
                     ChartService.removeLabel(label);
                 };
 
                 /**
                  * Remove all the concepts from the cohort selection
                  */
-                wcs.resetActiveLabels = function () {
+                vm.resetActiveLabels = function () {
                     ChartService.reset();
                     ChartService.updateDimensions();
                 };
@@ -102,7 +102,7 @@ angular.module('transmartBaseUi')
                  * @param info
                  * @param node Dropped node from the study tree
                  */
-                wcs.onNodeDropEvent = function (event, info, node) {
+                vm.onNodeDropEvent = function (event, info, node) {
                     ChartService.onNodeDrop(node);
                 };
 
@@ -110,7 +110,7 @@ angular.module('transmartBaseUi')
                  * Saves the cohort by asking for a name, saving it to the backend
                  * and showing the resulting id
                  */
-                wcs.openSaveCohortModal = function () {
+                vm.openSaveCohortModal = function () {
                     $uibModal.open({
                         templateUrl: 'app/components/save-cohort/save-cohort-dialog.tpl.html',
                         controller: 'SaveCohortDialogCtrl',

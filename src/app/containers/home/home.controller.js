@@ -2,9 +2,9 @@
 
 angular.module('transmartBaseUi')
     .controller('HomeCtrl', ['$scope', 'StudyListService', function ($scope, StudyListService) {
-        var hc = this;
+        var vm = this;
 
-        hc.tutorial = {
+        vm.tutorial = {
             openStep1: true,
             disableStep1: false,
             openStep2: false
@@ -12,16 +12,16 @@ angular.module('transmartBaseUi')
 
         var init = function () {
             if (StudyListService.getAll().length > 0) {
-                hc.tutorial.openStep1 = false;
-                hc.tutorial.disableStep1 = true;
-                hc.tutorial.openStep2 = true;
+                vm.tutorial.openStep1 = false;
+                vm.tutorial.disableStep1 = true;
+                vm.tutorial.openStep2 = true;
             }
         };
 
         $scope.$on('howManyStudiesLoaded', function (e, val) {
             if (val !== undefined) {
-                hc.tutorial.openStep1 = !val;
-                hc.tutorial.openStep2 = val;
+                vm.tutorial.openStep1 = !val;
+                vm.tutorial.openStep2 = val;
             }
         });
 

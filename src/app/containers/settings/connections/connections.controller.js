@@ -4,20 +4,20 @@ angular.module('transmartBaseUi')
     .controller('ConnectionsCtrl', ['$location', 'EndpointService', 'StudyListService', 'AlertService',
         function ($location, EndpointService, StudyListService, AlertService) {
 
-            var sc = this;
+            var vm = this;
 
             // alerts
-            sc.close = AlertService.remove;
-            sc.alerts = AlertService.get();
+            vm.close = AlertService.remove;
+            vm.alerts = AlertService.get();
 
             // form data obj
-            sc.formData = {};
+            vm.formData = {};
 
             // get list of stored endpoints (if any)
-            sc.endpoints = EndpointService.getEndpoints();
+            vm.endpoints = EndpointService.getEndpoints();
 
             // Predefined endpoints
-            sc.connections = [
+            vm.connections = [
                 {title: 'transmart-gb', url: 'http://transmart-gb.thehyve.net/transmart', isOAuth: true},
                 {
                     title: 'transmart-test-translocation',
@@ -26,53 +26,53 @@ angular.module('transmartBaseUi')
                 }
             ];
 
-            sc.selectedConnection = {};
+            vm.selectedConnection = {};
 
             /**
              * Empty endpoints
              */
-            sc.clearSavedEndpoints = function () {
+            vm.clearSavedEndpoints = function () {
                 EndpointService.clearStoredEndpoints();
-                sc.endpoints = EndpointService.getEndpoints();
-                sc.publicStudies = StudyListService.getPublicStudies();
-                sc.privateStudies = StudyListService.getPrivateStudies();
+                vm.endpoints = EndpointService.getEndpoints();
+                vm.publicStudies = StudyListService.getPublicStudies();
+                vm.privateStudies = StudyListService.getPrivateStudies();
             };
 
             /**
              * Navigate to authorization page
              */
-            sc.navigateToAuthorizationPage = function () {
+            vm.navigateToAuthorizationPage = function () {
                 // check selected connection
-                var isSelected = _.filter(EndpointService.getEndpoints(), {url: sc.selectedConnection.url});
+                var isSelected = _.filter(EndpointService.getEndpoints(), {url: vm.selectedConnection.url});
 
                 if (isSelected.length > 0) {
-                    AlertService.add('warning', 'You are already connected to ' + sc.selectedConnection.url);
+                    AlertService.add('warning', 'You are already connected to ' + vm.selectedConnection.url);
                     return false;
                 }
 
-                EndpointService.authorizeEndpoint(sc.selectedConnection);
+                EndpointService.authorizeEndpoint(vm.selectedConnection);
             };
 
             /**
              * Populate selected endpoint
              */
-            sc.populateDefaultApi = function () {
-                sc.formData.title = sc.selectedConnection.label;
-                sc.formData.url = sc.selectedConnection.url;
-                sc.formData.requestToken = '';
+            vm.populateDefaultApi = function () {
+                vm.formData.title = vm.selectedConnection.label;
+                vm.formData.url = vm.selectedConnection.url;
+                vm.formData.requestToken = '';
             };
 
             /**
              * Remove an endpoint
              * @param endpoint
              */
-            sc.removeEndpoint = function (endpoint) {
+            vm.removeEndpoint = function (endpoint) {
                 EndpointService.removeEndpoint(endpoint);
 
                 // delete study that has associated endpoint
                 StudyListService.removeStudiesByEndpoint(endpoint);
-                sc.publicStudies = StudyListService.getPublicStudies();
-                sc.privateStudies = StudyListService.getPrivateStudies();
+                vm.publicStudies = StudyListService.getPublicStudies();
+                vm.privateStudies = StudyListService.getPrivateStudies();
             };
 
             /**
@@ -80,7 +80,7 @@ angular.module('transmartBaseUi')
              * @param endpoint
              * @returns {string}
              */
-            sc.getStatusIcon = function (endpoint) {
+            vm.getStatusIcon = function (endpoint) {
                 var glyphicon = 'glyphicon glyphicon-ban-circle';
                 if (endpoint.status === 'active') {
                     glyphicon = 'glyphicon-ok text-success';
