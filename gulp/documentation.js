@@ -2,7 +2,31 @@
 
 var gulp = require('gulp');
 var shell = require('gulp-shell');
-gulp.task('docs', shell.task([
+var isThere = require("is-there");
+var mkdirp = require('mkdirp');
+var gutil = require('gulp-util');
+
+gulp.task('prepareDocDirectories', function () {
+    var docsDir = 'dist/docs';
+    var tutorialsDir = 'dist/docs/tutorials';
+
+    if(!isThere(docsDir)) {
+        mkdirp(docsDir, function (err) {
+            if (err) console.error(err)
+            else gutil.log('Create directory ' + docsDir + '...');
+        });
+    }
+
+    if(!isThere(tutorialsDir)) {
+        mkdirp(tutorialsDir, function (err) {
+            if (err) console.error(err)
+            else gutil.log('Create directory ' + tutorialsDir + '...');
+        });
+    }
+
+});
+
+gulp.task('docs', ['prepareDocDirectories'], shell.task([
     'node_modules/jsdoc/jsdoc.js '+
     '-c node_modules/angular-jsdoc/common/conf.json '+   // config file
     '-t node_modules/angular-jsdoc/angular-template '+   // template file

@@ -2,7 +2,9 @@
   "name": "transmartBaseUi",
   "version": "0.0.0",
   "dependencies": {
-    "fs": "0.0.2"
+    "fs": "0.0.2",
+    "is-there": "^4.3.3",
+    "mkdirp": "^0.5.1"
   },
   "scripts": {
     "test": "gulp test",
