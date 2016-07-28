@@ -8,7 +8,7 @@ var gutil = require('gulp-util');
 
 gulp.task('prepareDocDirectories', function () {
     var docsDir = 'dist/docs';
-    var tutorialsDir = 'dist/docs/tutorials';
+    var tutorialsDir = docsDir + '/tutorials';
 
     if(!isThere(docsDir)) {
         mkdirp(docsDir, function (err) {
