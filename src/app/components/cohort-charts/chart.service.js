@@ -118,9 +118,9 @@ angular.module('transmartBaseUi').factory('ChartService',
                     return d.labels;
                 });
 
-                chartService.cs.isInitialized = true;
+                this.cs.isInitialized = true;
 
-                $rootScope.$broadcast('prepareChartContainers', chartService.cs.labels);
+                $rootScope.$broadcast('prepareChartContainers', this.cs.labels);
             };
 
             var _getType = function (value) {
@@ -260,7 +260,6 @@ angular.module('transmartBaseUi').factory('ChartService',
                     chartService.updateDimensions();
 
                     _deferred.resolve();
-
                 }, function (err) {
                     _deferred.reject('Cannot get data from the end-point.' + err);
                 });
@@ -358,7 +357,7 @@ angular.module('transmartBaseUi').factory('ChartService',
                     // Remove data in crossfilter if no more label is selected
                     if (this.cs.labels.length < 1) {
                         // Removes all records that match the current filter
-                        chartService.cs.cross.remove();
+                        this.cs.cross.remove();
                     }
 
                     // Update charts
@@ -636,7 +635,6 @@ angular.module('transmartBaseUi').factory('ChartService',
                 return _filters;
             };
 
-
             /**
              * Update dimensions
              * @memberof ChartService
@@ -647,7 +645,6 @@ angular.module('transmartBaseUi').factory('ChartService',
                 this.cs.subjects = this.cs.mainDim.top(Infinity);
                 this.cs.cohortLabels = this.cs.labels;
             };
-
 
             /**
              * @memberof ChartService

@@ -9,30 +9,32 @@ angular.module('transmartBaseUi')
     .controller('SidebarCtrl', ['$scope', 'StudyListService', 'EndpointService',
         function ($scope, StudyListService, EndpointService) {
 
-            $scope.publicStudies = [];
-            $scope.privateStudies = [];
+            var vm = this;
 
-            $scope.searchTerm = '';
-            // Default to false (OR)
-            $scope.searchMode = false;
-            $scope.operator = 'OR';
-            $scope.searchKeys = [];
+            vm.publicStudies = [];
+            vm.privateStudies = [];
+
+            vm.searchTerm = '';
+            // Default to false (OR) for toggle switch
+            vm.searchMode = false;
+            vm.operator = 'OR';
+            vm.searchKeys = [];
 
             $scope.$watch('searchMode', function (newVal) {
-                $scope.operator = newVal ? 'AND' : 'OR';
-                StudyListService.showStudiesByKeys($scope.searchKeys, $scope.operator);
+                vm.operator = newVal ? 'AND' : 'OR';
+                StudyListService.showStudiesByKeys(vm.searchKeys, vm.operator);
             });
 
             /**
              * Add search key, invoked when user press Enter key in search input box.
              * @memberof SidebarCtrl
              */
-            $scope.addSearchKey = function () {
-                if ($scope.searchKeys.indexOf($scope.searchTerm) < 0 && $scope.searchTerm.trim() !== '') {
-                    $scope.searchKeys.push($scope.searchTerm);
-                    $scope.searchTerm = '';
+            vm.addSearchKey = function () {
+                if (vm.searchKeys.indexOf(vm.searchTerm) < 0 && vm.searchTerm.trim() !== '') {
+                    vm.searchKeys.push(vm.searchTerm);
+                    vm.searchTerm = '';
                     // search metadata
-                    StudyListService.showStudiesByKeys($scope.searchKeys, $scope.operator);
+                    StudyListService.showStudiesByKeys(vm.searchKeys, vm.operator);
                 }
             };
 
@@ -40,8 +42,8 @@ angular.module('transmartBaseUi')
              * Clear all search keys
              * @memberof SidebarCtrl
              */
-            $scope.removeAllSearchKeys = function () {
-                $scope.searchKeys = [];
+            vm.removeAllSearchKeys = function () {
+                vm.searchKeys = [];
                 StudyListService.showAll();
             };
 
@@ -50,37 +52,34 @@ angular.module('transmartBaseUi')
              * @memberof SidebarCtrl
              * @param searchKey
              */
-            $scope.removeSearchKey = function (searchKey) {
-                var idx = $scope.searchKeys.indexOf(searchKey);
+            vm.removeSearchKey = function (searchKey) {
+                var idx = vm.searchKeys.indexOf(searchKey);
                 if (idx > -1) {
-                    $scope.searchKeys.splice(idx, 1);
+                    vm.searchKeys.splice(idx, 1);
                 }
                 // Re-display studies of remaining matched search keywords or show all studies when there's no search keys left
-                $scope.searchKeys.length > 0 ?
-                    StudyListService.showStudiesByKeys($scope.searchKeys, $scope.operator) : StudyListService.showAll();
+                vm.searchKeys.length > 0 ?
+                    StudyListService.showStudiesByKeys(vm.searchKeys, vm.operator) : StudyListService.showAll();
             };
 
             /**
              * Load studies from available endpoints
              * @memberof SidebarCtrl
              */
-            $scope.loadStudies = function () {
-
+            vm.loadStudies = function () {
                 var _endpoints = EndpointService.getEndpoints(); // get available endpoints
 
                 _.each(_endpoints, function (endpoint) {
                     StudyListService.loadStudyList(endpoint).then(function (result) {
-                        $scope.publicStudies = StudyListService.getPublicStudies();
-                        $scope.privateStudies = StudyListService.getPrivateStudies();
+                        vm.publicStudies = StudyListService.getPublicStudies();
+                        vm.privateStudies = StudyListService.getPrivateStudies();
                     }, function () {
                         EndpointService.invalidateEndpoint(endpoint);
                     });
                 });
             };
 
-            $scope.loadStudies();
-
-
+            vm.loadStudies();
         }])
     .directive('buEnterKey', function () {
         return {

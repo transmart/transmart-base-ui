@@ -4,7 +4,7 @@ describe('SidebarCtrl', function () {
 
     beforeEach(module('transmartBaseUi'));
 
-    var $controller, scope, rootScope, StudyListService;
+    var ctrl, scope, rootScope, StudyListService;
     var dummyStudies = [
         {
             "hide": false,
@@ -133,7 +133,7 @@ describe('SidebarCtrl', function () {
         StudyListService = _StudyListService_;
         scope = _$rootScope_.$new();
         rootScope = _$rootScope_;
-        $controller = _$controller_('SidebarCtrl', {
+        ctrl = _$controller_('SidebarCtrl', {
             $scope: scope,
             $rootScope: rootScope
         });
@@ -141,12 +141,12 @@ describe('SidebarCtrl', function () {
     }));
 
     it('is should be defined', function () {
-        expect($controller).not.toEqual(undefined);
+        expect(ctrl).not.toEqual(undefined);
     });
 
     it('should start with no studies loaded', function () {
-        expect(scope.publicStudies.length).toEqual(0);
-        expect(scope.privateStudies.length).toEqual(0);
+        expect(ctrl.publicStudies.length).toEqual(0);
+        expect(ctrl.privateStudies.length).toEqual(0);
     });
 
     describe('addSearchKey', function () {
@@ -159,58 +159,58 @@ describe('SidebarCtrl', function () {
         });
 
         it('should add search key into searchKeys list and hide unmatched studies', function () {
-            scope.searchTerm = 'ss';
-            scope.searchKeys = [];
-            scope.addSearchKey();
-            expect(scope.searchKeys.length).toEqual(1);
-            expect(scope.searchTerm).toEqual('');
+            ctrl.searchTerm = 'ss';
+            ctrl.searchKeys = [];
+            ctrl.addSearchKey();
+            expect(ctrl.searchKeys.length).toEqual(1);
+            expect(ctrl.searchTerm).toEqual('');
             expect(StudyListService.studyList[0].hide).toBe(true);
         });
 
         it('should add case insensitive search key into searchKeys list and show matched studies', function () {
-            scope.searchTerm = 'app';
-            scope.searchKeys = [];
-            scope.addSearchKey();
-            expect(scope.searchKeys.length).toEqual(1);
-            expect(scope.searchTerm).toEqual('');
+            ctrl.searchTerm = 'app';
+            ctrl.searchKeys = [];
+            ctrl.addSearchKey();
+            expect(ctrl.searchKeys.length).toEqual(1);
+            expect(ctrl.searchTerm).toEqual('');
             expect(StudyListService.studyList[0].hide).toBe(false);
         });
 
         it('should not add search key into searchKeys list if search key is empty and show all studies', function () {
-            scope.searchTerm = '';
-            scope.searchKeys = [];
-            scope.addSearchKey();
-            expect(scope.searchKeys.length).toEqual(0);
+            ctrl.searchTerm = '';
+            ctrl.searchKeys = [];
+            ctrl.addSearchKey();
+            expect(ctrl.searchKeys.length).toEqual(0);
             expect(StudyListService.studyList[0].hide).toBe(false);
         });
 
         it('should not add search key into searchKeys list if search key already exists', function () {
-            scope.searchTerm = 'a';
-            scope.searchKeys = ['a'];
-            scope.addSearchKey();
-            expect(scope.searchKeys.length).toEqual(1);
+            ctrl.searchTerm = 'a';
+            ctrl.searchKeys = ['a'];
+            ctrl.addSearchKey();
+            expect(ctrl.searchKeys.length).toEqual(1);
         });
 
         it('should by default perform a OR-based search between two terms and show matched studies', function () {
-            scope.searchKeys = ['av'];
-            scope.searchTerm = 'GSE';
-            scope.addSearchKey();
+            ctrl.searchKeys = ['av'];
+            ctrl.searchTerm = 'GSE';
+            ctrl.addSearchKey();
 
-            expect(scope.searchKeys.length).toEqual(2);
-            expect(scope.operator).toEqual('OR');
+            expect(ctrl.searchKeys.length).toEqual(2);
+            expect(ctrl.operator).toEqual('OR');
             expect(StudyListService.studyList[0].hide).toBe(false);
             expect(StudyListService.studyList[1].hide).toBe(false);
             expect(StudyListService.studyList[2].hide).toBe(false);
         });
 
         it('should by perform a AND-based search between two terms and show matched studies', function () {
-            scope.searchKeys = ['av'];
-            scope.searchTerm = 'GSE';
-            scope.operator = 'AND';
-            scope.addSearchKey();
+            ctrl.searchKeys = ['av'];
+            ctrl.searchTerm = 'GSE';
+            ctrl.operator = 'AND';
+            ctrl.addSearchKey();
 
-            expect(scope.searchKeys.length).toEqual(2);
-            expect(scope.operator).toEqual('AND');
+            expect(ctrl.searchKeys.length).toEqual(2);
+            expect(ctrl.operator).toEqual('AND');
             expect(StudyListService.studyList[0].hide).toBe(true);
             expect(StudyListService.studyList[1].hide).toBe(true);
             expect(StudyListService.studyList[2].hide).toBe(true);
@@ -227,9 +227,9 @@ describe('SidebarCtrl', function () {
         });
 
         it('should remove all search keys and display all studies', function () {
-            scope.searchKeys = ['GSE', 'APP', 'XXX'];
-            scope.removeAllSearchKeys();
-            expect(scope.searchKeys.length).toEqual(0);
+            ctrl.searchKeys = ['GSE', 'APP', 'XXX'];
+            ctrl.removeAllSearchKeys();
+            expect(ctrl.searchKeys.length).toEqual(0);
             expect(StudyListService.studyList[0].hide).toBe(false);
             expect(StudyListService.studyList[1].hide).toBe(false);
             expect(StudyListService.studyList[2].hide).toBe(false);
@@ -246,12 +246,12 @@ describe('SidebarCtrl', function () {
         });
 
         it('should remove a search key', function () {
-            scope.searchKeys = ['GSE', 'DDD', 'XXX'];
-            scope.addSearchKey();
+            ctrl.searchKeys = ['GSE', 'DDD', 'XXX'];
+            ctrl.addSearchKey();
             expect(StudyListService.studyList[0].hide).toBe(false);
             expect(StudyListService.studyList[1].hide).toBe(false);
-            scope.removeSearchKey('GSE');
-            expect(scope.searchKeys.length).toEqual(2);
+            ctrl.removeSearchKey('GSE');
+            expect(ctrl.searchKeys.length).toEqual(2);
             expect(StudyListService.studyList[0].hide).toBe(true);
             expect(StudyListService.studyList[1].hide).toBe(true);
         });
@@ -262,12 +262,12 @@ describe('SidebarCtrl', function () {
                 s.hide = false;
             });
 
-            scope.searchKeys = ['GSE'];
-            scope.addSearchKey();
+            ctrl.searchKeys = ['GSE'];
+            ctrl.addSearchKey();
             expect(StudyListService.studyList[0].hide).toBe(false);
             expect(StudyListService.studyList[1].hide).toBe(false);
-            scope.removeSearchKey('GSE');
-            expect(scope.searchKeys.length).toEqual(0);
+            ctrl.removeSearchKey('GSE');
+            expect(ctrl.searchKeys.length).toEqual(0);
             expect(StudyListService.studyList[0].hide).toBe(false);
             expect(StudyListService.studyList[1].hide).toBe(false);
         });

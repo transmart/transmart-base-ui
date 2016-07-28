@@ -2,9 +2,26 @@
     margin-bottom: 15px;
 }
 
+.ts-study-title-container {
+    display: inline-block;
+    width: 65%;
+}
+
+@font-size: 12px;
+@line-height: 1.4;
+@lines-to-show: 1;
+
 .ts-study-title {
-    font-size: 12px;
-    width: 75%;
+    font-size: @font-size;
+    display: block; /* Fallback for non-webkit */
+    display: -webkit-box;
+    height: @font-size*@line-height*@lines-to-show; /* Fallback for non-webkit */
+    line-height: @line-height;
+    -webkit-line-clamp: @lines-to-show;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    word-break: break-all;
+    text-overflow: ellipsis;
 }
 
 .ts-remove-chart {

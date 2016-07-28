@@ -16,7 +16,7 @@ describe('FooterCtrl', function () {
         it('expects version to be defined.', function () {
             $scope = {};
             controller = $controller('FooterCtrl', {$scope: $scope});
-            expect($scope.version).toBeDefined();
+            expect(controller.version).toBeDefined();
         });
 
     });

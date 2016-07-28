@@ -6,8 +6,9 @@
  * @name FooterCtrl
  */
 angular.module('transmartBaseUi')
-    .controller('FooterCtrl', ['$scope', function ($scope) {
+    .controller('FooterCtrl', function () {
+        var vm = this;
 
-        $scope.version = 'v0.0.1-alpha';
+        vm.version = 'v0.0.1-alpha';
 
-    }]);
+    });

@@ -3,7 +3,7 @@
 describe('ConnectionsCtrl', function () {
     beforeEach(module('transmartBaseUi'));
 
-    var $controller, scope, rootScope, EndpointService, AlertService, location;
+    var ctrl, scope, rootScope, EndpointService, AlertService, location;
 
     /**
      * dummy endpoints
@@ -45,7 +45,7 @@ describe('ConnectionsCtrl', function () {
             removeEndpoint: function (e) {
             },
             authorizeEndpoint: function (endpoint) {
-            },
+            }
         };
 
         AlertService = {
@@ -70,7 +70,7 @@ describe('ConnectionsCtrl', function () {
         spyOn(AlertService, 'remove');
         spyOn(AlertService, 'get');
 
-        $controller = _$controller_('ConnectionsCtrl', {
+        ctrl = _$controller_('ConnectionsCtrl', {
             $scope: scope,
             $location: location,
             EndpointService: EndpointService,
@@ -79,28 +79,28 @@ describe('ConnectionsCtrl', function () {
     }));
 
     it('should have initial variables to be defined', function () {
-        expect($controller).toBeDefined();
-        expect(scope.formData).toBeDefined();
-        expect(scope.endpoints).toBeDefined();
-        expect(scope.connections).toBeDefined();
+        expect(ctrl).toBeDefined();
+        expect(ctrl.formData).toBeDefined();
+        expect(ctrl.endpoints).toBeDefined();
+        expect(ctrl.connections).toBeDefined();
         expect(AlertService.get).toHaveBeenCalled();
     });
 
     it('should call EndpointService.getEndpoints fn', function () {
-        expect(scope.endpoints.length).toBe(3);
+        expect(ctrl.endpoints.length).toBe(3);
     });
 
-    describe('$scope.clearSavedEndpoints', function () {
+    describe('$ctrl.clearSavedEndpoints', function () {
         it('Should invoke EndpointService.clearStoredEndpoints', function () {
-            scope.clearSavedEndpoints();
+            ctrl.clearSavedEndpoints();
             expect(EndpointService.clearStoredEndpoints).toHaveBeenCalled();
         });
     });
 
-    describe('$scope.navigateToAuthorizationPage', function () {
+    describe('$ctrl.navigateToAuthorizationPage', function () {
 
         it('should invoke EndpointService.authorizeEndpoint', function () {
-            scope.navigateToAuthorizationPage();
+            ctrl.navigateToAuthorizationPage();
             expect(EndpointService.authorizeEndpoint).toHaveBeenCalled();
         });
 
@@ -111,34 +111,33 @@ describe('ConnectionsCtrl', function () {
                 url: 'http://foo'
             }]);
 
-            scope.selectedConnection = {url: 'http://foo'};
-            scope.navigateToAuthorizationPage(scope.selectedConnection);
-            //expect(AlertService.add).toHaveBeenCalled();
+            ctrl.selectedConnection = {url: 'http://foo'};
+            ctrl.navigateToAuthorizationPage(ctrl.selectedConnection);
             expect(EndpointService.saveSelectedEndpoint).not.toHaveBeenCalled();
             expect(EndpointService.authorizeEndpoint).not.toHaveBeenCalled();
         });
 
     });
 
-    describe('$scope.populateDefaultApi', function () {
+    describe('$ctrl.populateDefaultApi', function () {
         it('should populate selected endpoints to the form', function () {
-            scope.selectedConnection = {
+            ctrl.selectedConnection = {
                 label: 'foo',
                 url: 'http://foo'
             };
 
-            scope.populateDefaultApi();
-            expect(scope.formData.title).toBe('foo');
-            expect(scope.formData.url).toBe('http://foo');
-            expect(scope.formData.requestToken).toBe('');
+            ctrl.populateDefaultApi();
+            expect(ctrl.formData.title).toBe('foo');
+            expect(ctrl.formData.url).toBe('http://foo');
+            expect(ctrl.formData.requestToken).toBe('');
 
         });
     });
 
-    describe('$scope.removeEndpoint', function () {
+    describe('$ctrl.removeEndpoint', function () {
         it('should invoke EndpointService.removeEndpoint', function () {
             var _e = {};
-            scope.removeEndpoint(_e);
+            ctrl.removeEndpoint(_e);
             expect(EndpointService.removeEndpoint).toHaveBeenCalled();
         });
     });
