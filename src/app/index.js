@@ -27,7 +27,8 @@ angular.module('transmartBaseUi', [
         'toggle-switch',
         'transmartBaseUiConstants'
     ])
-    .config(['$stateProvider',  '$urlRouterProvider', 'cfpLoadingBarProvider', '$locationProvider', '$uibTooltipProvider',
+    .config(['$stateProvider',  '$urlRouterProvider', 'cfpLoadingBarProvider', '$locationProvider',
+        '$uibTooltipProvider',
         function ($stateProvider, $urlRouterProvider, cfpLoadingBarProvider, $locationProvider, $uibTooltipProvider) {
 
             $locationProvider.html5Mode({
