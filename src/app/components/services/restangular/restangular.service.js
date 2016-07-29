@@ -13,7 +13,8 @@ angular.module('transmartBaseUi')
         service.createResourceServiceByEndpoint = function (endpoint) {
             return Restangular.withConfig(function (RestangularConfigurer) {
 
-                var fnResponseInterceptor = ResourceInterceptors.customResponseInterceptor;
+                var fnResponseInterceptor = ResourceInterceptors.customResponseInterceptor,
+                    fnErrorInterceptor = ResourceInterceptors.customErrorInterceptor;
 
                 RestangularConfigurer.setBaseUrl(endpoint.url);
                 RestangularConfigurer.setDefaultHeaders(
@@ -26,6 +27,7 @@ angular.module('transmartBaseUi')
                 // Set an interceptor in order to parse the API response
                 // when getting a list of resources
                 RestangularConfigurer.addResponseInterceptor(fnResponseInterceptor);
+                RestangularConfigurer.setErrorInterceptor(fnErrorInterceptor);
 
                 // Using self link for self reference resources
                 RestangularConfigurer.setRestangularFields({
