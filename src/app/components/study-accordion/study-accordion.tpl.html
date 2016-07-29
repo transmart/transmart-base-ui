@@ -19,10 +19,10 @@
 <!-- START Node template -->
 
 <script type="text/ng-template" id="nodes_renderer.html">
-    <div ui-tree-handle class="tree-node tree-node-content tree-node-custom" ng-click="ctrl.populateChildren(node);"
-         data-drag="node.type !== 'FAILED_CALL'" jqyoui-draggable="{placeholder: 'keep'}"
-         data-jqyoui-options="{containment: 'document', appendTo: 'body', helper: 'clone'}" ng-model="node"
-    >
+    <div ui-tree-handle class="tree-node tree-node-content tree-node-custom"
+         ng-click="ctrl.populateChildren(node);" data-drag="node.type !== 'FAILED_CALL'"
+         jqyoui-draggable="{placeholder: 'keep'}"
+         data-jqyoui-options="{containment: 'document', appendTo: 'body', helper: 'clone'}" ng-model="node">
 
         <!--icons-->
         <a data-nodrag ng-click="toggle(this)">
@@ -99,7 +99,8 @@
         </uib-accordion-heading>
 
         <!--content-->
-        <div ui-tree id="tree-root" data-drag-enabled="ctrl.treeConfig.drag" data-drop-enabled="false" ng-if="!callFailure">
+        <div ui-tree id="tree-root" data-drag-enabled="ctrl.treeConfig.drag" data-drop-enabled="false"
+             ng-if="!callFailure">
             <ol ui-tree-nodes="" ng-model="study.nodes" ng-class="{hidden: collapsed}">
                 <li ng-repeat="node in study.nodes"
                     ui-tree-node
