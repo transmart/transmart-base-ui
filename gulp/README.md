@@ -15,7 +15,7 @@ Contains the build tasks aiming to optimize all your project and create the dist
 - **clean**: delete temporary files
 - **build**: html + images + fonts + misc
 
-## documentation.js
+## docs.js
 
 Contains the task for generating documentation. 
 
