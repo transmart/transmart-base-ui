@@ -1,6 +1,7 @@
 'use strict';
 
 /**
+ * Tree node management service
  * @memberof transmartBaseUi
  * @ngdoc factory
  * @name TreeNodeService
@@ -9,6 +10,12 @@ angular.module('transmartBaseUi').factory('TreeNodeService', ['$q', function ($q
 
     var service = {};
 
+    /**
+     * Set attributes for a root node
+     * @memberof TreeNodeService
+     * @param rootNode
+     * @returns {object} rootNode
+     */
     service.setRootNodeAttributes = function (rootNode) {
         rootNode.restObj = rootNode;
         rootNode.loaded = false;
@@ -27,14 +34,15 @@ angular.module('transmartBaseUi').factory('TreeNodeService', ['$q', function ($q
     };
 
     /**
+     * Get total subjects of a node.
      * @memberof TreeNodeService
-     * @param newNode
-     * @returns {*}
+     * @param node {object} - a tree node
+     * @returns {Promise}
      */
-    service.getTotalSubjects = function (newNode) {
+    service.getTotalSubjects = function (node) {
         var deferred = $q.defer();
         // Counting total number of subjects in a node
-        newNode.restObj.one('subjects').get().then(function (subjects) {
+        node.restObj.one('subjects').get().then(function (subjects) {
             deferred.resolve(subjects._embedded.subjects.length);
         }, function () {
             deferred.reject('Cannot count subjects');
@@ -42,16 +50,13 @@ angular.module('transmartBaseUi').factory('TreeNodeService', ['$q', function ($q
         return deferred.promise;
     };
 
-
-
-
-
     /**
+     * Load a concept path (node)
      * @memberof TreeNodeService
-     * @param node
-     * @param link
-     * @param prefix
-     * @returns {*}
+     * @param node {object} - a tree node
+     * @param link {object} - link of associated node
+     * @param prefix {string} - string to be used as prefix in ajax call
+     * @returns {Promise}
      */
     service.loadNode = function (node, link, prefix) {
         var deferred = $q.defer();
@@ -104,9 +109,9 @@ angular.module('transmartBaseUi').factory('TreeNodeService', ['$q', function ($q
 
     /**
      * @memberof TreeNodeService
-     * @param node
-     * @param prefix
-     * @returns {*}
+     * @param node {Object} - tree node
+     * @param prefix {String} - string to be used as prefix in ajax call
+     * @returns {Promise}
      */
     service.getNodeChildren = function (node, prefix) {
         var childLinks, deferred = $q.defer();

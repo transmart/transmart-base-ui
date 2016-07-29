@@ -2,6 +2,7 @@
 
 angular.module('transmartBaseUi')
     /**
+     * This directive creates the study accordion
      * @memberof transmartBaseUi
      * @ngdoc directive
      * @name studyAccordion
@@ -15,31 +16,41 @@ angular.module('transmartBaseUi')
                 studyShown: '='
             },
             templateUrl: 'app/components/study-accordion/study-accordion.tpl.html',
-            controller: 'StudyAccordionCtrl as ctrl'
+            controller: 'StudyAccordionCtrl as ctrl',
+            controllerAs : 'ctrl'
         };
     }])
+
     /**
+     * Controller for study accordion
      * @memberof transmartBaseUi
      * @ngdoc controller
      * @name StudyAccordionCtrl
      */
-    .controller('StudyAccordionCtrl', ['$scope', '$uibModal', 'UtilService', 'TreeNodeService',
-        function ($scope, $uibModal, UtilService, TreeNodeService) {
+    .controller('StudyAccordionCtrl', ['$uibModal', 'UtilService', 'TreeNodeService',
+        function ($uibModal, UtilService, TreeNodeService) {
 
-            $scope.treeConfig = {
+            var ctrl = this;
+
+            ctrl.treeConfig = {
                 drag: false,
                 collapsed: true
             };
 
-            $scope.isURL = UtilService.isURL;
+            ctrl.isURL = UtilService.isURL;
 
-            $scope.status = {
+            ctrl.status = {
                 isFirstOpen: false,
                 isFirstDisabled: false,
                 oneAtATime: true
             };
 
-            $scope.populateChildren = function (node) {
+            /**
+             * Populate node children
+             * @memberof StudyAccordionCtrl
+             * @param node
+             */
+            ctrl.populateChildren = function (node) {
                 var prefix;
 
                 // first check if node has Restangular object or not
@@ -57,22 +68,28 @@ angular.module('transmartBaseUi')
 
             };
 
-            $scope.prev_node = null;
+            ctrl.prev_node = null;
 
-            $scope.clearMetadata = function (node) {
+            /**
+             * Clear metadata popup of a node
+             * @memberof StudyAccordionCtrl
+             * @param node
+             * @returns {{isSame: boolean, popover: *}}
+             */
+            ctrl.clearMetadata = function (node) {
                 //reset or toggle the flags
                 var isSame = false;
-                if ($scope.prev_node !== null && $scope.prev_node.$$hashKey == node.$$hashKey) {
+                if (ctrl.prev_node !== null && ctrl.prev_node.$$hashKey == node.$$hashKey) {
                     isSame = true;
                 }
-                if (!isSame && $scope.prev_node !== null) {
-                    $scope.prev_node.isPopOpen = false;
+                if (!isSame && ctrl.prev_node !== null) {
+                    ctrl.prev_node.isPopOpen = false;
                 }
                 node.isPopOpen = !node.isPopOpen;
-                $scope.prev_node = node;
+                ctrl.prev_node = node;
 
                 //clear the html
-                $scope.metadataObj = {};
+                ctrl.metadataObj = {};
                 var query = document.getElementsByClassName("popover");
                 var popoverElements = angular.element(query);
                 popoverElements.remove();
@@ -83,18 +100,25 @@ angular.module('transmartBaseUi')
                 };
             };
 
-            $scope.displayMetadata = function (node) {
+            /**
+             * Display metadata of a node
+             * @memberof StudyAccordionCtrl
+             * @param node
+             */
+            ctrl.displayMetadata = function (node) {
                 if (node) {
-                    $scope.clearMetadata(node);
+
+                    ctrl.clearMetadata(node);
+
                     if (node.hasOwnProperty('_embedded')) {
-                        $scope.metadataObj.title = node._embedded.ontologyTerm.name;
-                        $scope.metadataObj.fullname = node._embedded.ontologyTerm.fullName;
-                        $scope.metadataObj.body = node._embedded.ontologyTerm.metadata;
+                        ctrl.metadataObj.title = node._embedded.ontologyTerm.name;
+                        ctrl.metadataObj.fullname = node._embedded.ontologyTerm.fullName;
+                        ctrl.metadataObj.body = node._embedded.ontologyTerm.metadata;
                     }
                     else if (node.hasOwnProperty('restObj')) {
-                        $scope.metadataObj.title = node.title;
-                        $scope.metadataObj.fullname = node.restObj.fullName;
-                        $scope.metadataObj.body = node.restObj.metadata;
+                        ctrl.metadataObj.title = node.title;
+                        ctrl.metadataObj.fullname = node.restObj.fullName;
+                        ctrl.metadataObj.body = node.restObj.metadata;
                     }
                 }//if
             };

@@ -1,6 +1,7 @@
 'use strict';
 
 /**
+ * Custom Interceptors
  * @memberof transmartBaseUi
  * @ngdoc factory
  * @name ResourceInterceptors
@@ -11,11 +12,14 @@ angular.module('transmartBaseUi')
         var service = {};
 
         /**
-         * Custom Response Interceptor
-         * @param data
-         * @param operation
-         * @param what
-         * @returns {*}
+         * Intercept response to change 'concepts' to 'ontology_terms'
+         * TODO: This must be refactored once backend is consistent
+         * @memberof ResourceInterceptors
+         * @param data {object} - The data received got from the server
+         * @param operation {string} - The operation made. It'll be the HTTP method used except for a GET which
+         * returns a list of element which will return getList so that you can distinguish them.
+         * @param what {string} - The model that's being requested.
+         * @returns {object} data
          */
         service.customResponseInterceptor = function (data, operation, what) {
 
@@ -40,13 +44,11 @@ angular.module('transmartBaseUi')
         };
 
         /**
-         * Custom Error Interceptor
+         * Handle common HTTP Errors
          * @param response
-         * @param deferred
-         * @param responseHandler
-         * @returns {boolean}
+         * @returns {boolean} - true if error not handled, false if it is
          */
-        service.customErrorInterceptor = function(response, deferred, responseHandler) {
+        service.customErrorInterceptor = function(response) {
 
             if (response.status === 401) {
                 AlertService.add('danger', 'HTTP ' + response.status

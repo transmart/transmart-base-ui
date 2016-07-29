@@ -9,8 +9,8 @@
             ng-class-even="popover-even-row">
             <td><b>{{key}}:</b></td>
             <td>&nbsp;&nbsp;</td>
-            <td ng-if="isURL(value)"><a href="{{value}}" target="_blank">{{value}}</a></td>
-            <td ng-if="!isURL(value)">{{value}}</td>
+            <td ng-if="ctrl.isURL(value)"><a href="{{value}}" target="_blank">{{value}}</a></td>
+            <td ng-if="!ctrl.isURL(value)">{{value}}</td>
         </tr>
     </table>
 </script>
@@ -19,7 +19,7 @@
 <!-- START Node template -->
 
 <script type="text/ng-template" id="nodes_renderer.html">
-    <div ui-tree-handle class="tree-node tree-node-content tree-node-custom" ng-click="populateChildren(node);"
+    <div ui-tree-handle class="tree-node tree-node-content tree-node-custom" ng-click="ctrl.populateChildren(node);"
          data-drag="node.type !== 'FAILED_CALL'" jqyoui-draggable="{placeholder: 'keep'}"
          data-jqyoui-options="{containment: 'document', appendTo: 'body', helper: 'clone'}" ng-model="node"
     >
@@ -45,7 +45,7 @@
            popover-placement="right"
            popover-trigger="none"
            popover-is-open="node.isPopOpen"
-           base-ui-right-click="displayMetadata(node); "
+           base-ui-right-click="ctrl.displayMetadata(node); "
            click-outside="node.isPopOpen = false"
            ng-class="{'text-grey': node.type === 'FAILED_CALL'}"
         >
@@ -61,7 +61,7 @@
         <li ng-repeat="node in node.nodes"
             ui-tree-node
             ng-include="'nodes_renderer.html'"
-            data-collapsed="treeConfig.collapsed">
+            data-collapsed="ctrl.treeConfig.collapsed">
         </li>
     </ol>
 
@@ -76,7 +76,7 @@
     <uib-accordion-group is-open="study.open" ng-if="study.hide != true">
         <!--heading-->
         <uib-accordion-heading>
-      <span ng-click="populateChildren(study);">
+      <span ng-click="ctrl.populateChildren(study);">
         <a class="glyphicon glyphicon-folder-close ts-node-icon"
            ng-class="{
                'glyphicon-folder-close' : !study.open,
@@ -90,7 +90,7 @@
            popover-placement="right"
            popover-trigger="none"
            popover-is-open="study.isPopOpen"
-           base-ui-right-click="displayMetadata(study);"
+           base-ui-right-click="ctrl.displayMetadata(study);"
            click-outside="study.isPopOpen = false">
             {{study._embedded.ontologyTerm.name}}
             <span class="glyphicon glyphicon-spin" ng-class="{'glyphicon-refresh': study.isLoading}"></span>
@@ -99,12 +99,12 @@
         </uib-accordion-heading>
 
         <!--content-->
-        <div ui-tree id="tree-root" data-drag-enabled="treeConfig.drag" data-drop-enabled="false" ng-if="!callFailure">
+        <div ui-tree id="tree-root" data-drag-enabled="ctrl.treeConfig.drag" data-drop-enabled="false" ng-if="!callFailure">
             <ol ui-tree-nodes="" ng-model="study.nodes" ng-class="{hidden: collapsed}">
                 <li ng-repeat="node in study.nodes"
                     ui-tree-node
                     ng-include="'nodes_renderer.html'"
-                    data-collapsed="treeConfig.collapsed">
+                    data-collapsed="ctrl.treeConfig.collapsed">
                     {{node.title}}
                 </li>
             </ol>

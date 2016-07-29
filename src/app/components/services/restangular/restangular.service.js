@@ -1,6 +1,7 @@
 'use strict';
 
 /**
+ * Resource factory
  * @memberof transmartBaseUi
  * @ngdoc factory
  * @name ResourceService
@@ -10,6 +11,11 @@ angular.module('transmartBaseUi')
 
         var service = {};
 
+        /**
+         * Create restangular instance based on given endpoint
+         * @param endpoint {object}
+         * @returns {Restangular}
+         */
         service.createResourceServiceByEndpoint = function (endpoint) {
             return Restangular.withConfig(function (RestangularConfigurer) {
 
