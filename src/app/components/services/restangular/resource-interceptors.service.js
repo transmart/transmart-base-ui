@@ -24,7 +24,7 @@ angular.module('transmartBaseUi')
                 return what.indexOf('/') === -1 ? what : _t[_t.length - 1];
             };
 
-            if (operation === 'getList' && what !== 'studies') {
+            if (operation === 'getList') {
                 var _what, resp = data;
                 if (what === 'concepts') {
                     what = 'ontology_terms';
