@@ -23,8 +23,8 @@ angular.module('transmartBaseUi')
      * @ngdoc controller
      * @name StudyAccordionCtrl
      */
-    .controller('StudyAccordionCtrl', ['$scope', '$uibModal', 'UtilService', 'TreeNodeService', '$log',
-        function ($scope, $uibModal, UtilService, TreeNodeService, $log) {
+    .controller('StudyAccordionCtrl', ['$scope', '$uibModal', 'UtilService', 'TreeNodeService',
+        function ($scope, $uibModal, UtilService, TreeNodeService) {
 
             $scope.treeConfig = {
                 drag: false,
@@ -40,23 +40,25 @@ angular.module('transmartBaseUi')
             };
 
             $scope.populateChildren = function (node) {
+                var prefix;
 
-                // first check if node has restangular object or not
+                // first check if node has Restangular object or not
                 // if not it means it's root node a.k.a study
                 if (!node.hasOwnProperty('restObj')) {
                     node = TreeNodeService.setRootNodeAttributes(node);
-                    return TreeNodeService.getNodeChildren(node, 'concepts/').then(function (result) {
-                        node.isLoading = false;
-                    });
+                    prefix = 'concepts/';
                 }
 
                 node.isLoading = true;
-                TreeNodeService.getNodeChildren(node).then(function (result) {
+
+                TreeNodeService.getNodeChildren(node, prefix).finally(function () {
                     node.isLoading = false;
                 });
+
             };
 
             $scope.prev_node = null;
+
             $scope.clearMetadata = function (node) {
                 //reset or toggle the flags
                 var isSame = false;
@@ -79,7 +81,7 @@ angular.module('transmartBaseUi')
                     isSame: isSame,
                     popover: popoverElements
                 };
-            }
+            };
 
             $scope.displayMetadata = function (node) {
                 if (node) {

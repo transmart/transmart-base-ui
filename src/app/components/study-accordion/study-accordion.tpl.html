@@ -50,7 +50,7 @@
            ng-class="{'text-grey': node.type === 'FAILED_CALL'}"
         >
             {{node.title}}
-            <b ng-show="!node.isLoading">({{node.total}})</b>
+            <b ng-show="!node.isLoading && node.total">({{node.total}})</b>
             <span class="glyphicon glyphicon-spin" ng-class="{'glyphicon-refresh': node.isLoading}"></span>
         </a>
 

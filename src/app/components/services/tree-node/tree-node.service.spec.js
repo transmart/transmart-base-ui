@@ -120,7 +120,7 @@ describe('TreeNodeService', function () {
             expect(_rootNode.restObj).toEqual(_dummyNode);
             expect(_rootNode.loaded).toEqual(false);
             expect(_rootNode.study).toEqual(_dummyNode);
-            expect(_rootNode.title).toEqual('ROOT');
+            expect(_rootNode.title).toEqual(_dummyNode.title);
             expect(_rootNode.nodes).toEqual([]);
             expect(_rootNode._links.children).toEqual(_dummyNode._embedded.ontologyTerm._links.children);
             expect(_rootNode.isLoading).toEqual(true);
@@ -167,7 +167,7 @@ describe('TreeNodeService', function () {
                     expect(err).toEqual({
                         title: 'SomeLabel',
                         nodes: [],
-                        loaded: false,
+                        loaded: true,
                         study: undefined,
                         type: 'FAILED_CALL',
                         total: ''
@@ -239,13 +239,10 @@ describe('TreeNodeService', function () {
             spyOn(_dummyNode.restObj, 'one').and.callThrough();
 
             TreeNodeService.getNodeChildren(_dummyNode, 'concepts/').then(function (res) {
-                // skipped since it should be failed
                 expect(res.length).toEqual(1);
                 expect(res[0].title).toEqual('SomeLabel');
-                expect(res[0].loaded).toEqual(false);
+                expect(res[0].loaded).toEqual(true);
                 expect(res[0].type).toEqual('FAILED_CALL');
-            }, function (err) {
-                // not failing because it should create failed node
             });
 
             flushHttoBackend();
@@ -266,6 +263,8 @@ describe('TreeNodeService', function () {
                 expect(res).toBeTruthy();
             });
         });
+
+
     });
 
 

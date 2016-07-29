@@ -22,28 +22,33 @@ describe('studyAccordion', function () {
     }));
 
     describe('$scope.populateChildren', function () {
-        var _scope, deferred;
+        var _scope, deferred, _n;
 
         beforeEach(function () {
             _scope = scope;
             deferred = $q.defer();
-            spyOn(TreeNodeService, 'setRootNodeAttributes');
+
+            _n = {
+                title: 'someTitle',
+                total: 999,
+                type: 'UNKNOWN',
+                isLoading: false
+            };
+
+            spyOn(TreeNodeService, 'setRootNodeAttributes').and.returnValue(_n);
             spyOn(TreeNodeService, 'getNodeChildren').and.returnValue(deferred.promise);
             spyOn(_scope, 'clearMetadata');
         });
 
         it('should invoke TreeNodeService.getNodeChildren when populating node children', function () {
-            var _nodes = {
-                nodes: [
-                    {
-                        title: 'someTitle',
-                        total: 999,
-                        type: 'UNKNOWN'
-                    }
-                ]
-            };
-            _scope.populateChildren(_nodes);
+            _scope.populateChildren({});
             expect(TreeNodeService.setRootNodeAttributes).toHaveBeenCalled();
+            expect(TreeNodeService.getNodeChildren).toHaveBeenCalled();
+        });
+
+        it('should not invoke TreeNodeService.setRootNodeAttributes when populating study node', function () {
+            _scope.populateChildren({restObj:'foo'});
+            expect(TreeNodeService.setRootNodeAttributes).not.toHaveBeenCalled();
             expect(TreeNodeService.getNodeChildren).toHaveBeenCalled();
         });
 
