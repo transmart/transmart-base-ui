@@ -1,6 +1,7 @@
 'use strict';
 
 /**
+ * Tree node management service
  * @memberof transmartBaseUi
  * @ngdoc factory
  * @name TreeNodeService
@@ -9,27 +10,39 @@ angular.module('transmartBaseUi').factory('TreeNodeService', ['$q', function ($q
 
     var service = {};
 
+    /**
+     * Set attributes for a root node
+     * @memberof TreeNodeService
+     * @param rootNode
+     * @returns {object} rootNode
+     */
     service.setRootNodeAttributes = function (rootNode) {
         rootNode.restObj = rootNode;
         rootNode.loaded = false;
         rootNode.study = rootNode;
-        rootNode.title = 'ROOT';
         rootNode.nodes = [];
-        rootNode._links.children = rootNode._embedded.ontologyTerm._links.children;
-        rootNode.isLoading = true;
+
+        if (rootNode.hasOwnProperty('_links')) {
+            rootNode._links.children =
+                rootNode.hasOwnProperty('_embedded') ? rootNode._embedded.ontologyTerm._links.children : undefined;
+            rootNode.isLoading = true;
+        } else {
+            rootNode.isLoading = false;
+        }
+
         return rootNode;
     };
 
     /**
-     *  TODO: Need rest call refactoring. This is not the most efficient way to count subjects in a node.
+     * Get total subjects of a node.
      * @memberof TreeNodeService
-     * @param newNode
-     * @returns {*}
+     * @param node {object} - a tree node
+     * @returns {Promise}
      */
-    service.getTotalSubjects = function (newNode) {
+    service.getTotalSubjects = function (node) {
         var deferred = $q.defer();
         // Counting total number of subjects in a node
-        newNode.restObj.one('subjects').get().then(function (subjects) {
+        node.restObj.one('subjects').get().then(function (subjects) {
             deferred.resolve(subjects._embedded.subjects.length);
         }, function () {
             deferred.reject('Cannot count subjects');
@@ -38,11 +51,12 @@ angular.module('transmartBaseUi').factory('TreeNodeService', ['$q', function ($q
     };
 
     /**
+     * Load a concept path (node)
      * @memberof TreeNodeService
-     * @param node
-     * @param link
-     * @param prefix
-     * @returns {*}
+     * @param node {object} - a tree node
+     * @param link {object} - link of associated node
+     * @param prefix {string} - string to be used as prefix in ajax call
+     * @returns {Promise}
      */
     service.loadNode = function (node, link, prefix) {
         var deferred = $q.defer();
@@ -54,37 +68,62 @@ angular.module('transmartBaseUi').factory('TreeNodeService', ['$q', function ($q
             study: node.study
         };
 
+        var setErrorNode = function (node) {
+            node.type = 'FAILED_CALL';
+            node.total = '';
+            node.loaded = true;
+           return node;
+        };
+
         var nodePromise = node.restObj.one(prefix + link.title);
 
-        nodePromise.get().then(function (childObj) {
-            newNode.type = childObj.type ? childObj.type : 'UNDEF';
-            newNode.restObj = childObj;
-            if (newNode.type === 'CATEGORICAL_OPTION') {
-                node.type = 'CATEGORICAL_CONTAINER';
-                newNode.parent = node;
-            }
-            // and also count how many subjects in this node
-            service.getTotalSubjects(newNode).then(function (total) {
-                newNode.total = total;
-                deferred.resolve(newNode);
+        nodePromise.get()
+            .then(function (childObj) {
+                newNode.type = childObj.type ? childObj.type : 'UNDEF';
+                newNode.restObj = childObj;
+                if (newNode.type === 'CATEGORICAL_OPTION') {
+                    node.type = 'CATEGORICAL_CONTAINER';
+                    newNode.parent = node;
+                }
+            })
+            .catch(function () {
+                // reject error node
+                deferred.reject(setErrorNode(newNode));
+            })
+            .finally(function () {
+                node.loaded = true;
+                // and also count how many subjects in this node
+                if (newNode.type !== 'FAILED_CALL') {
+                    service.getTotalSubjects(newNode).then(function (total) {
+                        newNode.total = total;
+                        deferred.resolve(newNode);
+                    }).catch(function () {
+                        // reject error node
+                        deferred.reject(setErrorNode(newNode));
+                    });
+                }
             });
-
-        }, function (err) { // when it's failed
-            node.loaded = true;
-            newNode.type = 'FAILED_CALL';
-            newNode.total = '';
-            deferred.reject(newNode);
-        });
 
         return deferred.promise;
     };
 
+    /**
+     * @memberof TreeNodeService
+     * @param node {Object} - tree node
+     * @param prefix {String} - string to be used as prefix in ajax call
+     * @returns {Promise}
+     */
     service.getNodeChildren = function (node, prefix) {
         var childLinks, deferred = $q.defer();
         prefix = prefix || '';
 
         if (node.loaded) {
             deferred.resolve(node.loaded);
+            return deferred.promise;
+        }
+
+        if (node.type === 'FAILED_CALL') {
+            deferred.reject('Error node');
             return deferred.promise;
         }
 
@@ -96,11 +135,9 @@ angular.module('transmartBaseUi').factory('TreeNodeService', ['$q', function ($q
                 service.loadNode(node, link, prefix)
                     .then(function (newNode) {
                         node.nodes.push(newNode);
-                        node.loaded = true;
                     })
                     .catch(function (errNode) {
                         node.nodes.push(errNode);
-                        node.loaded = false;
                     })
                     .finally(function () {
                         if (childLinks.length === node.nodes.length) {
