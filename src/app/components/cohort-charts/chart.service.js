@@ -63,7 +63,6 @@ angular.module('transmartBaseUi').factory('ChartService',
                     label: [chart1.tsLabel, chart2.tsLabel],
                     name: chart1.tsLabel.name + ' - ' + chart2.tsLabel.name,
                     resolved: false,
-                    //TODO: manage multiple studies
                     study: chart1.tsLabel.study,
                     type: 'combination'
                 };
@@ -186,7 +185,6 @@ angular.module('transmartBaseUi').factory('ChartService',
 
             /**
              * Remove all the filters applied to the label dimensions
-             * TODO: Add the possibility to reapply removed filters
              * @memberof ChartService
              */
             var _removeAllLabelFilters = function () {
@@ -453,8 +451,9 @@ angular.module('transmartBaseUi').factory('ChartService',
 
             /**
              * Create the charts for each selected label
-             * TODO: Leave the existing charts in place, and only add the new ones
-             * TODO: Enable removing specific charts
+             * @memberof ChartService
+             * @param {Object} label
+             * @param {Object} el
              */
             chartService.createCohortChart = function (label, el) {
                 var _chart;
