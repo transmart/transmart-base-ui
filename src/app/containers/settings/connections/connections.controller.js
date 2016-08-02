@@ -18,7 +18,11 @@ angular.module('transmartBaseUi')
 
             // Predefined endpoints
             vm.connections = [
-                {title: 'transmart-gb', url: 'http://transmart-gb.thehyve.net/transmart', isOAuth: true},
+                {
+                    title: 'transmart-gb',
+                    url: 'http://transmart-gb.thehyve.net/transmart',
+                    isOAuth: true
+                },
                 {
                     title: 'transmart-test-translocation',
                     url: 'http://transmart-test-translocation.thehyve.net/transmart',
@@ -34,8 +38,6 @@ angular.module('transmartBaseUi')
             vm.clearSavedEndpoints = function () {
                 EndpointService.clearStoredEndpoints();
                 vm.endpoints = EndpointService.getEndpoints();
-                vm.publicStudies = StudyListService.getPublicStudies();
-                vm.privateStudies = StudyListService.getPrivateStudies();
             };
 
             /**
@@ -71,8 +73,6 @@ angular.module('transmartBaseUi')
 
                 // delete study that has associated endpoint
                 StudyListService.removeStudiesByEndpoint(endpoint);
-                vm.publicStudies = StudyListService.getPublicStudies();
-                vm.privateStudies = StudyListService.getPrivateStudies();
             };
 
             /**
