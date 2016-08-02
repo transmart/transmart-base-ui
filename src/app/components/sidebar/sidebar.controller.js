@@ -6,8 +6,8 @@
  * @name SidebarCtrl
  */
 angular.module('transmartBaseUi')
-    .controller('SidebarCtrl', ['$scope', 'StudyListService', 'EndpointService',
-        function ($scope, StudyListService, EndpointService) {
+    .controller('SidebarCtrl', ['$scope', 'StudyListService',
+        function ($scope, StudyListService) {
 
             var vm = this;
 
@@ -57,7 +57,8 @@ angular.module('transmartBaseUi')
                 if (idx > -1) {
                     vm.searchKeys.splice(idx, 1);
                 }
-                // Re-display studies of remaining matched search keywords or show all studies when there's no search keys left
+                // Re-display studies of remaining matched search keywords or show all studies when there's no search
+                // keys left
                 vm.searchKeys.length > 0 ?
                     StudyListService.showStudiesByKeys(vm.searchKeys, vm.operator) : StudyListService.showAll();
             };
@@ -67,15 +68,9 @@ angular.module('transmartBaseUi')
              * @memberof SidebarCtrl
              */
             vm.loadStudies = function () {
-                var _endpoints = EndpointService.getEndpoints(); // get available endpoints
-
-                _.each(_endpoints, function (endpoint) {
-                    StudyListService.loadStudyList(endpoint).then(function (result) {
-                        vm.publicStudies = StudyListService.getPublicStudies();
-                        vm.privateStudies = StudyListService.getPrivateStudies();
-                    }, function () {
-                        EndpointService.invalidateEndpoint(endpoint);
-                    });
+                StudyListService.getAllStudies().then(function (res) {
+                    vm.publicStudies = _.filter(res, {type: 'public'});
+                    vm.privateStudies = _.filter(res, {type: 'private'});
                 });
             };
 
