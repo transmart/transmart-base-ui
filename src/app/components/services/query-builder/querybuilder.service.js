@@ -153,7 +153,6 @@ angular.module('transmartBaseUi').factory('QueryBuilderService', ['JSON2XMLServi
      * @param studyType
      * @returns {*}
      */
-    //TODO: the study type should be handled transparently in the entire application and the hard-coded values should be removed
     function getStudyTypePrefix(studyType) {
         switch (studyType) {
             case 'public':

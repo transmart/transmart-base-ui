@@ -16,8 +16,6 @@ angular.module('transmartBaseUi')
              * @memberof SaveCohortDialogCtrl
              */
             $scope.ok = function () {
-                //TODO: currently the cohort selection is saved to the master endpoint. Should it be saved to the endpoints corresponding to the concepts/filters instead?
-                //TODO: how to deal with selections covering multiple studies?
                 var endpoint = EndpointService.getMasterEndpoint();
                 var i2b2Query = QueryBuilderService.convertCohortFiltersToXML(
                     ChartService.getCohortFilters(), $scope.cohortName);

@@ -13,7 +13,6 @@ angular.module('transmartBaseUi')
 
         /**
          * Intercept response to change 'concepts' to 'ontology_terms'
-         * TODO: This must be refactored once backend is consistent
          * @memberof ResourceInterceptors
          * @param data {object} - The data received got from the server
          * @param operation {string} - The operation made. It'll be the HTTP method used except for a GET which
