@@ -16,9 +16,10 @@ angular.module('transmartBaseUi')
             },
             controller: ['$scope', '$timeout', 'CohortGridService', function ($scope, $timeout, CohortGridService) {
 
-                $scope.displayedCollection = [].concat($scope.cohort);
-                $scope.gridOptions = CohortGridService.options;
-                $scope.style_modifiers = {'height': CohortGridService.HEIGHT};
+                var ctrl = this;
+
+                ctrl.gridOptions = CohortGridService.options;
+                ctrl.style_modifiers = {'height': CohortGridService.HEIGHT};
 
                 $scope.$watchCollection('headers', function (newValue, oldValue) {
                     if (!_.isEqual(newValue, oldValue)) {
@@ -31,13 +32,7 @@ angular.module('transmartBaseUi')
                         CohortGridService.updateCohortGridView(newValue, $scope.headers);
                     }
                 });
-
-                $scope.getConceptValue = function (id) {
-                    return function (subject) {
-                        return subject.labels[id];
-                    };
-                };
-
-            }]
+            }],
+            controllerAs : 'ctrl'
         };
     });
