@@ -107,15 +107,12 @@ angular.module('transmartBaseUi')
              */
             ctrl.displayMetadata = function (node) {
                 if (node) {
-
                     ctrl.clearMetadata(node);
-
                     if (node.hasOwnProperty('_embedded')) {
                         ctrl.metadataObj.title = node._embedded.ontologyTerm.name;
                         ctrl.metadataObj.fullname = node._embedded.ontologyTerm.fullName;
                         ctrl.metadataObj.body = node._embedded.ontologyTerm.metadata;
-                    }
-                    else if (node.hasOwnProperty('restObj')) {
+                    } else if (node.hasOwnProperty('restObj')) {
                         ctrl.metadataObj.title = node.title;
                         ctrl.metadataObj.fullname = node.restObj.fullName;
                         ctrl.metadataObj.body = node.restObj.metadata;
