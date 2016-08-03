@@ -20,10 +20,13 @@ angular.module('transmartBaseUi')
             vm.operator = 'OR';
             vm.searchKeys = [];
 
-            $scope.$watch('searchMode', function (newVal) {
-                vm.operator = newVal ? 'AND' : 'OR';
-                StudyListService.showStudiesByKeys(vm.searchKeys, vm.operator);
-            });
+            $scope.$watch(
+                function() { return vm.searchMode; },
+                function (newVal) {
+                    vm.operator = newVal ? 'AND' : 'OR';
+                    StudyListService.showStudiesByKeys(vm.searchKeys, vm.operator);
+                }
+            );
 
             /**
              * Add search key, invoked when user press Enter key in search input box.

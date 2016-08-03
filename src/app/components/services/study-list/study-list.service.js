@@ -37,7 +37,7 @@ angular.module('transmartBaseUi').factory('StudyListService', ['$q', 'EndpointSe
          */
         service.getAllStudies = function () {
 
-            var deferred = $q.defer(), defers = [];
+            var deferred = $q.defer(), defers = [], _this = this;
             var fnStudyInterceptor = StudyListInterceptor.customResponseInterceptor;
 
             EndpointService.getEndpoints().forEach(function (endpoint) {
@@ -53,6 +53,7 @@ angular.module('transmartBaseUi').factory('StudyListService', ['$q', 'EndpointSe
                     values.forEach(function(val) {
                         _tmp = _.union(_tmp,  val)
                     });
+                    _this.studyList = _tmp;
                     deferred.resolve(_tmp);
                 })
                 .catch(function (err) {
@@ -135,7 +136,7 @@ angular.module('transmartBaseUi').factory('StudyListService', ['$q', 'EndpointSe
                 return _.uniq(keyMap).length == searchKeywords.length;
             }
 
-            return !!(isFound && op === 'OR');
+            return isFound && op === 'OR';
         };
 
         /**
