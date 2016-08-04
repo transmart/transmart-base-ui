@@ -5,9 +5,10 @@
  * @ngdoc factory
  * @name StudyListService
  */
-angular.module('transmartBaseUi').factory('StudyListService', ['$q', 'EndpointService', 'StudyListInterceptor',
-    function ($q, EndpointService, StudyListInterceptor) {
+angular.module('transmartBaseUi').factory('StudyListService', ['$q', '$log', 'EndpointService', 'StudyListInterceptor',
+    function ($q, $log, EndpointService, StudyListInterceptor) {
 
+        var _studiesResolved = false;
         var service = {
             studyList: []
         };
@@ -35,7 +36,6 @@ angular.module('transmartBaseUi').factory('StudyListService', ['$q', 'EndpointSe
          * @memberof StudyListService
          * @return promise {Promise}
          */
-        service.getAllStudies = function () {
 
             var deferred = $q.defer(), defers = [], _this = this;
             var fnStudyInterceptor = StudyListInterceptor.customResponseInterceptor;
@@ -53,7 +53,6 @@ angular.module('transmartBaseUi').factory('StudyListService', ['$q', 'EndpointSe
                     values.forEach(function(val) {
                         _tmp = _.union(_tmp,  val)
                     });
-                    _this.studyList = _tmp;
                     deferred.resolve(_tmp);
                 })
                 .catch(function (err) {
@@ -160,7 +159,6 @@ angular.module('transmartBaseUi').factory('StudyListService', ['$q', 'EndpointSe
          * @returns {Array} - studies which contains search keywords
          */
         service.showStudiesByKeys = function (searchKeywords, operator) {
-            _.forEach(this.studyList, function (s) {
                 _.forEach(collectSearchTargetObjects(s), function (_obj) {  // Iterate through
                                                                             // searching objects of a study
                     s.hide = !containsSearchKeys(_obj, searchKeywords, operator);   // Hide the study when it does not
