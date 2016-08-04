@@ -113,7 +113,7 @@ angular.module('transmartBaseUi')
                 vm.openSaveCohortModal = function () {
                     $uibModal.open({
                         templateUrl: 'app/components/save-cohort/save-cohort-dialog.tpl.html',
-                        controller: 'SaveCohortDialogCtrl',
+                        controller: 'SaveCohortDialogCtrl as vm',
                         animation: false
                     });
                 };

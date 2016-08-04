@@ -9,13 +9,15 @@ angular.module('transmartBaseUi')
     .controller('SaveCohortDialogCtrl', ['$scope', '$uibModalInstance', 'EndpointService', 'ChartService', 'QueryBuilderService', 'AlertService',
         function ($scope, $uibModalInstance, EndpointService, ChartService, QueryBuilderService, AlertService) {
 
-            $scope.cohortName = '';
+            var vm = this;
+
+            vm.cohortName = '';
 
             /**
              * Saves the currently selected cohort to the backend.
              * @memberof SaveCohortDialogCtrl
              */
-            $scope.ok = function () {
+            vm.ok = function () {
                 var endpoint = EndpointService.getMasterEndpoint();
                 var i2b2Query = QueryBuilderService.convertCohortFiltersToXML(
                     ChartService.getCohortFilters(), $scope.cohortName);
@@ -34,7 +36,7 @@ angular.module('transmartBaseUi')
                 $uibModalInstance.close();
             };
 
-            $scope.cancel = function () {
+            vm.cancel = function () {
                 $uibModalInstance.dismiss('cancel');
             };
 
