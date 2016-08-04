@@ -6,8 +6,8 @@
  * @name SidebarCtrl
  */
 angular.module('transmartBaseUi')
-    .controller('SidebarCtrl', ['$scope', '$log', 'StudyListService',
-        function ($scope, $log, StudyListService) {
+    .controller('SidebarCtrl', ['$scope', 'StudyListService',
+        function ($scope, StudyListService) {
 
             var vm = this;
 

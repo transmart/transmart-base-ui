@@ -5,8 +5,8 @@
  * @ngdoc factory
  * @name StudyListService
  */
-angular.module('transmartBaseUi').factory('StudyListService', ['$q', '$log', 'EndpointService', 'StudyListInterceptor',
-    function ($q, $log, EndpointService, StudyListInterceptor) {
+angular.module('transmartBaseUi').factory('StudyListService', ['$q', 'EndpointService', 'StudyListInterceptor',
+    function ($q, EndpointService, StudyListInterceptor) {
 
         var _studiesResolved = false;
         var service = {
@@ -48,7 +48,6 @@ angular.module('transmartBaseUi').factory('StudyListService', ['$q', '$log', 'En
              * If so resolve and return
              */
             if (_studiesResolved && this.studyList.length != null && !force) {
-                $log.debug("Returning cached studies.");
                 deferred.resolve(service.studyList);
                 return deferred.promise;
             }
