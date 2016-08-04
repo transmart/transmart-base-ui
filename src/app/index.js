@@ -52,7 +52,7 @@ angular.module('transmartBaseUi', [
             });
 
             // Default route
-            $urlRouterProvider.otherwise('/');
+            $urlRouterProvider.otherwise('/workspace');
 
             // Set default actions for popover
             $uibTooltipProvider.setTriggers({'click': 'never'});
