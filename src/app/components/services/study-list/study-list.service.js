@@ -47,7 +47,7 @@ angular.module('transmartBaseUi').factory('StudyListService', ['$q', 'EndpointSe
              * Have we already retrieved the studies?
              * If so resolve and return
              */
-            if (service.studiesResolved && service.studyList.length && !force) {
+            if (service.studiesResolved && service.studyList.length > 0 && !force) {
                 deferred.resolve(service.studyList);
                 return deferred.promise;
             }
