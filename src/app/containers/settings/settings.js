@@ -20,7 +20,7 @@ angular.module('transmartBaseUi')
             })
             .state('settings.connections', {
                 parent: 'settings',
-                url: '/settings/connections',
+                url: '/connections',
                 views: {
                     'content@settings': {
                         templateUrl: 'app/containers/settings/connections/connections.html',
