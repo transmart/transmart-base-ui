@@ -3,7 +3,7 @@
 
 describe('StudyListService', function () {
 
-    var StudyListService, httpBackend, EndpointService, Restangular;
+    var StudyListService, httpBackend, EndpointService, Restangular, $rootScope;
 
     /**
      * Super dummy studies only have id and type
@@ -201,8 +201,9 @@ describe('StudyListService', function () {
         module('transmartBaseUi');
     });
 
-    beforeEach(inject(function (_StudyListService_, _$httpBackend_, _EndpointService_, _Restangular_) {
+    beforeEach(inject(function (_StudyListService_, _$httpBackend_, _EndpointService_, _Restangular_, _$rootScope_) {
         httpBackend = _$httpBackend_;
+        $rootScope = _$rootScope_;
         StudyListService = _StudyListService_;
         EndpointService = _EndpointService_;
         Restangular = _Restangular_;
@@ -244,6 +245,28 @@ describe('StudyListService', function () {
         afterEach(function () {
             httpBackend.verifyNoOutstandingExpectation();
             httpBackend.verifyNoOutstandingRequest();
+        });
+
+        it('should return cached studied after the second call.', function() {
+            expect(StudyListService.studiesResolved).toBeFalsy();
+
+            StudyListService.getAllStudies().then(function (res) {
+                expect(EndpointService.getEndpoints).toHaveBeenCalled();
+                expect(Restangular.addResponseInterceptor).toHaveBeenCalled();
+                expect(res.length).toEqual(6);
+            });
+
+            httpBackend.flush();
+
+            expect(StudyListService.studiesResolved).toBeTruthy();
+
+            StudyListService.getAllStudies().then(function (resCached) {
+                // Expect it only to have been called once in the original query.
+                expect(EndpointService.getEndpoints.calls.count()).toEqual(1);
+                expect(resCached.length).toEqual(6);
+            });
+
+            $rootScope.$digest();
         });
 
         it('should load studies depend on number endpoints', function () {

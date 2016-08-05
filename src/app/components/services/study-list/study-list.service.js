@@ -9,7 +9,8 @@ angular.module('transmartBaseUi').factory('StudyListService', ['$q', 'EndpointSe
     function ($q, EndpointService, StudyListInterceptor) {
 
         var service = {
-            studyList: []
+            studyList: [],
+            studiesResolved: false
         };
 
         /**
@@ -25,20 +26,31 @@ angular.module('transmartBaseUi').factory('StudyListService', ['$q', 'EndpointSe
          * @memberof StudyListService
          */
         service.showAll = function () {
-            _.forEach(this.studyList, function (s) {
+            _.forEach(service.studyList, function(s){
                 s.hide = false;
             });
         };
 
         /**
-         * Get all studies
+         * Get all studies. Cached versions are returned when studies have been previously fetched.
+         * Can be forced through the 'force' boolean.
          * @memberof StudyListService
+         * @param boolean - force the retrieval of studies from the endpoints.
          * @return promise {Promise}
          */
-        service.getAllStudies = function () {
+        service.getAllStudies = function (force) {
 
-            var deferred = $q.defer(), defers = [], _this = this;
+            var deferred = $q.defer(), defers = [];
             var fnStudyInterceptor = StudyListInterceptor.customResponseInterceptor;
+
+	        /**
+             * Have we already retrieved the studies?
+             * If so resolve and return
+             */
+            if (service.studiesResolved && service.studyList.length > 0 && !force) {
+                deferred.resolve(service.studyList);
+                return deferred.promise;
+            }
 
             EndpointService.getEndpoints().forEach(function (endpoint) {
                 // add custom response interceptor
@@ -53,10 +65,13 @@ angular.module('transmartBaseUi').factory('StudyListService', ['$q', 'EndpointSe
                     values.forEach(function(val) {
                         _tmp = _.union(_tmp,  val)
                     });
-                    _this.studyList = _tmp;
-                    deferred.resolve(_tmp);
+                    service.studyList = _tmp;
+                    service.studiesResolved = true;
+
+                    deferred.resolve(service.studyList);
                 })
                 .catch(function (err) {
+                    service.studiesResolved = false;
                     deferred.reject(err);
                 });
 
@@ -119,12 +134,17 @@ angular.module('transmartBaseUi').factory('StudyListService', ['$q', 'EndpointSe
                     pair.push(k);
                 }
 
+	            /**
+                 * Search through all the key value pairs of the study and where possible, attached metadata.
+                 */
                 _.each(pair, function (searchString) {
                     var idx = hasKeywordByIndex(searchString, searchKeywords);
-                    if (idx >= 0) {
-                        keyMap.push(searchKeywords[idx]);
-                        isFound = true;
-                    }
+                    _.each(idx, function(v, k){
+                        if (v > -1) {
+                            keyMap.push(k);
+                            isFound = true;
+                        }
+                    });
                 });
 
                 if (isFound && op === 'OR') {
@@ -148,9 +168,14 @@ angular.module('transmartBaseUi').factory('StudyListService', ['$q', 'EndpointSe
          * @returns index {number}
          */
         var hasKeywordByIndex = function (str, keywords) {
-            return _.findIndex(keywords, function (searchKeyword) {
-                return str.match(new RegExp(searchKeyword, 'i'));
+            var s = {};
+            _.each(keywords, function(k){
+                if(str.match(new RegExp(k, 'i'))){
+                    s[k] = 1;
+                }
             });
+
+            return s;
         };
 
         /**
@@ -160,7 +185,7 @@ angular.module('transmartBaseUi').factory('StudyListService', ['$q', 'EndpointSe
          * @returns {Array} - studies which contains search keywords
          */
         service.showStudiesByKeys = function (searchKeywords, operator) {
-            _.forEach(this.studyList, function (s) {
+            _.forEach(service.studyList, function (s) {
                 _.forEach(collectSearchTargetObjects(s), function (_obj) {  // Iterate through
                                                                             // searching objects of a study
                     s.hide = !containsSearchKeys(_obj, searchKeywords, operator);   // Hide the study when it does not

@@ -23,6 +23,10 @@ angular.module('transmartBaseUi')
             $scope.$watch(
                 function() { return vm.searchMode; },
                 function (newVal) {
+                    if (!vm.searchTerm && !vm.searchKeys.length) {
+                        vm.removeAllSearchKeys();
+                        return false;
+                    }
                     vm.operator = newVal ? 'AND' : 'OR';
                     StudyListService.showStudiesByKeys(vm.searchKeys, vm.operator);
                 }
