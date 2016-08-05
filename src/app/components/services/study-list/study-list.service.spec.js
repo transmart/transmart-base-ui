@@ -8,7 +8,8 @@ describe('StudyListService', function () {
         httpBackend,
         EndpointService,
         Restangular,
-        StudyListMocks
+        StudyListMocks,
+        $rootScope;
 
     /**
      * Super dummy studies only have id and type
@@ -20,7 +21,7 @@ describe('StudyListService', function () {
         module('transmartBaseUi');
     });
 
-    beforeEach(inject(function (_StudyListService_, _StudyListMocks_, _$httpBackend_, _EndpointService_, _Restangular_) {
+    beforeEach(inject(function (_StudyListService_, _StudyListMocks_, _$httpBackend_, _EndpointService_, _Restangular_, _$rootScope_) {
         httpBackend = _$httpBackend_;
         $rootScope = _$rootScope_;
         StudyListService = _StudyListService_;
