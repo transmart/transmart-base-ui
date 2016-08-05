@@ -40,7 +40,7 @@ describe('StudyListService', function () {
 
     describe('emptyAll', function () {
         it('should empty studies', function () {
-            StudyListService.studyList = StudyListMocks.baseStudies;
+            StudyListService.studyList = StudyListMocks.baseStudies();
             StudyListService.emptyAll();
             expect(StudyListService.studyList.length).toEqual(0);
         });
@@ -52,7 +52,7 @@ describe('StudyListService', function () {
         beforeEach(function () {
             StudyListService.studyList = [];
 
-            httpBackend.whenGET('/studies').respond(StudyListMocks.studies);
+            httpBackend.whenGET('/studies').respond(StudyListMocks.studies());
 
             spyOn(Restangular, 'addResponseInterceptor');
             _endpoints = [
@@ -104,10 +104,10 @@ describe('StudyListService', function () {
     describe('removeStudiesByEndpoint', function () {
 
         it('should remove studies by selected endpoint', function () {
-            StudyListService.studyList = StudyListMocks.studies;
+            StudyListService.studyList = StudyListMocks.studies();
             expect(StudyListService.studyList.length).toEqual(3);
 
-            StudyListService.removeStudiesByEndpoint(StudyListMocks.endpoint);
+            StudyListService.removeStudiesByEndpoint(StudyListMocks.endpoint());
             expect(StudyListService.studyList.length).toEqual(2);
         });
     });
@@ -115,7 +115,7 @@ describe('StudyListService', function () {
     describe('showStudiesByKeys', function () {
         it('should show studies matched with search keywords', function () {
             var searchKeys = ['GSE', 'DDD', 'XXX'];
-            StudyListService.studyList = StudyListMocks.studies;
+            StudyListService.studyList = StudyListMocks.studies();
             StudyListService.showStudiesByKeys(searchKeys);
             expect(StudyListService.studyList[0].hide).toBe(true);
         });
