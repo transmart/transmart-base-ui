@@ -246,6 +246,26 @@ describe('StudyListService', function () {
             httpBackend.verifyNoOutstandingRequest();
         });
 
+        it('should return cached studied after the second call.', function() {
+            expect(StudyListService._studiesResolved).toBeFalsy();
+
+            StudyListService.getAllStudies().then(function (res) {
+                expect(EndpointService.getEndpoints).toHaveBeenCalled();
+                expect(Restangular.addResponseInterceptor).toHaveBeenCalled();
+                expect(res.length).toEqual(6);
+            });
+
+            httpBackend.flush();
+
+            expect(StudyListService._studiesResolved).toBeTruthy();
+
+            StudyListService.getAllStudies().then(function (resCached) {
+                // Expect it only to have been called once in the original query.
+                expect(EndpointService.getEndpoints.calls.count()).toEqual(1);
+                expect(resCached.length).toEqual(6);
+            });
+        });
+
         it('should load studies depend on number endpoints', function () {
             loadedStudies = StudyListService.getAllStudies().then(function (res) {
                 expect(EndpointService.getEndpoints).toHaveBeenCalled();
