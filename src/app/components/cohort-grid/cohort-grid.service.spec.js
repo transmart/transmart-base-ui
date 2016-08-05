@@ -49,7 +49,7 @@ describe('CohortGridService', function () {
 
     describe('convertToTable', function () {
         var _formatted,
-            _labels = [{name: 'a', ids: 0}, {name: 'b', ids: 1}, {name: 'c', ids: 2}],
+            _labels = [{name: 'a', labelId: 0}, {name: 'b', labelId: 1}, {name: 'c', labelId: 2}],
             _subjects = [{id: 1111, labels: ['aa', 'bb', 'cc']}];
 
         beforeEach(function () {

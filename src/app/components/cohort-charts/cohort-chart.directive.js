@@ -23,7 +23,7 @@ angular.module('transmartBaseUi')
 
                 var _chart,
                     _bodyDiv = el.find('div')[2],
-                    _cached = _.find(ChartService.cs.charts, {id: scope.tsLabel.ids});
+                    _cached = _.find(ChartService.cs.charts, {id: scope.tsLabel.labelId});
 
                 // always create new chart even it's been cached
                 _chart = ChartService.createCohortChart(scope.tsLabel, _bodyDiv);

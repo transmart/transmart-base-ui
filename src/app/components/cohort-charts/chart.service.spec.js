@@ -26,7 +26,7 @@ describe('ChartService Unit Tests', function () {
         beforeEach(function () {
 
             ChartService.reset();
-            ChartService.cs.dims = [
+            ChartService.cs.dimensions = [
                 {
                     dispose: function () {
                     }
@@ -38,7 +38,7 @@ describe('ChartService Unit Tests', function () {
                     }
                 }
             ];
-            ChartService.cs.cross = {
+            ChartService.cs.crossfilter = {
                 remove: function () {
                 }
             };
@@ -48,50 +48,50 @@ describe('ChartService Unit Tests', function () {
 
         it('should invoke filterSubjectsByLabel', function () {
             spyOn(ChartService, 'filterSubjectsByLabel');
-            ChartService.removeLabel({ids: 0});
+            ChartService.removeLabel({labelId: 0});
             expect(ChartService.filterSubjectsByLabel).toHaveBeenCalled();
         });
 
-        it('should invoke .cs.dims[0].dispose', function () {
-            spyOn(ChartService.cs.dims[0], 'dispose');
-            ChartService.removeLabel({ids: 0});
-            expect(ChartService.cs.dims[0].dispose).toHaveBeenCalled();
+        it('should invoke .cs.dimensions[0].dispose', function () {
+            spyOn(ChartService.cs.dimensions[0], 'dispose');
+            ChartService.removeLabel({labelId: 0});
+            expect(ChartService.cs.dimensions[0].dispose).toHaveBeenCalled();
         });
 
         it('should invoke .cs.groups[0].dispose', function () {
             spyOn(ChartService.cs.groups[0], 'dispose');
-            ChartService.removeLabel({ids: 0});
+            ChartService.removeLabel({labelId: 0});
             expect(ChartService.cs.groups[0].dispose).toHaveBeenCalled();
         });
 
-        it('should invoke .cs.cross.remove', function () {
-            ChartService.cs.labels = [{ids: 0}];
-            spyOn(ChartService.cs.cross, 'remove');
-            ChartService.removeLabel({ids: 0});
-            expect(ChartService.cs.cross.remove).toHaveBeenCalled();
+        it('should invoke .cs.crossfilter.remove', function () {
+            ChartService.cs.labels = [{labelId: 0}];
+            spyOn(ChartService.cs.crossfilter, 'remove');
+            ChartService.removeLabel({labelId: 0});
+            expect(ChartService.cs.crossfilter.remove).toHaveBeenCalled();
         });
 
-        it('should not invoke .cs.cross.remove', function () {
-            ChartService.cs.labels = [{ids: 0}, {ids: 1}];
-            spyOn(ChartService.cs.cross, 'remove');
-            ChartService.removeLabel({ids: 0});
-            expect(ChartService.cs.cross.remove).not.toHaveBeenCalled();
+        it('should not invoke .cs.crossfilter.remove', function () {
+            ChartService.cs.labels = [{labelId: 0}, {labelId: 1}];
+            spyOn(ChartService.cs.crossfilter, 'remove');
+            ChartService.removeLabel({labelId: 0});
+            expect(ChartService.cs.crossfilter.remove).not.toHaveBeenCalled();
         });
 
         it('should invoke $broadcast', function () {
             spyOn($rootScope, '$broadcast');
-            ChartService.removeLabel({ids: 0});
+            ChartService.removeLabel({labelId: 0});
             expect($rootScope.$broadcast).toHaveBeenCalled();
         });
 
         it('should invoke dc.redrawAll', function () {
             spyOn(dc, 'redrawAll');
-            ChartService.removeLabel({ids: 0});
+            ChartService.removeLabel({labelId: 0});
             expect(dc.redrawAll).toHaveBeenCalled();
         });
 
         it('should invoke updateDimensions', function () {
-            ChartService.removeLabel({ids: 0});
+            ChartService.removeLabel({labelId: 0});
             expect(ChartService.updateDimensions).toHaveBeenCalled();
         });
 
@@ -111,8 +111,8 @@ describe('ChartService Unit Tests', function () {
                     labels: ['label1']
                 }
             ];
-            _label = {ids: 0};
-            _labelNo = {ids: 99};
+            _label = {labelId: 0};
+            _labelNo = {labelId: 99};
         });
 
         it('should remove label from subject labels', function () {
@@ -150,8 +150,8 @@ describe('ChartService Unit Tests', function () {
                 {id: 1, filter: _filter},
                 {id: 2, filter: _filter}
             ];
-            _label = {ids: 2};
-            _labelNotExist = {ids: 3};
+            _label = {labelId: 2};
+            _labelNotExist = {labelId: 3};
 
             ChartService.cs.charts = _charts;
 

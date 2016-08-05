@@ -24,6 +24,10 @@ angular.module('transmartBaseUi')
                 // Charts
                 vm.cs = ChartService.cs;
 
+
+                // TODO MONITOR THIS
+                vm.selectedSubjets = ChartService.getSelectedSubjects();
+
                 $scope.$watchCollection(function () {
                     return ChartService.cs.labels;
                 }, function (newV, oldV) {

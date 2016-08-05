@@ -28,7 +28,7 @@
                 </button>
                 <button ng-if="vm.cohortChartContainerLabels.length >= 1" class="btn btn-danger ts-btn-node-reset"
                         ng-click="vm.resetActiveLabels()">
-                    Reset<br>({{vm.cs.labels.length}}/{{vm.cs.maxDim}})
+                    Reset<br>({{vm.cs.labels.length}}/{{vm.cs.maxNoOfDimensions}})
                 </button>
                 <button ng-if="vm.cohortChartContainerLabels.length >= 1" class="btn" ng-click="vm.openSaveCohortModal()">
                     Save cohort
@@ -63,7 +63,7 @@
                 <span>{{vm.tabs[1].title}}</span>
             </uib-tab-heading>
             <!--Cohort grid-->
-            <cohort-grid cohort="vm.cs.subjects" headers="vm.cs.labels" ng-show="vm.cs.labels.length > 0"></cohort-grid>
+            <cohort-grid cohort="vm.selectedSubjects" headers="vm.cs.labels" ng-show="vm.cs.labels.length > 0"></cohort-grid>
             <!--Cohort grid no data message-->
             <div class="form-group has-warning" ng-show="vm.cs.labels.length <= 0">
                 <span class="help-block">No cohort selected.</span>
