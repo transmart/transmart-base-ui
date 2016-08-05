@@ -10,7 +10,7 @@ angular.module('transmartBaseUi').factory('StudyListService', ['$q', 'EndpointSe
 
         var service = {
             studyList: [],
-            studiesResolved: false
+            _studiesResolved: false
         };
 
         /**
@@ -47,8 +47,8 @@ angular.module('transmartBaseUi').factory('StudyListService', ['$q', 'EndpointSe
              * Have we already retrieved the studies?
              * If so resolve and return
              */
-            if (this.studiesResolved && !this.studyList.length && !force) {
-                deferred.resolve(this.studyList);
+            if (service._studiesResolved && this.studyList.length != null && !force) {
+                deferred.resolve(service.studyList);
                 return deferred.promise;
             }
 
@@ -65,13 +65,13 @@ angular.module('transmartBaseUi').factory('StudyListService', ['$q', 'EndpointSe
                     values.forEach(function(val) {
                         _tmp = _.union(_tmp,  val)
                     });
-                    _this.studyList = _tmp;
-                    _this.studiesResolved = true;
+                    service.studyList = _tmp;
+                    service._studiesResolved = true;
 
-                    deferred.resolve(_this.studyList);
+                    deferred.resolve(service.studyList);
                 })
                 .catch(function (err) {
-                    _this.studiesResolved = false;
+                    service._studiesResolved = false;
                     deferred.reject(err);
                 });
 

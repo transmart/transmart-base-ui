@@ -248,7 +248,7 @@ describe('StudyListService', function () {
         });
 
         it('should return cached studied after the second call.', function() {
-            expect(StudyListService.studiesResolved).toBeFalsy();
+            expect(StudyListService._studiesResolved).toBeFalsy();
 
             StudyListService.getAllStudies().then(function (res) {
                 expect(EndpointService.getEndpoints).toHaveBeenCalled();
@@ -258,7 +258,7 @@ describe('StudyListService', function () {
 
             httpBackend.flush();
 
-            expect(StudyListService.studiesResolved).toBeTruthy();
+            expect(StudyListService._studiesResolved).toBeTruthy();
 
             StudyListService.getAllStudies().then(function (resCached) {
                 // Expect it only to have been called once in the original query.
