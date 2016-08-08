@@ -7,109 +7,19 @@ describe('TreeNodeService', function () {
         module('transmartBaseUi');
     });
 
-    var $q, deferred, TreeNodeService, httpBackend, ResourceService;
-    var
-        _dummyNode, _restangular,
-        _dummyNodeResponse = {
-            "name": "Endpoints",
-            "key": "\\\\Public Studies\\Public Studies\\GSE8581\\Endpoints\\",
-            "fullName": "\\Public Studies\\GSE8581\\Endpoints\\",
-            "type": "CATEGORICAL_OPTION",
-            "_links": {
-                "self": {
-                    "href": "/studies/gse8581/concepts/Endpoints"
-                },
-                "observations": {
-                    "href": "/studies/gse8581/concepts/Endpoints/observations"
-                },
-                "children": [
-                    {
-                        "href": "/studies/gse8581/concepts/Endpoints/Diagnosis",
-                        "title": "Diagnosis"
-                    },
-                    {
-                        "href": "/studies/gse8581/concepts/Endpoints/FEV1",
-                        "title": "FEV1"
-                    },
-                    {
-                        "href": "/studies/gse8581/concepts/Endpoints/Forced%20Expiratory%20Volume%20Ratio",
-                        "title": "Forced Expiratory Volume Ratio"
-                    }
-                ],
-                "parent": {
-                    "href": "/studies/gse8581/concepts/ROOT"
-                }
-            }
-        },
-        _subjects = {
-            "_links": {
-                "self": {
-                    "href": "/studies/av_app_demo/subjects"
-                }
-            },
-            "_embedded": {
-                "subjects": [
-                    {
-                        "religion": null,
-                        "maritalStatus": null,
-                        "race": null,
-                        "id": 1000430083,
-                        "birthDate": null,
-                        "age": null,
-                        "deathDate": null,
-                        "trial": "AV_APP_DEMO",
-                        "inTrialId": "LN1",
-                        "sex": "UNKOWN",
-                        "_links": {
-                            "self": {
-                                "href": "/studies/av_app_demo/subjects/1000430083"
-                            }
-                        }
-                    },
-                    {
-                        "religion": null,
-                        "maritalStatus": null,
-                        "race": null,
-                        "id": 1000430082,
-                        "birthDate": null,
-                        "age": null,
-                        "deathDate": null,
-                        "trial": "AV_APP_DEMO",
-                        "inTrialId": "LN2",
-                        "sex": "UNKOWN",
-                        "_links": {
-                            "self": {
-                                "href": "/studies/av_app_demo/subjects/1000430082"
-                            }
-                        }
-                    }
-                ]
-            }
-        };
+    var $q, deferred, TreeNodeService, httpBackend, TreeNodeMocks;
+    var _dummyNode;
 
 
-    beforeEach(inject(function (_$q_, _TreeNodeService_, _$httpBackend_, _ResourceService_) {
+    beforeEach(inject(function (_$q_, _TreeNodeService_, _TreeNodeMocks_, _$httpBackend_) {
         $q = _$q_;
         httpBackend = _$httpBackend_;
         deferred = _$q_.defer();
         TreeNodeService = _TreeNodeService_;
-        ResourceService = _ResourceService_;
-        _restangular = ResourceService.createResourceServiceByEndpoint({});
+        TreeNodeMocks = _TreeNodeMocks_;
+
         // set dummy node
-        _dummyNode = {
-            restObj: _restangular,
-            _links: {
-                children: []
-            },
-            _embedded: {
-                ontologyTerm: {
-                    _links: {
-                        children: []
-                    }
-                }
-            },
-            nodes: []
-        };
+        _dummyNode = TreeNodeMocks.dummyNode();
 
     }));
 
@@ -130,7 +40,8 @@ describe('TreeNodeService', function () {
     describe('getTotalSubjects', function () {
 
         it('should return total number of subjects in a node', function () {
-            httpBackend.when('GET', '/subjects').respond(_subjects);
+            var sub = TreeNodeMocks.subjects();
+            httpBackend.when('GET', '/subjects').respond(sub);
             TreeNodeService.getTotalSubjects(_dummyNode).then(function (s) {
                 expect(s).toEqual(2);
             });
@@ -158,6 +69,7 @@ describe('TreeNodeService', function () {
 
         it('should return failed node when request load node failed', function () {
             var prefix = 'concepts/', link = {title: 'SomeLabel'};
+
             httpBackend.when('GET', '/' + prefix + link.title).respond(404);
             spyOn(_dummyNode.restObj, 'one').and.callThrough();
             TreeNodeService.loadNode(_dummyNode, link, prefix).then(function (res) {
@@ -176,12 +88,15 @@ describe('TreeNodeService', function () {
         });
 
         it('should load node details including total number of subjects', function () {
+            var response = TreeNodeMocks.treenodeResponse();
+            var sub = TreeNodeMocks.subjects();
+
             var prefix = 'concepts/', link = {title: 'SomeLabel'};
-            httpBackend.when('GET', '/' + prefix + link.title).respond(_dummyNodeResponse);
-            httpBackend.when('GET', '/' + prefix + link.title + '/subjects').respond(_subjects);
+            httpBackend.when('GET', '/' + prefix + link.title).respond(response);
+            httpBackend.when('GET', '/' + prefix + link.title + '/subjects').respond(sub);
             spyOn(_dummyNode.restObj, 'one').and.callThrough();
             TreeNodeService.loadNode(_dummyNode, link, prefix).then(function (res) {
-                expect(res.restObj.name).toEqual(_dummyNodeResponse.name);
+                expect(res.restObj.name).toEqual(response.name);
                 expect(res.title).toEqual('SomeLabel');
                 expect(res.type).toEqual('CATEGORICAL_OPTION');
                 expect(res.total).toEqual(2);
@@ -220,8 +135,11 @@ describe('TreeNodeService', function () {
         };
 
         it('should load child nodes', function () {
-            httpBackend.when('GET', '/' + prefix + link.title).respond(_dummyNodeResponse);
-            httpBackend.when('GET', '/' + prefix + link.title + '/subjects').respond(_subjects);
+            var res = TreeNodeMocks.treenodeResponse();
+            var sub = TreeNodeMocks.subjects();
+
+            httpBackend.when('GET', '/' + prefix + link.title).respond(res);
+            httpBackend.when('GET', '/' + prefix + link.title + '/subjects').respond(sub);
             spyOn(_dummyNode.restObj, 'one').and.callThrough();
 
             TreeNodeService.getNodeChildren(_dummyNode, 'concepts/').then(function (res) {
