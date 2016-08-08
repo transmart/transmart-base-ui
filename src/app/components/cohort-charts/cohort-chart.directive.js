@@ -43,8 +43,6 @@ angular.module('transmartBaseUi')
                     'tsGridsterItem.sizeX', 'tsGridsterItem.sizeY',
                     'tsGridster.curColWidth', 'tsGridster.curRowHeight'
                 ], function (newValues, oldValues, scope) {
-                    console.log(_cached);
-
                     if (!_.isEqual(newValues, oldValues) || !_cached) {
                         // save gridster info
                         _chart.gridInfo = {
