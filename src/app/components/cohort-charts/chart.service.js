@@ -80,6 +80,7 @@ angular.module('transmartBaseUi').factory('ChartService',
             chartService.reset = function () {
 
                 this.cs.subjects = [];
+                this.cs.selectedSubjects = [];
                 this.cs.chartId = 0;
                 this.cs.charts = [];
                 this.cs.crossfilter = crossfilter();
@@ -89,16 +90,11 @@ angular.module('transmartBaseUi').factory('ChartService',
                 this.cs.labels = [];
                 this.cs.selected = 0;
                 this.cs.total = 0;
+                this.cs.mainDimension = this.cs.crossfilter.dimension(function (d) {
+                    return d.labels;
+                });
 
                 $rootScope.$broadcast('prepareChartContainers', this.cs.labels);
-            };
-
-            chartService.getSelectedSubjects = function () {
-                var lastDimension;
-                if (this.cs.dimensions.length >0) {
-                    lastDimension = this.cs.dimensions.pop();
-                    return lastDimension.top(Infinity);
-                }
             };
 
             var _getType = function (value) {
@@ -201,7 +197,6 @@ angular.module('transmartBaseUi').factory('ChartService',
 
                             if (foundSubject) {
                                 foundSubject.labels[_newLabelId] = obs.value;
-                                console.log('subject found ..', foundSubject)
                             } else {
                                 obs._embedded.subject.labels = {};
                                 obs._embedded.subject.labels[_newLabelId] = obs.value;
@@ -478,7 +473,6 @@ angular.module('transmartBaseUi').factory('ChartService',
                         _chart = DcChartsService.getBarChart(chartService.cs.dimensions[label.labelId], chartService.cs.groups[label.labelId],
                             el, {nodeTitle: label.name, float: true, precision: label.precision});
                         _chart.type = 'BARCHART';
-
                     }
                 }
 
@@ -615,6 +609,7 @@ angular.module('transmartBaseUi').factory('ChartService',
              */
             chartService.updateDimensions = function () {
                 this.cs.selected = this.cs.crossfilter.groupAll().value();    // # of selected subjects
+                this.cs.selectedSubjects = this.cs.mainDimension.top(Infinity);
                 this.cs.total = this.cs.crossfilter.size();                   // # of total of subjects
                 this.cs.cohortLabels = this.cs.labels;
             };
