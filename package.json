@@ -1,12 +1,15 @@
 {
   "name": "transmartBaseUi",
   "version": "0.0.0",
-  "dependencies": {},
+  "dependencies": {
+    "fs": "0.0.2"
+  },
   "scripts": {
     "test": "gulp test",
     "report-coverage": "codecov"
   },
   "devDependencies": {
+    "angular-jsdoc": "^1.4.2",
     "browser-sync": "~2.12.5",
     "browser-sync-spa": "~1.0.3",
     "chalk": "~1.1.1",
@@ -18,8 +21,9 @@
     "gulp-angular-templatecache": "~1.8.0",
     "gulp-autoprefixer": "~3.1.0",
     "gulp-cssnano": "~2.1.1",
+    "gulp-documentation": "^2.2.0",
     "gulp-eslint": "~2.0.0",
-    "gulp-filter": "~4.0.0",
+    "gulp-filter": "~3.0.1",
     "gulp-flatten": "~0.2.0",
     "gulp-htmlmin": "~2.0.0",
     "gulp-inject": "~4.0.0",
@@ -32,12 +36,14 @@
     "gulp-replace": "~0.5.4",
     "gulp-rev": "~7.0.0",
     "gulp-rev-replace": "~0.4.2",
+    "gulp-shell": "^0.5.2",
     "gulp-size": "~2.1.0",
     "gulp-sourcemaps": "~2.0.0-alpha",
     "gulp-uglify": "~1.5.3",
     "gulp-useref": "~3.1.0",
     "gulp-util": "~3.0.6",
     "http-proxy-middleware": "~0.15.0",
+    "jsdoc": "^3.4.0",
     "karma": "~0.13.14",
     "karma-angular-filesort": "~1.0.0",
     "karma-coverage": "~1.0.0",
@@ -49,8 +55,7 @@
     "main-bower-files": "~2.13.0",
     "phantomjs-prebuilt": "~2.1.7",
     "uglify-save-license": "~0.4.1",
-    "wiredep": "~4.0.0",
-    "wrench": "~1.5.8"
+    "wiredep": "~4.0.0"
   },
   "engines": {
     "node": ">=0.10.0"
