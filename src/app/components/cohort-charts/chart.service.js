@@ -116,7 +116,7 @@ angular.module('transmartBaseUi').factory('ChartService',
              * @param obs
              * @param node
              * @param filterObj
-             * @returns {*}
+             * @returns {int} labelId
              * @private
              */
             var _addLabel = function (obs, node, filterObj) {
@@ -269,7 +269,7 @@ angular.module('transmartBaseUi').factory('ChartService',
              * Clear chart's filter
              * @memberof ChartService
              * @param {Object} label
-             * @returns {*}
+             * @returns {Object} chart
              */
             chartService.clearChartFilterByLabel = function (label) {
                 var chart;
