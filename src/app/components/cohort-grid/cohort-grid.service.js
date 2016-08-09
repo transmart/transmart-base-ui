@@ -57,7 +57,7 @@ angular.module('transmartBaseUi').factory('CohortGridService', ['$timeout', func
             var cleanSubject = {};
             cleanSubject.id = subject.id;
             headers.forEach(function (label) {
-                cleanSubject[label.name] = subject.labels[label.ids];
+                cleanSubject[label.name] = subject.labels[label.labelId];
             });
             formatted.push(cleanSubject);
         });
@@ -65,10 +65,12 @@ angular.module('transmartBaseUi').factory('CohortGridService', ['$timeout', func
     };
 
     service.updateCohortGridView = function (subjects, labels) {
-        $timeout(function () { // this is necessary for ui-grid to notice the change at all
-            service.options.data = service.convertToTable(subjects, labels);
-            service.options.columnDefs = service.prepareColumnDefs(labels);
-        });
+            $timeout(function () { // this is necessary for ui-grid to notice the change at all
+                if (subjects) {
+                    service.options.data = service.convertToTable(subjects, labels);
+                    service.options.columnDefs = service.prepareColumnDefs(labels);
+                }
+            });
     };
 
     return service;

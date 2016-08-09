@@ -10,7 +10,7 @@ angular.module('transmartBaseUi')
                 var vm = this;
 
                 // Initialize the chart service only if uninitialized
-                if (!ChartService.cs.isInitialized) {
+                if (!ChartService.cs.mainDimension) {
                     ChartService.reset();
                 }
 
@@ -23,6 +23,15 @@ angular.module('transmartBaseUi')
 
                 // Charts
                 vm.cs = ChartService.cs;
+                vm.selectedSubjects = ChartService.cs.selectedSubjects;
+
+                $scope.$watchCollection(function () {
+                   return ChartService.cs.selectedSubjects;
+                }, function (newValue, oldValue) {
+                    if (!_.isEqual(newValue, oldValue)) {
+                        vm.selectedSubjects = newValue;
+                    }
+                });
 
                 $scope.$watchCollection(function () {
                     return ChartService.cs.labels;
@@ -62,7 +71,7 @@ angular.module('transmartBaseUi')
                 vm.cohortChartContainerLabels = GridsterService.cohortChartContainerLabels;
 
                 // Watch labels container
-                $scope.$watch(function () {
+                $scope.$watchCollection(function () {
                     return GridsterService.cohortChartContainerLabels;
                 }, function (newVal, oldVal) {
                     if (!_.isEqual(newVal, oldVal)) {

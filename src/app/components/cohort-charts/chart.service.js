@@ -11,8 +11,7 @@ angular.module('transmartBaseUi').factory('ChartService',
         function ($q, $rootScope, $timeout, AlertService, DcChartsService, GridsterService) {
 
             var chartService = {
-                cs: {},
-                cohortUpdating: false
+                cs: {}
             };
 
             var _numDisplay = function (cDimension, cGroup, el) {
@@ -27,7 +26,6 @@ angular.module('transmartBaseUi').factory('ChartService',
                 return _number;
             };
 
-
             /**
              * Get the last token when requested model is a string path
              * @memberof ChartService
@@ -39,36 +37,19 @@ angular.module('transmartBaseUi').factory('ChartService',
                 return what.indexOf('\\') === -1 ? what : _t[_t.length - 2];
             };
 
-
-            /**
-             * Render all visible charts
-             * @memberof ChartService
-             * @param charts
-             */
-            chartService.renderAll = function (charts) {
-                if (!charts) {
-                    charts = this.cs.charts;
-                }
-                angular.forEach(charts, function (chart) {
-                    if (!chart.rendered) {
-                        chart.render();
-                        chart.rendered = true;
-                    }
-                });
-            };
-
             var _groupCharts = function (chart1, chart2) {
                 var _combinationLabel = {
-                    ids: chartService.cs.chartId++,
+                    labelId: chartService.cs.chartId++,
                     label: [chart1.tsLabel, chart2.tsLabel],
                     name: chart1.tsLabel.name + ' - ' + chart2.tsLabel.name,
                     resolved: false,
                     study: chart1.tsLabel.study,
                     type: 'combination'
                 };
-                chartService.cs.subjects.forEach(function (sub) {
-                    if (sub.labels[chart1.tsLabel.ids] || sub.labels[chart2.tsLabel.ids]) {
-                        sub.labels[_combinationLabel.ids] = [sub.labels[chart1.tsLabel.ids], sub.labels[chart2.tsLabel.ids]];
+                chartService.cs.subjects.forEach(function (subject) {
+                    if (subject.labels[chart1.tsLabel.labelId] || subject.labels[chart2.tsLabel.labelId]) {
+                        subject.labels[_combinationLabel.labelId] = [subject.labels[chart1.tsLabel.labelId],
+                            subject.labels[chart2.tsLabel.labelId]];
                     }
                 });
                 chartService.cs.labels.push(_combinationLabel);
@@ -99,25 +80,19 @@ angular.module('transmartBaseUi').factory('ChartService',
             chartService.reset = function () {
 
                 this.cs.subjects = [];
+                this.cs.selectedSubjects = [];
                 this.cs.chartId = 0;
                 this.cs.charts = [];
-                this.cs.cross = crossfilter();
-                this.cs.dims = {};
-                this.cs.maxDim = 20;
+                this.cs.crossfilter = crossfilter();
+                this.cs.dimensions = [];
+                this.cs.maxNoOfDimensions = 20;
                 this.cs.groups = {};
                 this.cs.labels = [];
                 this.cs.selected = 0;
                 this.cs.total = 0;
-                this.cs.dimensions = 0;
-
-                _groupingChart = {};
-
-                // Preserve main dimension
-                this.cs.mainDim = this.cs.cross.dimension(function (d) {
+                this.cs.mainDimension = this.cs.crossfilter.dimension(function (d) {
                     return d.labels;
                 });
-
-                this.cs.isInitialized = true;
 
                 $rootScope.$broadcast('prepareChartContainers', this.cs.labels);
             };
@@ -138,27 +113,33 @@ angular.module('transmartBaseUi').factory('ChartService',
 
             /**
              * Add new label to list and check data type
-             * @param label
-             * @param value
+             * @param obs
+             * @param node
+             * @param filterObj
+             * @returns {int} labelId
+             * @private
              */
             var _addLabel = function (obs, node, filterObj) {
 
                 // Check if label has already been added
                 var label = _.find(chartService.cs.labels, {label: obs.label});
                 var filters;
-                if (filterObj) filters = filterObj.filterWords;
+
+                if (filterObj) {
+                    filters = filterObj.filterWords;
+                }
 
                 if (!label) {
 
                     //Check that the maximum number of dimensions has not been reached
-                    if (chartService.cs.labels.length < chartService.cs.maxDim) {
+                    if (chartService.cs.labels.length < chartService.cs.maxNoOfDimensions) {
                         // Create the new label object
 
                         label = {
                             label: obs.label,
                             type: _getType(obs.value),
                             name: _getLastToken(obs.label),
-                            ids: chartService.cs.chartId++,
+                            labelId: chartService.cs.chartId++,
                             study: node.study,
                             resolved: false,
                             filters: filters
@@ -180,27 +161,7 @@ angular.module('transmartBaseUi').factory('ChartService',
                     label.precision = label.precision ? Math.min(label.precision, precision) : precision;
                 }
 
-                return label.ids;
-            };
-
-            /**
-             * Remove all the filters applied to the label dimensions
-             * @memberof ChartService
-             */
-            var _removeAllLabelFilters = function () {
-                _.each(chartService.cs.dims, function (dim) {
-                    dim.filterAll();
-                });
-            };
-
-            /**
-             * Create the Crossfilter instance from the subject data
-             * @memberof ChartService
-             */
-            var _populateCohortCrossfilter = function () {
-                _removeAllLabelFilters();
-                chartService.cs.cross.remove();
-                chartService.cs.cross.add(chartService.cs.subjects);
+                return label.labelId;
             };
 
             /**
@@ -211,8 +172,6 @@ angular.module('transmartBaseUi').factory('ChartService',
              * @returns {*}
              */
             chartService.addNodeToActiveCohortSelection = function (node, filters) {
-                chartService.cohortUpdating = true;
-
                 var _filter, _deferred = $q.defer();
 
                 var _getFilter = function (label, filters) {
@@ -231,32 +190,25 @@ angular.module('transmartBaseUi').factory('ChartService',
                             }
 
                             // Add the concept to the list of chart labels
-                            var _id = _addLabel(obs, node, _filter);
+                            var _newLabelId = _addLabel(obs, node, _filter);
 
                             // Check if the subject of the observation is already present
-                            var found = _.find(chartService.cs.subjects, {id: obs._embedded.subject.id});
+                            var foundSubject = _.find(chartService.cs.subjects, {id: obs._embedded.subject.id});
 
-                            if (found) {
-                                found.labels[_id] = obs.value;
+                            if (foundSubject) {
+                                foundSubject.labels[_newLabelId] = obs.value;
                             } else {
                                 obs._embedded.subject.labels = {};
-                                obs._embedded.subject.labels[_id] = obs.value;
+                                obs._embedded.subject.labels[_newLabelId] = obs.value;
                                 chartService.cs.subjects.push(obs._embedded.subject);
+                                chartService.cs.crossfilter.add([obs._embedded.subject]);
                             }
                         }
                     });
 
-                    _populateCohortCrossfilter();
-
                     // Notify the applicable controller that the chart directive instances
                     // can be created
                     GridsterService.resize('#main-chart-container', chartService.cs.labels, false);
-
-                    dc.redrawAll();
-
-                    chartService.cohortUpdating = false;
-                    chartService.updateDimensions();
-
                     _deferred.resolve();
                 }, function (err) {
                     _deferred.reject('Cannot get data from the end-point.' + err);
@@ -275,7 +227,7 @@ angular.module('transmartBaseUi').factory('ChartService',
             chartService.filterSubjectsByLabel = function (subjects, label) {
                 subjects.forEach(function (subject, subjectIdx) {
                     subject.labels = _.filter(subject.labels, function (subjectLabel, subjectLabelIdx) {
-                        return subjectLabelIdx !== label.ids;
+                        return subjectLabelIdx !== label.labelId;
                     });
                     if (subject.labels.length < 1) {
                         subjects.splice(subjectIdx, 1);
@@ -293,7 +245,7 @@ angular.module('transmartBaseUi').factory('ChartService',
              */
             var _removeLabelFromLabels = function (labels, label) {
                 return _.reject(labels, function (el) {
-                    return el.ids === label.ids;
+                    return el.labelId === label.labelId;
                 });
             };
 
@@ -306,27 +258,26 @@ angular.module('transmartBaseUi').factory('ChartService',
              */
             var _removeChartFromCharts = function (charts, label) {
                 return _.filter(charts, function (chartToBeRemoved) {
-                    if (chartToBeRemoved.id === label.ids) {
+                    if (chartToBeRemoved.id === label.labelId) {
                         chartToBeRemoved.filter(null); // clear filter
                     }
-                    return chartToBeRemoved.id !== label.ids;
+                    return chartToBeRemoved.id !== label.labelId;
                 });
             };
 
             /**
              * Clear chart's filter
              * @memberof ChartService
-             * @param  {Array}charts
              * @param {Object} label
-             * @returns {*}
+             * @returns {Object} chart
              */
             chartService.clearChartFilterByLabel = function (label) {
                 var chart;
-                chart = _.find(this.cs.charts, {id: label.ids});
+                chart = _.find(this.cs.charts, {id: label.labelId});
                 if (chart) {
                     chart.filter(null);
                     dc.redrawAll();
-                    this.updateDimensions();
+                    chartService.updateDimensions();
                 }
                 return chart;
             };
@@ -346,16 +297,16 @@ angular.module('transmartBaseUi').factory('ChartService',
 
                     // Remove label from cs.subjects and remove subjects no longer associated
                     // with any label
-                    this.cs.subjects = this.filterSubjectsByLabel(this.cs.subjects, label);
+                    this.cs.subjects = chartService.filterSubjectsByLabel(this.cs.subjects, label);
 
                     // Remove dimension and group associated with the label
-                    this.cs.dims[label.ids].dispose();
-                    this.cs.groups[label.ids].dispose();
+                    this.cs.dimensions[label.labelId].dispose();
+                    this.cs.groups[label.labelId].dispose();
 
                     // Remove data in crossfilter if no more label is selected
                     if (this.cs.labels.length < 1) {
                         // Removes all records that match the current filter
-                        this.cs.cross.remove();
+                        this.cs.crossfilter.remove();
                     }
 
                     // Update charts
@@ -375,22 +326,24 @@ angular.module('transmartBaseUi').factory('ChartService',
 
                 // Check if label0 or label1 has categorical values
                 if (label.label[0].type === 'string' || label.label[1].type === 'string') {
+
                     // Check if one of them is not categorical
                     if (label.label[0].type !== 'string' || label.label[1].type !== 'string') {
+
                         // Always categorical on X axis
                         var _valueX = label.label[0].type === 'string' ? 0 : 1;
                         var _valueY = _valueX === 0 ? 1 : 0;
 
-                        chartService.cs.dims[label.ids] = chartService.cs.cross.dimension(function (d) {
-                            return d.labels[label.ids] ? d.labels[label.ids][_valueX] : undefined;
+                        chartService.cs.dimensions[label.labelId] = chartService.cs.crossfilter.dimension(function (d) {
+                            return d.labels[label.labelId] ? d.labels[label.labelId][_valueX] : undefined;
                         });
-                        chartService.cs.groups[label.ids] = chartService.cs.dims[label.ids].group().reduce(
+                        chartService.cs.groups[label.labelId] = chartService.cs.dimensions[label.labelId].group().reduce(
                             function (p, v) {
-                                p.push(v.labels[label.ids] ? +v.labels[label.ids][_valueY] : undefined);
+                                p.push(v.labels[label.labelId] ? +v.labels[label.labelId][_valueY] : undefined);
                                 return p;
                             },
                             function (p, v) {
-                                p.splice(p.indexOf(v.labels[label.ids] ? +v.labels[label.ids][_valueY] : undefined), 1);
+                                p.splice(p.indexOf(v.labels[label.labelId] ? +v.labels[label.labelId][_valueY] : undefined), 1);
                                 return p;
                             },
                             function () {
@@ -398,26 +351,27 @@ angular.module('transmartBaseUi').factory('ChartService',
                             }
                         );
 
-                        _max = chartService.cs.dims[label.label[_valueY].ids].top(1)[0].labels[label.label[_valueY].ids];
-                        _min = chartService.cs.dims[label.label[_valueY].ids].bottom(1)[0].labels[label.label[_valueY].ids];
+                        _max = chartService.cs.dimensions[label.label[_valueY].labelId].top(1)[0].labels[label.label[_valueY].labelId];
+                        _min = chartService.cs.dimensions[label.label[_valueY].labelId].bottom(1)[0].labels[label.label[_valueY].labelId];
 
-                        _chart = DcChartsService.getBoxPlot(chartService.cs.dims[label.ids], chartService.cs.groups[label.ids], el, {
+                        _chart = DcChartsService.getBoxPlot(chartService.cs.dimensions[label.labelId], chartService.cs.groups[label.labelId], el, {
                             xLab: label.label[_valueX].name,
                             yLab: label.label[_valueY].name,
                             min: _min,
                             max: _max
                         });
+
                         _chart.type = 'BOXPLOT';
 
                     } else {
                         // Both labels are categorical
-                        chartService.cs.dims[label.ids] = chartService.cs.cross.dimension(function (d) {
-                            return [d.labels[label.ids] ? d.labels[label.ids][0] : undefined,
-                                d.labels[label.ids] ? d.labels[label.ids][1] : undefined];
+                        chartService.cs.dimensions[label.labelId] = chartService.cs.crossfilter.dimension(function (d) {
+                            return [d.labels[label.labelId] ? d.labels[label.labelId][0] : undefined,
+                                d.labels[label.labelId] ? d.labels[label.labelId][1] : undefined];
                         });
-                        chartService.cs.groups[label.ids] = chartService.cs.dims[label.ids].group();
+                        chartService.cs.groups[label.labelId] = chartService.cs.dimensions[label.labelId].group();
 
-                        _chart = DcChartsService.getHeatMap(chartService.cs.dims[label.ids], chartService.cs.groups[label.ids], el, {
+                        _chart = DcChartsService.getHeatMap(chartService.cs.dimensions[label.labelId], chartService.cs.groups[label.labelId], el, {
                             xLab: label.label[0].name,
                             yLab: label.label[1].name
                         });
@@ -427,21 +381,27 @@ angular.module('transmartBaseUi').factory('ChartService',
                     }
                 } else {
                     // Both labels are numerical, create a scatter plot
-                    chartService.cs.dims[label.ids] = chartService.cs.cross.dimension(function (d) {
-                        return [d.labels[label.ids] ? d.labels[label.ids][0] : undefined,
-                            d.labels[label.ids] ? d.labels[label.ids][1] : undefined];
+                    chartService.cs.dimensions[label.labelId] = chartService.cs.crossfilter.dimension(function (d) {
+                        return [d.labels[label.labelId] ? d.labels[label.labelId][0] : undefined,
+                            d.labels[label.labelId] ? d.labels[label.labelId][1] : undefined];
                     });
-                    chartService.cs.groups[label.ids] = chartService.cs.dims[label.ids].group();
 
-                    _max = chartService.cs.dims[label.label[0].ids].top(1)[0].labels[label.label[0].ids];
-                    _min = chartService.cs.dims[label.label[0].ids].bottom(1)[0].labels[label.label[0].ids];
+                    chartService.cs.groups[label.labelId] = chartService.cs.dimensions[label.labelId].group();
 
-                    _chart = DcChartsService.getScatterPlot(chartService.cs.dims[label.ids], chartService.cs.groups[label.ids], el, {
-                        min: _min,
-                        max: _max,
-                        xLab: label.label[0].name,
-                        yLab: label.label[1].name
-                    });
+                    _max = chartService.cs.dimensions[label.label[0].labelId].top(1)[0].labels[label.label[0].labelId];
+                    _min = chartService.cs.dimensions[label.label[0].labelId].bottom(1)[0].labels[label.label[0].labelId];
+
+                    _chart = DcChartsService.getScatterPlot(
+                        chartService.cs.dimensions[label.labelId],
+                        chartService.cs.groups[label.labelId],
+                        el,
+                        {
+                            min: _min,
+                            max: _max,
+                            xLab: label.label[0].name,
+                            yLab: label.label[1].name
+                        }
+                    );
 
                     _chart.type = 'SCATTER';
                 }
@@ -458,12 +418,17 @@ angular.module('transmartBaseUi').factory('ChartService',
             chartService.createCohortChart = function (label, el) {
                 var _chart;
 
+                /**
+                 *
+                 * @param _missingLabelId
+                 * @private
+                 */
                 var _defaultDim = function (_missingLabelId) {
-                    chartService.cs.dims[label.ids] = chartService.cs.cross.dimension(function (d) {
+                    chartService.cs.dimensions[label.labelId] = chartService.cs.crossfilter.dimension(function (d) {
                         var lbl = _missingLabelId || undefined;
-                        return d.labels[label.ids] === undefined ? lbl : d.labels[label.ids];
+                        return d.labels[label.labelId] === undefined ? lbl : d.labels[label.labelId];
                     });
-                    chartService.cs.groups[label.ids] = chartService.cs.dims[label.ids].group();
+                    chartService.cs.groups[label.labelId] = chartService.cs.dimensions[label.labelId].group();
                 };
 
                 if (label.type === 'combination') {
@@ -472,19 +437,19 @@ angular.module('transmartBaseUi').factory('ChartService',
                     // Create a number display if highdim
                     if (label.type === 'highdim') {
                         _defaultDim();
-                        _chart = _numDisplay(chartService.cs.dims[label.ids], chartService.cs.groups[label.ids], el);
+                        _chart = _numDisplay(chartService.cs.dimensions[label.labelId], chartService.cs.groups[label.labelId], el);
                         _chart.type = 'NUMBER';
 
                         // Create a PIECHART if categorical
                     } else if (label.type === 'string' || label.type === 'object') {
                         _defaultDim("N/A");
-                        _chart = DcChartsService.getPieChart(chartService.cs.dims[label.ids], chartService.cs.groups[label.ids], el);
+                        _chart = DcChartsService.getPieChart(chartService.cs.dimensions[label.labelId], chartService.cs.groups[label.labelId], el);
                         _chart.type = 'PIECHART';
 
                         // Create a BARCHART if numerical
                     } else if (label.type === 'number') {
                         _defaultDim(Infinity);
-                        var group = chartService.cs.dims[label.ids].group();
+                        var group = chartService.cs.dimensions[label.labelId].group();
                         // Filter out all records that do not have a value (which are set to Infinity in the dimension)
                         // To do this, we clone the group (we want to keep the methods) and override all().
                         var filteredGroup = {};
@@ -494,25 +459,24 @@ angular.module('transmartBaseUi').factory('ChartService',
                                 return d.key != Infinity;
                             });
                         };
-                        chartService.cs.groups[label.ids] = filteredGroup
-                        _chart = DcChartsService.getBarChart(chartService.cs.dims[label.ids], filteredGroup, el,
+                        chartService.cs.groups[label.labelId] = filteredGroup;
+                        _chart = DcChartsService.getBarChart(chartService.cs.dimensions[label.labelId], filteredGroup, el,
                             {nodeTitle: label.name});
                         _chart.type = 'BARCHART';
 
                         // Create a BARCHART WITH BINS if floating point values
                     } else if (label.type === 'float') {
-                        chartService.cs.dims[label.ids] = chartService.cs.cross.dimension(function (d) {
-                            return d.labels[label.ids] === undefined ? undefined : d.labels[label.ids].toFixed(label.precision === 0 ? 0 : label.precision);
+                        chartService.cs.dimensions[label.labelId] = chartService.cs.crossfilter.dimension(function (d) {
+                            return d.labels[label.labelId] === undefined ? undefined : d.labels[label.labelId].toFixed(label.precision === 0 ? 0 : label.precision);
                         });
-                        chartService.cs.groups[label.ids] = chartService.cs.dims[label.ids].group();
-                        _chart = DcChartsService.getBarChart(chartService.cs.dims[label.ids], chartService.cs.groups[label.ids],
+                        chartService.cs.groups[label.labelId] = chartService.cs.dimensions[label.labelId].group();
+                        _chart = DcChartsService.getBarChart(chartService.cs.dimensions[label.labelId], chartService.cs.groups[label.labelId],
                             el, {nodeTitle: label.name, float: true, precision: label.precision});
                         _chart.type = 'BARCHART';
-
                     }
                 }
 
-                _chart.id = label.ids;
+                _chart.id = label.labelId;
                 _chart.tsLabel = label;
 
                 _chart.render(); // render chart here
@@ -525,6 +489,11 @@ angular.module('transmartBaseUi').factory('ChartService',
                  */
                 if (label.filters !== undefined) {
                     _filterChart(_chart, label.filters);
+                }
+
+                // reapply filters when chart has filters
+                if (_chart.filters()) {
+                    _filterChart(_chart, _chart.filters());
                 }
 
                 return _chart;
@@ -635,13 +604,13 @@ angular.module('transmartBaseUi').factory('ChartService',
             };
 
             /**
-             * Update dimensions
+             * Get summary data
              * @memberof ChartService
              */
             chartService.updateDimensions = function () {
-                this.cs.selected = this.cs.cross.groupAll().value();
-                this.cs.total = this.cs.cross.size();
-                this.cs.subjects = this.cs.mainDim.top(Infinity);
+                this.cs.selected = this.cs.crossfilter.groupAll().value();    // # of selected subjects
+                this.cs.selectedSubjects = this.cs.mainDimension.top(Infinity);
+                this.cs.total = this.cs.crossfilter.size();                   // # of total of subjects
                 this.cs.cohortLabels = this.cs.labels;
             };
 
@@ -673,8 +642,7 @@ angular.module('transmartBaseUi').factory('ChartService',
                         chartService.updateDimensions();
                         dc.renderAll();
                     }
-                }
-                else if(_.isArray(criteria)){
+                } else if(_.isArray(criteria)){
                     criteria.forEach(function (word) {
                         _filterChart(chart, word);
                     });
