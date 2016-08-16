@@ -5,7 +5,8 @@
 angular.module('smartRApp').directive('conceptBox', [
     '$rootScope',
     '$http',
-    function($rootScope, $http) {
+    'EndpointService',
+    function($rootScope, $http, EndpointService) {
         return {
             restrict: 'E',
             scope: {
@@ -44,6 +45,12 @@ angular.module('smartRApp').directive('conceptBox', [
                     dtgI.notifyDrop = dropOntoCategorySelection; // jshint ignore:line
                 };
 
+                scope.onNodeDropEvent = function (event, info, node) {
+                    scope.conceptGroup.concepts.push(node);
+                    console.log(node);
+                    scope.validate();
+                };
+
                 var typeMap = {
                     hleaficon: 'HD',
                     null: 'LD-categorical', // FIXME: alphaicon does not exist yet in transmartApp master branch
@@ -56,6 +63,7 @@ angular.module('smartRApp').directive('conceptBox', [
                 };
 
                 var _getNodeDetails = function(conceptKeys, callback) {
+                    var headers = EndpointService.getMasterEndpoint().restangular.defaultHeaders;
                     var request = $http({
                         url: pageInfo.basePath + '/SmartR/nodeDetails',
                         method: 'POST',
@@ -64,7 +72,8 @@ angular.module('smartRApp').directive('conceptBox', [
                         },
                         data: {
                             conceptKeys: conceptKeys
-                        }
+                        },
+                        headers: headers
                     });
 
                     request.then(
@@ -74,10 +83,6 @@ angular.module('smartRApp').directive('conceptBox', [
                         });
                 };
 
-                // activate drag & drop for our conceptBox and color it once it is rendered
-                scope.$evalAsync(function() {
-                    //_activateDragAndDrop();
-                });
 
                 // bind the button to its clearing functionality
                 template_btn.addEventListener('click', function() {
