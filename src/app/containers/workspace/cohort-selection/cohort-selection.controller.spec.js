@@ -1,23 +1,15 @@
 'use strict';
 
 describe('MainCtrl', function () {
+    var $controller, AlertService, ctrl, scope;
+
     beforeEach(module('transmartBaseUi'));
 
-    var $controller, AlertService;
-
-    beforeEach(inject(function (_$controller_, _AlertService_) {
+    beforeEach(inject(function (_$controller_, _AlertService_, _$rootScope_) {
         // The injector unwraps the underscores (_) from around the parameter names when matching
+        scope = _$rootScope_.$new();
         $controller = _$controller_;
         AlertService = _AlertService_;
+        ctrl = $controller('CohortSelectionCtrl', {$scope: scope});
     }));
-
-    describe('MainPage', function () {
-        var $scope, controller;
-
-        beforeEach(function () {
-            $scope = {};
-            controller = $controller('CohortSelectionCtrl', {$scope: $scope});
-        });
-    });
-
 });

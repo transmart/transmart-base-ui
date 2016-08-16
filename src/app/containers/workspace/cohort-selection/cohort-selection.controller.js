@@ -113,6 +113,25 @@ angular.module('transmartBaseUi')
                  */
                 vm.onNodeDropEvent = function (event, info, node) {
                     ChartService.onNodeDrop(node);
+                    angular.element(event.target).removeClass('chart-container-hover');
+                };
+
+                /**
+                 * Add class when on node over the chart container
+                 * @param e
+                 */
+                vm.onNodeOver = function (e) {
+                    console.log(e)
+                    console.log(angular.element(e.target).addClass('chart-container-hover'))
+                    return angular.element(e.target).addClass('chart-container-hover');
+                };
+
+                /**
+                 * Remove class when on node over the chart container
+                 * @param e
+                 */
+                vm.onNodeOut = function (e) {
+                    angular.element(e.target).removeClass('chart-container-hover');
                 };
 
                 /**
