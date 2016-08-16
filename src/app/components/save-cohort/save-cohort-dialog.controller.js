@@ -6,8 +6,10 @@
  * @name SaveCohortDialogCtrl
  */
 angular.module('transmartBaseUi')
-    .controller('SaveCohortDialogCtrl', ['$scope', '$uibModalInstance', 'EndpointService', 'ChartService', 'QueryBuilderService', 'AlertService',
-        function ($scope, $uibModalInstance, EndpointService, ChartService, QueryBuilderService, AlertService) {
+    .controller('SaveCohortDialogCtrl', ['$scope', '$uibModalInstance', 'EndpointService', 'ChartService',
+        'QueryBuilderService', 'AlertService', 'CohortSelectionService',
+        function ($scope, $uibModalInstance, EndpointService, ChartService, QueryBuilderService, AlertService,
+                  CohortSelectionService) {
 
             var vm = this;
 
@@ -28,6 +30,7 @@ angular.module('transmartBaseUi')
                     .then(function (result) {
                         AlertService.add('success', 'Cohort saved OK: "' + $scope.cohortName +
                             '", id: ' + result.id + ', size: ' + result.setSize);
+                        CohortSelectionService.setSelection([result.id]);
                     }, function (result) {
                         AlertService.add('danger', 'There was an error saving cohort "' +
                             $scope.cohortName + '": ' + result.data.message);

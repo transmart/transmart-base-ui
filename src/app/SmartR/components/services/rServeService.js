@@ -167,7 +167,7 @@ angular.module('smartRApp').factory('rServeService', [
             state.currentRequestAbort();
 
             var canceler = $q.defer();
-            var runRequest = $http({
+            var _httpArg = {
                 url: baseURL + '/ScriptExecution/run',
                 method: 'POST',
                 timeout: canceler.promise,
@@ -182,7 +182,9 @@ angular.module('smartRApp').factory('rServeService', [
                     taskType: taskData.taskType,
                     workflow: workflow
                 }
-            });
+            };
+            console.log(_httpArg);
+            var runRequest = $http(_httpArg);
 
             runRequest.finally(function () {
                 state.currentRequestAbort = NOOP_ABORT;
@@ -293,7 +295,7 @@ angular.module('smartRApp').factory('rServeService', [
                         if (typeof dataConstraints !== 'undefined') {
                             _arg.dataConstraints = dataConstraints;
                         }
-
+                        console.log(_arg);
                         service.startScriptExecution({
                             taskType: 'fetchData',
                             arguments: _arg

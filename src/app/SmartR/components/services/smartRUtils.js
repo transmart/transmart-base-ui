@@ -2,16 +2,21 @@
 
 'use strict';
 
-angular.module('smartRApp').factory('smartRUtils', ['$q', function($q) {
+angular.module('smartRApp').factory('smartRUtils', ['$q', 'CohortSelectionService', function($q,
+                                                                                             CohortSelectionService) {
 
     var service = {};
+
+    var nodeToKey = function (node) {
+        return node.restObj.key;
+    };
 
     service.conceptBoxMapToConceptKeys = function smartRUtils_conceptBoxMapToConceptKeys(conceptBoxMap) {
         var allConcepts = {};
         Object.keys(conceptBoxMap).forEach(function(group) {
             var concepts = conceptBoxMap[group].concepts;
             concepts.forEach(function(concept, idx) {
-                allConcepts[group + '_' + 'n' + idx] = concept;
+                allConcepts[group + '_' + 'n' + idx] = nodeToKey(concept);
             });
         });
         return allConcepts;
@@ -87,34 +92,12 @@ angular.module('smartRApp').factory('smartRUtils', ['$q', function($q) {
     };
 
     service.countCohorts = function() {
-        return !window.isSubsetEmpty(1) + !window.isSubsetEmpty(2);
+        return CohortSelectionService.getSelection().length;
     };
 
     service.getSubsetIds = function smartRUtil_getSubsetIds() {
         var defer = $q.defer();
-
-        function resolveResult() {
-            var res = window.GLOBAL.CurrentSubsetIDs.slice(1).map(function (v) {
-                return v || null;
-            });
-            if (res.some(function (el) {
-                    return el !== null;
-                })) {
-                defer.resolve(res);
-            } else {
-                defer.reject();
-            }
-        }
-
-        for (var i = 1; i <= window.GLOBAL.NumOfSubsets; i++) {
-            if (!window.isSubsetEmpty(i) && !window.GLOBAL.CurrentSubsetIDs[i]) {
-                window.runAllQueries(resolveResult);
-                return defer.promise;
-            }
-        }
-
-        resolveResult();
-
+        defer.resolve(CohortSelectionService.getSelection());
         return defer.promise;
     };
 
