@@ -121,8 +121,6 @@ angular.module('transmartBaseUi')
                  * @param e
                  */
                 vm.onNodeOver = function (e) {
-                    console.log(e)
-                    console.log(angular.element(e.target).addClass('chart-container-hover'))
                     return angular.element(e.target).addClass('chart-container-hover');
                 };
 
