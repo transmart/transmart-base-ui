@@ -24,77 +24,29 @@ describe('ChartService Unit Tests', function () {
     describe('removeLabel', function () {
 
         beforeEach(function () {
-
             ChartService.reset();
-            ChartService.cs.dimensions = [
-                {
-                    dispose: function () {
-                    }
-                }
-            ];
-            ChartService.cs.groups = [
-                {
-                    dispose: function () {
-                    }
-                }
-            ];
-            ChartService.cs.crossfilter = {
-                remove: function () {
-                }
-            };
+            ChartService.cs.charts = [{id:0, filter: function (){}}, {id:1,  filter: function (){}}, {id:2,  filter: function (){}}];
+            ChartService.cs.dimensions = [{d:0}, {d:1}, {d:2}];
+            ChartService.cs.groups = [{g:0}, {g:1}, {g:2}];
+            ChartService.cs.labels = [{labelId:0}, {labelId:1}, {labelId:2}];
 
             spyOn(ChartService, 'updateDimensions');
-        });
-
-        it('should invoke filterSubjectsByLabel', function () {
-            spyOn(ChartService, 'filterSubjectsByLabel');
-            ChartService.removeLabel({labelId: 0});
-            expect(ChartService.filterSubjectsByLabel).toHaveBeenCalled();
-        });
-
-        it('should invoke .cs.dimensions[0].dispose', function () {
-            spyOn(ChartService.cs.dimensions[0], 'dispose');
-            ChartService.removeLabel({labelId: 0});
-            expect(ChartService.cs.dimensions[0].dispose).toHaveBeenCalled();
-        });
-
-        it('should invoke .cs.groups[0].dispose', function () {
-            spyOn(ChartService.cs.groups[0], 'dispose');
-            ChartService.removeLabel({labelId: 0});
-            expect(ChartService.cs.groups[0].dispose).toHaveBeenCalled();
-        });
-
-        it('should invoke .cs.crossfilter.remove', function () {
-            ChartService.cs.labels = [{labelId: 0}];
-            spyOn(ChartService.cs.crossfilter, 'remove');
-            ChartService.removeLabel({labelId: 0});
-            expect(ChartService.cs.crossfilter.remove).toHaveBeenCalled();
-        });
-
-        it('should not invoke .cs.crossfilter.remove', function () {
-            ChartService.cs.labels = [{labelId: 0}, {labelId: 1}];
-            spyOn(ChartService.cs.crossfilter, 'remove');
-            ChartService.removeLabel({labelId: 0});
-            expect(ChartService.cs.crossfilter.remove).not.toHaveBeenCalled();
-        });
-
-        it('should invoke $broadcast', function () {
+            spyOn(ChartService, 'reset');
             spyOn($rootScope, '$broadcast');
-            ChartService.removeLabel({labelId: 0});
-            expect($rootScope.$broadcast).toHaveBeenCalled();
         });
 
-        it('should invoke dc.redrawAll', function () {
-            spyOn(dc, 'redrawAll');
-            ChartService.removeLabel({labelId: 0});
-            expect(dc.redrawAll).toHaveBeenCalled();
-        });
-
-        it('should invoke updateDimensions', function () {
-            ChartService.removeLabel({labelId: 0});
+        it ('remove chart from cs.charts', function () {
+            ChartService.removeLabel({labelId:2});
+            expect( _.find(ChartService.cs.charts, {id:2})).toEqual(undefined);
+            expect( _.find(ChartService.cs.labels, {id:2})).toEqual(undefined);
+            expect( _.find(ChartService.cs.subjects, {id:2})).toEqual(undefined);
+            expect( _.find(ChartService.cs.groups, {id:2})).toEqual(undefined);
             expect(ChartService.updateDimensions).toHaveBeenCalled();
+            expect($rootScope.$broadcast).toHaveBeenCalled();
+            ChartService.removeLabel({labelId:0});
+            ChartService.removeLabel({labelId:1});
+            expect(ChartService.reset).toHaveBeenCalled();
         });
-
     });
 
     describe('filterSubjectsByLabel', function () {
@@ -239,7 +191,7 @@ describe('ChartService Unit Tests', function () {
             chart.tsLabel.label = chartName;
             chart.filters = function () {
                 return [];
-            }
+            };
             ChartService.cs.charts.push(chart);
 
             spyOn(ChartService, 'onNodeDrop').and.callThrough();

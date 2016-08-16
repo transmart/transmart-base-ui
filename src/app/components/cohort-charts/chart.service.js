@@ -86,7 +86,7 @@ angular.module('transmartBaseUi').factory('ChartService',
                 this.cs.crossfilter = crossfilter();
                 this.cs.dimensions = [];
                 this.cs.maxNoOfDimensions = 20;
-                this.cs.groups = {};
+                this.cs.groups = [];
                 this.cs.labels = [];
                 this.cs.selected = 0;
                 this.cs.total = 0;
@@ -300,8 +300,8 @@ angular.module('transmartBaseUi').factory('ChartService',
                     this.cs.subjects = chartService.filterSubjectsByLabel(this.cs.subjects, label);
 
                     // Remove dimension and group associated with the label
-                    this.cs.dimensions[label.labelId].dispose();
-                    this.cs.groups[label.labelId].dispose();
+                    this.cs.dimensions.splice(label.labelId);
+                    this.cs.groups.splice(label.labelId);
 
                     // Remove data in crossfilter if no more label is selected
                     if (this.cs.labels.length < 1) {
@@ -312,14 +312,14 @@ angular.module('transmartBaseUi').factory('ChartService',
                     // Update charts
                     $rootScope.$broadcast('prepareChartContainers', this.cs.labels);
 
-                    // Redraw all charts
-                    dc.redrawAll();
-
                     // Update dimension summary
-                    this.updateDimensions();
+                    if (this.cs.labels.length > 0) {
+                        this.updateDimensions();
+                    } else {
+                        this.reset();
+                    }
                 }
             };
-
 
             var _createMultidimensionalChart = function (label, el) {
                 var _chart, _min, _max;
@@ -489,11 +489,6 @@ angular.module('transmartBaseUi').factory('ChartService',
                  */
                 if (label.filters !== undefined) {
                     _filterChart(_chart, label.filters);
-                }
-
-                // reapply filters when chart has filters
-                if (_chart.filters()) {
-                    _filterChart(_chart, _chart.filters());
                 }
 
                 return _chart;
