@@ -6,7 +6,7 @@
  * @ngdoc factory
  * @name EndpointService
  */
-angular.module('transmartBaseUi')
+angular.module('tmEndpoints')
     .factory('EndpointService',
         ['$rootScope', '$http', '$q', 'ResourceService', '$cookies', '$window', '$location', 'masterEndpointConfig',
             'isTesting',

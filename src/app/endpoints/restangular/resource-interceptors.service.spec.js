@@ -5,7 +5,7 @@ describe('ResourceInterceptors', function () {
 
     // Load the transmartBaseUi module, which contains the directive
     beforeEach(function () {
-        module('transmartBaseUi');
+        module('tmEndpoints');
     });
 
     beforeEach(inject(function (_ResourceInterceptors_, _AlertService_) {

@@ -6,7 +6,7 @@ describe('AlertService Unit Tests', function () {
     //--------------------------------------------------------------------------------------------------------------------
     // Setup
     beforeEach(function () {
-        module('transmartBaseUi');
+        module('tmEndpoints');
     });
 
     beforeEach(inject(function (_AlertService_, _$interval_) {

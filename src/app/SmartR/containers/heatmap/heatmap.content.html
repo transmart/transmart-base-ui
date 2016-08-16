@@ -1,9 +1,9 @@
 <div ng-controller="HeatmapController">
 
     <tab-container>
-        %{--========================================================================================================--}%
-        %{-- Fetch Data --}%
-        %{--========================================================================================================--}%
+        <!----========================================================================================================-->
+        <!---- Fetch Data -->
+        <!----========================================================================================================-->
         <workflow-tab tab-name="Fetch Data" disabled="fetch.disabled">
             <concept-box
                 concept-group="fetch.conceptBoxes.highDimensional"
@@ -50,11 +50,11 @@
             <summary-stats summary-data="fetch.scriptResults"></summary-stats>
         </workflow-tab>
 
-        %{--========================================================================================================--}%
-        %{-- Preprocess Data --}%
-        %{--========================================================================================================--}%
+        <!----========================================================================================================-->
+        <!---- Preprocess Data -->
+        <!----========================================================================================================-->
         <workflow-tab tab-name="Preprocess" disabled="preprocess.disabled">
-            %{--Aggregate Probes--}%
+            <!----Aggregate Probes-->
             <div class="heim-input-field">
                 <input type="checkbox" ng-model="preprocess.params.aggregate">
                 <span>Aggregate probes</span>
@@ -75,17 +75,17 @@
         </workflow-tab>
 
 
-        %{--========================================================================================================--}%
-        %{--Run Analysis--}%
-        %{--========================================================================================================--}%
+        <!----========================================================================================================-->
+        <!----Run Analysis-->
+        <!----========================================================================================================-->
         <workflow-tab tab-name="Run Analysis" disabled="runAnalysis.disabled">
-            %{--Number of max row to display--}%
+            <!----Number of max row to display-->
             <div class="heim-input-field heim-input-number sr-input-area">
                 Show <input type="text" id="txtMaxRow" ng-model="runAnalysis.params.max_row">
-                of {{ common.numberOfRows }} rows in total. (< 1000 is preferable.)
+             <!--   of {{ common.numberOfRows }} rows in total. (< 1000 is preferable.) -->
             </div>
 
-            %{--Type of sorting to apply--}%
+            <!----Type of sorting to apply-->
             <div class="heim-input-field sr-input-area">
                 <h2>Order columns by:</h2>
                 <fieldset class="heim-radiogroup">
@@ -120,7 +120,7 @@
                 </fieldset>
             </div>
 
-            %{--Type of sorting to apply--}%
+            <!----Type of sorting to apply-->
             <div class="heim-input-field  sr-input-area">
                 <sorting-criteria criteria="runAnalysis.params.ranking"
                                   samples="common.totalSamples"

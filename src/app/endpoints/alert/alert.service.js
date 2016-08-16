@@ -5,7 +5,7 @@
  * @ngdoc factory
  * @name AlertService
  */
-angular.module('transmartBaseUi').factory('AlertService', ['$interval', function ($interval) {
+angular.module('tmEndpoints').factory('AlertService', ['$interval', function ($interval) {
     var service = {};
     var alerts = [];
     service.ids = 0;

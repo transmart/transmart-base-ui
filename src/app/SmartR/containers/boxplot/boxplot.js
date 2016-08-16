@@ -8,8 +8,10 @@ angular.module('smartRApp')
                     '@': {
                         templateUrl: 'app/SmartR/containers/boxplot/boxplot.html'
                     },
-                    'content@help': {
-                        templateUrl: 'app/SmartR/containers/boxplot/boxplot.content.html'
+                    'content@boxplot': {
+                        templateUrl: 'app/SmartR/containers/boxplot/boxplot.content.html',
+                        controller: 'BoxplotController',
+                        controllerAs: 'vm'
                     }
                 }
             });

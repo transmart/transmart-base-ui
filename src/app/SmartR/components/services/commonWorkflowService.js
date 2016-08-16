@@ -2,16 +2,11 @@
 
 'use strict';
 
-angular.module('smartRApp').factory('commonWorkflowService', ['rServeService', '$css', function(rServeService, $css) {
-
+angular.module('smartRApp').factory('commonWorkflowService', ['rServeService', function(rServeService) {
     var service = {};
 
     service.initializeWorkflow = function(workflowName, scope) {
         service.currentScope = scope;
-        // load workflow specific css
-        $css.bind({
-            href: scope.smartRPath + '/css/' + workflowName + '.css'
-        }, scope);
 
         rServeService.destroyAndStartSession(workflowName);
     };
