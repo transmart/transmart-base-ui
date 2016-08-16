@@ -76,7 +76,7 @@ angular.module('smartRApp').directive('conceptBox', [
 
                 // activate drag & drop for our conceptBox and color it once it is rendered
                 scope.$evalAsync(function() {
-                    _activateDragAndDrop();
+                    //_activateDragAndDrop();
                 });
 
                 // bind the button to its clearing functionality
