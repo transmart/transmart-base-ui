@@ -11,10 +11,10 @@ angular.module('transmartBaseUi')
                 url: '/smartr',
                 views: {
                     '@': {
-                        templateUrl: 'app/containers/smartr/smartr.html'
+                        templateUrl: 'app/SmartR/containers/analysisTab/workflows.html'
                     },
                     'content@smartr': {
-                        templateUrl: 'app/containers/smartr/smartr.html'
+                        templateUrl: 'app/SmartR/containers/analysisTab/workflows.html'
                     }
                 }
             });

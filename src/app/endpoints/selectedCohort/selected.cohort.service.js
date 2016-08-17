@@ -13,11 +13,13 @@ angular.module('tmEndpoints')
         var cohorts = []; // resultInstanceIDs only, i.e. array of strings
 
         service.getSelection = function () {
-            return [28863];//cohorts;
+            console.log(cohorts);
+            return cohorts;
         };
 
         service.setSelection = function (cohortsArray) {
             cohorts = cohortsArray;
+            console.log(cohorts);
         };
 
         return service;

@@ -17,6 +17,9 @@ angular.module('smartRApp')
                         templateUrl: 'app/components/sidebar/sidebar.html',
                         controller: 'SidebarCtrl',
                         controllerAs: 'vm'
+                    },
+                    '':{
+                        templateUrl: 'app/components/sidebar/sidebar.html'
                     }
                 }
             });
