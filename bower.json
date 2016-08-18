@@ -66,6 +66,7 @@
     },
     "resolutions": {
         "jquery": "~2.2",
-        "angular": "~1.5.7"
+        "angular": "~1.5.7",
+        "d3": "~3.5.17"
     }
 }

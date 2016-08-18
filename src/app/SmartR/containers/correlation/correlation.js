@@ -8,8 +8,13 @@ angular.module('smartRApp')
                     '@': {
                         templateUrl: 'app/SmartR/containers/correlation/correlation.html'
                     },
-                    'content@help': {
+                    'content@correlation': {
                         templateUrl: 'app/SmartR/containers/correlation/correlation.content.html'
+                    },
+                    'sidebar@correlation': {
+                        templateUrl: 'app/components/sidebar/sidebar.html',
+                        controller: 'SidebarCtrl',
+                        controllerAs: 'vm'
                     }
                 }
             });

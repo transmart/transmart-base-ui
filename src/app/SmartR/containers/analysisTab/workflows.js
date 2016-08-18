@@ -6,14 +6,14 @@
 angular.module('transmartBaseUi')
     .config(function ($stateProvider) {
         $stateProvider
-            .state('smartr', {
+            .state('analysis', {
                 parent: 'site',
-                url: '/smartr',
+                url: '/analysis',
                 views: {
                     '@': {
                         templateUrl: 'app/SmartR/containers/analysisTab/workflows.html'
                     },
-                    'content@smartr': {
+                    'content@analysis': {
                         templateUrl: 'app/SmartR/containers/analysisTab/workflows.html'
                     }
                 }

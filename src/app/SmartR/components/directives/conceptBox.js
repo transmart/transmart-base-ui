@@ -30,10 +30,7 @@ angular.module('smartRApp').directive('conceptBox', [
                 $(template_tooltip).tooltip({track: true, tooltipClass: "sr-ui-tooltip"});
 
                 var _clearWindow = function () {
-                    while (scope.conceptGroup.concepts.length) {
-                        scope.conceptGroup.concepts.pop();
-                    }
-                    ;
+                    scope.conceptGroup.concepts.length = 0;
                     // in order to avoid reassignment of a shared variable with watchers
                 };
 
