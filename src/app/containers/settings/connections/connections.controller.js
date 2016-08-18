@@ -27,6 +27,11 @@ angular.module('transmartBaseUi')
                     title: 'transmart-test-translocation',
                     url: 'http://transmart-test-translocation.thehyve.net/transmart',
                     isOAuth: true
+                },
+                {
+                    title: 'localhost',
+                    url: 'http://localhost:8080/transmart',
+                    isOAuth: true
                 }
             ];
 
