@@ -2,7 +2,7 @@
 
 /**
  */
-angular.module('tmEndpoints', [ 'transmartBaseUiConstants'])
+angular.module('tmEndpoints', [ 'transmartBaseUiConstants', 'restangular', 'ngCookies'])
     .config(['$httpProvider', function($httpProvider) {
 
     }]);
