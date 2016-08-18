@@ -9,6 +9,7 @@ angular.module('transmartBaseUi')
 
                 var vm = this;
 
+                ChartService.restoreCrossfilter();
                 // Initialize the chart service only if uninitialized
                 if (!ChartService.cs.mainDimension) {
                     ChartService.reset();

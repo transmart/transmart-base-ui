@@ -21,6 +21,61 @@ describe('ChartService Unit Tests', function () {
         expect(ChartService).toBeDefined();
     });
 
+    describe('restoreCrossfilter', function () {
+        var fullSubjects = [
+            {
+                id: 1, gender: 'male'
+            },
+            {
+                id: 2, gender: 'female'
+            },
+            {
+                id: 3, gender: 'male'
+            },
+            {
+                id: 4, gender: 'female'
+            },
+            {
+                id: 5, gender: 'unknown'
+            }
+        ];
+
+        var partialSubjects = [
+            {
+                id: 1, gender: 'male'
+            },
+            {
+                id: 2, gender: 'female'
+            },
+            {
+                id: 5, gender: 'unknown'
+            }
+        ];
+
+        beforeEach(function () {
+            ChartService.reset();
+        });
+
+        it('should restore the crossfilter dimension(s)', function () {
+            ChartService.cs.crossfilter = crossfilter(partialSubjects);
+            var dimChanged = ChartService.cs.crossfilter.dimension(function (d) {
+                return d.gender;
+            });
+            expect(dimChanged.top(Infinity).length).toEqual(3);
+
+            var restorationPerformed = ChartService.restoreCrossfilter();
+            expect(restorationPerformed).toEqual(false);
+
+            ChartService.cs.subjects = fullSubjects;
+            restorationPerformed = ChartService.restoreCrossfilter();
+            var dimRestored = ChartService.cs.crossfilter.dimension(function (d) {
+                return d.gender;
+            });
+            expect(restorationPerformed).toEqual(true);
+            expect(dimRestored.top(Infinity).length).toEqual(5);
+        });
+    });
+
     describe('removeLabel', function () {
 
         beforeEach(function () {
