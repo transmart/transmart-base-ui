@@ -101,7 +101,13 @@ angular.module('transmartBaseUi').factory('ChartService',
              * @memberOf ChartService
              */
             chartService.restoreCrossfilter = function () {
-                if(this.cs.subjects) this.cs.crossfilter = crossfilter(this.cs.subjects);
+                if(this.cs.subjects && this.cs.subjects.length > 0) {
+                    this.cs.crossfilter = crossfilter(this.cs.subjects);
+                    return true;
+                }
+                else {
+                    return false;
+                }
             }
 
             var _getType = function (value) {
@@ -151,7 +157,6 @@ angular.module('transmartBaseUi').factory('ChartService',
                             resolved: false,
                             filters: filters
                         };
-
                         chartService.cs.labels.push(label);
 
                     } else {
