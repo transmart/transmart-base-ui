@@ -2,7 +2,8 @@
 
 'use strict';
 
-angular.module('smartRApp').directive('biomarkerSelection', ['$rootScope', function($rootScope) {
+angular.module('smartRApp').directive('biomarkerSelection', ['$rootScope','EndpointService', '$http',
+    function($rootScope, EndpointService, $http) {
 
     return {
         restrict: 'E',
@@ -31,11 +32,12 @@ angular.module('smartRApp').directive('biomarkerSelection', ['$rootScope', funct
                             // grails response looks like this:
                             // { "id": 1842083, "source": "", "keyword": "TPO", "synonyms":
                             // "(TDH2A, MSA, TPX)", "category": "GENE", "display": "Gene" }
-                            var r = grailsResponse.rows.map(function(v) {
-                                return {
+                            var r = [];
+                            grailsResponse.rows.forEach(function(v) {
+                                r.push({
                                     label: v.keyword,
                                     value: v
-                                }
+                                });
                             });
                             return response(r);
                         }
@@ -81,6 +83,8 @@ angular.module('smartRApp').directive('biomarkerSelection', ['$rootScope', funct
             );
 
             var getIdentifierSuggestions = (function() {
+                var baseURL = EndpointService.getMasterEndpoint().url;
+                var headers = EndpointService.getMasterEndpoint().restangular.defaultHeaders;
                 var curXHR = null;
 
                 return function(term, response) {
@@ -88,13 +92,19 @@ angular.module('smartRApp').directive('biomarkerSelection', ['$rootScope', funct
                         curXHR.abort();
                     }
 
-                    curXHR = jQuery.get("/transmart/search/loadSearchPathways", {
+                    /*curXHR = jQuery.get(baseURL + "/search/loadSearchPathways", {
                         query: term
+                    });*/
+                    console.log(headers);
+                    curXHR = $http({
+                        url: baseURL + "/search/loadSearchPathways?query=" + term,
+                        headers: headers
                     });
 
-                    curXHR.always(function() { curXHR = null; })
+                    curXHR.finally(function() { curXHR = null; });
                     return curXHR.then(
                         function(data) {
+                            data = data.data;
                             data = data.substring(5, data.length - 1);  // loadSearchPathways returns String with null (JSON).
                                                                         // This strips it off
                             response(JSON.parse(data));

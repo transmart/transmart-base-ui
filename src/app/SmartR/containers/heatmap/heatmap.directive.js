@@ -1,7 +1,8 @@
 angular.module('smartRApp').directive('heatmapPlot', [
     'smartRUtils',
     '$rootScope',
-    function(smartRUtils, $rootScope) {
+    'EndpointService',
+    function(smartRUtils, $rootScope, EndpointService) {
 
         return {
             restrict: 'E',
@@ -13,6 +14,7 @@ angular.module('smartRApp').directive('heatmapPlot', [
             },
             templateUrl:   'app/SmartR/containers/templates/heatmap.html',
             link: function(scope, element) {
+
                 var viz = element.children()[1];
                 /**
                  * Watch data model (which is only changed by ajax calls when we want to (re)draw everything)
@@ -744,7 +746,7 @@ angular.module('smartRApp').directive('heatmapPlot', [
                 statistics.map(function(d) { return d[ranking]; })
                     .sort(function(a, b) { return a - b; })
                     .filter(function(d, i) { return i < cutoff; })
-                    .each(function(d) {
+                    .forEach(function(d) {
                         d3.select('.bar.idx-' + smartRUtils.makeSafeForCSS(d[0])).classed('cuttoffHighlight', true);
                         d3.selectAll('.square.rowname-' + smartRUtils.makeSafeForCSS(rowNames[d[0]])).classed('cuttoffHighlight', true);
                     });
@@ -916,14 +918,14 @@ angular.module('smartRApp').directive('heatmapPlot', [
                     .attr('x', 5 - margin.left)
                     .attr('y', 8 - margin.top + 100)
                     .attr('text-anchor', 'start')
-                    .text(steps.min().toFixed(1));
+                    .text(Math.min.apply(null, steps).toFixed(1));
 
                 legendItems.append('text')
                     .attr('class', 'legendText')
                     .attr('x', 5 - margin.left + legendWidth)
                     .attr('y', 8 - margin.top + 100)
                     .attr('text-anchor', 'end')
-                    .text(steps.max().toFixed(1));
+                    .text(Math.max.apply(null, steps).toFixed(1));
             }
 
             function unselectAll() {
@@ -1025,15 +1027,16 @@ angular.module('smartRApp').directive('heatmapPlot', [
                     }).on('click', function(d) {
                     var leafs = d.index.split(' ');
                     var genes = [];
-                    leafs.each(function(leaf) {
+                    leafs.forEach(function(leaf) {
                         var rowName = rowNames[leaf];
                         var split = rowName.split("--");
                         split.shift();
                         genes = genes.concat(split);
                     });
+                    var baseURL = EndpointService.getMasterEndpoint().url;
 
                     var request = $.ajax({
-                        url: pageInfo.basePath + '/SmartR/biocompendium',
+                        url: baseURL + '/SmartR/biocompendium',
                         type: 'POST',
                         timeout: 5000,
                         data: {
