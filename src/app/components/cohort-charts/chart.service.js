@@ -78,7 +78,6 @@ angular.module('transmartBaseUi').factory('ChartService',
              * @memberof ChartService
              */
             chartService.reset = function () {
-
                 this.cs.subjects = [];
                 this.cs.selectedSubjects = [];
                 this.cs.chartId = 0;
@@ -96,6 +95,14 @@ angular.module('transmartBaseUi').factory('ChartService',
 
                 $rootScope.$broadcast('prepareChartContainers', this.cs.labels);
             };
+
+            /**
+             * Restore the data of the crossfilter to full set
+             * @memberOf ChartService
+             */
+            chartService.restoreCrossfilter = function () {
+                if(this.cs.subjects) this.cs.crossfilter = crossfilter(this.cs.subjects);
+            }
 
             var _getType = function (value) {
                 var _type = typeof value;
