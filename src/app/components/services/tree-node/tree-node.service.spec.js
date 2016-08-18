@@ -4,7 +4,7 @@
 describe('TreeNodeService', function () {
 
     beforeEach(function () {
-        module('tmEndpoints');
+        module('transmartBaseUi');
     });
 
     var $q, deferred, TreeNodeService, httpBackend, TreeNodeMocks;

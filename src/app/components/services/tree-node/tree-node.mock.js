@@ -3,7 +3,7 @@
  * @Service QueryBuilderMocks
  * @Description Service layer exposing a mock layer for QueryBuilder operations.
  */
-angular.module('tmEndpoints')
+angular.module('transmartBaseUi')
     .factory('TreeNodeMocks', ['ResourceService',
         function (ResourceService) {
             var mock = {};

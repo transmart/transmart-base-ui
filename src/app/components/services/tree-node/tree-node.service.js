@@ -6,7 +6,7 @@
  * @ngdoc factory
  * @name TreeNodeService
  */
-angular.module('tmEndpoints').factory('TreeNodeService', ['$q', function ($q) {
+angular.module('transmartBaseUi').factory('TreeNodeService', ['$q', function ($q) {
 
     var service = {};
 
