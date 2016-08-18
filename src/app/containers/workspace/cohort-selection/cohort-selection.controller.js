@@ -45,7 +45,8 @@ angular.module('transmartBaseUi')
                 // Tabs
                 vm.tabs = [
                     {title: 'Cohort Selection', active: true},
-                    {title: 'Cohort Grid', active: false}
+                    {title: 'Cohort Grid', active: false},
+                    {title: 'Saved Cohorts', active: false}
                 ];
 
                 /**
@@ -61,10 +62,15 @@ angular.module('transmartBaseUi')
                 };
 
                 if ($stateParams !== undefined) {
-                    if ($stateParams.action === 'cohortGrid') {
-                        vm.activateTab(vm.tabs[1].title, 'cohortGrid');
-                    } else {
-                        vm.activateTab(vm.tabs[0].title, 'cohortSelection');
+                    switch ($stateParams.action) {
+                        case 'cohortGrid':
+                            vm.activateTab(vm.tabs[1].title, 'cohortGrid');
+                            break;
+                        case 'cohortView':
+                            vm.activateTab(vm.tabs[2].title, 'cohortView');
+                            break;
+                        default:
+                            vm.activateTab(vm.tabs[0].title, 'cohortSelection');
                     }
                 }
 

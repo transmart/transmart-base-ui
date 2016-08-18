@@ -1,0 +1,20 @@
+<div>
+    <table class="table">
+        <tr>
+            <th>Name</th>
+            <th>ID</th>
+            <th>Set size</th>
+            <th>User</th>
+            <th></th>
+        </tr>
+
+        <tr ng-repeat="cohort in cohorts">
+            <td>{{cohort.name}}</td>
+            <td>{{cohort.id}}</td>
+            <td>{{cohort.setSize}}</td>
+            <td>{{cohort.username}}</td>
+            <td><i class="glyphicon glyphicon-remove-circle text-danger"
+                   ng-click="ctrl.removeCohort(cohort)" ng-show="true"></i></td>
+        </tr>
+    </table>
+</div>
