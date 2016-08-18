@@ -8,8 +8,13 @@ angular.module('smartRApp')
                     '@': {
                         templateUrl: 'app/SmartR/containers/timeline/timeline.html'
                     },
-                    'content@help': {
+                    'content@timeline': {
                         templateUrl: 'app/SmartR/containers/timeline/timeline.content.html'
+                    },
+                    'sidebar@timeline': {
+                        templateUrl: 'app/components/sidebar/sidebar.html',
+                        controller: 'SidebarCtrl',
+                        controllerAs: 'vm'
                     }
                 }
             });

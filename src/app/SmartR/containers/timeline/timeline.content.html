@@ -1,4 +1,4 @@
-<div ng-controller="TimelineController">
+<div ng-controller="TimelineController" class="main-container">
 
     <tab-container>
 
@@ -6,7 +6,7 @@
             <concept-box concept-group="conceptBoxes.datapoints"></concept-box>
             <br/>
             <br/>
-            <fetch-button concept-map="conceptBoxes"></fetch-button>
+            <fetch-button concept-map="conceptBoxes" allowed-cohorts="[1]"></fetch-button>
         </workflow-tab>
 
         <workflow-tab tab-name="Run Analysis">

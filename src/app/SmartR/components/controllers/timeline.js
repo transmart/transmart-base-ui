@@ -5,7 +5,7 @@ angular.module('smartRApp').controller('TimelineController',
         commonWorkflowService.initializeWorkflow('timeline', $scope);
 
         // model
-        $scope.conceptBoxes = {};
+        $scope.conceptBoxes = {datapoints:{concepts:[]}};
         $scope.scriptResults = {};
         $scope.params = {};
     }]);

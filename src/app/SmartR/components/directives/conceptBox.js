@@ -34,12 +34,6 @@ angular.module('smartRApp').directive('conceptBox', [
                     // in order to avoid reassignment of a shared variable with watchers
                 };
 
-                var _getConcepts = function () {
-                    return $(template_box).children().toArray().map(function (childNode) {
-                        return childNode.getAttribute('conceptid');
-                    });
-                };
-
 
                 scope.onNodeDropEvent = function (event, info, node) {
                     scope.conceptGroup.concepts.push(node);
@@ -49,10 +43,11 @@ angular.module('smartRApp').directive('conceptBox', [
 
                 var typeMap = {
                     hleaficon: 'HD',
-                    null: 'LD-categorical', // FIXME: alphaicon does not exist yet in transmartApp master branch
-                    valueicon: 'LD-numerical'
+                    null: 'CATEGORICAL_OPTION', // FIXME: alphaicon does not exist yet in transmartApp master branch
+                    valueicon: 'NUMERIC'
                 };
                 var _containsOnlyCorrectType = function () {
+                    if (scope.type === undefined) return true;
                     var correct = true;
                     scope.conceptGroup.concepts.forEach(function (conceptObj) {
                         if (scope.type != conceptObj.type) {

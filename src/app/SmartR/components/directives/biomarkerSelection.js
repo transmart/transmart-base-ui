@@ -92,10 +92,6 @@ angular.module('smartRApp').directive('biomarkerSelection', ['$rootScope','Endpo
                         curXHR.abort();
                     }
 
-                    /*curXHR = jQuery.get(baseURL + "/search/loadSearchPathways", {
-                        query: term
-                    });*/
-                    console.log(headers);
                     curXHR = $http({
                         url: baseURL + "/search/loadSearchPathways?query=" + term,
                         headers: headers
