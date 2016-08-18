@@ -2,8 +2,8 @@
     "dev": {
         "isTesting": false,
         "masterEndpointConfig": {
-            "title": "local",
-            "url": "http://localhost:8080/transmart",
+            "title": "transmart-gb",
+            "url": "http://transmart-gb.thehyve.net/transmart",
             "isOAuth": true,
             "isMaster": true
         }
@@ -11,8 +11,8 @@
     "test": {
         "isTesting": true,
         "masterEndpointConfig": {
-            "title": "local",
-            "url": "http://localhost:8080/transmart",
+            "title": "transmart-gb",
+            "url": "http://transmart-gb.thehyve.net/transmart",
             "isOAuth": true,
             "isMaster": true
         }
@@ -20,11 +20,10 @@
     "prod": {
         "isTesting": false,
         "masterEndpointConfig": {
-            "title": "local",
-            "url": "http://localhost:8080/transmart",
+            "title": "transmart-gb",
+            "url": "http://transmart-gb.thehyve.net/transmart",
             "isOAuth": true,
             "isMaster": true
         }
     }
 }
-
