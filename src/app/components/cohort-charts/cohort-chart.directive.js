@@ -29,6 +29,7 @@ angular.module('transmartBaseUi')
                 _chart = ChartService.createCohortChart(scope.tsLabel, _bodyDiv);
 
                 _chart.on('filtered', function (chart, filter) {
+                    chart.tsLabel.filters = chart.filters();
                     ChartService.updateDimensions();
                 });
 
