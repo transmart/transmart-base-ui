@@ -15,7 +15,8 @@ angular.module('transmartBaseUi')
                     },
                     'content@help': {
                         templateUrl: 'app/containers/help/help.content.html',
-                        controller: 'HelpCtrl'
+                        controller: 'HelpCtrl',
+                        controllerAs: 'vm'
                     }
                 }
             });

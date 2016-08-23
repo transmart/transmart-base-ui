@@ -1,6 +1,33 @@
-<div class="main-container">
-    <div class="container">
-        <h3>About</h3>
-        <hr>
+<div class="main-container container">
+    <div class="row container">
+        <table class="table table-striped col-xs-6 col-sm-4">
+            <thead>
+            <tr>
+                <th class="help-td col-sm-3">Git info</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td class="help-td col-sm-3">version</td>
+                <th>{{vm.gitInfo.tag}}</th>
+            </tr>
+            <tr>
+                <td class="help-td col-sm-3">branch</td>
+                <th>{{vm.gitInfo.branch}}</th>
+            </tr>
+            <tr>
+                <td class="help-td col-sm-3">#commits</td>
+                <th>{{vm.gitInfo.count}}</th>
+            </tr>
+            <tr>
+                <td class="help-td col-sm-3">latest commit</td>
+                <th><a href="{{vm.gitInfo.url}}" target="_blank">{{vm.gitInfo.short}}</a></th>
+            </tr>
+            <tr>
+                <td class="help-td col-sm-3">commit message</td>
+                <th>{{vm.gitInfo.message}}</th>
+            </tr>
+            </tbody>
+        </table>
     </div>
 </div>

@@ -6,6 +6,7 @@
 angular.module('transmartBaseUi')
     .controller('HelpCtrl', HelpCtrl);
 
-function HelpCtrl($scope) {
-    console.log('this is help control');
+function HelpCtrl($scope, gitInfo) {
+    var vm = this;
+    vm.gitInfo = gitInfo;
 }
