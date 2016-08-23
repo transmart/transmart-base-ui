@@ -8,7 +8,16 @@
                 <li><a ui-sref="home">Home</a></li>
                 <li ui-sref-active-eq="active"><a ui-sref="workspace">Workspace &nbsp;</a></li>
                 <li ui-sref-active-eq="active"><a ui-sref="settings.connections">Settings</a></li>
-                <li ui-sref-active-eq="active"><a ui-sref="analysis">Analysis</a></li>
+                <li ui-sref-active-eq="active" class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">SmartR <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a ui-sref="boxplot"> Boxplot </a></li>
+                        <li><a ui-sref="correlation"> Correlation </a></li>
+                        <li><a ui-sref="heatmap"> Heatmap </a></li>
+                        <li><a ui-sref="timeline"> Timeline </a></li>
+                        <li><a ui-sref="volcanoplot"> Volcano Plot</a></li>
+                    </ul>
+                </li>
             </ul>
 
             <ul class="nav navbar-nav navbar-right">
