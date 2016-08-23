@@ -643,15 +643,11 @@ angular.module('transmartBaseUi').factory('ChartService',
              * @param {Array} filters - The filtering words or criteria that filter the chart
              */
             function _filterChart(chart, filters) {
+                console.log(filters);
                 if(_.isArray(filters) && filters.length > 0) {
-                    if(filters[0].filterType == 'RangedFilter') {
-                        chart.filter(filters[0]);
-                    }
-                    else {
-                        filters.forEach(function (_f) {
-                            chart.filter(_f);
-                        });
-                    }
+                    filters.forEach(function (_f) {
+                        chart.filter(_f);
+                    });
                     chartService.updateDimensions();
                     dc.renderAll();
                 }
