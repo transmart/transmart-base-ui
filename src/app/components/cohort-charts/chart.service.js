@@ -643,7 +643,6 @@ angular.module('transmartBaseUi').factory('ChartService',
              * @param {Array} filters - The filtering words or criteria that filter the chart
              */
             function _filterChart(chart, filters) {
-                console.log(filters);
                 if(_.isArray(filters) && filters.length > 0) {
                     filters.forEach(function (_f) {
                         chart.filter(_f);
