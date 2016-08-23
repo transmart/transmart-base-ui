@@ -28,7 +28,7 @@ angular.module('transmartBaseUi')
 
                 $scope.$watchCollection(function () {
                    return ChartService.cs.selectedSubjects;
-                }, function (newValue, oldValue) { 
+                }, function (newValue, oldValue) {
                     if (!_.isEqual(newValue, oldValue)) {
                         vm.selectedSubjects = newValue;
                     }

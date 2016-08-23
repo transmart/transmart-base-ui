@@ -648,7 +648,9 @@ angular.module('transmartBaseUi').factory('ChartService',
                         chart.filter(filters[0]);
                     }
                     else {
-                        chart.filter(filters);
+                        filters.forEach(function (_f) {
+                            chart.filter(_f);
+                        });
                     }
                     chartService.updateDimensions();
                     dc.renderAll();
