@@ -9,15 +9,6 @@ angular.module('transmartBaseUi').factory('GridsterService', ['$q', function ($q
 
     var service = {
         options: {
-            /*
-             * isMobile: stacks the grid items if true --
-             * the description of this option is similar to that of the 'float' option, which, also,
-             * does not indicate its behavior. Based on an initial testing, this option does not
-             * have any impact on the behavior of the gridster resizing layout. It is commented but kept
-             * in the code for the sake of a more complete inclusion of options that are potentially
-             * relevant for configuring a gridster layout.
-             */
-            // isMobile: false,
             // whether to push other items out of the way on move or resize
             pushing: true,
             /*
