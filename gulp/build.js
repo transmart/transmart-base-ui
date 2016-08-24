@@ -86,7 +86,7 @@ gulp.task('fonts', ['ui-grid-fonts'], function () {
         .pipe(gulp.dest(path.join(conf.paths.dist, '/fonts/')));
 });
 
-gulp.task('other', ['config'], function () {
+gulp.task('other', ['config', 'helper'], function () {
     var fileFilter = $.filter(function (file) {
         return file.stat.isFile();
     });

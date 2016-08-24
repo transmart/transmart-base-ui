@@ -26,7 +26,7 @@ function runTests(singleRun, done) {
         pathSrcJs.forEach(function (path) {
             preprocessors[path] = ['coverage'];
         });
-        reporters.push('coverage')
+        reporters.push('coverage');
     }
 
     var localConfig = {
@@ -43,10 +43,10 @@ function runTests(singleRun, done) {
     server.start();
 }
 
-gulp.task('test', ['config', 'scripts'], function (done) {
+gulp.task('test', ['config', 'helper', 'scripts'], function (done) {
     runTests(true, done);
 });
 
-gulp.task('test:auto', ['config', 'watch'], function (done) {
+gulp.task('test:auto', ['config', 'helper', 'watch'], function (done) {
     runTests(false, done);
 });
