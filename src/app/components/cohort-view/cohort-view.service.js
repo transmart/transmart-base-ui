@@ -10,7 +10,25 @@ angular.module('transmartBaseUi').factory('CohortViewService', ['$timeout', 'End
 
     var service = {
         cohortList: [],
-        cohortsResolved: false
+        cohortsResolved: false,
+
+        options: {
+            enableGridMenu: false,
+            enableSelectAll: false,
+            exporterMenuPdf: false,
+            paginationPageSizes: [25, 50, 75],
+            paginationPageSize: 25,
+            columnDefs: [ {field: 'name', name: 'Name', width: '**'},
+                {field: 'id', name: 'ID', width: '*'},
+                {field: 'setSize', name: 'Set size', width: '*'},
+                {field: 'username', name: 'User', width: '*'}
+            ], // columns is stored here
+            data: 'cohorts',
+            enableFiltering: true,
+            onRegisterApi: function (gridApi) {
+                service.options.gridApi = gridApi;
+            },
+        }
     };
 
     /**

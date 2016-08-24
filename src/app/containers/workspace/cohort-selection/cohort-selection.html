@@ -79,7 +79,7 @@
                 <span>{{vm.tabs[2].title}}</span>
             </uib-tab-heading>
 
-            <cohort-view></cohort-view>
+            <cohort-view ng-if="vm.tabs[2].active"></cohort-view>
 
         </uib-tab>
 
