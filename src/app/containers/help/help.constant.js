@@ -1,13 +1,13 @@
 angular.module("transmartBaseUiGitConstants", [])
 
-    .constant("gitInfo", {
-        "short": "b24762c",
-        "long": "b24762c4eb1e774c7ae2c62f04fcae32dd59bd15",
-        "branch": "helper",
-        "tag": "v0.1.1",
-        "message": "refactor helper page",
-        "url": "https://github.com/thehyve/transmart-base-ui/commit/b24762c4eb1e774c7ae2c62f04fcae32dd59bd15",
-        "count": 889
-    })
+.constant("gitInfo", {
+	"short": "4c52c69",
+	"long": "4c52c6981a56d32e35738fc702c93f086d486aa5",
+	"branch": "helper",
+	"tag": "v0.1.1",
+	"message": "add help.constant",
+	"url": "https://github.com/thehyve/transmart-base-ui/commit/4c52c6981a56d32e35738fc702c93f086d486aa5",
+	"count": 890
+})
 
 ;
