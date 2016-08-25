@@ -669,7 +669,7 @@ angular.module('transmartBaseUi').factory('ChartService',
                         chartService.addNodeToActiveCohortSelection(node.parent, filters);
                     }
                     else {
-                        _filterChart(chart, node.title);
+                        _filterChart(chart, [node.title]);
                     }
                 }
                 else {
