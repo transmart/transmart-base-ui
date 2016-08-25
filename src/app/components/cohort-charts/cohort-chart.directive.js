@@ -7,7 +7,7 @@
  * @description handles cohort chart creation and user-interaction
  */
 angular.module('transmartBaseUi')
-    .directive('tsCohortChart', ['ChartService', function (ChartService) {
+    .directive('tsCohortChart', ['ChartService', 'DcChartsService', function (ChartService, DcChartsService) {
 
         var _scope = {
             tsGridster: '=',
@@ -28,9 +28,15 @@ angular.module('transmartBaseUi')
                 // always create new chart even it's been cached
                 _chart = ChartService.createCohortChart(scope.tsLabel, _bodyDiv);
 
+                //This listener function will be invoked after a filter is applied, added or removed.
                 _chart.on('filtered', function (chart, filter) {
                     chart.tsLabel.filters = chart.filters();
                     ChartService.updateDimensions();
+                });
+
+                //This listener function will be invoked after transitions after redraw and render.
+                _chart.on('renderlet', function (chart, filter) {
+                    ChartService.emphasizeChartLegend(chart, _bodyDiv);
                 });
 
                 // check if chart is number chart or not
@@ -56,7 +62,7 @@ angular.module('transmartBaseUi')
                         // Number of characters after which the title string will be cut off
                         // 10 pixels per characters is assumed
                         scope.cutOff = _chart.gridInfo.sizeX * (_chart.gridInfo.curColWidth - 5) / 10;
-                        ChartService.resizeChart(_chart);
+                        DcChartsService.resizeChart(_chart);
                     }
 
                 });
