@@ -2,4 +2,13 @@
     <div ui-grid="ctrl.gridOptions"
          ui-grid-pagination ui-grid-selection ui-grid-resize-columns>
     </div>
+
+    <div>
+        <button type="button"
+                class="btn btn-primary ts-cohort-delete-button"
+                ng-disabled="false"
+                ng-click="ctrl.deleteSelectedCohorts()">Delete selected</button>
+    </div>
 </div>
+
+

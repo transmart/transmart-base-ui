@@ -9,9 +9,7 @@ angular.module('transmartBaseUi').factory('CohortViewService', ['$timeout', 'End
   function ($timeout, EndpointService, $q) {
 
     var service = {
-        cohortList: [],
-        cohortsResolved: false,
-
+        gridApi: undefined,
         options: {
             enableGridMenu: false,
             enableSelectAll: false,
@@ -26,26 +24,24 @@ angular.module('transmartBaseUi').factory('CohortViewService', ['$timeout', 'End
             data: 'cohorts',
             enableFiltering: true,
             onRegisterApi: function (gridApi) {
-                service.options.gridApi = gridApi;
+                service.gridApi = gridApi;
             },
         }
     };
 
-    /**
-     * Empty study list
-     * @memberof CohortService
+    /** Retrieves the list of cohorts.
+     *
+     * @returns {*} A promise that resolves when the list has been retrieved or is
+     *              rejected in case of an error.
+     * @memberof CohortViewService
      */
-    service.emptyAll = function () {
-        service.cohortList = [];
-    };
-
     service.getCohorts = function() {
         var deferred = $q.defer();
 
+        // TODO: allow cohorts to be retrieved from other sources than the master endpoint?
         var endpoint = EndpointService.getMasterEndpoint();
         endpoint.restangular.all('patient_sets').getList().then(function(cohorts) {
-                service.cohortList = cohorts;
-                deferred.resolve(service.cohortList);
+                deferred.resolve(cohorts);
             })
             .catch(function (err) {
                 deferred.reject(err);
@@ -54,6 +50,12 @@ angular.module('transmartBaseUi').factory('CohortViewService', ['$timeout', 'End
         return deferred.promise;
     };
 
+    /** Removes the specified cohort.
+     * @param cohort The cohort to be deleted.
+     * @returns {*} A promise that is resolved on successful completion of deletion,
+     *              or rejected in case of an error.
+     * @memberof CohortViewService
+     */
     service.removeCohort = function(cohort) {
         return cohort.remove();
     };
