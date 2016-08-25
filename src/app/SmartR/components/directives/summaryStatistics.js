@@ -16,6 +16,8 @@ angular.module('smartRApp').directive('summaryStats',
                     return scope.summaryData;
                 }, function(updated, old) {
                     if (!_.isEqual(updated, old)) {
+                        _.each(updated.summary, function(sum) {
+                            sum.then( function(p) {
                                 var imgPath = p.img;
 
                                 rServeService.fetchImageResource(imgPath)
@@ -25,6 +27,9 @@ angular.module('smartRApp').directive('summaryStats',
                                         $log.error("Error while fetching the image for path", imgPath, e);
                                     });
                             });
+                        });
+                    }
+                });
             },
             templateUrl:   'app/SmartR/containers/templates/summaryStatistics.html'
         };
