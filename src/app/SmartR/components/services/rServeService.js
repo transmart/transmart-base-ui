@@ -63,6 +63,46 @@ angular.module('smartRApp').factory('rServeService', [
             });
         };
 
+        service.fetchImageResource = function(uri) {
+            var authHeaders = EndpointService.getMasterEndpoint().restangular.defaultHeaders;
+            authorizationHeader = authHeaders['Authorization'];
+
+            var deferred = $q.defer();
+
+            var xmlHTTP = new XMLHttpRequest();
+            xmlHTTP.open('GET',uri, true);
+            xmlHTTP.responseType = 'arraybuffer';
+            xmlHTTP.setRequestHeader("Authorization", authorizationHeader);
+
+            xmlHTTP.onload = function() {
+                var arr = new Uint8Array(this.response);
+
+                // Convert the int array to a binary string
+                // We have to use apply() as we are converting an *array*
+                // and String.fromCharCode() takes one or more single values, not
+                // an array.
+                var raw = String.fromCharCode.apply(null,arr);
+                var b64=btoa(raw);
+                var dataURL="data:image/jpeg;base64,"+b64;
+                return deferred.resolve(dataURL);
+            };
+
+            xmlHTTP.onerror = function (e) {
+                return deferred.reject({
+                    status: this.status,
+                    statusText: xmlHTTP.statusText
+                })
+            };
+
+            xmlHTTP.onprogress = function(p) {
+                return deferred.notify(p);
+            };
+
+            xmlHTTP.send();
+
+            return deferred.promise;
+        };
+
         service.touch = function (sessionId) {
             if (sessionId !== state.sessionId) {
                 return;

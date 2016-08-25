@@ -23,7 +23,8 @@ angular.module('smartRApp').controller('HeatmapController', [
                 categoric: {concepts: [], valid: true}
             },
             selectedBiomarkers: [],
-            scriptResults: {}
+            scriptResults: {},
+            images: {}
         };
 
         // ------------------------------------------------------------- //
