@@ -493,8 +493,6 @@ angular.module('transmartBaseUi').factory('ChartService',
 
                 _chart.render(); // render chart here
 
-                this.cs.charts.push(_chart);
-
                 /*
                  * when a sub-categorical label is dropped and the corresponding (parent) pie-chart is created,
                  * apply the filter of the sub-category on the chart
@@ -502,6 +500,19 @@ angular.module('transmartBaseUi').factory('ChartService',
                 if (label.filters !== undefined) {
                     _filterChart(_chart, label.filters);
                 }
+
+                //this listener function will be invoked after a filter is applied, added or removed.
+                _chart.on('filtered', function (chart, filter) {
+                    chart.tsLabel.filters = chart.filters();
+                    chartService.updateDimensions();
+                });
+
+                //this listener function will be invoked after transitions after redraw and render.
+                _chart.on('renderlet', function (chart, filter) {
+                    chartService.emphasizeChartLegend(chart, el);
+                });
+
+                this.cs.charts.push(_chart);
 
                 return _chart;
             };
@@ -596,7 +607,6 @@ angular.module('transmartBaseUi').factory('ChartService',
                 }
             };
 
-
             /**
              * Emphasize pie chart legends when the corresponding slices are selected
              * @memberof ChartService
@@ -606,6 +616,7 @@ angular.module('transmartBaseUi').factory('ChartService',
             chartService.emphasizeChartLegend = function (chart, el) {
                 var filters = chart.tsLabel.filters;
                 var gs = angular.element(el).find('g');
+                var items = [];
                 _.forEach(gs, function (g) {
                     if (angular.element(g).hasClass('dc-legend-item')) {
                         var item = angular.element(g).find('text');
@@ -613,12 +624,14 @@ angular.module('transmartBaseUi').factory('ChartService',
                             && filters.length < chart.data().length
                             && filters.indexOf(item.text()) !== -1) {
                             item.addClass('pie-legend-bold');
+                            items.push(item);
                         }
                         else {
                             item.addClass('pie-legend-normal');
                         }
                     }
                 });
+                return items;
             }
 
             return chartService;

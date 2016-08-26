@@ -28,17 +28,6 @@ angular.module('transmartBaseUi')
                 // always create new chart even it's been cached
                 _chart = ChartService.createCohortChart(scope.tsLabel, _bodyDiv);
 
-                //This listener function will be invoked after a filter is applied, added or removed.
-                _chart.on('filtered', function (chart, filter) {
-                    chart.tsLabel.filters = chart.filters();
-                    ChartService.updateDimensions();
-                });
-
-                //This listener function will be invoked after transitions after redraw and render.
-                _chart.on('renderlet', function (chart, filter) {
-                    ChartService.emphasizeChartLegend(chart, _bodyDiv);
-                });
-
                 // check if chart is number chart or not
                 scope.isNumberChart = _chart.type === 'NUMBER';
 
