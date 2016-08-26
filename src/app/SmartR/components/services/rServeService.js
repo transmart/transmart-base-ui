@@ -30,7 +30,7 @@ angular.module('smartRApp').factory('rServeService', [
         /* returns a promise with the session id and
          * saves the session id for future calls */
         var authorizationHeader = '';
-        service.startSession = function(name) {
+        service.startSession = function (name) {
             var authHeaders = EndpointService.getMasterEndpoint().restangular.defaultHeaders;
             authorizationHeader = authHeaders['Authorization'];
             baseURL = EndpointService.getMasterEndpoint().url;
@@ -51,54 +51,57 @@ angular.module('smartRApp').factory('rServeService', [
                 }
             });
 
-            return $q(function(resolve, reject) {
+            return $q(function (resolve, reject) {
                 request.then(
-                    function(response) {
+                    function (response) {
                         state.sessionId = response.data.sessionId;
                         rServeService_scheduleTouch();
                         resolve();
                     },
-                    function(response) { reject(response.statusText);}
+                    function (response) {
+                        reject(response.statusText);
+                    }
                 );
             });
         };
 
-        service.fetchImageResource = function(uri) {
+        service.fetchImageResource = function (uri) {
             var authHeaders = EndpointService.getMasterEndpoint().restangular.defaultHeaders;
             authorizationHeader = authHeaders['Authorization'];
 
             var deferred = $q.defer();
 
-            var xmlHTTP = new XMLHttpRequest();
-            xmlHTTP.open('GET',uri, true);
-            xmlHTTP.responseType = 'arraybuffer';
-            xmlHTTP.setRequestHeader("Authorization", authorizationHeader);
+            var header = {};
+            header.Authorization = authorizationHeader;
 
-            xmlHTTP.onload = function() {
-                var arr = new Uint8Array(this.response);
+            $http({
+                method: 'GET',
+                headers: header,
+                url: uri,
+                responseType: 'arraybuffer',
+                eventHandlers: {
+                    progress: function (e) {
+                        deferred.notify(e);
+                    }
+                }
+            }).then(function (res) {
+                var arr = new Uint8Array(res.data);
 
                 // Convert the int array to a binary string
                 // We have to use apply() as we are converting an *array*
                 // and String.fromCharCode() takes one or more single values, not
                 // an array.
-                var raw = String.fromCharCode.apply(null,arr);
-                var b64=btoa(raw);
-                var dataURL="data:image/jpeg;base64,"+b64;
-                return deferred.resolve(dataURL);
-            };
+                var raw = String.fromCharCode.apply(null, arr);
+                var b64 = btoa(raw);
+                var dataURL = "data:image/jpeg;base64," + b64;
 
-            xmlHTTP.onerror = function (e) {
+                return deferred.resolve(dataURL);
+            }).catch(function (err) {
                 return deferred.reject({
                     status: this.status,
                     statusText: xmlHTTP.statusText
                 })
-            };
-
-            xmlHTTP.onprogress = function(p) {
-                return deferred.notify(p);
-            };
-
-            xmlHTTP.send();
+            });
 
             return deferred.promise;
         };
@@ -391,7 +394,7 @@ angular.module('smartRApp').factory('rServeService', [
                 var retObj = {summary: [], allSamples: 0, numberOfRows: 0},
                     fileExt = {fetch: ['.png', 'json'], preprocess: ['all.png', 'all.json']},
 
-                    // find matched items in an array by key
+                // find matched items in an array by key
                     _find = function composeSummaryResults_find(key, array) {
                         // The variable results needs var in this case (without 'var' a global variable is created)
                         var results = [];
@@ -403,7 +406,7 @@ angular.module('smartRApp').factory('rServeService', [
                         return results;
                     },
 
-                    // process each item
+                // process each item
                     _processItem = function composeSummaryResults_processItem(img, json) {
                         return $q(function (resolve) {
                             service.downloadJsonFile(executionId, json).then(
