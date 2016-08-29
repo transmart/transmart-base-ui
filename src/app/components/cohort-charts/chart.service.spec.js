@@ -2,15 +2,16 @@
 
 describe('ChartService Unit Tests', function () {
 
-    var ChartService, window, $rootScope, Restangular, httpBackend;
+    var ChartService, DcChartsService, window, $rootScope, Restangular, httpBackend;
     //------------------------------------------------------------------------------------------------------------------
     // Setup
     beforeEach(function () {
         module('transmartBaseUi');
     });
 
-    beforeEach(inject(function (_ChartService_, _$window_, _$rootScope_, _Restangular_, _$httpBackend_) {
+    beforeEach(inject(function (_ChartService_, _DcChartsService_, _$window_, _$rootScope_, _Restangular_, _$httpBackend_) {
         ChartService = _ChartService_;
+        DcChartsService = _DcChartsService_;
         window = _$window_;
         $rootScope = _$rootScope_;
         Restangular = angular.copy(_Restangular_, Restangular);
@@ -80,26 +81,35 @@ describe('ChartService Unit Tests', function () {
 
         beforeEach(function () {
             ChartService.reset();
-            ChartService.cs.charts = [{id:0, filter: function (){}}, {id:1,  filter: function (){}}, {id:2,  filter: function (){}}];
-            ChartService.cs.dimensions = [{d:0}, {d:1}, {d:2}];
-            ChartService.cs.groups = [{g:0}, {g:1}, {g:2}];
-            ChartService.cs.labels = [{labelId:0}, {labelId:1}, {labelId:2}];
+            ChartService.cs.charts = [{
+                id: 0, filter: function () {
+                }
+            }, {
+                id: 1, filter: function () {
+                }
+            }, {
+                id: 2, filter: function () {
+                }
+            }];
+            ChartService.cs.dimensions = [{d: 0}, {d: 1}, {d: 2}];
+            ChartService.cs.groups = [{g: 0}, {g: 1}, {g: 2}];
+            ChartService.cs.labels = [{labelId: 0}, {labelId: 1}, {labelId: 2}];
 
             spyOn(ChartService, 'updateDimensions');
             spyOn(ChartService, 'reset');
             spyOn($rootScope, '$broadcast');
         });
 
-        it ('remove chart from cs.charts', function () {
-            ChartService.removeLabel({labelId:2});
-            expect( _.find(ChartService.cs.charts, {id:2})).toEqual(undefined);
-            expect( _.find(ChartService.cs.labels, {id:2})).toEqual(undefined);
-            expect( _.find(ChartService.cs.subjects, {id:2})).toEqual(undefined);
-            expect( _.find(ChartService.cs.groups, {id:2})).toEqual(undefined);
+        it('remove chart from cs.charts', function () {
+            ChartService.removeLabel({labelId: 2});
+            expect(_.find(ChartService.cs.charts, {id: 2})).toEqual(undefined);
+            expect(_.find(ChartService.cs.labels, {id: 2})).toEqual(undefined);
+            expect(_.find(ChartService.cs.subjects, {id: 2})).toEqual(undefined);
+            expect(_.find(ChartService.cs.groups, {id: 2})).toEqual(undefined);
             expect(ChartService.updateDimensions).toHaveBeenCalled();
             expect($rootScope.$broadcast).toHaveBeenCalled();
-            ChartService.removeLabel({labelId:0});
-            ChartService.removeLabel({labelId:1});
+            ChartService.removeLabel({labelId: 0});
+            ChartService.removeLabel({labelId: 1});
             expect(ChartService.reset).toHaveBeenCalled();
         });
     });
@@ -279,7 +289,7 @@ describe('ChartService Unit Tests', function () {
                 filters: []
             },
             data: function () {
-                return [1,2];
+                return [1, 2];
             }
         }
 
@@ -301,5 +311,61 @@ describe('ChartService Unit Tests', function () {
         });
 
     });
+
+    describe('createCohortChart', function () {
+        var label, el, subjects;
+
+        beforeEach(function () {
+            label = {
+                $$hashKey: "object:306",
+                col: 0,
+                row: 0,
+                filter: undefined,
+                label: "/Public Studies/AAA_TRANSLOCATION/Gender/",
+                labelId: 0,
+                name: "Gender",
+                resolved: false,
+                sizeX: 3,
+                sizeY: 3,
+                type: "string"
+            };
+            el = document.createElement('div');
+            subjects = [{
+                id: 1, gender: 'male', labels: {}
+            }, {
+                id: 2, gender: 'female', labels: {}
+            }, {
+                id: 3, gender: 'male', labels: {}
+            }, {
+                id: 4, gender: 'female', labels: {}
+            }, {
+                id: 5, gender: 'unknown', labels: {}
+            }];
+            ChartService.reset();
+            ChartService.cs.subjects = subjects;
+            ChartService.cs.crossfilter = crossfilter(subjects);
+
+        });
+
+        it('should listen to the renderlet event after a chart is (re)drawn or rendered', function () {
+            spyOn(ChartService, 'createCohortChart').and.callThrough();
+            spyOn(DcChartsService, 'getPieChart').and.callThrough();
+
+            var _chart = ChartService.createCohortChart(label, el);
+            /*
+             * renderlet is called each time a chart is created
+             * postRender is called after the renderlet event
+             */
+            _chart.on('postRender', function () {
+                spyOn(ChartService, 'emphasizeChartLegend');
+                expect(ChartService.emphasizeChartLegend).toHaveBeenCalled();
+            });
+
+            expect(ChartService.createCohortChart).toHaveBeenCalledWith(label, el);
+            expect(DcChartsService.getPieChart).toHaveBeenCalled();
+        });
+
+    });
+
 
 });

@@ -431,7 +431,6 @@ angular.module('transmartBaseUi').factory('ChartService',
                 var _chart;
 
                 /**
-                 *
                  * @param _missingLabelId
                  * @private
                  */
@@ -503,6 +502,9 @@ angular.module('transmartBaseUi').factory('ChartService',
 
                 //this listener function will be invoked after a filter is applied, added or removed.
                 _chart.on('filtered', function (chart, filter) {
+                    /*
+                     * keep the tsLabel.filters to be in sync with chart.filters()
+                     */
                     chart.tsLabel.filters = chart.filters();
                     chartService.updateDimensions();
                 });
