@@ -1,9 +1,10 @@
 'use strict';
 
 /**
+ * Mainly for DC SVG chart creation/manipulation
  * @memberof transmartBaseUi
  * @ngdoc factory
- * @name DcChartsService - mainly for DC SVG chart creation/manipulation
+ * @name DcChartsService
  */
 angular.module('transmartBaseUi').factory('DcChartsService', [function () {
 

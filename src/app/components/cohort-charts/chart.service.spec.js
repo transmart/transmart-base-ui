@@ -316,19 +316,15 @@ describe('ChartService Unit Tests', function () {
         it('should listen to the renderlet event after a chart is (re)drawn or rendered', function () {
             spyOn(ChartService, 'createCohortChart').and.callThrough();
             spyOn(DcChartsService, 'getPieChart').and.callThrough();
+            spyOn(DcChartsService, 'emphasizeChartLegend');
 
-            var _chart = ChartService.createCohortChart(label, el);
-            /*
-             * renderlet is called each time a chart is created
-             * postRender is called after the renderlet event
-             */
-            _chart.on('postRender', function () {
-                spyOn(DcChartsService, 'emphasizeChartLegend');
-                expect(DcChartsService.emphasizeChartLegend).toHaveBeenCalled();
-            });
+            ChartService.createCohortChart(label, el);
 
             expect(ChartService.createCohortChart).toHaveBeenCalledWith(label, el);
             expect(DcChartsService.getPieChart).toHaveBeenCalled();
+            setTimeout(function(){
+                expect(DcChartsService.emphasizeChartLegend).toHaveBeenCalled();
+            }, 3000);
         });
 
     });
