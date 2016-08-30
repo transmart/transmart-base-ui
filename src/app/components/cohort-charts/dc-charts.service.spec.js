@@ -11,7 +11,7 @@ describe('DcChartsService Unit Tests', function () {
         module('transmartBaseUi');
     });
 
-    beforeEach(inject(function ( _DcChartsService_) {
+    beforeEach(inject(function (_DcChartsService_) {
         DcChartsService = _DcChartsService_;
     }));
 
