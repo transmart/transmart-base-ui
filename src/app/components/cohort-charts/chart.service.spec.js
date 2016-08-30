@@ -279,7 +279,7 @@ describe('ChartService Unit Tests', function () {
 
     });
 
-    fdescribe('createCohortChart', function () {
+    describe('createCohortChart', function () {
         var label, el, subjects;
 
         beforeEach(function () {
