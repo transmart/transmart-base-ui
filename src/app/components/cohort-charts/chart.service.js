@@ -511,7 +511,7 @@ angular.module('transmartBaseUi').factory('ChartService',
 
                 //this listener function will be invoked after transitions after redraw and render.
                 _chart.on('renderlet', function (chart, filter) {
-                    chartService.emphasizeChartLegend(chart, el);
+                    DcChartsService.emphasizeChartLegend(chart, el);
                 });
 
                 this.cs.charts.push(_chart);
@@ -608,33 +608,6 @@ angular.module('transmartBaseUi').factory('ChartService',
                     chartService.addNodeToActiveCohortSelection(node);
                 }
             };
-
-            /**
-             * Emphasize pie chart legends when the corresponding slices are selected
-             * @memberof ChartService
-             * @param chart
-             * @param el
-             */
-            chartService.emphasizeChartLegend = function (chart, el) {
-                var filters = chart.tsLabel.filters;
-                var gs = angular.element(el).find('g');
-                var items = [];
-                _.forEach(gs, function (g) {
-                    if (angular.element(g).hasClass('dc-legend-item')) {
-                        var item = angular.element(g).find('text');
-                        if (filters
-                            && filters.length < chart.data().length
-                            && filters.indexOf(item.text()) !== -1) {
-                            item.addClass('pie-legend-bold');
-                            items.push(item);
-                        }
-                        else {
-                            item.addClass('pie-legend-normal');
-                        }
-                    }
-                });
-                return items;
-            }
 
             return chartService;
 

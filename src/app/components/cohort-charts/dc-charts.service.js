@@ -3,7 +3,7 @@
 /**
  * @memberof transmartBaseUi
  * @ngdoc factory
- * @name DcChartsService
+ * @name DcChartsService - mainly for DC SVG chart creation/manipulation
  */
 angular.module('transmartBaseUi').factory('DcChartsService', [function () {
 
@@ -272,6 +272,33 @@ angular.module('transmartBaseUi').factory('DcChartsService', [function () {
 
         return _chart;
     };
+
+    /**
+     * Emphasize pie chart legends when the corresponding slices are selected
+     * @memberof DcChartsService
+     * @param chart
+     * @param el
+     */
+    service.emphasizeChartLegend = function (chart, el) {
+        var filters = chart.tsLabel.filters;
+        var gs = angular.element(el).find('g');
+        var items = [];
+        _.forEach(gs, function (g) {
+            if (angular.element(g).hasClass('dc-legend-item')) {
+                var item = angular.element(g).find('text');
+                if (filters
+                    && filters.length < chart.data().length
+                    && filters.indexOf(item.text()) !== -1) {
+                    item.addClass('pie-legend-bold');
+                    items.push(item);
+                }
+                else {
+                    item.addClass('pie-legend-normal');
+                }
+            }
+        });
+        return items;
+    }
 
     /**
      * Render all
