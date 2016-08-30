@@ -313,10 +313,17 @@ describe('ChartService Unit Tests', function () {
             ChartService.cs.crossfilter = crossfilter(subjects);
         });
 
-        it('should listen to the renderlet event after a chart is (re)drawn or rendered', function () {
-            // spyOn(DcChartsService, 'emphasizeChartLegend');
-            // ChartService.createCohortChart(label, el);
-            // expect(DcChartsService.emphasizeChartLegend).toHaveBeenCalled();
+        it('should listen to the filtered and renderlet events', function () {
+            var _chart = jasmine.createSpyObj('_chart', ['on', 'render']);
+            var _func = jasmine.any(Function);
+
+            spyOn(DcChartsService, 'getPieChart').and.returnValue(_chart);
+
+            ChartService.createCohortChart(label, el);
+
+            expect(_chart.on).toHaveBeenCalledWith('filtered', _func);
+            expect(_chart.on).toHaveBeenCalledWith('renderlet', _func);
+
         });
     });
 

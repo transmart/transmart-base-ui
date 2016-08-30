@@ -280,9 +280,9 @@ angular.module('transmartBaseUi').factory('DcChartsService', [function () {
      * @param chart
      * @param el
      */
-    service.emphasizeChartLegend = function (chart, el) {
+    service.emphasizeChartLegend = function (chart) {
         var filters = chart.tsLabel.filters;
-        var gs = angular.element(el).find('g');
+        var gs = angular.element(chart.el).find('g');
         var items = [];
         _.forEach(gs, function (g) {
             if (angular.element(g).hasClass('dc-legend-item')) {

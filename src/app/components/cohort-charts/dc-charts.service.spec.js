@@ -31,18 +31,21 @@ describe('DcChartsService Unit Tests', function () {
 
         it('should add "pie-legend-bold" class to text tags with filters and "dc-legend-item" tags', function () {
             chart.tsLabel.filters = ['female'];
-            var items = DcChartsService.emphasizeChartLegend(chart, divWithDcItems);
+            chart.el = divWithDcItems;
+            var items = DcChartsService.emphasizeChartLegend(chart);
             expect(items.length).toEqual(1);
             expect(items[0].hasClass('pie-legend-bold')).toBe(true);
         });
 
         it('should not add "pie-legend-bold" class to text tags without filters or "dc-legend-item" tags', function () {
             chart.tsLabel.filters = [];
-            var items = DcChartsService.emphasizeChartLegend(chart, divWithDcItems);
+            chart.el = divWithDcItems;
+            var items = DcChartsService.emphasizeChartLegend(chart);
             expect(items.length).toEqual(0);
 
             chart.tsLabel.filters = ['male'];
-            items = DcChartsService.emphasizeChartLegend(chart, divWithoutDcItems);
+            chart.el = divWithoutDcItems;
+            items = DcChartsService.emphasizeChartLegend(chart);
             expect(items.length).toEqual(0);
         });
 

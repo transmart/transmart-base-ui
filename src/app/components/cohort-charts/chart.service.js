@@ -487,8 +487,9 @@ angular.module('transmartBaseUi').factory('ChartService',
                     }
                 }
 
-                _chart.id = label.labelId;
-                _chart.tsLabel = label;
+                _chart.id = label.labelId;//update id
+                _chart.tsLabel = label;//update tsLabel
+                _chart.el = el;//update html obj
 
                 /*
                  * when a sub-categorical label is dropped and the corresponding (parent) pie-chart is created,
@@ -499,19 +500,10 @@ angular.module('transmartBaseUi').factory('ChartService',
                 }
 
                 //this listener function will be invoked after a filter is applied, added or removed.
-                _chart.on('filtered', function (chart, filter) {
-                    /*
-                     * keep the tsLabel.filters to be in sync with chart.filters()
-                     */
-                    chart.tsLabel.filters = chart.filters();
-                    chartService.updateDimensions();
-                });
-
+                _chart.on('filtered', _handleChartFilteredEvent);
 
                 //this listener function will be invoked after transitions after redraw and render.
-                _chart.on('renderlet', function (chart, filter) {
-                    DcChartsService.emphasizeChartLegend(chart, el);
-                });
+                _chart.on('renderlet', _handleChartRenderletEvent);
 
                 _chart.render(); // render chart here
 
@@ -519,6 +511,18 @@ angular.module('transmartBaseUi').factory('ChartService',
 
                 return _chart;
             };
+
+            function _handleChartFilteredEvent(chart, filter) {
+                /*
+                 * keep the tsLabel.filters to be in sync with chart.filters()
+                 */
+                chart.tsLabel.filters = chart.filters();
+                chartService.updateDimensions();
+            }
+
+            function _handleChartRenderletEvent(chart, filter) {
+                DcChartsService.emphasizeChartLegend(chart);
+            }
 
 
             /**
