@@ -26,9 +26,6 @@ describe('Unit testing cohort-chart directive', function () {
             ChartService.reset();
         }
 
-        // Spy on rootscope broadcasts
-        broadcastOnRootScope = spyOn(rootScope, '$broadcast').and.callThrough();
-
         scope.gridsterOpts = GridsterServiceMocks.getGridsterOptions();
         scope.gridsterItem = GridsterServiceMocks.getGridsterItem();
         scope.gridster = GridsterServiceMocks.getGridster();
@@ -46,10 +43,6 @@ describe('Unit testing cohort-chart directive', function () {
 
     it('should contain ts-cohort-chart-container', function () {
         expect(chartElm.html()).toContain('chart-container');
-    });
-
-    it('should contain  ui-grid', function () {
-//        expect(element.html()).toContain('ui-grid');
     });
 
     it('should group charts', function() {

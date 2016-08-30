@@ -8,6 +8,31 @@ angular.module('transmartBaseUi')
 		function () {
 			var service = {};
 
+            service.getDropEvent = function() {
+                var event = {
+                    type: 'drop',
+                    target: 'div#main-chart-container',
+                    cancelable: true,
+                    bubbles: true,
+                    metaKey: false
+                };
+
+                return event;
+            };
+
+            service.getNodes = function() {
+                var nodes = {
+                    loaded: false,
+                    nodes: [],
+                    study: {},
+                    restObj: {},
+                    title: "Subjects",
+                    total: 58
+                };
+
+                return nodes;
+            };
+
             service.getMockLabels = function() {
                 var labels = [
                     {
