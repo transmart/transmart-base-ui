@@ -490,8 +490,6 @@ angular.module('transmartBaseUi').factory('ChartService',
                 _chart.id = label.labelId;
                 _chart.tsLabel = label;
 
-                _chart.render(); // render chart here
-
                 /*
                  * when a sub-categorical label is dropped and the corresponding (parent) pie-chart is created,
                  * apply the filter of the sub-category on the chart
@@ -509,10 +507,13 @@ angular.module('transmartBaseUi').factory('ChartService',
                     chartService.updateDimensions();
                 });
 
+
                 //this listener function will be invoked after transitions after redraw and render.
                 _chart.on('renderlet', function (chart, filter) {
                     DcChartsService.emphasizeChartLegend(chart, el);
                 });
+
+                _chart.render(); // render chart here
 
                 this.cs.charts.push(_chart);
 
