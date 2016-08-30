@@ -311,13 +311,6 @@ describe('ChartService Unit Tests', function () {
             ChartService.reset();
             ChartService.cs.subjects = subjects;
             ChartService.cs.crossfilter = crossfilter(subjects);
-
-            //use jasmine clock
-            jasmine.clock().install()
-
-            console.log('jasmine-version:');
-            console.log(jasmine.version || (jasmine.getEnv().versionString && jasmine.getEnv().versionString()));
-            // console.log(jasmine.Clock.useMock());
         });
 
         it('should listen to the renderlet event after a chart is (re)drawn or rendered', function () {
