@@ -94,6 +94,9 @@ angular.module('transmartBaseUi').factory('GridsterService', ['$q', function ($q
 
         service.cohortChartContainerLabels = labels;
 
+        console.log('...resizing');
+        console.log(labels);
+
         return labels;
     };
 
