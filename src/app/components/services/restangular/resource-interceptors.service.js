@@ -28,14 +28,15 @@ angular.module('transmartBaseUi')
             };
 
             if (operation === 'getList') {
-                var _what, resp = data;
+                var _what, resp;
                 if (what === 'concepts') {
-                    what = 'ontology_terms';
-                    resp = data._embedded[what];
+                    _what = 'ontology_terms';
+                } else if (what === 'patient_sets') {
+                    _what = 'values';
                 } else {
                     _what = _getLastToken(what);
-                    resp = data._embedded[_what];
                 }
+                resp = data._embedded[_what];
                 return resp;
             }
 

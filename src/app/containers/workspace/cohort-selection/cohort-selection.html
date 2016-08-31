@@ -74,6 +74,15 @@
             </div>
         </uib-tab>
 
+        <uib-tab active="vm.tabs[2].active" ng-click="vm.activateTab(vm.tabs[2].title, 'cohortView');">
+            <uib-tab-heading>
+                <span>{{vm.tabs[2].title}}</span>
+            </uib-tab-heading>
+
+            <cohort-view ng-if="vm.tabs[2].active"></cohort-view>
+
+        </uib-tab>
+
     </uib-tabset>
 </div>
 
