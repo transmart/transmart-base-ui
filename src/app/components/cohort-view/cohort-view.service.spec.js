@@ -1,7 +1,7 @@
 'use strict';
 /* jshint undef: false */
 
-fdescribe('CohortViewService', function () {
+describe('CohortViewService', function () {
     var CohortViewService, $timeout, $q, deferred;
 
     var CohortViewService,
@@ -48,7 +48,7 @@ fdescribe('CohortViewService', function () {
 
         it('should return all cohorts', function() {
             CohortViewService.getCohorts().then(function(res) {
-                expect(res[0]._embedded.values.length).toEqual(8);
+                expect(res[0]._embedded.values.length).toEqual(3);
             });
             httpBackend.flush();
         });
