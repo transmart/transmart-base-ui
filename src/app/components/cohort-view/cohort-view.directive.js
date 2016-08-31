@@ -47,10 +47,10 @@ angular.module('transmartBaseUi')
                     ctrl.removeCohort = function(cohort) {
                         var deferred = $q.defer();
                         CohortViewService.removeCohort(cohort).then(function() {
-                            AlertService.add('success', 'Successfully deleted cohort "' + cohort.name + '"');
+                            AlertService.add('success', 'Successfully removed cohort "' + cohort.name + '"');
                             deferred.resolve(cohort);
                         }, function(error) {
-                            AlertService.add('danger', 'Failed to delete cohort "' + cohort.name + '"');
+                            AlertService.add('danger', 'Failed to remove cohort "' + cohort.name + '"');
                             deferred.reject(error);
                         });
                         return deferred.promise;
