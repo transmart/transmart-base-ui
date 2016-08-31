@@ -19,17 +19,23 @@ angular.module('transmartBaseUi')
                     ctrl.gridApi = null;
                     ctrl.isCohortSelected = false;
 
-                    var updateSelection = function() {
+                    ctrl.updateSelection = function() {
                         ctrl.isCohortSelected = ctrl.gridApi.selection.getSelectedCount() > 0;
                     }
+
+                    $scope.$watchCollection('cohorts', function(newValue, oldValue) {
+                        if (!_.isEqual(newValue, oldValue)) {
+                            ctrl.updateSelection();
+                        }
+                    });
 
                     // Store a reference to the grid API when it becomes available
                     ctrl.gridOptions.onRegisterApi = function(gridApi) {
                         ctrl.gridApi = gridApi;
 
                         // Listen for changes in the selection
-                        gridApi.selection.on.rowSelectionChanged($scope, updateSelection);
-                        gridApi.selection.on.rowSelectionChangedBatch($scope, updateSelection);
+                        gridApi.selection.on.rowSelectionChanged($scope, ctrl.updateSelection);
+                        gridApi.selection.on.rowSelectionChangedBatch($scope, ctrl.updateSelection);
                     };
 
                     /** Loads the list of cohorts.
