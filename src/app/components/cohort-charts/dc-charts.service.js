@@ -1,6 +1,7 @@
 'use strict';
 
 /**
+ * Mainly for DC SVG chart creation/manipulation
  * @memberof transmartBaseUi
  * @ngdoc factory
  * @name DcChartsService
@@ -8,6 +9,132 @@
 angular.module('transmartBaseUi').factory('DcChartsService', [function () {
 
     var service = {};
+
+    var _CONF = {
+        WIDTH: 180, //Default width of a chart
+        HEIGHT: 180, //Default height of a chart
+        RAD: 0.9, // Percentage to adjust the radius of the chart
+        LEG_H: 0.05,// Percentage to adjust legend position in Y
+        LEG_W: 0, // Percentage to adjust legend position in X
+        LEG_S: 0.03, // Legend size percentage of chart
+        LEG_B: 4, // Legend size base in px
+        LEG_G: 0.02, // Legend gap in percentage of chart height
+        MIN_S: 180, //Default width or height
+        TICK_X: 30, // Pixels per tick in x
+        TICK_Y: 30, // Pixels per tick in y
+        SLICE: 20, // Pixels per slice for pie charts
+        SP_DOT_SIZE: 4, // Pixels per width / height
+        BP_PIXELS_PER_GROUP: 110,
+        HM_LEFT_MARGIN: 30,
+        HM_Y_LABELS_PIXELS: 10,
+        TRANSITION_DURATION: 1
+    };
+
+    /**
+     * @memberof DcChartsService
+     * @param _chart
+     */
+    service.resizeChart = function (_chart) {
+
+        var width = (_chart.gridInfo.sizeX * _chart.gridInfo.curColWidth) - 50;
+        var height = (_chart.gridInfo.sizeY * _chart.gridInfo.curRowHeight) - 60;
+
+        if(width > 0 && height > 0) {
+            _CONF.WIDTH = width;
+            _CONF.HEIGHT = height;
+            _CONF.MIN_S = (_CONF.WIDTH > _CONF.HEIGHT ? _CONF.HEIGHT : _CONF.WIDTH); // Smallest of width or height
+            _CONF.HM_LEFT_MARGIN = _CONF.WIDTH / 6;
+
+            // Adjust width and height
+            _chart.width(_CONF.WIDTH).height(_CONF.HEIGHT);
+
+            // If the chart has a radius (ie. pie chart)
+            if (_chart.type === 'PIECHART') {
+                //  set the radius to half the shortest dimension
+                _chart.radius((_CONF.MIN_S) / 2 * _CONF.RAD)
+                // Limit the number of slices in the chart
+                    .slicesCap(Math.floor(_CONF.MIN_S / _CONF.SLICE));
+
+                if (!_chart._opt.nolegend) {
+                    _chart.legend(dc.legend()
+                        .x(_CONF.WIDTH * _CONF.LEG_W)
+                        .y(_CONF.HEIGHT * _CONF.LEG_H)
+                        .itemHeight(_CONF.LEG_B + _CONF.LEG_S * _CONF.MIN_S)
+                        .gap(_CONF.MIN_S * _CONF.LEG_G));
+                    // .legendText(function(d) { return d.name + ' (' + d.data + ')'; }));
+                }
+
+            } else if (_chart.type === 'BARCHART') {
+                // Adjust number of ticks to not overlap
+                // Number of ticks per pixel
+                _chart.xAxis().ticks(Math.floor(_CONF.WIDTH / _CONF.TICK_X));
+                _chart.yAxis().ticks(Math.floor(_CONF.HEIGHT / _CONF.TICK_Y));
+                _chart.rescale();
+
+            } else if (_chart.type === 'BOXPLOT') {
+                _chart.margins({top: 5, right: 5, bottom: 45, left: 40});
+
+                if (_chart.group().all().length > _CONF.WIDTH / _CONF.BP_PIXELS_PER_GROUP) {
+                    _chart.xAxis().tickValues([]);
+                    _chart.yAxis().ticks(3);
+                } else {
+                    _chart.yAxis().ticks(Math.floor(_CONF.HEIGHT / _CONF.TICK_Y));
+                    _chart.xAxis().tickValues(null);
+                }
+
+            } else if (_chart.type === 'HEATMAP') {
+                _chart
+                    .keyAccessor(function (d) {
+                        return d.key[0] ? d.key[0].slice(0, Math.floor(_CONF.WIDTH / 80)) : undefined;
+                    })
+                    .valueAccessor(function (d) {
+                        return d.key[1] ? d.key[1].slice(0, Math.floor(_CONF.WIDTH / 50)) : undefined;
+                    })
+                    .colorAccessor(function (d) {
+                        return d.value;
+                    })
+                    .margins({top: 5, right: 5, bottom: 40, left: _CONF.HM_LEFT_MARGIN});
+
+            } else if (_chart.type === 'SCATTER') {
+                // Adjust number of ticks to not overlap
+                // Number of ticks per pixel
+                _chart.xAxis().ticks(Math.floor(_CONF.WIDTH / _CONF.TICK_X));
+                _chart.yAxis().ticks(Math.floor(_CONF.HEIGHT / _CONF.TICK_Y));
+                // Adjust the size of the dots
+                _chart.symbolSize(_CONF.SP_DOT_SIZE);
+                _chart.rescale();
+            }
+            _chart.render();
+        }//if width and height are both > 0
+    };
+
+    /**
+     * Create dc.js pie chart
+     * @memberof DcChartsService
+     * @param cDimension
+     * @param cGroup
+     * @param el
+     * @returns {*}
+     * @private
+     */
+    service.getPieChart = function (cDimension, cGroup, el, opt) {
+        opt = opt || {};
+        var _pChart = dc.pieChart(el);
+
+        _pChart
+            .width(opt.size || 200)
+            .height(opt.size || 200)
+            .innerRadius(0)
+            .dimension(cDimension)
+            .group(cGroup)
+            .renderLabel(false).legend(dc.legend())
+            .transitionDuration(_CONF.TRANSITION_DURATION)
+            .colors(d3.scale.category20());
+
+        _pChart._opt = opt;
+
+        return _pChart;
+    };
 
     /**
      * Create dc.js bar chart
@@ -34,6 +161,7 @@ angular.module('transmartBaseUi').factory('DcChartsService', [function () {
             .centerBar(true)
             .gap(1)
             .x(d3.scale.linear())
+            .transitionDuration(_CONF.TRANSITION_DURATION)
             .renderHorizontalGridLines(true);
 
         if (opt.float) {
@@ -62,6 +190,7 @@ angular.module('transmartBaseUi').factory('DcChartsService', [function () {
             .dimension(cDimension)
             .group(cGroup)
             .elasticX(true)
+            .transitionDuration(_CONF.TRANSITION_DURATION)
             .yAxisLabel(opt.yLab ? opt.yLab : '')
             .xAxisLabel(opt.xLab ? opt.xLab : '');
 
@@ -72,36 +201,6 @@ angular.module('transmartBaseUi').factory('DcChartsService', [function () {
         }
 
         return _bp;
-    };
-
-
-    /**
-     * Create dc.js pie chart
-     * @memberof DcChartsService
-     * @param cDimension
-     * @param cGroup
-     * @param el
-     * @returns {*}
-     * @private
-     */
-    service.getPieChart = function (cDimension, cGroup, el, opt) {
-        opt = opt || {};
-        var _pChart = dc.pieChart(el);
-
-        _pChart
-            .width(opt.size || 200)
-            .height(opt.size || 200)
-            .innerRadius(0)
-            .dimension(cDimension)
-            .group(cGroup)
-            .renderLabel(false)
-            .colors(d3.scale.category20c());
-
-        if (!opt.nolegend) {
-            _pChart.legend(dc.legend());
-        }
-
-        return _pChart;
     };
 
 
@@ -132,6 +231,7 @@ angular.module('transmartBaseUi').factory('DcChartsService', [function () {
             .margins({top: 5, right: 5, bottom: 30, left: 30})
             .yAxisLabel(opt.yLab || '')
             .xAxisLabel(opt.xLab || '')
+            .transitionDuration(_CONF.TRANSITION_DURATION)
             .group(cGroup);
 
         return _chart;
@@ -168,10 +268,38 @@ angular.module('transmartBaseUi').factory('DcChartsService', [function () {
             })
             .colors(['#edf8b1', '#c7e9b4', '#7fcdbb', '#41b6c4', '#1d91c0', '#225ea8',
                 '#253494', '#081d58'])
+            .transitionDuration(_CONF.TRANSITION_DURATION)
             .calculateColorDomain();
 
         return _chart;
     };
+
+    /**
+     * Emphasize pie chart legends when the corresponding slices are selected
+     * @memberof DcChartsService
+     * @param chart
+     * @param el
+     */
+    service.emphasizeChartLegend = function (chart) {
+        var filters = chart.tsLabel.filters;
+        var gs = angular.element(chart.el).find('g');
+        var items = [];
+        _.forEach(gs, function (g) {
+            if (angular.element(g).hasClass('dc-legend-item')) {
+                var item = angular.element(g).find('text');
+                if (filters
+                    && filters.length < chart.data().length
+                    && filters.indexOf(item.text()) !== -1) {
+                    item.addClass('pie-legend-bold');
+                    items.push(item);
+                }
+                else {
+                    item.addClass('pie-legend-normal');
+                }
+            }
+        });
+        return items;
+    }
 
     /**
      * Render all
