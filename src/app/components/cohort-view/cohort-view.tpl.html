@@ -6,7 +6,7 @@
     <div>
         <button type="button"
                 class="btn btn-primary ts-cohort-delete-button"
-                ng-disabled="false"
+                ng-disabled="!ctrl.isCohortSelected"
                 ng-click="ctrl.deleteSelectedCohorts()">Delete selected</button>
     </div>
 </div>

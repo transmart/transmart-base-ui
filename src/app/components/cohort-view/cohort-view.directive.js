@@ -15,14 +15,30 @@ angular.module('transmartBaseUi')
 
                     $scope.cohorts = [];
                     var ctrl = this;
-
                     ctrl.gridOptions = CohortViewService.options;
+                    ctrl.gridApi = null;
+                    ctrl.isCohortSelected = false;
+
+                    var updateSelection = function() {
+                        ctrl.isCohortSelected = ctrl.gridApi.selection.getSelectedCount() > 0;
+                    }
+
+                    // Store a reference to the grid API when it becomes available
+                    ctrl.gridOptions.onRegisterApi = function(gridApi) {
+                        ctrl.gridApi = gridApi;
+
+                        // Listen for changes in the selection
+                        gridApi.selection.on.rowSelectionChanged($scope, updateSelection);
+                        gridApi.selection.on.rowSelectionChangedBatch($scope, updateSelection);
+                    };
 
                     /** Loads the list of cohorts.
                      */
                     ctrl.loadCohorts = function() {
-                        CohortViewService.getCohorts().then(function (cohorts) {
+                        CohortViewService.getCohorts().then(function(cohorts) {
                             $scope.cohorts = cohorts;
+                        }, function(error) {
+                            AlertService.add('danger', 'Failed to retrieve list of cohorts');
                         });
                     };
 
@@ -43,7 +59,7 @@ angular.module('transmartBaseUi')
                     /** Deletes the cohorts currently selected in the cohort grid.
                      */
                     ctrl.deleteSelectedCohorts = function() {
-                        var selectedCohorts = CohortViewService.gridApi.selection.getSelectedRows();
+                        var selectedCohorts = ctrl.gridApi.selection.getSelectedRows();
 
                         // Remove all selected cohorts and reload the list after completing
                         $q.all(selectedCohorts.map(function(cohort) {

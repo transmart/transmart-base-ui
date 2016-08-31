@@ -9,7 +9,6 @@ angular.module('transmartBaseUi').factory('CohortViewService', ['$timeout', 'End
   function ($timeout, EndpointService, $q) {
 
     var service = {
-        gridApi: undefined,
         options: {
             enableGridMenu: false,
             enableSelectAll: false,
@@ -22,10 +21,7 @@ angular.module('transmartBaseUi').factory('CohortViewService', ['$timeout', 'End
                 {field: 'username', name: 'User', width: '*'}
             ], // columns is stored here
             data: 'cohorts',
-            enableFiltering: true,
-            onRegisterApi: function (gridApi) {
-                service.gridApi = gridApi;
-            },
+            enableFiltering: true
         }
     };
 
