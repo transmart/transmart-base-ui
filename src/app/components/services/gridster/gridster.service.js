@@ -31,36 +31,30 @@ angular.module('transmartBaseUi').factory('GridsterService', ['$q', function ($q
             // maximum number of rows
             maxRows: 100,
             // minimum column width of an item
-            minSizeX: 2,
+            minSizeX: 1,
             // maximum column width of an item
             maxSizeX: null,
             // minumum row height of an item
-            minSizeY: 2,
+            minSizeY: 1,
             // maximum row height of an item
             maxSizeY: null,
             resizable: {
                 enabled: true,
-                handles: ['n', 'e', 's', 'w', 'ne', 'se', 'sw', 'nw'],
-                resize: function (event, $element, widget) {
-                    // Resize chart container in an interactive way
-                    angular.element('#cohort-chart-panel-' + widget.ids)
-                        .width($element[0].clientWidth)
-                        .height($element[0].clientHeight);
-                }
+                handles: ['n', 'e', 's', 'w', 'ne', 'se', 'sw', 'nw']
             },
             draggable: {
                 enabled: true, // whether dragging items is supported
-                handle: '.chart-drag-handle', // optional selector for resize handle
+                handle: '.chart-drag-handle' // optional selector for resize handle
             }
         },
         config: {
             // Base width for a gridster square, this value will be adapted to fit
             // exaclty an even number of squares in the grid according to window size
-            G_BASE_WIDTH: 80,
+            G_BASE_WIDTH: 230,
             // Number of columns a gridster item will occupy by default
-            G_ITEM_SPAN_X: 3,
+            G_ITEM_SPAN_X: 1,
             // Number of rows a gridster item will occupy by default
-            G_ITEM_SPAN_Y: 3
+            G_ITEM_SPAN_Y: 1
         },
         cohortChartContainerLabels: []
     };

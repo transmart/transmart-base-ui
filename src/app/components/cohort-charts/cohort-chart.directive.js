@@ -22,8 +22,8 @@ angular.module('transmartBaseUi')
             link: function (scope, el) {
 
                 var _chart,
-                    _bodyDiv = el.find('div')[2],
-                    _cached = _.find(ChartService.cs.charts, {id: scope.tsLabel.labelId});
+                    _bodyDiv = el.find('div')[2];
+
                 // always create new chart even it's been cached
                 _chart = ChartService.createCohortChart(scope.tsLabel, _bodyDiv);
 
@@ -38,21 +38,18 @@ angular.module('transmartBaseUi')
                     'tsGridsterItem.sizeX', 'tsGridsterItem.sizeY',
                     'tsGridster.curColWidth', 'tsGridster.curRowHeight'
                 ], function (newValues, oldValues, scope) {
-                    if (!_.isEqual(newValues, oldValues) || !_cached) {
-                        // save gridster info
-                        _chart.gridInfo = {
-                            sizeX: newValues[0],
-                            sizeY: newValues[1],
-                            curColWidth: newValues[2],
-                            curRowHeight: newValues[3]
-                        };
+                    // save gridster info
+                    _chart.gridInfo = {
+                        sizeX: newValues[0],
+                        sizeY: newValues[1],
+                        curColWidth: newValues[2],
+                        curRowHeight: newValues[3]
+                    };
 
-                        // Number of characters after which the title string will be cut off
-                        // 10 pixels per characters is assumed
-                        scope.cutOff = _chart.gridInfo.sizeX * (_chart.gridInfo.curColWidth - 5) / 10;
-                        DcChartsService.resizeChart(_chart);
-                    }
-
+                    // Number of characters after which the title string will be cut off
+                    // 10 pixels per characters is assumed
+                    scope.cutOff = _chart.gridInfo.sizeX * (_chart.gridInfo.curColWidth - 5) / 10;
+                    DcChartsService.resizeChart(_chart);
                 });
 
                 // Title for the chart panel
