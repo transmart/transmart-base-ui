@@ -20,12 +20,12 @@ angular.module('transmartBaseUi')
             vm.connections = [
                 {
                     title: 'transmart-gb',
-                    url: 'http://transmart-gb.thehyve.net/transmart',
+                    url: 'http://transmart-gb.thehyve.net/transmart/v1',
                     isOAuth: true
                 },
                 {
                     title: 'transmart-test-translocation',
-                    url: 'http://transmart-test-translocation.thehyve.net/transmart',
+                    url: 'http://transmart-test-translocation.thehyve.net/transmart/v1',
                     isOAuth: true
                 }
             ];
