@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('transmartBaseUi')
-    .controller('ConnectionsCtrl', ['$location', 'EndpointService', 'StudyListService', 'AlertService',
-        function ($location, EndpointService, StudyListService, AlertService) {
+    .controller('ConnectionsCtrl', ['$location', 'EndpointService', 'StudyListService', 'AlertService', 'CONNECTIONS',
+        function ($location, EndpointService, StudyListService, AlertService, CONNECTIONS) {
 
             var vm = this;
 
@@ -17,18 +17,7 @@ angular.module('transmartBaseUi')
             vm.endpoints = EndpointService.getEndpoints();
 
             // Predefined endpoints
-            vm.connections = [
-                {
-                    title: 'transmart-gb',
-                    url: 'http://transmart-gb.thehyve.net/transmart/v1',
-                    isOAuth: true
-                },
-                {
-                    title: 'transmart-test-translocation',
-                    url: 'http://transmart-test-translocation.thehyve.net/transmart/v1',
-                    isOAuth: true
-                }
-            ];
+            vm.connections = CONNECTIONS;
 
             vm.selectedConnection = {};
 
