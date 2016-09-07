@@ -4,6 +4,7 @@
     </uib-alert>
 
     <uib-tabset>
+        <!----------- Tab: Cohort Selection ----------->
         <uib-tab active="vm.tabs[0].active" ng-click="vm.activateTab(tabs[0].title, 'cohortSelection');">
             <uib-tab-heading>
                 <span>{{vm.tabs[0].title}}</span>
@@ -88,6 +89,7 @@
             </div>
         </uib-tab>
 
+        <!----------- Tab: Cohort Grid ----------->
         <uib-tab active="vm.tabs[1].active" ng-click="vm.activateTab(vm.tabs[1].title, 'cohortGrid');">
             <uib-tab-heading>
                 <span>{{vm.tabs[1].title}}</span>
@@ -100,6 +102,7 @@
             </div>
         </uib-tab>
 
+        <!----------- Tab: Saved Cohorts ----------->
         <uib-tab active="vm.tabs[2].active" ng-click="vm.activateTab(vm.tabs[2].title, 'cohortView');">
             <uib-tab-heading>
                 <span>{{vm.tabs[2].title}}</span>

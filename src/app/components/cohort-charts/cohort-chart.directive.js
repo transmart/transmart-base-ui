@@ -27,6 +27,7 @@ angular.module('transmartBaseUi')
                 // always create new chart even it's been cached
                 _chart = ChartService.createCohortChart(scope.tsLabel, _bodyDiv);
 
+
                 // check if chart is number chart or not
                 scope.isNumberChart = _chart.type === 'NUMBER';
 

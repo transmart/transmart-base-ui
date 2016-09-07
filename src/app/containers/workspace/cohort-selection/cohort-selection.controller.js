@@ -6,13 +6,14 @@ angular.module('transmartBaseUi')
             '$state', 'StudyListService', 'GridsterService', '$uibModal',
             function ($scope, ChartService, AlertService, $stateParams, $log,
                       $state, StudyListService, GridsterService, $uibModal) {
-
                 var vm = this;
+                vm.workspaceId = 'workspace_0';
 
-                ChartService.restoreCrossfilter();
+                ChartService.addWorkspace(vm.workspaceId);
+                ChartService.restoreCrossfilter(vm.workspaceId);
                 // Initialize the chart service only if uninitialized
-                if (!ChartService.cs.mainDimension) {
-                    ChartService.reset();
+                if (!ChartService.cs[vm.workspaceId].mainDimension) {
+                    ChartService.reset(vm.workspaceId);
                 }
 
                 // Alerts
@@ -23,11 +24,11 @@ angular.module('transmartBaseUi')
                 vm.gridsterOpts = GridsterService.options;
 
                 // Charts
-                vm.cs = ChartService.cs;
-                vm.selectedSubjects = ChartService.cs.selectedSubjects;
+                vm.cs = ChartService.cs[vm.workspaceId];
+                vm.selectedSubjects = ChartService.cs[vm.workspaceId].selectedSubjects;
 
                 $scope.$watchCollection(function () {
-                   return ChartService.cs.selectedSubjects;
+                   return ChartService.cs[vm.workspaceId].selectedSubjects;
                 }, function (newValue, oldValue) {
                     if (!_.isEqual(newValue, oldValue)) {
                         vm.selectedSubjects = newValue;
@@ -35,10 +36,10 @@ angular.module('transmartBaseUi')
                 });
 
                 $scope.$watchCollection(function () {
-                    return ChartService.cs.labels;
+                    return ChartService.cs[vm.workspaceId].labels;
                 }, function (newV, oldV) {
                     if (!_.isEqual(newV, oldV)) {
-                        ChartService.updateDimensions();
+                        ChartService.updateDimensions(vm.workspaceId);
                     }
                 });
 
@@ -108,8 +109,8 @@ angular.module('transmartBaseUi')
                  * Remove all the concepts from the cohort selection
                  */
                 vm.resetActiveLabels = function () {
-                    ChartService.reset();
-                    ChartService.updateDimensions();
+                    ChartService.reset(vm.workspaceId);
+                    ChartService.updateDimensions(vm.workspaceId);
                 };
 
                 /**
@@ -119,7 +120,7 @@ angular.module('transmartBaseUi')
                  * @param node Dropped node from the study tree
                  */
                 vm.onNodeDropEvent = function (event, info, node) {
-                    ChartService.onNodeDrop(node);
+                    ChartService.onNodeDrop(node, vm.workspaceId);
                     angular.element(event.target).removeClass('chart-container-hover');
                 };
 
