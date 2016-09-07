@@ -27,7 +27,7 @@ angular.module('transmartBaseUi').factory('DcChartsService', [function () {
         BP_PIXELS_PER_GROUP: 110,
         HM_LEFT_MARGIN: 30,
         HM_Y_LABELS_PIXELS: 10,
-        TRANSITION_DURATION: 1
+        TRANSITION_DURATION: 500
     };
 
     /**

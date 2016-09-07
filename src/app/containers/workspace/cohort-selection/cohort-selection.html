@@ -9,24 +9,50 @@
                 <span>{{vm.tabs[0].title}}</span>
             </uib-tab-heading>
 
-            <div class="well" ng-if="vm.cohortChartContainerLabels.length > 0" >
-                <button type="button" class="btn btn-primary btn-sm ts-btn-node"
-                        ng-repeat="label in vm.cohortChartContainerLabels"
-                        ng-click="vm.removeLabel(label)">
-                    <div class="ts-node-name">
-                        {{label.name}}<br><span
-                        class="ts-smaller-font">{{label.study._embedded.ontologyTerm.name}}</span>
-                    </div>
-
-                    <div class="ts-node-close-x" aria-hidden="true">&times;</div>
-                </button>
-                <button ng-if="vm.cohortChartContainerLabels.length >= 1" class="btn btn-danger ts-btn-node-reset"
-                        ng-click="vm.resetActiveLabels()">
-                    Reset<br>({{vm.cs.labels.length}}/{{vm.cs.maxNoOfDimensions}})
-                </button>
-                <button ng-if="vm.cohortChartContainerLabels.length >= 1" class="btn" ng-click="vm.openSaveCohortModal()">
-                    Save cohort
-                </button>
+            <div class="btn-toolbar" role="toolbar">
+                <div class="btn-group" role="group">
+                    <button type="button"
+                            class="btn btn-secondary"
+                            ng-click="vm.openSaveCohortModal()"
+                            uib-tooltip="Save cohorts"
+                            tooltip-trigger="mouseenter"
+                            tooltip-placement="top"
+                            popupDelay="1000"><span class="glyphicon glyphicon-cloud-upload"></span></button>
+                    <button type="button"
+                            class="btn btn-secondary"
+                            uib-tooltip="Load cohorts"
+                            tooltip-trigger="mouseenter"
+                            tooltip-placement="top"
+                            popupDelay="1000"><span class="glyphicon glyphicon-cloud-download"></span></button>
+                    <button type="button"
+                            class="btn btn-secondary"
+                            uib-tooltip="Refresh"
+                            tooltip-trigger="mouseenter"
+                            tooltip-placement="top"
+                            popupDelay="1000"><span class="glyphicon glyphicon-refresh"></span></button>
+                    <button type="button"
+                            class="btn btn-secondary"
+                            ng-click="vm.resetActiveLabels()"
+                            uib-tooltip="Clear"
+                            tooltip-trigger="mouseenter"
+                            tooltip-placement="top"
+                            popupDelay="1000"><span class="glyphicon glyphicon-erase"></span><</button>
+                </div>
+                <div class="btn-group" role="group">
+                    <button type="button"
+                            class="btn btn-secondary"
+                            uib-tooltip="New workspace"
+                            tooltip-trigger="mouseenter"
+                            tooltip-placement="top"
+                            popupDelay="1000"><span class="glyphicon glyphicon-plus"></span></button>
+                    <button type="button"
+                            class="btn btn-secondary"
+                            uib-tooltip="Close workspace"
+                            tooltip-trigger="mouseenter"
+                            tooltip-placement="top"
+                            popupDelay="1000"><span class="glyphicon glyphicon-remove"></span></button>
+                </div>
+                <br><br>
             </div>
 
             <div class="progress-container">
