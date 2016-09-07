@@ -101,6 +101,7 @@ angular.module('transmartBaseUi').factory('ChartService',
              * @memberof ChartService
              */
             chartService.reset = function (workspaceId) {
+                this.addWorkspace(workspaceId);
                 this.cs[workspaceId].subjects = [];
                 this.cs[workspaceId].selectedSubjects = [];
                 this.cs[workspaceId].chartId = 0;
