@@ -352,7 +352,7 @@ angular.module('transmartBaseUi').factory('ChartService',
                     if (this.cs[workspaceId].labels.length > 0) {
                         this.updateDimensions(workspaceId);
                     } else {
-                        this.reset();
+                        this.reset(workspaceId);
                     }
                 }
             };
