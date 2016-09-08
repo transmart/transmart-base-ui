@@ -3,6 +3,7 @@
 describe('ChartService Unit Tests', function () {
 
     var ChartService, DcChartsService, window, $rootScope, Restangular, httpBackend;
+    var workspaceId = 'exampleId';
     //------------------------------------------------------------------------------------------------------------------
     // Setup
     beforeEach(function () {
@@ -54,22 +55,22 @@ describe('ChartService Unit Tests', function () {
         ];
 
         beforeEach(function () {
-            ChartService.reset();
+            ChartService.reset(workspaceId);
         });
 
         it('should restore the crossfilter dimension(s)', function () {
-            ChartService.cs.crossfilter = crossfilter(partialSubjects);
-            var dimChanged = ChartService.cs.crossfilter.dimension(function (d) {
+            ChartService.cs[workspaceId].crossfilter = crossfilter(partialSubjects);
+            var dimChanged = ChartService.cs[workspaceId].crossfilter.dimension(function (d) {
                 return d.gender;
             });
             expect(dimChanged.top(Infinity).length).toEqual(3);
 
-            var restorationPerformed = ChartService.restoreCrossfilter();
+            var restorationPerformed = ChartService.restoreCrossfilter(workspaceId);
             expect(restorationPerformed).toEqual(false);
 
-            ChartService.cs.subjects = fullSubjects;
-            restorationPerformed = ChartService.restoreCrossfilter();
-            var dimRestored = ChartService.cs.crossfilter.dimension(function (d) {
+            ChartService.cs[workspaceId].subjects = fullSubjects;
+            restorationPerformed = ChartService.restoreCrossfilter(workspaceId);
+            var dimRestored = ChartService.cs[workspaceId].crossfilter.dimension(function (d) {
                 return d.gender;
             });
             expect(restorationPerformed).toEqual(true);
@@ -80,8 +81,8 @@ describe('ChartService Unit Tests', function () {
     describe('removeLabel', function () {
 
         beforeEach(function () {
-            ChartService.reset();
-            ChartService.cs.charts = [{
+            ChartService.reset(workspaceId);
+            ChartService.cs[workspaceId].charts = [{
                 id: 0, filter: function () {
                 }
             }, {
@@ -91,9 +92,9 @@ describe('ChartService Unit Tests', function () {
                 id: 2, filter: function () {
                 }
             }];
-            ChartService.cs.dimensions = [{d: 0}, {d: 1}, {d: 2}];
-            ChartService.cs.groups = [{g: 0}, {g: 1}, {g: 2}];
-            ChartService.cs.labels = [{labelId: 0}, {labelId: 1}, {labelId: 2}];
+            ChartService.cs[workspaceId].dimensions = [{d: 0}, {d: 1}, {d: 2}];
+            ChartService.cs[workspaceId].groups = [{g: 0}, {g: 1}, {g: 2}];
+            ChartService.cs[workspaceId].labels = [{labelId: 0}, {labelId: 1}, {labelId: 2}];
 
             spyOn(ChartService, 'updateDimensions');
             spyOn(ChartService, 'reset');
@@ -101,15 +102,15 @@ describe('ChartService Unit Tests', function () {
         });
 
         it('remove chart from cs.charts', function () {
-            ChartService.removeLabel({labelId: 2});
-            expect(_.find(ChartService.cs.charts, {id: 2})).toEqual(undefined);
-            expect(_.find(ChartService.cs.labels, {id: 2})).toEqual(undefined);
-            expect(_.find(ChartService.cs.subjects, {id: 2})).toEqual(undefined);
-            expect(_.find(ChartService.cs.groups, {id: 2})).toEqual(undefined);
+            ChartService.removeLabel({labelId: 2}, workspaceId);
+            expect(_.find(ChartService.cs[workspaceId].charts, {id: 2})).toEqual(undefined);
+            expect(_.find(ChartService.cs[workspaceId].labels, {id: 2})).toEqual(undefined);
+            expect(_.find(ChartService.cs[workspaceId].subjects, {id: 2})).toEqual(undefined);
+            expect(_.find(ChartService.cs[workspaceId].groups, {id: 2})).toEqual(undefined);
             expect(ChartService.updateDimensions).toHaveBeenCalled();
             expect($rootScope.$broadcast).toHaveBeenCalled();
-            ChartService.removeLabel({labelId: 0});
-            ChartService.removeLabel({labelId: 1});
+            ChartService.removeLabel({labelId: 0}, workspaceId);
+            ChartService.removeLabel({labelId: 1}, workspaceId);
             expect(ChartService.reset).toHaveBeenCalled();
         });
     });
@@ -162,15 +163,16 @@ describe('ChartService Unit Tests', function () {
         };
 
         beforeEach(function () {
+            ChartService.reset(workspaceId);
             _charts = [
                 {id: 0, filter: _filter},
                 {id: 1, filter: _filter},
                 {id: 2, filter: _filter}
             ];
-            _label = {labelId: 2};
-            _labelNotExist = {labelId: 3};
+            _label = {labelId: 2, workspaceId: workspaceId};
+            _labelNotExist = {labelId: 3, workspaceId: workspaceId};
 
-            ChartService.cs.charts = _charts;
+            ChartService.cs[workspaceId].charts = _charts;
 
             spyOn(ChartService, 'updateDimensions');
         });
@@ -210,8 +212,8 @@ describe('ChartService Unit Tests', function () {
             spyOn(ChartService, 'addNodeToActiveCohortSelection').and.callThrough();
             spyOn(node.restObj, 'one').and.callThrough();
 
-            ChartService.addNodeToActiveCohortSelection(node);
-            expect(ChartService.addNodeToActiveCohortSelection).toHaveBeenCalledWith(node);
+            ChartService.addNodeToActiveCohortSelection(node, [], workspaceId);
+            expect(ChartService.addNodeToActiveCohortSelection).toHaveBeenCalledWith(node, [], workspaceId);
             expect(node.restObj.one).toHaveBeenCalled();
         });
     });
@@ -234,7 +236,7 @@ describe('ChartService Unit Tests', function () {
             node.restObj = {};
             node.restObj.fullName = chartName;
 
-            ChartService.cs.charts = [];
+            ChartService.reset(workspaceId);
         });
 
         it('should invoke addNodeToActiveCohortSelection when a pieNode is newly dropped', function () {
@@ -246,9 +248,9 @@ describe('ChartService Unit Tests', function () {
             spyOn(ChartService, 'onNodeDrop').and.callThrough();
             spyOn(ChartService, 'addNodeToActiveCohortSelection');
 
-            ChartService.onNodeDrop(pieNode);
-            expect(ChartService.onNodeDrop).toHaveBeenCalledWith(pieNode);
-            expect(ChartService.addNodeToActiveCohortSelection).toHaveBeenCalledWith(node, filters);
+            ChartService.onNodeDrop(pieNode, workspaceId);
+            expect(ChartService.onNodeDrop).toHaveBeenCalledWith(pieNode, workspaceId);
+            expect(ChartService.addNodeToActiveCohortSelection).toHaveBeenCalledWith(node, filters, workspaceId);
         });
 
         it('should not invoke addNodeToActiveCohortSelection upon node-dropping when the pie-chart exists', function () {
@@ -257,14 +259,14 @@ describe('ChartService Unit Tests', function () {
             chart.filters = function () {
                 return [];
             };
-            ChartService.cs.charts.push(chart);
+            ChartService.cs[workspaceId].charts.push(chart);
 
             spyOn(ChartService, 'onNodeDrop').and.callThrough();
             spyOn(ChartService, 'addNodeToActiveCohortSelection');
             spyOn(ChartService, 'updateDimensions');
 
-            ChartService.onNodeDrop(pieNode);
-            expect(ChartService.onNodeDrop).toHaveBeenCalledWith(pieNode);
+            ChartService.onNodeDrop(pieNode, workspaceId);
+            expect(ChartService.onNodeDrop).toHaveBeenCalledWith(pieNode, workspaceId);
             expect(ChartService.addNodeToActiveCohortSelection).not.toHaveBeenCalled();
         });
 
@@ -272,9 +274,9 @@ describe('ChartService Unit Tests', function () {
             spyOn(ChartService, 'onNodeDrop').and.callThrough();
             spyOn(ChartService, 'addNodeToActiveCohortSelection');
 
-            ChartService.onNodeDrop(node);
-            expect(ChartService.onNodeDrop).toHaveBeenCalledWith(node);
-            expect(ChartService.addNodeToActiveCohortSelection).toHaveBeenCalledWith(node);
+            ChartService.onNodeDrop(node, workspaceId);
+            expect(ChartService.onNodeDrop).toHaveBeenCalledWith(node, workspaceId);
+            expect(ChartService.addNodeToActiveCohortSelection).toHaveBeenCalled();
         });
 
     });
@@ -294,7 +296,8 @@ describe('ChartService Unit Tests', function () {
                 resolved: false,
                 sizeX: 3,
                 sizeY: 3,
-                type: "string"
+                type: "string",
+                workspaceId: workspaceId
             };
             el = document.createElement('div');
             subjects = [{
@@ -308,9 +311,9 @@ describe('ChartService Unit Tests', function () {
             }, {
                 id: 5, gender: 'unknown', labels: {}
             }];
-            ChartService.reset();
-            ChartService.cs.subjects = subjects;
-            ChartService.cs.crossfilter = crossfilter(subjects);
+            ChartService.reset(workspaceId);
+            ChartService.cs[workspaceId].subjects = subjects;
+            ChartService.cs[workspaceId].crossfilter = crossfilter(subjects);
         });
 
         it('should listen to the filtered and renderlet events', function () {
@@ -325,6 +328,50 @@ describe('ChartService Unit Tests', function () {
             expect(_chart.on).toHaveBeenCalledWith('renderlet', _func);
 
         });
+    });
+
+    describe('addWorkspace', function () {
+        beforeEach(function () {
+            ChartService.reset(workspaceId);
+        });
+
+        it('should assert that ChartService.workspaces is defined', function () {
+            expect(ChartService.workspaces).toBeDefined();
+        });
+
+        it('should assert that ChartService.workspaces is an array containing only one workspaceId', function () {
+            expect(ChartService.workspaces.length).toBe(1);
+        });
+
+        it('should expect the cs object to be defined', function () {
+            expect(ChartService.cs[workspaceId]).toBeDefined();
+        });
+
+        it('should add a second workspaceId when addWorkspace is called', function () {
+            var newWorkspaceId = 'newExampleId';
+            ChartService.addWorkspace(newWorkspaceId);
+            expect(ChartService.workspaces.length).toBe(2);
+            expect(ChartService.cs[newWorkspaceId]).toBeDefined();
+        });
+
+    });
+
+    describe('removeWorkspace', function () {
+        var newWorkspaceId = 'newExampleId';
+
+        beforeEach(function () {
+            ChartService.reset(workspaceId);
+            ChartService.addWorkspace(newWorkspaceId);
+        });
+
+        it('should remove a workspace when removeWorkspace is called', function () {
+            expect(ChartService.workspaces.length).toBe(2);
+            expect(ChartService.cs[newWorkspaceId]).toBeDefined();
+            ChartService.removeWorkspace(newWorkspaceId);
+            expect(ChartService.workspaces.length).toBe(1);
+            expect(ChartService.cs[newWorkspaceId]).not.toBeDefined();
+        });
+
     });
 
 });
