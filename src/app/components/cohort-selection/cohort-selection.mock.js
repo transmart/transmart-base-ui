@@ -1,12 +1,12 @@
 'use strict';
 /**
- * @Service CohortChartMocks
+ * @Service CohortSelectionMocks
  * @Description Service layer exposing mocks for gridster and cohort charts
  */
 angular.module('transmartBaseUi')
-	.factory('GridsterServiceMocks',
-		function () {
-			var service = {};
+    .factory('CohortSelectionMocks',
+        function () {
+            var service = {};
 
             service.getGridsterOptions = function() {
                 var options = {
@@ -87,6 +87,5 @@ angular.module('transmartBaseUi')
                 return gridster;
             };
 
-			return service;
-		});
-
+            return service;
+        });

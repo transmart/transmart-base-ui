@@ -8,10 +8,15 @@ angular.module('transmartBaseUi')
 		function () {
 			var service = {};
 
+			service.getBoxId = function () {
+			    return 'cohort-selection-box-id-0';
+            };
+
             service.getDropEvent = function() {
+                var boxId = service.getBoxId();
                 var event = {
                     type: 'drop',
-                    target: 'div#main-chart-container',
+                    target: 'div#main-chart-container-'+boxId,
                     cancelable: true,
                     bubbles: true,
                     metaKey: false
@@ -34,6 +39,7 @@ angular.module('transmartBaseUi')
             };
 
             service.getMockLabels = function() {
+                var boxId = service.getBoxId();
                 var labels = [
                     {
                         col: 0,
@@ -63,7 +69,8 @@ angular.module('transmartBaseUi')
                                 }
                             }
                         },
-                        type: "number"
+                        type: "number",
+                        boxId: boxId
                     },
                     {
                         col: 0,
@@ -93,7 +100,8 @@ angular.module('transmartBaseUi')
                                 }
                             }
                         },
-                        type: "string"
+                        type: "string",
+                        boxId: boxId
                     }
                 ];
 
