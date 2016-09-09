@@ -23,10 +23,6 @@ describe('CohortSelectionCtrl', function () {
     }));
 
     describe('Initialization of controller', function() {
-        it('should intialize correctly calling defaults', function() {
-
-        });
-
         it('should restore the cross filter by default ', function() {
             expect(ChartService.restoreCrossfilter).toHaveBeenCalled();
         });
@@ -38,16 +34,6 @@ describe('CohortSelectionCtrl', function () {
 
         it('should retrieve all the active alerts ', function() {
            expect(AlertService.get).toHaveBeenCalled();
-        });
-    });
-
-    describe('Initialize all the watchers for collections ', function() {
-        it('should correctly watch for selected subjects', function() {
-
-        });
-
-        it('should correctly watch the labels in the chartservice for changes', function() {
-
         });
     });
 
@@ -73,22 +59,20 @@ describe('CohortSelectionCtrl', function () {
             spyOn(ChartService, 'onNodeDrop');
             angular.element(dropEvent.target).addClass('chart-container-hover');
             ctrl.onNodeDropEvent(dropEvent, {}, nodes);
-            expect(ChartService.onNodeDrop).toHaveBeenCalledWith(nodes);
+            expect(ChartService.onNodeDrop).toHaveBeenCalledWith(nodes, 'workspace_0');
             expect(!angular.element(dropEvent.target).hasClass('chart-container-hover'));
         });
 
         it('should add a css class when hovering a node over the drop box ', function() {
-            //var dropEvent = CohortChartMocks.getDropEvent();
-            //var hoverElm = ctrl.onNodeOver(dropEvent);
-            //expect(angular.element(hoverElm).hasClass('chart-container-hover')).toBeTruthy();
+            // To Be Implemented
         });
 
         it('should remove a css class when the node is moved out of the drop box', function() {
-
+            // To Be Implemented
         });
 
         it('should be able to open the save cohort modal', function() {
-
+            // To Be Implemented
         });
     });
 });
