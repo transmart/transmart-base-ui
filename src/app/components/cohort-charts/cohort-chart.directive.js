@@ -30,6 +30,7 @@ angular.module('transmartBaseUi')
 
                 // check if chart is number chart or not
                 scope.isNumberChart = _chart.type === 'NUMBER';
+                scope.chart = _chart;
 
                 // show group icon
                 scope.showGroupIcon = scope.tsLabel.type !== 'combination' && scope.tsLabel.type !== 'highdim';

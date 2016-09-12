@@ -3,62 +3,19 @@
 describe('ConnectionsCtrl', function () {
     beforeEach(module('transmartBaseUi'));
 
-    var ctrl, scope, rootScope, EndpointService, AlertService, location;
+    var ctrl, scope, rootScope, _dummyEndpoints, EndpointService, EndpointServiceMocks, AlertService, AlertServiceMocks, location;
 
-    /**
-     * dummy endpoints
-     * @type {Array}
-     * @private
-     */
-    var _dummyEndpoints = [
-        {
-            title: 'foo',
-            url: ' http://foo',
-            status: 'active'
-        },
-        {
-            title: 'bar',
-            url: ' http://bar',
-            status: 'error'
-        },
-        {
-            title: ' local-dummy',
-            url: 'local-dummy',
-            status: 'local'
-        }
-    ];
-
-    beforeEach(inject(function (_$controller_, _$rootScope_, _$location_) {
+    beforeEach(inject(function (_$controller_, _$rootScope_, _$location_, _EndpointServiceMocks_, _AlertServiceMocks_) {
         scope = _$rootScope_.$new();
         rootScope = _$rootScope_;
         location = _$location_;
+        EndpointServiceMocks = _EndpointServiceMocks_;
 
-        EndpointService = {
-            getEndpoints: function () {
-            },
-            clearStoredEndpoints: function () {
-            },
-            saveSelectedEndpoint: function () {
-            },
-            navigateToAuthorizationPage: function () {
-            },
-            removeEndpoint: function (e) {
-            },
-            authorizeEndpoint: function (endpoint) {
-            }
-        };
+        EndpointService = EndpointServiceMocks.getService();
+        _dummyEndpoints = EndpointServiceMocks.getDummyEndpoints();
 
-        AlertService = {
-            remove: function () {
-
-            },
-            get: function () {
-
-            },
-            add: function () {
-
-            }
-        };
+        AlertServiceMocks = _AlertServiceMocks_;
+        AlertService = AlertServiceMocks.getService();
 
         spyOn(EndpointService, 'getEndpoints').and.returnValue(_dummyEndpoints);
         spyOn(EndpointService, 'clearStoredEndpoints');

@@ -132,7 +132,7 @@ angular.module('transmartBaseUi').factory('ChartService',
                 else {
                     return false;
                 }
-            }
+            };
 
             var _getType = function (value) {
                 var _type = typeof value;
