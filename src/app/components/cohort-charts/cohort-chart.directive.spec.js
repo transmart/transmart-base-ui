@@ -1,7 +1,7 @@
 'use strict';
 
 describe('Unit testing cohort-chart directive', function () {
-    var $compile, rootScope, scope, chartElm, CohortChartMocks, broadcastOnRootScope, ChartService, GridsterServiceMocks;
+    var ctrl, $controller, $compile, rootScope, ctrlScope, scope, chartElm, CohortChartMocks, CohortSelectionMocks;
 
     // Load the transmartBaseUi module, which contains the directive
     beforeEach(function () {
@@ -12,30 +12,35 @@ describe('Unit testing cohort-chart directive', function () {
 
     // Store references to $rootScope and $compile
     // so they are available to all tests in this describe block
-    beforeEach(inject(function (_$compile_, _$rootScope_, _CohortChartMocks_, _ChartService_, _GridsterServiceMocks_) {
+    beforeEach(inject(function (_$controller_, _$compile_, _$rootScope_, _CohortChartMocks_, _CohortSelectionMocks_) {
         // The injector unwraps the underscores (_) from around the parameter
         // names when matching
+        $controller = _$controller_;
         $compile = _$compile_;
         rootScope = _$rootScope_;
         scope = rootScope.$new();
-        GridsterServiceMocks = _GridsterServiceMocks_;
-        ChartService = _ChartService_;
+        ctrlScope = rootScope.$new();
+        CohortSelectionMocks = _CohortSelectionMocks_;
         CohortChartMocks = _CohortChartMocks_;
 
-        if (!ChartService.cs.mainDimension) {
-            ChartService.reset();
-        }
-
-        scope.gridsterOpts = GridsterServiceMocks.getGridsterOptions();
-        scope.gridsterItem = GridsterServiceMocks.getGridsterItem();
-        scope.gridster = GridsterServiceMocks.getGridster();
-
+        scope.gridsterOpts = CohortSelectionMocks.getGridsterOptions();
+        scope.gridsterItem = CohortSelectionMocks.getGridsterItem();
+        scope.gridster = CohortSelectionMocks.getGridster();
         scope.labels = CohortChartMocks.getMockLabels();
         scope.label = scope.labels[0];
 
-        var chartHtml = '<ts-cohort-chart class="chart-container" ts-gridster-item="gridsterItem" ts-label="label" ts-gridster="gridster"></ts-cohort-chart>';
+        var boxId = CohortChartMocks.getBoxId();
+        var ctrlElm = angular.element('<div id='+boxId+'></div>');
+        ctrl = $controller('CohortSelectionCtrl', {$scope: ctrlScope, $element: ctrlElm});
+        ctrlElm.scope = function () {
+            return {
+                cohortSelectionCtrl: ctrl
+            }
+        }
 
-        // Compile a piece of HTML containing the directive
+        spyOn(angular, 'element').and.returnValue(ctrlElm);
+
+        var chartHtml = '<ts-cohort-chart class="chart-container" ts-gridster-item="gridsterItem" ts-label="label" ts-gridster="gridster"></ts-cohort-chart>';
         chartElm = $compile(chartHtml)(scope);
 
         scope.$digest();
@@ -46,11 +51,11 @@ describe('Unit testing cohort-chart directive', function () {
     });
 
     it('should group charts', function() {
-        spyOn(ChartService, 'groupCharts');
+        spyOn(ctrl, 'groupCharts');
 
         // Call group action from isolated directive scope
         chartElm.isolateScope().groupAction();
-        expect(ChartService.groupCharts).toHaveBeenCalled();
+        expect(ctrl.groupCharts).toHaveBeenCalled();
     });
 
     it('should have the correct title set', function() {
@@ -58,20 +63,20 @@ describe('Unit testing cohort-chart directive', function () {
     });
 
     it('should be able to remove a label ', function() {
-        spyOn(ChartService, 'removeLabel');
+        spyOn(ctrl, 'removeLabel');
 
         // Use beforeEach scoped label
         var label = scope.label;
         chartElm.isolateScope().removeChart(label);
-        expect(ChartService.removeLabel).toHaveBeenCalledWith(label);
+        expect(ctrl.removeLabel).toHaveBeenCalledWith(label);
     });
 
     it('should be able to clear a filter ', function() {
-        spyOn(ChartService, 'clearChartFilterByLabel');
+        spyOn(ctrl, 'clearChartFilterByLabel');
 
         // Use beforeEach scoped label
         var label = scope.label;
         chartElm.isolateScope().clearFilter(label);
-        expect(ChartService.clearChartFilterByLabel).toHaveBeenCalledWith(label);
+        expect(ctrl.clearChartFilterByLabel).toHaveBeenCalledWith(label);
     });
 });

@@ -7,7 +7,7 @@
  * @description handles cohort chart creation and user-interaction
  */
 angular.module('transmartBaseUi')
-    .directive('tsCohortChart', ['ChartService', 'DcChartsService', function (ChartService, DcChartsService) {
+    .directive('tsCohortChart', ['DcChartsService', function (DcChartsService) {
 
         var _scope = {
             tsGridster: '=',
@@ -20,12 +20,13 @@ angular.module('transmartBaseUi')
             templateUrl: 'app/components/cohort-charts/cohort-chart.tpl.html',
             scope: _scope,
             link: function (scope, el) {
+                var cohortSelectionCtrl = angular.element('#'+scope.tsLabel.boxId).scope().cohortSelectionCtrl;
 
                 var _chart,
                     _bodyDiv = el.find('div')[2];
 
                 // always create new chart even it's been cached
-                _chart = ChartService.createCohortChart(scope.tsLabel, _bodyDiv);
+                _chart = cohortSelectionCtrl.createCohortChart(scope.tsLabel, _bodyDiv);
 
 
                 // check if chart is number chart or not
@@ -63,17 +64,17 @@ angular.module('transmartBaseUi')
                  */
                 scope.groupAction = function () {
                     scope.groupOn = true;
-                    ChartService.groupCharts(_chart, function () {
+                    cohortSelectionCtrl.groupCharts(_chart, function () {
                         scope.groupOn = false;
                     });
                 };
 
                 scope.removeChart = function (label) {
-                    ChartService.removeLabel(label);
+                    cohortSelectionCtrl.removeLabel(label);
                 };
 
                 scope.clearFilter = function (label) {
-                    return ChartService.clearChartFilterByLabel(label);
+                    return cohortSelectionCtrl.clearChartFilterByLabel(label);
                 }
             }
         };
