@@ -34,7 +34,9 @@ describe('Unit testing cohort-chart directive', function () {
         ctrl = $controller('CohortSelectionCtrl', {$scope: ctrlScope, $element: ctrlElm});
         ctrlElm.scope = function () {
             return {
-                cohortSelectionCtrl: ctrl
+                box: {
+                    ctrl: ctrl
+                }
             }
         }
 

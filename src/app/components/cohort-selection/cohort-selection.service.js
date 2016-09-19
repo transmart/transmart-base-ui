@@ -7,31 +7,55 @@
  * @description handles cohort chart creation and user-interaction
  */
 angular.module('transmartBaseUi')
-    .factory('CohortSelectionService', [function () {
+    .factory('CohortSelectionService', ['UtilityService', function (UtilityService) {
         var service = {
             boxes: [],
-            MAX_NUM_BOXES: 10
+            MAX_NUM_BOXES: 2,
+            DEFAULT_BOX_SIZE: 500
         }
 
         service.currentBoxId = '';
 
-        /** Add box to workspace
+        /**
+         * Add box to workspace
          * @param cohortSelectionCtrl - The controller instance of the box
-         * @returns {String} - The new box id
+         * @returns {Object} - The new box id
          * @memberof CohortSelectionService
          */
         service.addBox = function () {
             var boxId = undefined;
-            if(service.boxes.length < service.MAX_NUM_BOXES) {
-                boxId = 'cohort-selection-box-id-' + service.boxes.length;
+            if (service.boxes.length < service.MAX_NUM_BOXES) {
+                boxId = UtilityService.guid();
                 service.currentBoxId = boxId;
                 var obj = {
                     boxId: boxId
                 }
                 service.boxes.push(obj);
+
+                var boxsetContainer = angular.element('#cohort-selection-ui-layout-div');
+                var boxsetContainerWidth = boxsetContainer.width();
+                if (service.boxes.length > 2) {
+                    boxsetContainerWidth += service.DEFAULT_BOX_SIZE;
+                    boxsetContainer.width(boxsetContainerWidth);
+                }
             }
+
             return boxId;
         };
+
+        /**
+         * Duplicate the box based the given, existing box,
+         * which is identified by boxId
+         * @param boxId
+         * @memberof CohortSelectionService
+         */
+        service.duplicateBox = function (boxId) {
+            var currBox = service.getBox(boxId);
+            var newBoxId = service.addBox();
+            if(currBox && newBoxId) {
+                service.getBox(newBoxId).duplication = currBox;
+            }
+        }
 
         /**
          * Remove box to workspace
@@ -43,6 +67,28 @@ angular.module('transmartBaseUi')
             if (service.boxes.length > 1) {
                 var removed = _.remove(service.boxes, {boxId: boxId});
                 if (removed.length > 0) {
+                    var boxsetContainer = angular.element('#cohort-selection-ui-layout-div');
+                    var boxsetContainerWidth = boxsetContainer.width();
+                    if (service.boxes.length > 2) {
+                        boxsetContainerWidth -= service.DEFAULT_BOX_SIZE;
+                        boxsetContainer.width(boxsetContainerWidth);
+                    }
+
+                    var sumWidth = 0;
+                    service.boxes.forEach(function (box) {
+                        var boxContainer = box.ctrl.boxElm.parent();
+                        var width = boxContainer.width();
+                        sumWidth += width;
+                    });
+
+                    service.boxes.forEach(function (box) {
+                        var boxContainer = box.ctrl.boxElm.parent();
+                        var width = boxContainer.width();
+                        var proportion = width / sumWidth;
+                        var newWidth = proportion * boxsetContainerWidth;
+                        boxContainer.width(newWidth);
+                    });
+
                     return true;
                 }
                 else {
@@ -86,7 +132,7 @@ angular.module('transmartBaseUi')
                     break;
                 }
             }
-            var id = boxId + '-main-container';
+            var id = boxId + '-main-chart-container';
             if (mainContainer !== null) {
                 mainContainer.attr('id', id);
             }

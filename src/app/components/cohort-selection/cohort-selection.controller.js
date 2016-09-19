@@ -6,15 +6,18 @@ angular.module('transmartBaseUi')
             'AlertService', '$uibModal',
             function ($q, $element, $scope, CohortSelectionService, StudyListService, DcChartsService,
                       AlertService, $uibModal) {
-                var cohortSelectionCtrl = this;
+                var vm = this;
+                vm.isRecordingHistory = true;
+                vm.boxId = CohortSelectionService.currentBoxId;
+                vm.boxElm = $element;
+                vm.boxes = CohortSelectionService.boxes;
+                vm.domElement = $element;
+                vm.mainContainerId =
+                    CohortSelectionService.setElementAttrs($element, vm.boxId);
+                vm.history = [];
 
-                cohortSelectionCtrl.boxId = CohortSelectionService.currentBoxId;
-                cohortSelectionCtrl.domElement = $element;
-                cohortSelectionCtrl.mainContainerId =
-                    CohortSelectionService.setElementAttrs($element, cohortSelectionCtrl.boxId);
-
-                cohortSelectionCtrl.cs = {};
-                cohortSelectionCtrl.gridsterOpts = {
+                vm.cs = {};
+                vm.gridsterOpts = {
                     // whether to push other items out of the way on move or resize
                     pushing: true,
                     /*
@@ -55,7 +58,7 @@ angular.module('transmartBaseUi')
                         handle: '.chart-drag-handle' // optional selector for resize handle
                     }
                 };
-                cohortSelectionCtrl.gridsterConfig = {
+                vm.gridsterConfig = {
                     // Base width for a gridster square, this value will be adapted to fit
                     // exaclty an even number of squares in the grid according to window size
                     G_BASE_WIDTH: 200,
@@ -63,34 +66,40 @@ angular.module('transmartBaseUi')
                     G_ITEM_SPAN_X: 1,
                     // Number of rows a gridster item will occupy by default
                     G_ITEM_SPAN_Y: 1
-                }
-                cohortSelectionCtrl.el = $element;
+                };
 
                 /**
                  * Reset the cohort chart service to initial state
                  * @memberof CohortSelectionCtrl
                  */
-                cohortSelectionCtrl.reset = function () {
-                    cohortSelectionCtrl.cs = {};
-                    cohortSelectionCtrl.cs.subjects = [];
-                    cohortSelectionCtrl.cs.selectedSubjects = [];
-                    cohortSelectionCtrl.cs.chartId = 0;
-                    cohortSelectionCtrl.cs.charts = [];
-                    cohortSelectionCtrl.cs.crossfilter = crossfilter();
-                    cohortSelectionCtrl.cs.dimensions = [];
-                    cohortSelectionCtrl.cs.maxNoOfDimensions = 20;
-                    cohortSelectionCtrl.cs.groups = [];
-                    cohortSelectionCtrl.cs.labels = [];
-                    cohortSelectionCtrl.cs.selected = 0;
-                    cohortSelectionCtrl.cs.total = 0;
-                    cohortSelectionCtrl.cs.mainDimension = cohortSelectionCtrl.cs.crossfilter.dimension(function (d) {
+                vm.reset = function () {
+                    vm.cs = {};
+                    vm.cs.subjects = [];
+                    vm.cs.selectedSubjects = [];
+                    vm.cs.chartId = 0;
+                    vm.cs.charts = [];
+                    vm.cs.crossfilter = crossfilter();
+                    vm.cs.dimensions = [];
+                    vm.cs.maxNoOfDimensions = 20;
+                    vm.cs.groups = [];
+                    vm.cs.labels = [];
+                    vm.cs.nodes = [];
+                    vm.cs.selected = 0;
+                    vm.cs.total = 0;
+                    vm.cs.mainDimension = vm.cs.crossfilter.dimension(function (d) {
                         return d.labels;
                     });
+                    vm.history = [];
                 };
 
-                cohortSelectionCtrl.resize = function (reDistribute) {
-                    var elId = '#' + cohortSelectionCtrl.mainContainerId;
-                    var labels = cohortSelectionCtrl.cs.labels;
+                /**
+                 * Rearrange the gridster layout of the charts
+                 * @param {boolean} if redistribute
+                 * @memberof CohortSelectionCtrl
+                 */
+                vm.resize = function (reDistribute) {
+                    var elId = '#' + vm.mainContainerId;
+                    var labels = vm.cs.labels;
                     if(labels.length > 0) {
                         // Get width of the full gridster grid
                         var _gWidth = angular.element(elId).width();
@@ -98,14 +107,14 @@ angular.module('transmartBaseUi')
                         // Calculate the number of columns in the grid according to full gridster
                         // grid size and the base square size. Adjust by -1 if number of columns
                         // is not pair.
-                        var _gCols = Math.floor(_gWidth / cohortSelectionCtrl.gridsterConfig.G_BASE_WIDTH);
-                        cohortSelectionCtrl.gridsterOpts.columns = _gCols;
+                        var _gCols = Math.floor(_gWidth / vm.gridsterConfig.G_BASE_WIDTH);
+                        vm.gridsterOpts.columns = _gCols;
 
                         // For each label create a gridster item
                         labels.forEach(function (label, index) {
                             if (!label.sizeX || reDistribute) {
-                                label.sizeX = cohortSelectionCtrl.gridsterConfig.G_ITEM_SPAN_X;
-                                label.sizeY = cohortSelectionCtrl.gridsterConfig.G_ITEM_SPAN_Y;
+                                label.sizeX = vm.gridsterConfig.G_ITEM_SPAN_X;
+                                label.sizeY = vm.gridsterConfig.G_ITEM_SPAN_Y;
                                 // Spread items left to right
                                 label.col = (index * label.sizeX) % _gCols;
                                 // And top to bottom
@@ -121,9 +130,9 @@ angular.module('transmartBaseUi')
                  * Restore the data of the crossfilter to full set
                  * @memberOf CohortSelectionCtrl
                  */
-                cohortSelectionCtrl.restoreCrossfilter = function () {
-                    if (cohortSelectionCtrl.cs.subjects && cohortSelectionCtrl.cs.subjects.length > 0) {
-                        cohortSelectionCtrl.cs.crossfilter = crossfilter(cohortSelectionCtrl.cs.subjects);
+                vm.restoreCrossfilter = function () {
+                    if (vm.cs.subjects && vm.cs.subjects.length > 0) {
+                        vm.cs.crossfilter = crossfilter(vm.cs.subjects);
                         return true;
                     }
                     else {
@@ -135,21 +144,21 @@ angular.module('transmartBaseUi')
                  * Get summary data
                  * @memberof CohortSelectionCtrl
                  */
-                cohortSelectionCtrl.updateDimensions = function () {
-                    cohortSelectionCtrl.cs.selected = cohortSelectionCtrl.cs.crossfilter.groupAll().value(); // # of selected subjects
-                    cohortSelectionCtrl.cs.selectedSubjects = cohortSelectionCtrl.cs.mainDimension.top(Infinity);
-                    cohortSelectionCtrl.cs.total = cohortSelectionCtrl.cs.crossfilter.size(); // # of total of subjects
-                    cohortSelectionCtrl.cs.cohortLabels = cohortSelectionCtrl.cs.labels;
+                vm.updateDimensions = function () {
+                    vm.cs.selected = vm.cs.crossfilter.groupAll().value(); // # of selected subjects
+                    vm.cs.selectedSubjects = vm.cs.mainDimension.top(Infinity);
+                    vm.cs.total = vm.cs.crossfilter.size(); // # of total of subjects
+                    vm.cs.cohortLabels = vm.cs.labels;
                 };
 
-                cohortSelectionCtrl.restoreCrossfilter();
+                vm.restoreCrossfilter();
                 // Initialize the chart service only if uninitialized
-                if (!cohortSelectionCtrl.cs.mainDimension) {
-                    cohortSelectionCtrl.reset();
+                if (!vm.cs.mainDimension) {
+                    vm.reset();
                 }
 
                 $scope.$watchCollection(function () {
-                    return cohortSelectionCtrl.cs;
+                    return vm.cs;
                 }, function (newValue, oldValue) {
                     if (!_.isEqual(newValue, oldValue)) {
                         $scope.$emit('cohortSelectionUpdateEvent');
@@ -159,9 +168,9 @@ angular.module('transmartBaseUi')
                 /**
                  * Clear all the charts from the current cohort selection
                  */
-                cohortSelectionCtrl.clearSelection = function () {
-                    cohortSelectionCtrl.reset();
-                    cohortSelectionCtrl.updateDimensions();
+                vm.clearSelection = function () {
+                    vm.reset();
+                    vm.updateDimensions();
                 };
 
                 var _numDisplay = function (cDimension, cGroup, el) {
@@ -178,26 +187,26 @@ angular.module('transmartBaseUi')
 
                 var _groupCharts = function (chart1, chart2) {
                     var _combinationLabel = {
-                        labelId: cohortSelectionCtrl.cs.chartId++,
+                        labelId: vm.cs.chartId++,
                         label: [chart1.tsLabel, chart2.tsLabel],
                         name: chart1.tsLabel.name + ' - ' + chart2.tsLabel.name,
                         resolved: false,
                         study: chart1.tsLabel.study,
                         type: 'combination',
-                        boxId: cohortSelectionCtrl.boxId
+                        boxId: vm.boxId
                     };
-                    cohortSelectionCtrl.cs.subjects.forEach(function (subject) {
+                    vm.cs.subjects.forEach(function (subject) {
                         if (subject.labels[chart1.tsLabel.labelId] || subject.labels[chart2.tsLabel.labelId]) {
                             subject.labels[_combinationLabel.labelId] = [subject.labels[chart1.tsLabel.labelId],
                                 subject.labels[chart2.tsLabel.labelId]];
                         }
                     });
-                    cohortSelectionCtrl.cs.labels.push(_combinationLabel);
+                    vm.cs.labels.push(_combinationLabel);
                 };
 
                 var _groupingChart = {};
 
-                cohortSelectionCtrl.groupCharts = function (newChart, turnOff) {
+                vm.groupCharts = function (newChart, turnOff) {
                     // If a first chart was already selected, group them together
                     if (_groupingChart.chartOne) {
                         _groupCharts(newChart, _groupingChart.chartOne);
@@ -247,7 +256,7 @@ angular.module('transmartBaseUi')
                  */
                 var _addLabel = function (obs, node, filterObj) {
                     // Check if label has already been added
-                    var label = _.find(cohortSelectionCtrl.cs.labels, {label: obs.label});
+                    var label = _.find(vm.cs.labels, {label: obs.label});
                     var filters;
 
                     if (filterObj) {
@@ -257,20 +266,20 @@ angular.module('transmartBaseUi')
                     if (!label) {
 
                         //Check that the maximum number of dimensions has not been reached
-                        if (cohortSelectionCtrl.cs.labels.length < cohortSelectionCtrl.cs.maxNoOfDimensions) {
+                        if (vm.cs.labels.length < vm.cs.maxNoOfDimensions) {
                             // Create the new label object
 
                             label = {
                                 label: obs.label,
                                 type: _getType(obs.value),
                                 name: _getLastToken(obs.label),
-                                labelId: cohortSelectionCtrl.cs.chartId++,
+                                labelId: vm.cs.chartId++,
                                 study: node.study,
                                 resolved: false,
                                 filters: filters,
-                                boxId: cohortSelectionCtrl.boxId
+                                boxId: vm.boxId
                             };
-                            cohortSelectionCtrl.cs.labels.push(label);
+                            vm.cs.labels.push(label);
 
                         } else {
                             AlertService.add('danger', 'Max number of dimensions reached !', 2000);
@@ -298,7 +307,7 @@ angular.module('transmartBaseUi')
                  */
                 var _findChartByName = function (chartName) {
                     var foundChart = null;
-                    cohortSelectionCtrl.cs.charts.forEach(function (_chart) {
+                    vm.cs.charts.forEach(function (_chart) {
                         if (_chart.tsLabel.label == chartName) {
                             foundChart = _chart;
                         }
@@ -317,7 +326,7 @@ angular.module('transmartBaseUi')
                         filters.forEach(function (_f) {
                             chart.filter(_f);
                         });
-                        cohortSelectionCtrl.updateDimensions();
+                        vm.updateDimensions();
                         dc.renderAll();
                     }
                 }
@@ -329,7 +338,7 @@ angular.module('transmartBaseUi')
                  * @param {Array} filters
                  * @returns {*}
                  */
-                cohortSelectionCtrl.addNodeToActiveCohortSelection = function (node, filters) {
+                vm.addNodeToActiveCohortSelection = function (node, filters) {
                     var _filter, _deferred = $q.defer();
 
                     var _getFilter = function (label, filters) {
@@ -338,6 +347,7 @@ angular.module('transmartBaseUi')
 
                     // Get all observations under the selected concept
                     node.restObj.one('observations').get().then(function (observations) {
+                        vm.addNode(node);
                         observations = observations._embedded.observations;
 
                         observations.forEach(function (obs) {
@@ -351,7 +361,7 @@ angular.module('transmartBaseUi')
                                 var _newLabelId = _addLabel(obs, node, _filter);
 
                                 // Check if the subject of the observation is already present
-                                var foundSubject = _.find(cohortSelectionCtrl.cs.subjects,
+                                var foundSubject = _.find(vm.cs.subjects,
                                     {id: obs._embedded.subject.id});
 
                                 if (foundSubject) {
@@ -359,16 +369,16 @@ angular.module('transmartBaseUi')
                                 } else {
                                     obs._embedded.subject.labels = {};
                                     obs._embedded.subject.labels[_newLabelId] = obs.value;
-                                    cohortSelectionCtrl.cs.subjects.push(obs._embedded.subject);
-                                    cohortSelectionCtrl.cs.crossfilter.add([obs._embedded.subject]);
+                                    vm.cs.subjects.push(obs._embedded.subject);
+                                    vm.cs.crossfilter.add([obs._embedded.subject]);
                                 }
                             }
                         });
 
                         // Notify the applicable controller that the chart directive instances
                         // can be created
-                        cohortSelectionCtrl.resize(true);
-                        cohortSelectionCtrl.updateDimensions();
+                        vm.resize(true);
+                        vm.updateDimensions();
                         _deferred.resolve();
                     }, function (err) {
                         _deferred.reject('Cannot get data from the end-point.' + err);
@@ -385,7 +395,7 @@ angular.module('transmartBaseUi')
                  * @param {String} label
                  * @returns {*}
                  */
-                cohortSelectionCtrl.filterSubjectsByLabel = function (subjects, label) {
+                vm.filterSubjectsByLabel = function (subjects, label) {
                     subjects.forEach(function (subject, subjectIdx) {
                         subject.labels = _.filter(subject.labels, function (subjectLabel, subjectLabelIdx) {
                             return subjectLabelIdx !== label.labelId;
@@ -432,50 +442,74 @@ angular.module('transmartBaseUi')
                  * @param {Object} label
                  * @returns {Object} chart
                  */
-                cohortSelectionCtrl.clearChartFilterByLabel = function (label) {
+                vm.clearChartFilterByLabel = function (label) {
                     var chart;
-                    chart = _.find(cohortSelectionCtrl.cs.charts, {id: label.labelId});
+                    chart = _.find(vm.cs.charts, {id: label.labelId});
                     if (chart) {
                         chart.filter(null);
                         dc.redrawAll();
-                        cohortSelectionCtrl.updateDimensions();
+                        vm.updateDimensions();
                     }
                     return chart;
                 };
+
+                /**
+                 * Clear the filters of the charts and reset their gridster layout
+                 * @memberof CohortSelectionCtrl
+                 */
+                vm.resetCharts = function () {
+                    vm.cs.charts.forEach(function (_chart) {
+                        _chart.filter(null);
+                    });
+                    vm.updateDimensions();
+                    vm.resize(true);
+                    dc.redrawAll();
+                }
 
                 /**
                  * Remove label from cohort selection
                  * @memberof CohortSelectionCtrl
                  * @param {Object} label
                  */
-                cohortSelectionCtrl.removeLabel = function (label) {
+                vm.removeLabel = function (label) {
+                    var _deferred = $q.defer();
+
                     if (label) {
+                        vm.removeNode(label);
                         // Remove associated chart from cs.charts
-                        cohortSelectionCtrl.cs.charts = _removeChartFromCharts(cohortSelectionCtrl.cs.charts, label);
+                        vm.cs.charts = _removeChartFromCharts(vm.cs.charts, label);
 
                         // Remove label from cs.labels
-                        cohortSelectionCtrl.cs.labels = _removeLabelFromLabels(cohortSelectionCtrl.cs.labels, label);
+                        vm.cs.labels = _removeLabelFromLabels(vm.cs.labels, label);
 
                         // Remove label from cs.subjects and remove subjects no longer associated
                         // with any label
-                        cohortSelectionCtrl.cs.subjects =
-                            cohortSelectionCtrl.filterSubjectsByLabel(cohortSelectionCtrl.cs.subjects, label);
+                        vm.cs.subjects =
+                            vm.filterSubjectsByLabel(vm.cs.subjects, label);
 
                         // Remove dimension and group associated with the label
-                        cohortSelectionCtrl.cs.dimensions.splice(label.labelId);
-                        cohortSelectionCtrl.cs.groups.splice(label.labelId);
+                        vm.cs.dimensions.splice(label.labelId);
+                        vm.cs.groups.splice(label.labelId);
                         // Remove data in crossfilter if no more label is selected
-                        if (cohortSelectionCtrl.cs.labels.length < 1) {
+                        if (vm.cs.labels.length < 1) {
                             // Removes all records that match the current filter
-                            cohortSelectionCtrl.cs.crossfilter.remove();
+                            vm.cs.crossfilter.remove();
                         }
                         // Update dimension summary
-                        if (cohortSelectionCtrl.cs.labels.length > 0) {
-                            cohortSelectionCtrl.updateDimensions();
+                        if (vm.cs.labels.length > 0) {
+                            vm.updateDimensions();
                         } else {
-                            cohortSelectionCtrl.reset();
+                            vm.reset();
                         }
+
+                        vm.addHistory('removeLabel', [label]);
+                        _deferred.resolve();
                     }
+                    else {
+                        _deferred.reject('label is not defined');
+                    }
+
+                    return _deferred.promise;
                 };
 
                 var _createMultidimensionalChart = function (label, el) {
@@ -492,12 +526,12 @@ angular.module('transmartBaseUi')
                             var _valueX = label.label[0].type === 'string' ? 0 : 1;
                             var _valueY = _valueX === 0 ? 1 : 0;
 
-                            cohortSelectionCtrl.cs.dimensions[label.labelId] =
-                                cohortSelectionCtrl.cs.crossfilter.dimension(function (d) {
+                            vm.cs.dimensions[label.labelId] =
+                                vm.cs.crossfilter.dimension(function (d) {
                                     return d.labels[label.labelId] ? d.labels[label.labelId][_valueX] : undefined;
                                 });
-                            cohortSelectionCtrl.cs.groups[label.labelId] =
-                                cohortSelectionCtrl.cs.dimensions[label.labelId].group().reduce(
+                            vm.cs.groups[label.labelId] =
+                                vm.cs.dimensions[label.labelId].group().reduce(
                                     function (p, v) {
                                         p.push(v.labels[label.labelId] ? +v.labels[label.labelId][_valueY] : undefined);
                                         return p;
@@ -511,13 +545,13 @@ angular.module('transmartBaseUi')
                                     }
                                 );
 
-                            _max = cohortSelectionCtrl.cs.dimensions[label.label[_valueY].labelId]
+                            _max = vm.cs.dimensions[label.label[_valueY].labelId]
                                 .top(1)[0].labels[label.label[_valueY].labelId];
-                            _min = cohortSelectionCtrl.cs.dimensions[label.label[_valueY].labelId]
+                            _min = vm.cs.dimensions[label.label[_valueY].labelId]
                                 .bottom(1)[0].labels[label.label[_valueY].labelId];
 
-                            _chart = DcChartsService.getBoxPlot(cohortSelectionCtrl.cs.dimensions[label.labelId],
-                                cohortSelectionCtrl.cs.groups[label.labelId], el, {
+                            _chart = DcChartsService.getBoxPlot(vm.cs.dimensions[label.labelId],
+                                vm.cs.groups[label.labelId], el, {
                                     xLab: label.label[_valueX].name,
                                     yLab: label.label[_valueY].name,
                                     min: _min,
@@ -528,16 +562,16 @@ angular.module('transmartBaseUi')
 
                         } else {
                             // Both labels are categorical
-                            cohortSelectionCtrl.cs.dimensions[label.labelId] =
-                                cohortSelectionCtrl.cs.crossfilter.dimension(function (d) {
+                            vm.cs.dimensions[label.labelId] =
+                                vm.cs.crossfilter.dimension(function (d) {
                                     return [d.labels[label.labelId] ? d.labels[label.labelId][0] : undefined,
                                         d.labels[label.labelId] ? d.labels[label.labelId][1] : undefined];
                                 });
-                            cohortSelectionCtrl.cs.groups[label.labelId] =
-                                cohortSelectionCtrl.cs.dimensions[label.labelId].group();
+                            vm.cs.groups[label.labelId] =
+                                vm.cs.dimensions[label.labelId].group();
 
-                            _chart = DcChartsService.getHeatMap(cohortSelectionCtrl.cs.dimensions[label.labelId],
-                                cohortSelectionCtrl.cs.groups[label.labelId], el, {
+                            _chart = DcChartsService.getHeatMap(vm.cs.dimensions[label.labelId],
+                                vm.cs.groups[label.labelId], el, {
                                     xLab: label.label[0].name,
                                     yLab: label.label[1].name
                                 });
@@ -547,23 +581,23 @@ angular.module('transmartBaseUi')
                         }
                     } else {
                         // Both labels are numerical, create a scatter plot
-                        cohortSelectionCtrl.cs.dimensions[label.labelId] =
-                            cohortSelectionCtrl.cs.crossfilter.dimension(function (d) {
+                        vm.cs.dimensions[label.labelId] =
+                            vm.cs.crossfilter.dimension(function (d) {
                                 return [d.labels[label.labelId] ? d.labels[label.labelId][0] : undefined,
                                     d.labels[label.labelId] ? d.labels[label.labelId][1] : undefined];
                             });
 
-                        cohortSelectionCtrl.cs.groups[label.labelId] =
-                            cohortSelectionCtrl.cs.dimensions[label.labelId].group();
+                        vm.cs.groups[label.labelId] =
+                            vm.cs.dimensions[label.labelId].group();
 
-                        _max = cohortSelectionCtrl.cs.dimensions[label.label[0].labelId]
+                        _max = vm.cs.dimensions[label.label[0].labelId]
                             .top(1)[0].labels[label.label[0].labelId];
-                        _min = cohortSelectionCtrl.cs.dimensions[label.label[0].labelId]
+                        _min = vm.cs.dimensions[label.label[0].labelId]
                             .bottom(1)[0].labels[label.label[0].labelId];
 
                         _chart = DcChartsService.getScatterPlot(
-                            cohortSelectionCtrl.cs.dimensions[label.labelId],
-                            cohortSelectionCtrl.cs.groups[label.labelId],
+                            vm.cs.dimensions[label.labelId],
+                            vm.cs.groups[label.labelId],
                             el,
                             {
                                 min: _min,
@@ -585,7 +619,7 @@ angular.module('transmartBaseUi')
                  * @param {Object} label
                  * @param {Object} el
                  */
-                cohortSelectionCtrl.createCohortChart = function (label, el) {
+                vm.createCohortChart = function (label, el) {
                     var _chart;
 
                     /**
@@ -593,13 +627,13 @@ angular.module('transmartBaseUi')
                      * @private
                      */
                     var _defaultDim = function (_missingLabelId) {
-                        cohortSelectionCtrl.cs.dimensions[label.labelId] =
-                            cohortSelectionCtrl.cs.crossfilter.dimension(function (d) {
+                        vm.cs.dimensions[label.labelId] =
+                            vm.cs.crossfilter.dimension(function (d) {
                                 var lbl = _missingLabelId || undefined;
                                 return d.labels[label.labelId] === undefined ? lbl : d.labels[label.labelId];
                             });
-                        cohortSelectionCtrl.cs.groups[label.labelId] =
-                            cohortSelectionCtrl.cs.dimensions[label.labelId].group();
+                        vm.cs.groups[label.labelId] =
+                            vm.cs.dimensions[label.labelId].group();
                     };
 
                     if (label.type === 'combination') {
@@ -608,21 +642,21 @@ angular.module('transmartBaseUi')
                         // Create a number display if highdim
                         if (label.type === 'highdim') {
                             _defaultDim();
-                            _chart = _numDisplay(cohortSelectionCtrl.cs.dimensions[label.labelId],
-                                cohortSelectionCtrl.cs.groups[label.labelId], el);
+                            _chart = _numDisplay(vm.cs.dimensions[label.labelId],
+                                vm.cs.groups[label.labelId], el);
                             _chart.type = 'NUMBER';
 
                             // Create a PIECHART if categorical
                         } else if (label.type === 'string' || label.type === 'object') {
                             _defaultDim("N/A");
-                            _chart = DcChartsService.getPieChart(cohortSelectionCtrl.cs.dimensions[label.labelId],
-                                cohortSelectionCtrl.cs.groups[label.labelId], el);
+                            _chart = DcChartsService.getPieChart(vm.cs.dimensions[label.labelId],
+                                vm.cs.groups[label.labelId], el);
                             _chart.type = 'PIECHART';
 
                             // Create a BARCHART if numerical
                         } else if (label.type === 'number') {
                             _defaultDim(Infinity);
-                            var group = cohortSelectionCtrl.cs.dimensions[label.labelId].group();
+                            var group = vm.cs.dimensions[label.labelId].group();
                             // Filter out all records that do not have a value (which are set to Infinity in the dimension)
                             // To do this, we clone the group (we want to keep the methods) and override all().
                             var filteredGroup = {};
@@ -632,22 +666,22 @@ angular.module('transmartBaseUi')
                                     return d.key != Infinity;
                                 });
                             };
-                            cohortSelectionCtrl.cs.groups[label.labelId] = filteredGroup;
-                            _chart = DcChartsService.getBarChart(cohortSelectionCtrl.cs.dimensions[label.labelId],
+                            vm.cs.groups[label.labelId] = filteredGroup;
+                            _chart = DcChartsService.getBarChart(vm.cs.dimensions[label.labelId],
                                 filteredGroup, el, {nodeTitle: label.name});
                             _chart.type = 'BARCHART';
 
                             // Create a BARCHART WITH BINS if floating point values
                         } else if (label.type === 'float') {
-                            cohortSelectionCtrl.cs.dimensions[label.labelId] =
-                                cohortSelectionCtrl.cs.crossfilter.dimension(function (d) {
+                            vm.cs.dimensions[label.labelId] =
+                                vm.cs.crossfilter.dimension(function (d) {
                                 return d.labels[label.labelId] ===
                                     undefined ? undefined : d.labels[label.labelId].toFixed(label.precision === 0 ? 0 : label.precision);
                             });
-                            cohortSelectionCtrl.cs.groups[label.labelId] =
-                                cohortSelectionCtrl.cs.dimensions[label.labelId].group();
-                            _chart = DcChartsService.getBarChart(cohortSelectionCtrl.cs.dimensions[label.labelId],
-                                cohortSelectionCtrl.cs.groups[label.labelId],
+                            vm.cs.groups[label.labelId] =
+                                vm.cs.dimensions[label.labelId].group();
+                            _chart = DcChartsService.getBarChart(vm.cs.dimensions[label.labelId],
+                                vm.cs.groups[label.labelId],
                                 el, {nodeTitle: label.name, float: true, precision: label.precision});
                             _chart.type = 'BARCHART';
                         }
@@ -683,28 +717,27 @@ angular.module('transmartBaseUi')
                      * keep the tsLabel.filters to be in sync with chart.filters()
                      */
                     chart.tsLabel.filters = chart.filters();
-                    cohortSelectionCtrl.updateDimensions();
+                    vm.updateDimensions();
                 }
 
                 function _handleChartRenderletEvent(chart, filter) {
                     DcChartsService.emphasizeChartLegend(chart);
                 }
 
-
                 /**
                  * Return active filters
                  * @memberof CohortSelectionCtrl
                  */
-                cohortSelectionCtrl.getCohortFilters = function () {
+                vm.getCohortFilters = function () {
                     var _filters = [];
 
-                    if (cohortSelectionCtrl.cs.charts) {
-                        _.each(cohortSelectionCtrl.cs.charts, function (c, _index) {
+                    if (vm.cs.charts) {
+                        _.each(vm.cs.charts, function (c, _index) {
                             _filters.push({
-                                name: cohortSelectionCtrl.cs.labels[_index].name,
-                                label: cohortSelectionCtrl.cs.labels[_index].label,
-                                type: cohortSelectionCtrl.cs.labels[_index].type,
-                                study: cohortSelectionCtrl.cs.labels[_index].study,
+                                name: vm.cs.labels[_index].name,
+                                label: vm.cs.labels[_index].label,
+                                type: vm.cs.labels[_index].type,
+                                study: vm.cs.labels[_index].study,
                                 filters: c.filters()
                             });
                         });
@@ -721,7 +754,9 @@ angular.module('transmartBaseUi')
                  * @param info
                  * @param node Dropped node from the study tree
                  */
-                cohortSelectionCtrl.onNodeDrop = function (event, info, node) {
+                vm.onNodeDrop = function (event, info, node) {
+                    var promise = undefined;
+
                     if (node.type === 'CATEGORICAL_OPTION') { //leaf node for pie chart
                         var chart = _findChartByName(node.parent.restObj.fullName);
                         if (chart == null) {
@@ -729,40 +764,47 @@ angular.module('transmartBaseUi')
                                 label: node.parent.restObj.fullName,
                                 filterWords: [node.title]
                             }];
-                            cohortSelectionCtrl.addNodeToActiveCohortSelection(node.parent, filters);
+                            promise = vm.addNodeToActiveCohortSelection(node.parent, filters);
                         }
                         else {
                             _filterChart(chart, [node.title]);
                         }
                     }
                     else {
-                        cohortSelectionCtrl.addNodeToActiveCohortSelection(node, []);
+                        promise = vm.addNodeToActiveCohortSelection(node, []);
                     }
                     angular.element(event.target).removeClass('chart-container-hover');
+
+                    vm.addHistory('onNodeDrop', [event, info, node]);
+
+                    return promise;
                 };
 
                 /**
                  * Add class when on node over the chart container
                  * @param e
+                 * @memberof CohortSelectionCtrl
                  */
-                cohortSelectionCtrl.onNodeOver = function (e) {
+                vm.onNodeOver = function (e) {
                     return angular.element(e.target).addClass('chart-container-hover');
                 };
 
                 /**
                  * Remove class when on node over the chart container
                  * @param e
+                 * @memberof CohortSelectionCtrl
                  */
-                cohortSelectionCtrl.onNodeOut = function (e) {
+                vm.onNodeOut = function (e) {
                     angular.element(e.target).removeClass('chart-container-hover');
                 };
 
                 /**
                  * Saves the cohort by asking for a name, saving it to the backend
                  * and showing the resulting id
+                 * @memberof CohortSelectionCtrl
                  */
-                cohortSelectionCtrl.openSaveCohortModal = function () {
-                    CohortSelectionService.currentBoxId = cohortSelectionCtrl.boxId;
+                vm.openSaveCohortModal = function () {
+                    CohortSelectionService.currentBoxId = vm.boxId;
                     $uibModal.open({
                         templateUrl: 'app/components/save-cohort/save-cohort-dialog.tpl.html',
                         controller: 'SaveCohortDialogCtrl as vm',
@@ -771,20 +813,126 @@ angular.module('transmartBaseUi')
                 };
 
                 /**
-                 * Add cohort-selection box
+                 * Add cohort-selection cohort-selection box
+                 * @memberof CohortSelectionCtrl
                  */
-                cohortSelectionCtrl.addBox = function () {
+                vm.addBox = function () {
                     CohortSelectionService.addBox();
-                    // var s = angular.element('#'+ cohortSelectionCtrl.mainContainerId).scope();
-                    // console.log(s);
                 };
 
                 /**
-                 * Remove the current cohort-selection box
+                 * Duplicate the current cohort-selection box
+                 * @memberof CohortSelectionCtrl
                  */
-                cohortSelectionCtrl.removeBox = function () {
-                    cohortSelectionCtrl.clearSelection();
-                    CohortSelectionService.removeBox(cohortSelectionCtrl.boxId);
+                vm.duplicateBox = function () {
+                    CohortSelectionService.duplicateBox(vm.boxId);
+                }
+
+                /**
+                 * Remove the current cohort-selection box
+                 * @memberof CohortSelectionCtrl
+                 */
+                vm.removeBox = function () {
+                    vm.clearSelection();
+                    CohortSelectionService.removeBox(vm.boxId);
                 };
+
+
+                /**
+                 * Add history records (i.e. which functions to be called with what params)
+                 * @param funcName - The name of the function to be called
+                 * @param paramsArr - The parameters of the function
+                 * @memberof CohortSelectionCtrl
+                 */
+                vm.addHistory = function (funcName, paramsArr) {
+                    if(vm.isRecordingHistory) {
+                        vm.history.push({
+                            func: funcName,
+                            params: paramsArr
+                        });
+                    }
+                }
+
+                /**
+                 * reApply the history, i.e. past user interactions
+                 * to the current cohort-selection box
+                 * @memberof CohortSelectionCtrl
+                 */
+                vm.applyHistory = function () {
+                    if(vm.history.length > 0) {
+                        var index = 0;
+                        _applyHistory(index);
+                    }
+                }
+
+                function _applyHistory(index) {
+                    if(index < vm.history.length) {
+                        vm.isRecordingHistory = false;
+                        var historyObj = vm.history[index];
+                        var promise = vm[historyObj.func].apply(vm, historyObj.params);
+                        if(promise) {
+                            promise.then(function () {
+                                index++;
+                                _applyHistory(index);
+                            });
+                        }
+                    }
+                    else {
+                        vm.isRecordingHistory = true;
+                    }
+                }
+
+                /**
+                 * Add a node to the node collection of this cohort-selection
+                 * @param node
+                 * @memberof CohortSelectionCtrl
+                 */
+                vm.addNode = function (node) {
+                    var found = _.find(vm.cs.nodes, node);
+                    if(!found) {
+                        vm.cs.nodes.push(node);
+                    }
+                }
+
+                /**
+                 * Remove a node from the node collection of this cohort-selection
+                 * @param label
+                 * @returns {boolean} - Indicating removal of node is successful or not
+                 * @memberof CohortSelectionCtrl
+                 */
+                vm.removeNode = function (label) {
+                    var removed = _.remove(vm.cs.nodes, {
+                        restObj: {
+                            fullName: label.label
+                        }
+                    });
+                    if(removed.length > 0) {
+                        return true;
+                    }
+                    else {
+                        return false;
+                    }
+                }
+
+                /**
+                 * Automatically 'drop' the given nodes to this cohort-selection,
+                 * for the duplication of cohort-selection
+                 * @param nodes
+                 * @memberof CohortSelectionCtrl
+                 */
+                vm.applyNodes = function (nodes) {
+                    nodes.forEach(function (node) {
+                        vm.addNodeToActiveCohortSelection(node, []);
+                    });
+                }
+
+                $scope.$watch(function () {
+                    return $element.parent().width();
+                }, function(newVal, oldVal) {
+                    vm.boxSize = newVal;
+                    if(Math.abs(newVal - oldVal) > 3) {
+                        vm.resize(true);
+                    }
+                });
 
             }]);

@@ -1,4 +1,4 @@
-<div class="main-container">
+<div class="main-container" id="main-container-div">
     <uib-alert class="alert-div" ng-repeat="alert in vm.alerts" type="{{alert.type}}" close="vm.close(alert.id)">
         {{alert.message}}
     </uib-alert>
@@ -10,15 +10,13 @@
                 <span>{{vm.tabs[0].title}}</span>
             </uib-tab-heading>
 
-            <div ui-layout="{flow : 'column'}" id="cohort-selection-ui-layout-div" class="cohort-selection-boxset"
-                 ng-controller="CohortSelecctionLayoutCtrl">
-                <div ui-layout-container size="99%" min-size="10%"
-                     ng-repeat="box in vm.boxes track by $index" class="cohort-selection-box">
-                    <cohort-selection></cohort-selection>
+            <div ui-layout="{flow : 'column', 'disableToggle': true }" id="cohort-selection-ui-layout-div" class="cohort-selection-boxset">
+                <div ui-layout-container min-size="260px"
+                     ng-repeat="box in vm.boxes track by box.boxId" class="cohort-selection-box">
+                    <cohort-selection box="box"></cohort-selection>
                 </div>
             </div>
 
-            <!--<cohort-selection></cohort-selection>-->
         </uib-tab>
 
         <!----------- Tab: Cohort Grid ----------->

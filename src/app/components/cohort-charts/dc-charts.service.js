@@ -104,7 +104,7 @@ angular.module('transmartBaseUi').factory('DcChartsService', [function () {
                 _chart.symbolSize(_CONF.SP_DOT_SIZE);
                 _chart.rescale();
             }
-            _chart.render();
+            _chart.redraw();
         }//if width and height are both > 0
     };
 

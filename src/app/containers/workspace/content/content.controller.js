@@ -70,10 +70,4 @@ angular.module('transmartBaseUi')
                     _mergeCohortSelectionData();
                 });
 
-                angular.element($window).bind('resize', function () {
-                    CohortSelectionService.boxes.forEach(function (box) {
-                        box.ctrl.resize(true);
-                    });
-                });
-
             }]);

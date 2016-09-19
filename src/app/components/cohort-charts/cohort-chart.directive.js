@@ -20,7 +20,7 @@ angular.module('transmartBaseUi')
             templateUrl: 'app/components/cohort-charts/cohort-chart.tpl.html',
             scope: _scope,
             link: function (scope, el) {
-                var cohortSelectionCtrl = angular.element('#'+scope.tsLabel.boxId).scope().cohortSelectionCtrl;
+                var cohortSelectionCtrl = angular.element('#'+scope.tsLabel.boxId).scope().box.ctrl;
 
                 var _chart,
                     _bodyDiv = el.find('div')[2];

@@ -19,16 +19,16 @@ describe('cohort-selection directive', function () {
         $compile = _$compile_;
         rootScope = _$rootScope_;
         scope = rootScope.$new();
+        scope.box = {
+            boxId: 'testId'
+        };
 
-        var cohortSelectionHtml = '<cohort-selection></cohort-selection>';
-
-        // Compile a piece of HTML containing the directive
+        var cohortSelectionHtml = '<cohort-selection box="box"></cohort-selection>';
         cohortSelectionElm = $compile(cohortSelectionHtml)(scope);
-
         scope.$digest();
     }));
 
-    it('should contain cohort selection', function () {
+    it('should contain cohort selection elements', function () {
         expect(cohortSelectionElm.html()).toContain('btn-toolbar');
         expect(cohortSelectionElm.html()).toContain('progress-container');
         expect(cohortSelectionElm.html()).toContain('text-center main-chart-container');
