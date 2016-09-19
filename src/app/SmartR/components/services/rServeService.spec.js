@@ -18,7 +18,12 @@ describe('Endpoint Service Unit Tests', function () {
         rServeService = _rServeService_;
         $httpBackend = _$httpBackend_;
 
-        authRequestHandler = $httpBackend.when('POST', baseURL + '/RSession/deleteFiles')
+        $httpBackend.when('POST', baseURL + '/RSession/deleteFiles')
+            .respond(201, '');
+        $httpBackend.when('POST', baseURL + '/RSession/delete')
+            .respond(201, '');
+        $httpBackend.when('GET', 'http://transmart-gb.thehyve.net/transmart/ScriptExecution/' +
+            'downloadFile?sessionId=null&executionId=bogus-execution-id&filename=bogus-file')
             .respond(201, '');
     }));
 
@@ -38,6 +43,31 @@ describe('Endpoint Service Unit Tests', function () {
             rServeService.deleteSessionFiles('bogus-session-id');
             $httpBackend.flush();
         });
+
+        it('should call destroySession', function () {
+            $httpBackend.expectPOST(baseURL + '/RSession/delete');
+            rServeService.destroySession('bogus-session-id');
+            $httpBackend.flush();
+        });
+
+        it('should call downloadJsonFile', function () {
+            var bogusId = 'bogus-execution-id';
+            var bogusFile = 'bogus-file';
+            var downloadUrl = rServeService.urlForFile(bogusId, bogusFile);
+            $httpBackend.expectGET(downloadUrl);
+            rServeService.downloadJsonFile(bogusId, bogusFile);
+            $httpBackend.flush();
+        });
+
+        it('should get correct URL for json resource', function () {
+            var bogusId = 'bogus-execution-id';
+            var bogusFile = 'bogus-file';
+            var resultingUrl = rServeService.urlForFile(bogusId, bogusFile);
+            expect(resultingUrl)
+                .toBe('http://transmart-gb.thehyve.net/transmart/ScriptExecution/downloadFile?sessionId=null' +
+                    '&executionId=bogus-execution-id&filename=bogus-file')
+        })
+
 
     });
 
