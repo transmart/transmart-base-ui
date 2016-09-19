@@ -8,10 +8,10 @@
  */
 angular.module('transmartBaseUi')
     .factory('EndpointService',
-        ['$rootScope', '$http', '$q', 'ResourceService', '$cookies', '$window', '$location', 'masterEndpointConfig',
-            'isTesting',
-            function ($rootScope, $http, $q, ResourceService, $cookies, $window, $location, masterEndpointConfig,
-                      isTesting) {
+        ['$rootScope', '$http', '$q', 'ResourceService', '$cookies', '$window', '$location', 'MASTER_ENDPOINT_CONFIG',
+            'IS_TESTING',
+            function ($rootScope, $http, $q, ResourceService, $cookies, $window, $location, MASTER_ENDPOINT_CONFIG,
+                      IS_TESTING) {
 
                 var service = {};
 
@@ -49,7 +49,7 @@ angular.module('transmartBaseUi')
                         $location.url($location.path());
                     }
                     else {
-                        if (!isTesting) {
+                        if (!IS_TESTING) {
                             service.initializeMasterEndpoint();
                         }
                     }
@@ -176,8 +176,8 @@ angular.module('transmartBaseUi')
                  */
                 service.initializeMasterEndpoint = function () {
                     if (!masterEndpoint) {
-                        masterEndpoint = masterEndpointConfig;
-                        service.authorizeEndpoint(masterEndpointConfig);
+                        masterEndpoint = MASTER_ENDPOINT_CONFIG;
+                        service.authorizeEndpoint(masterEndpoint);
                     }
                 };
 

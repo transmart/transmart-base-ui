@@ -1,30 +1,66 @@
 {
     "dev": {
-        "isTesting": false,
-        "masterEndpointConfig": {
+        "IS_TESTING": false,
+        "MASTER_ENDPOINT_CONFIG": {
             "title": "transmart-gb",
-            "url": "http://transmart-gb.thehyve.net/transmart",
+            "url": "http://transmart-gb.thehyve.net/transmart/v1",
             "isOAuth": true,
             "isMaster": true
-        }
+        },
+        "CONNECTIONS": [
+            {
+                "title": "transmart-gb",
+                "url": "http://transmart-gb.thehyve.net/transmart/v1",
+                "isOAuth": "true"
+            },
+            {
+                "title": "transmart-test-translocation",
+                "url": "http://transmart-test-translocation.thehyve.net/transmart/v1",
+                "isOAuth": "true"
+            }
+        ]
     },
     "test": {
-        "isTesting": true,
-        "masterEndpointConfig": {
+        "IS_TESTING": true,
+        "MASTER_ENDPOINT_CONFIG": {
             "title": "transmart-gb",
-            "url": "http://transmart-gb.thehyve.net/transmart",
+            "url": "http://transmart-gb.thehyve.net/transmart/v1",
             "isOAuth": true,
             "isMaster": true
-        }
+        },
+        "CONNECTIONS": [
+            {
+                "title": "transmart-gb",
+                "url": "http://transmart-gb.thehyve.net/transmart/v1",
+                "isOAuth": "true"
+            },
+            {
+                "title": "transmart-test-translocation",
+                "url": "http://transmart-test-translocation.thehyve.net/transmart/v1",
+                "isOAuth": "true"
+            }
+        ]
     },
     "prod": {
-        "isTesting": false,
-        "masterEndpointConfig": {
+        "IS_TESTING": false,
+        "MASTER_ENDPOINT_CONFIG": {
             "title": "transmart-gb",
-            "url": "http://transmart-gb.thehyve.net/transmart",
+            "url": "http://transmart-gb.thehyve.net/transmart/v1",
             "isOAuth": true,
             "isMaster": true
-        }
+        },
+        "CONNECTIONS": [
+            {
+                "title": "transmart-gb",
+                "url": "http://transmart-gb.thehyve.net/transmart/v1",
+                "isOAuth": "true"
+            },
+            {
+                "title": "transmart-test-translocation",
+                "url": "http://transmart-test-translocation.thehyve.net/transmart/v1",
+                "isOAuth": "true"
+            }
+        ]
     }
 }
 
