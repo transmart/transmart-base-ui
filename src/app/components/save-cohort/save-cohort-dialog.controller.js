@@ -6,10 +6,8 @@
  * @name SaveCohortDialogCtrl
  */
 angular.module('transmartBaseUi')
-    .controller('SaveCohortDialogCtrl', ['$scope', '$uibModalInstance', 'EndpointService', 'ChartService',
-        'QueryBuilderService', 'AlertService', 'CohortSelectionService',
-        function ($scope, $uibModalInstance, EndpointService, ChartService, QueryBuilderService, AlertService,
-                  CohortSelectionService) {
+    .controller('SaveCohortDialogCtrl', ['$scope', '$uibModalInstance', 'EndpointService', 'QueryBuilderService', 'AlertService', 'CohortSelectionService',
+        function ($scope, $uibModalInstance, EndpointService, QueryBuilderService, AlertService, CohortSelectionService) {
 
             var vm = this;
 
@@ -21,8 +19,10 @@ angular.module('transmartBaseUi')
              */
             vm.ok = function () {
                 var endpoint = EndpointService.getMasterEndpoint();
+                var cohortSelectionCtrl = angular.element('#'+CohortSelectionService.currentBoxId).scope().cohortSelectionCtrl;
+                var cohortFilters = cohortSelectionCtrl.getCohortFilters();
                 var i2b2Query = QueryBuilderService.convertCohortFiltersToXML(
-                    ChartService.getCohortFilters(), $scope.cohortName);
+                    cohortFilters, $scope.cohortName);
 
                 var patientSets = endpoint.restangular.all('patient_sets');
                 patientSets.customPOST(i2b2Query, undefined, undefined,

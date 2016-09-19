@@ -1,0 +1,47 @@
+<div class="main-container">
+    <uib-alert class="alert-div" ng-repeat="alert in vm.alerts" type="{{alert.type}}" close="vm.close(alert.id)">
+        {{alert.message}}
+    </uib-alert>
+
+    <uib-tabset>
+        <!----------- Tab: Cohort Selection ----------->
+        <uib-tab active="vm.tabs[0].active" ng-click="vm.activateTab(tabs[0].title, 'cohortSelection');">
+            <uib-tab-heading>
+                <span>{{vm.tabs[0].title}}</span>
+            </uib-tab-heading>
+
+            <div ui-layout="{flow : 'column'}" id="cohort-selection-ui-layout-div" class="cohort-selection-boxset"
+                 ng-controller="CohortSelecctionLayoutCtrl">
+                <div ui-layout-container size="99%" min-size="10%"
+                     ng-repeat="box in vm.boxes track by $index" class="cohort-selection-box">
+                    <cohort-selection></cohort-selection>
+                </div>
+            </div>
+
+            <!--<cohort-selection></cohort-selection>-->
+        </uib-tab>
+
+        <!----------- Tab: Cohort Grid ----------->
+        <uib-tab active="vm.tabs[1].active" ng-click="vm.activateTab(vm.tabs[1].title, 'cohortGrid');">
+            <uib-tab-heading>
+                <span>{{vm.tabs[1].title}}</span>
+            </uib-tab-heading>
+            <cohort-grid cohort="vm.selectedSubjects" headers="vm.labels" ng-show="vm.labels.length > 0"></cohort-grid>
+            <!--Cohort grid no data message-->
+            <div class="form-group has-warning" ng-show="vm.labels.length <= 0">
+                <span class="help-block">No cohort selected.</span>
+            </div>
+        </uib-tab>
+
+        <!----------- Tab: Saved Cohorts ----------->
+        <uib-tab active="vm.tabs[2].active" ng-click="vm.activateTab(vm.tabs[2].title, 'cohortView');">
+            <uib-tab-heading>
+                <span>{{vm.tabs[2].title}}</span>
+            </uib-tab-heading>
+            <cohort-view ng-if="vm.tabs[2].active"></cohort-view>
+
+        </uib-tab>
+
+    </uib-tabset>
+</div>
+

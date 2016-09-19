@@ -126,13 +126,53 @@ div.summary-div span {
     color: #CCCCCC;
     font-style: italic;
     top: 50%;
-    left:50%;
-    transform: translate(-50%,-50%);
+    left: 50%;
+    transform: translate(-50%, -50%);
     position: absolute;
+    margin-top: 100px;
 }
 
 .chart-container-hover {
- background-color: #EFEFEF;
+    background-color: #EFEFEF;
 }
 
-.main-chart-container {height: 79vh;}
+.pie-legend-bold {
+    font-weight: bold;
+    font-size: 110%;
+}
+
+.pie-legend-normal {
+    font-weight: normal;
+    font-size: 100%;
+}
+
+.btn-secondary {
+    background-color: white;
+    border-color: rgba(200, 200, 200, 30);
+}
+
+.btn-secondary:hover {
+    background-color: cornsilk;
+}
+
+.cohort-selection-boxset {
+    margin-top: 123px;
+    margin-left: 10px;
+    padding-bottom: 760px;
+}
+
+.cohort-selection-box {
+    overflow-y: hidden;
+}
+
+.panel-footer {
+    height: 26px;
+    text-align: end;
+    padding-top: 3px;
+    padding-bottom: 3px;
+}
+
+.main-chart-container {
+    height: 79vh;
+    overflow-y: scroll;
+}

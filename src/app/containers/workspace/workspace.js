@@ -19,8 +19,8 @@ angular.module('transmartBaseUi')
                         controllerAs: 'vm'
                     },
                     'content@workspace': {
-                        templateUrl: 'app/containers/workspace/cohort-selection/cohort-selection.html',
-                        controller: 'CohortSelectionCtrl',
+                        templateUrl: 'app/containers/workspace/content/content.html',
+                        controller: 'ContentCtrl',
                         controllerAs: 'vm'
                     }
                 }

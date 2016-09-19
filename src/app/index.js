@@ -31,8 +31,9 @@ angular.module('transmartBaseUi', [
         'tmEndpoints'
     ])
     .config(['$stateProvider',  '$urlRouterProvider', 'cfpLoadingBarProvider', '$locationProvider',
-        '$uibTooltipProvider',
-        function ($stateProvider, $urlRouterProvider, cfpLoadingBarProvider, $locationProvider, $uibTooltipProvider) {
+        '$uibTooltipProvider', '$compileProvider',
+        function ($stateProvider, $urlRouterProvider, cfpLoadingBarProvider, $locationProvider,
+                  $uibTooltipProvider, $compileProvider) {
 
             $locationProvider.html5Mode({
                 enabled: true,
@@ -67,6 +68,9 @@ angular.module('transmartBaseUi', [
 
             // Remove spinner from http request loading bar
             cfpLoadingBarProvider.includeSpinner = false;
+
+            // enable scope
+            $compileProvider.debugInfoEnabled = true;
 
         }])
 
