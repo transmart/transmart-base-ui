@@ -3,14 +3,35 @@
  */
 'use strict';
 
-describe('Endpoint Service Unit Tests', function () {
-    var rServeService, $httpBackend, authRequestHandler;
+describe('rServe Service Unit Tests', function () {
+    var rServeService, $httpBackend, authRequestHandler, MASTER_ENDPOINT_CONFIG;
     var baseURL = 'http://transmart-gb.thehyve.net/transmart';
     // Load the transmartBaseUi module, which contains the directive
     beforeEach(function () {
         module('transmartBaseUi');
         module('tmEndpoints');
         module('smartRApp');
+        MASTER_ENDPOINT_CONFIG = {
+            "title": "transmart-gb",
+            "url": "http://transmart-gb.thehyve.net/transmart/v1",
+            "isOAuth": true,
+            "isMaster": true
+        }
+
+        module(function ($provide) {
+           $provide.service('EndpointService', function() {
+               this.initializeEndpoints = jasmine.createSpy('initializeEndpoints')
+                   .and.callFake(function () {
+                       this.masterEndpoint = MASTER_ENDPOINT_CONFIG;
+               });
+               this.getMasterEndpoint = jasmine.createSpy('getMasterEndpoint')
+                   .and.callFake(function () {
+                       return {
+                           url: baseURL
+                       }
+               });
+           });
+        });
     });
 
 

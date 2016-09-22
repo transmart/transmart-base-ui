@@ -8,7 +8,7 @@ angular.module('smartRApp').factory('rServeService', [
     '$http',
     'EndpointService',
     function (smartRUtils, $q, $http, EndpointService) {
-        var baseURL = 'http://transmart-gb.thehyve.net/transmart';
+        var baseURL = EndpointService.getMasterEndpoint().url;
 
         var service = {};
 
