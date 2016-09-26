@@ -21,8 +21,8 @@ angular.module('tmEndpoints')
 
                 var fnResponseInterceptor = ResourceInterceptors.customResponseInterceptor,
                     fnErrorInterceptor = ResourceInterceptors.customErrorInterceptor;
-
-                RestangularConfigurer.setBaseUrl(endpoint.url);
+                var baseURL = endpoint.url + '/' + endpoint.apiVersion;
+                RestangularConfigurer.setBaseUrl(baseURL);
                 RestangularConfigurer.setDefaultHeaders(
                     {
                         'Authorization': 'Bearer ' + endpoint.access_token,
