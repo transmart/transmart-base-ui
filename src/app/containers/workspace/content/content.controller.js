@@ -32,6 +32,12 @@ angular.module('transmartBaseUi')
                         tab.active = tab.title === tabTitle;
                     });
                     $state.go('workspace', {action: tabAction});
+
+                    var cohortSelectionBox =
+                        angular.element($element).find(document.querySelector('.cohort-selection-box'));
+                    if(cohortSelectionBox.hasClass('ui-layout-hidden')) {
+                        cohortSelectionBox.removeClass('ui-layout-hidden');
+                    }
                 };
 
                 if ($stateParams !== undefined) {
