@@ -23,7 +23,7 @@ describe('CohortGridService', function () {
         expect(CohortGridService.options.paginationPageSize).toEqual(25);
         expect(CohortGridService.options.columnDefs).toEqual([]);
         expect(CohortGridService.options.data).toEqual([]);
-        expect(CohortGridService.options.enableFiltering).toEqual(true);
+        expect(CohortGridService.options.enableFiltering).toEqual(false);
     });
 
     describe('prepareColumnDefs', function () {

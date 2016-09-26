@@ -20,7 +20,7 @@ angular.module('transmartBaseUi').factory('CohortGridService', ['$timeout', func
             paginationPageSize: 25,
             columnDefs: [], // columns is stored here
             data: [], // data is stored here
-            enableFiltering: true,
+            enableFiltering: false,
             onRegisterApi: function (gridApi) {
                 service.options.gridApi = gridApi;
             }
