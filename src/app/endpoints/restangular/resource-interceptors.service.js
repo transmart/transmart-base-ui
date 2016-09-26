@@ -6,7 +6,7 @@
  * @ngdoc factory
  * @name ResourceInterceptors
  */
-angular.module('transmartBaseUi')
+angular.module('tmEndpoints')
     .factory('ResourceInterceptors', ['AlertService', function (AlertService) {
 
         var service = {};

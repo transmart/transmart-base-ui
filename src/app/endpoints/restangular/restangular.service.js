@@ -6,7 +6,7 @@
  * @ngdoc factory
  * @name ResourceService
  */
-angular.module('transmartBaseUi')
+angular.module('tmEndpoints')
     .factory('ResourceService', function (Restangular, ResourceInterceptors) {
 
         var service = {};

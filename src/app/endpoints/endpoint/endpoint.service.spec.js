@@ -5,7 +5,7 @@ describe('Endpoint Service Unit Tests', function () {
 
     // Load the transmartBaseUi module, which contains the directive
     beforeEach(function () {
-        module('transmartBaseUi');
+        module('tmEndpoints');
     });
 
     beforeEach(inject(function (_EndpointService_, _ResourceService_, _$cookies_) {

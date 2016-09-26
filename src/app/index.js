@@ -26,7 +26,9 @@ angular.module('transmartBaseUi', [
         'angular-click-outside',
         'toggle-switch',
         'transmartBaseUiConstants',
-        'transmartBaseUiGitConstants'
+        'transmartBaseUiGitConstants',
+        'smartRApp',
+        'tmEndpoints'
     ])
     .config(['$stateProvider',  '$urlRouterProvider', 'cfpLoadingBarProvider', '$locationProvider',
         '$uibTooltipProvider', '$compileProvider',
