@@ -7,7 +7,7 @@ angular.module('transmartBaseUi')
     .factory('TreeNodeMocks', ['ResourceService',
         function (ResourceService) {
             var mock = {};
-            var _restangular = ResourceService.createResourceServiceByEndpoint({});
+            var _restangular = ResourceService.createResourceServiceByEndpoint({apiVersion:'', url:''});
 
             mock.treenodeResponse = function() {
                 return {
