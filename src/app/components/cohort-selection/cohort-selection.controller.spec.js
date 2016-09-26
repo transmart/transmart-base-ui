@@ -369,4 +369,111 @@ describe('CohortSelectionCtrl', function () {
         });
     });
 
+    describe('resetCharts', function () {
+        var chart1, chart2;
+        beforeEach(function() {
+            ctrl.cs.charts = [];
+            chart1 = {
+                id: 'c1',
+                filter: function () {}
+            }
+            chart2 = {
+                id: 'c2',
+                filter: function () {}
+            }
+            ctrl.cs.charts.push(chart1);
+            ctrl.cs.charts.push(chart2);
+            spyOn(chart1, 'filter');
+            spyOn(chart2, 'filter');
+            spyOn(ctrl, 'updateDimensions');
+            spyOn(ctrl, 'resize');
+            spyOn(dc, 'redrawAll');
+
+            ctrl.resetCharts();
+        });
+
+        it('should clear the filters of the charts', function () {
+            expect(chart1.filter).toHaveBeenCalledWith(null);
+            expect(chart2.filter).toHaveBeenCalledWith(null);
+        });
+
+        it('should update dimensions and resize charts', function () {
+            expect(ctrl.updateDimensions).toHaveBeenCalled();
+            expect(ctrl.resize).toHaveBeenCalledWith(true);
+            expect(dc.redrawAll).toHaveBeenCalled();
+        });
+    });
+
+    describe('applyNodes', function () {
+        var nodes = [];
+        beforeEach(function () {
+            var node1 = {id: 'node1'};
+            var node2 = {id: 'node2'};
+            nodes.push(node1);
+            nodes.push(node2);
+        });
+
+        it('should iterate over nodes', function () {
+            spyOn(nodes, 'forEach');
+            ctrl.applyNodes(nodes);
+            expect(nodes.forEach).toHaveBeenCalled();
+        });
+
+        it('should call addNodeToActiveCohortSelection', function () {
+            spyOn(ctrl, 'addNodeToActiveCohortSelection');
+            ctrl.applyNodes(nodes);
+            expect(ctrl.addNodeToActiveCohortSelection).toHaveBeenCalled();
+        });
+    });
+
+    describe('addNode', function () {
+
+        beforeEach(function () {
+            ctrl.cs = {
+                nodes: []
+            }
+        });
+
+        it('should add node when it is not already existent', function () {
+            expect(ctrl.cs.nodes.length).toBe(0);
+            var node = {id: 'a_node'};
+            ctrl.addNode(node);
+            expect(ctrl.cs.nodes.length).toBe(1);
+        });
+
+        it('should not add node when it exits', function () {
+            ctrl.cs.nodes.push({
+                id: 'a_node'
+            });
+            var node = {id: 'a_node'};
+            ctrl.addNode(node);
+            expect(ctrl.cs.nodes.length).toBe(1);
+        });
+    });
+
+    describe('removeNode', function () {
+        beforeEach(function () {
+            ctrl.cs = {
+                nodes: []
+            }
+        });
+
+        it('should remove node when it exists', function () {
+            var node = {
+                id: 'a_node',
+                restObj: {
+                    fullName: 'a_node_fullname'
+                }
+            };
+            var label = {
+                label: 'a_node_fullname'
+            }
+            ctrl.cs.nodes.push(node);
+            expect(ctrl.cs.nodes.length).toBe(1);
+            var result = ctrl.removeNode(label);
+            expect(result).toBe(true);
+            expect(ctrl.cs.nodes.length).toBe(0);
+        });
+    });
+
 });

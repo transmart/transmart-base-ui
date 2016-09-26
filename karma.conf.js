@@ -53,7 +53,7 @@ module.exports = function (config) {
             moduleName: 'transmartBaseUIHTML'
         },
 
-        logLevel: 'WARN',
+        logLevel: config.LOG_INFO, //options: config.LOG_INFO, config.LOG_DEBUG
 
         frameworks: ['phantomjs-shim', 'jasmine', 'angular-filesort'],
 

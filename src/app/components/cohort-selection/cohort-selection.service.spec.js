@@ -40,6 +40,14 @@ describe('CohortSelectionService', function () {
         it('should remove a box when the number of boxes is larger than one', function () {
             CohortSelectionService.addBox();
             expect(CohortSelectionService.boxes.length).toBe(2);
+            CohortSelectionService.boxes.forEach(function (box) {
+                box.ctrl = {
+                    boxElm: angular.element('<div></div>')
+                }
+                box.ctrl.boxElm.parent = function () {
+                    return angular.element('<div></div>');
+                }
+            });
             CohortSelectionService.removeBox(newBoxId);
             expect(CohortSelectionService.boxes.length).toBe(1);
         });

@@ -15,6 +15,7 @@
                 popupDelay="1000"><span class="glyphicon glyphicon-cloud-download"></span></button>
         <button type="button"
                 class="btn btn-secondary"
+                ng-click="cohortSelectionCtrl.resetCharts()"
                 uib-tooltip="Reset charts"
                 tooltip-trigger="mouseenter"
                 tooltip-placement="top"
@@ -35,7 +36,17 @@
                 tooltip-trigger="mouseenter"
                 tooltip-placement="top"
                 popupDelay="1000"><span class="glyphicon glyphicon-plus"></span></button>
+
         <button type="button"
+                class="btn btn-secondary"
+                ng-click="cohortSelectionCtrl.duplicateBox()"
+                uib-tooltip="Duplicate workspace"
+                tooltip-trigger="mouseenter"
+                tooltip-placement="top"
+                popupDelay="1000"><span class="glyphicon glyphicon-duplicate"></span></button>
+
+
+        <button ng-if="cohortSelectionCtrl.boxes.length>1" type="button"
                 class="btn btn-secondary"
                 ng-click="cohortSelectionCtrl.removeBox()"
                 uib-tooltip="Close workspace"
@@ -43,6 +54,7 @@
                 tooltip-placement="top"
                 popupDelay="1000"><span class="glyphicon glyphicon-remove"></span></button>
     </div>
+
     <br><br>
 </div>
 
@@ -78,3 +90,5 @@
         </ul>
     </div>
 </div>
+
+
