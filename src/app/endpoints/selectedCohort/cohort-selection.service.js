@@ -12,7 +12,7 @@ angular.module('transmartBaseUi')
             boxes: [],
             MAX_NUM_BOXES: 2,
             DEFAULT_BOX_SIZE: 500
-        }
+        };
 
         service.currentBoxId = '';
 
@@ -29,7 +29,7 @@ angular.module('transmartBaseUi')
                 service.currentBoxId = boxId;
                 var obj = {
                     boxId: boxId
-                }
+                };
                 service.boxes.push(obj);
 
                 var boxsetContainer = angular.element('#cohort-selection-ui-layout-div');
@@ -55,7 +55,7 @@ angular.module('transmartBaseUi')
             if(currBox && newBoxId) {
                 service.getBox(newBoxId).duplication = currBox;
             }
-        }
+        };
 
         /**
          * Remove box to workspace

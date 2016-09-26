@@ -4,7 +4,7 @@ describe('CohortSelectionService', function () {
     var CohortSelectionService;
 
     beforeEach(function () {
-        module('transmartBaseUi');
+        module('tmEndpoints');
     });
 
     beforeEach(inject(function (_CohortSelectionService_) {
