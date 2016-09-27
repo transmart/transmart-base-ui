@@ -49,7 +49,6 @@ angular.module('transmartBaseUi').factory('CohortGridService', ['$timeout', func
      * Format data and labels for the gridview's data
      * @memberof CohortGridService
      * @param subjects
-     * @param labels
      * @returns {Array}
      */
     service.convertToTable = function (subjects) {

@@ -21,7 +21,16 @@ angular.module('transmartBaseUi')
                 var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
                 return v.toString(16);
             });
-        }
+        };
+
+        /**
+         * Check if a given var is a finite number
+         * @param n
+         * @returns {boolean}
+         */
+        service.isFiniteNumber = function (n) {
+            return typeof(n) == 'number' && (n < Infinity) && (n > -Infinity);
+        };
 
         return service;
     }]);

@@ -24,7 +24,36 @@ describe('UtilityService unit tests', function () {
             var uid1 = utilityService.guid();
             expect(uid).not.toEqual(uid1);
         });
+    });
 
+    describe('isFiniteNumber', function () {
+
+        it('should recognize a finite number', function () {
+            var n = 10;
+            var is = utilityService.isFiniteNumber(n);
+            expect(is).toBe(true);
+            n = Infinity;
+            is = utilityService.isFiniteNumber(n);
+            expect(is).toBe(false);
+            n = -Infinity;
+            is = utilityService.isFiniteNumber(n);
+            expect(is).toBe(false);
+        });
+
+        it('should recognize a non-number', function () {
+            var n = {};
+            var is = utilityService.isFiniteNumber(n);
+            expect(is).toBe(false);
+            n = "";
+            is = utilityService.isFiniteNumber(n);
+            expect(is).toBe(false);
+            n = NaN;
+            is = utilityService.isFiniteNumber(n);
+            expect(is).toBe(false);
+            n = true;
+            is = utilityService.isFiniteNumber(n);
+            expect(is).toBe(false);
+        });
     });
 
 });
