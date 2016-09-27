@@ -3,7 +3,7 @@
  * @Service CohortSelectionMocks
  * @Description Service layer exposing mocks for gridster and cohort charts
  */
-angular.module('tmEndpoints')
+angular.module('transmartBaseUi')
     .factory('CohortSelectionMocks',
         function () {
             var service = {};

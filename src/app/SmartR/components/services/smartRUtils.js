@@ -2,8 +2,8 @@
 
 'use strict';
 
-angular.module('smartRApp').factory('smartRUtils', ['$q', 'CohortSelectionService', function($q,
-                                                                                             CohortSelectionService) {
+angular.module('smartRApp').factory('smartRUtils', ['$q', 'CohortSharingService', function($q,
+                                                                                           CohortSharingService) {
 
     var service = {};
 
@@ -92,12 +92,12 @@ angular.module('smartRApp').factory('smartRUtils', ['$q', 'CohortSelectionServic
     };
 
     service.countCohorts = function() {
-        return CohortSelectionService.getSelection().length;
+        return CohortSharingService.getSelection().length;
     };
 
     service.getSubsetIds = function smartRUtil_getSubsetIds() {
         var defer = $q.defer();
-        defer.resolve(CohortSelectionService.getSelection());
+        defer.resolve(CohortSharingService.getSelection());
         return defer.promise;
     };
 
