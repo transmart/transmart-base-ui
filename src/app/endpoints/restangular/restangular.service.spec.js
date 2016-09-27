@@ -13,6 +13,7 @@ describe('ResourceService', function () {
 
         _endpoint1 = {
             url : 'http://foo.bar',
+            apiVersion: 'v1',
             access_token : '88888888'
         }
     }));
@@ -20,7 +21,7 @@ describe('ResourceService', function () {
     describe('createResourceServiceByEndpoint', function () {
         it ('should create resource service using given values from given endpoint', function () {
             var _resource = ResourceService.createResourceServiceByEndpoint(_endpoint1);
-            expect(_resource.configuration.baseUrl).toEqual(_endpoint1.url);
+            expect(_resource.configuration.baseUrl).toEqual(_endpoint1.url + '/' + _endpoint1.apiVersion);
             expect(_resource.defaultHeaders.Authorization).toEqual('Bearer ' +  _endpoint1.access_token);
         });
 

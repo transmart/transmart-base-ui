@@ -38,7 +38,7 @@ describe('Endpoint Service Unit Tests', function () {
         var _endpoint, _fakeRestangular;
 
         beforeEach(function () {
-            _endpoint = {title: "local", url: "http://localhost:8080/transmart", isOAuth: true, isMaster: true};
+            _endpoint = {title: "local", url: "http://localhost:8080/transmart", isOAuth: true, isMaster: true, apiVersion: 'v1'};
             _fakeRestangular = {foo: 'Bar'};
             spyOn(ResourceService, 'createResourceServiceByEndpoint').and.returnValue(_fakeRestangular);
         });
