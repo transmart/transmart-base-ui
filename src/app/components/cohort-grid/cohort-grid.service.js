@@ -41,6 +41,7 @@ angular.module('transmartBaseUi').factory('CohortGridService', ['$timeout', func
                 columnDefs.push({field: label.name, width: service.WIDTH_PER_COLUMN});
             }
         });
+        columnDefs.push({field: 'cohort-panel', width: service.WIDTH_PER_COLUMN});
         return columnDefs;
     };
 
@@ -48,29 +49,32 @@ angular.module('transmartBaseUi').factory('CohortGridService', ['$timeout', func
      * Format data and labels for the gridview's data
      * @memberof CohortGridService
      * @param subjects
-     * @param headers
+     * @param labels
      * @returns {Array}
      */
-    service.convertToTable = function (subjects, headers) {
+    service.convertToTable = function (subjects) {
         var formatted = [];
         subjects.forEach(function (subject) {
             var cleanSubject = {};
             cleanSubject.id = subject.id;
-            headers.forEach(function (label) {
+            var labels = subject.box.ctrl.cs.labels;
+            labels.forEach(function (label) {
                 cleanSubject[label.name] = subject.labels[label.labelId];
             });
+            cleanSubject['cohort-panel'] = 'cohort-' + (subject.box.index+1);
             formatted.push(cleanSubject);
         });
+
         return formatted;
     };
 
     service.updateCohortGridView = function (subjects, labels) {
-            $timeout(function () { // this is necessary for ui-grid to notice the change at all
-                if (subjects) {
-                    service.options.data = service.convertToTable(subjects, labels);
-                    service.options.columnDefs = service.prepareColumnDefs(labels);
-                }
-            });
+        $timeout(function () { // this is necessary for ui-grid to notice the change at all
+            if (subjects) {
+                service.options.data = service.convertToTable(subjects);
+                service.options.columnDefs = service.prepareColumnDefs(labels);
+            }
+        });
     };
 
     return service;

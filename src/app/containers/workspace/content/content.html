@@ -13,7 +13,7 @@
             <div ui-layout="{flow : 'column', 'disableToggle': true }" id="cohort-selection-ui-layout-div" class="cohort-selection-boxset">
                 <div ui-layout-container min-size="260px"
                      ng-repeat="box in vm.boxes track by box.boxId" class="cohort-selection-box">
-                    <cohort-selection box="box"></cohort-selection>
+                    <cohort-selection box="box" index={{$index}}></cohort-selection>
                 </div>
             </div>
 

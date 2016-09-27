@@ -33,7 +33,7 @@ describe('CohortGridService', function () {
             _colDefs = CohortGridService.prepareColumnDefs(_labels);
         });
 
-        it('should define columns from given labels', function () {
+        it('should define column header', function () {
             expect(_colDefs[0]).toEqual({field: 'id', width: 200});
         });
 
@@ -42,22 +42,34 @@ describe('CohortGridService', function () {
                 {field: 'id', width: 200},
                 {field: 'a', width: 200},
                 {field: 'b', width: 200},
-                {field: 'c', width: 200}
+                {field: 'c', width: 200},
+                {field: 'cohort-panel', width: 200}
             ]);
         });
     });
 
     describe('convertToTable', function () {
         var _formatted,
-            _labels = [{name: 'a', labelId: 0}, {name: 'b', labelId: 1}, {name: 'c', labelId: 2}],
-            _subjects = [{id: 1111, labels: ['aa', 'bb', 'cc']}];
+            _labels = [{name: 'a', labelId: 0}, {name: 'b', labelId: 1}, {name: 'c', labelId: 2}];
+        var box = {
+            index: 0,
+            ctrl: {
+                cs: {
+                    labels: _labels
+                }
+            }
+        };
+        var _subjects = [{id: 1111, labels: ['aa', 'bb', 'cc'], box: box}];
+
 
         beforeEach(function () {
-            _formatted = CohortGridService.convertToTable(_subjects, _labels);
+            _formatted = CohortGridService.convertToTable(_subjects);
         });
 
         it('should format data to table format', function () {
-            expect(_formatted).toEqual([{id: 1111, a: 'aa', b: 'bb', c: 'cc'}])
+            expect(_formatted).toEqual([
+                {id: 1111, a: 'aa', b: 'bb', c: 'cc', 'cohort-panel': 'cohort-1'}
+            ]);
         });
     });
 

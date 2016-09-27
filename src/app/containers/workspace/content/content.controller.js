@@ -7,7 +7,10 @@ angular.module('transmartBaseUi')
                 var vm = this;
                 vm.selectedSubjects = [];
                 vm.labels = [];
-                CohortSelectionService.addBox();
+                if (CohortSelectionService.boxes.length == 0) {
+                    CohortSelectionService.addBox();
+                }
+
                 vm.boxes = CohortSelectionService.boxes;
                 vm.el = $element;
 
@@ -35,7 +38,7 @@ angular.module('transmartBaseUi')
 
                     var cohortSelectionBox =
                         angular.element($element).find(document.querySelector('.cohort-selection-box'));
-                    if(cohortSelectionBox.hasClass('ui-layout-hidden')) {
+                    if (cohortSelectionBox.hasClass('ui-layout-hidden')) {
                         cohortSelectionBox.removeClass('ui-layout-hidden');
                     }
                 };
@@ -53,19 +56,20 @@ angular.module('transmartBaseUi')
                     }
                 }
 
-                var _mergeCohortSelectionData = function () {
+                var _updateCohortSelectionData = function () {
                     vm.selectedSubjects = [];
                     vm.labels = [];
 
                     //for each cohort-selection box
                     CohortSelectionService.boxes.forEach(function (box) {
                         box.ctrl.cs.selectedSubjects.forEach(function (subject) {
-                            if(vm.selectedSubjects.indexOf(subject) == -1) {
+                            if (vm.selectedSubjects.indexOf(subject) == -1) {
+                                subject['box'] = box;
                                 vm.selectedSubjects.push(subject);
                             }
                         });
                         box.ctrl.cs.labels.forEach(function (label) {
-                            if(vm.labels.indexOf(label) == -1) {
+                            if (vm.labels.indexOf(label) == -1) {
                                 vm.labels.push(label);
                             }
                         });
@@ -73,7 +77,7 @@ angular.module('transmartBaseUi')
                 }
 
                 $scope.$on('cohortSelectionUpdateEvent', function (event) {
-                    _mergeCohortSelectionData();
+                    _updateCohortSelectionData();
                 });
 
             }]);
