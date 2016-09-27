@@ -2,7 +2,12 @@
  * Created by piotrzakrzewski on 26/09/2016.
  */
 'use strict'
-
+/**
+ * Resource factory
+ * @memberof tmEndpoints
+ * @ngdoc factory
+ * @name CohortSharingService
+ */
 angular.module('tmEndpoints')
     .factory('CohortSharingService', [function () {
         var service = {
