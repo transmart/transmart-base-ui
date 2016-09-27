@@ -46,6 +46,7 @@
            base-ui-right-click="ctrl.displayMetadata(node); "
            click-outside="node.isPopOpen = false"
            ng-class="{'text-grey': node.type === 'FAILED_CALL'}"
+           ng-click="toggle(this)"
         >
             {{node.title}}
             <b ng-show="!node.isLoading && node.total">({{node.total}})</b>
