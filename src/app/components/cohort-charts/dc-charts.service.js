@@ -42,8 +42,8 @@ angular.module('transmartBaseUi')
 
         if(width > 0 &&
             height > 0 &&
-            UtilityService.isFiniteNumber(width) &&
-            UtilityService.isFiniteNumber(height)
+            isFinite(width) &&
+            isFinite(height)
         ) {
             _CONF.WIDTH = width;
             _CONF.HEIGHT = height;
