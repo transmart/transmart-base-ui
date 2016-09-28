@@ -10,7 +10,7 @@ angular.module('transmartBaseUi')
     .factory('CohortSelectionService', ['UtilityService', function (UtilityService) {
         var service = {
             boxes: [],
-            MAX_NUM_BOXES: 2,
+            MAX_NUM_BOXES: 10,
             DEFAULT_BOX_SIZE: 500
         };
 
