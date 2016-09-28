@@ -24,7 +24,6 @@ describe('UtilityService unit tests', function () {
             var uid1 = utilityService.guid();
             expect(uid).not.toEqual(uid1);
         });
-
     });
 
 });

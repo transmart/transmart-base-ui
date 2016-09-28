@@ -12,13 +12,15 @@ angular.module('transmartBaseUi')
         return {
             restrict: 'E',
             scope: {
-                box: '='
+                box: '=',
+                index: '@'
             },
             templateUrl: 'app/components/cohort-selection/cohort-selection.tpl.html',
             controller: 'CohortSelectionCtrl',
             controllerAs: 'cohortSelectionCtrl',
             link: function (scope, element, attrs, CohortSelectionCtrl) {
                 var box = scope.box;
+                box.index = +scope.index;
                 box.ctrl = CohortSelectionCtrl;
 
                 /*
@@ -36,6 +38,12 @@ angular.module('transmartBaseUi')
                      */
                     box.ctrl.applyNodes(box.duplication.ctrl.cs.nodes);
                 }
+
+                scope.$watch('index', function (newVal, oldVal) {
+                    if((+newVal) !== (+oldVal)) {
+                        box.index = +newVal;
+                    }
+                });
             }
         };
     }]);

@@ -193,7 +193,8 @@ angular.module('transmartBaseUi')
                         resolved: false,
                         study: chart1.tsLabel.study,
                         type: 'combination',
-                        boxId: vm.boxId
+                        boxId: vm.boxId,
+                        box: CohortSelectionService.getBox(vm.boxId)
                     };
                     vm.cs.subjects.forEach(function (subject) {
                         if (subject.labels[chart1.tsLabel.labelId] || subject.labels[chart2.tsLabel.labelId]) {
@@ -268,7 +269,6 @@ angular.module('transmartBaseUi')
                         //Check that the maximum number of dimensions has not been reached
                         if (vm.cs.labels.length < vm.cs.maxNoOfDimensions) {
                             // Create the new label object
-
                             label = {
                                 label: obs.label,
                                 type: _getType(obs.value),
@@ -277,7 +277,8 @@ angular.module('transmartBaseUi')
                                 study: node.study,
                                 resolved: false,
                                 filters: filters,
-                                boxId: vm.boxId
+                                boxId: vm.boxId,
+                                box: CohortSelectionService.getBox(vm.boxId)
                             };
                             vm.cs.labels.push(label);
 
@@ -835,6 +836,7 @@ angular.module('transmartBaseUi')
                 vm.removeBox = function () {
                     vm.clearSelection();
                     CohortSelectionService.removeBox(vm.boxId);
+                    $scope.$emit('cohortSelectionUpdateEvent');
                 };
 
 

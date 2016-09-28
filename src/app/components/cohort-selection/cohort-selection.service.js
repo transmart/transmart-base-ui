@@ -18,7 +18,6 @@ angular.module('transmartBaseUi')
 
         /**
          * Add box to workspace
-         * @param cohortSelectionCtrl - The controller instance of the box
          * @returns {Object} - The new box id
          * @memberof CohortSelectionService
          */

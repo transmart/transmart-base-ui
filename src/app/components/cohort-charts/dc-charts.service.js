@@ -6,7 +6,8 @@
  * @ngdoc factory
  * @name DcChartsService
  */
-angular.module('transmartBaseUi').factory('DcChartsService', [function () {
+angular.module('transmartBaseUi')
+    .factory('DcChartsService', ['UtilityService', function (UtilityService) {
 
     var service = {};
 
@@ -39,7 +40,11 @@ angular.module('transmartBaseUi').factory('DcChartsService', [function () {
         var width = (_chart.gridInfo.sizeX * _chart.gridInfo.curColWidth) - 50;
         var height = (_chart.gridInfo.sizeY * _chart.gridInfo.curRowHeight) - 60;
 
-        if(width > 0 && height > 0) {
+        if(width > 0 &&
+            height > 0 &&
+            isFinite(width) &&
+            isFinite(height)
+        ) {
             _CONF.WIDTH = width;
             _CONF.HEIGHT = height;
             _CONF.MIN_S = (_CONF.WIDTH > _CONF.HEIGHT ? _CONF.HEIGHT : _CONF.WIDTH); // Smallest of width or height
