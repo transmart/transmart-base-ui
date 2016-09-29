@@ -19,7 +19,7 @@ angular.module('transmartBaseUi')
              */
             vm.ok = function () {
                 var endpoint = EndpointService.getMasterEndpoint();
-                var cohortSelectionCtrl = angular.element('#'+CohortSelectionService.currentBoxId).scope().cohortSelectionCtrl;
+                var cohortSelectionCtrl = CohortSelectionService.getBox(CohortSelectionService.currentBoxId).ctrl;
                 var cohortFilters = cohortSelectionCtrl.getCohortFilters();
                 var i2b2Query = QueryBuilderService.convertCohortFiltersToXML(
                     cohortFilters, $scope.cohortName);
