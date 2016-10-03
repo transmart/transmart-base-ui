@@ -378,7 +378,7 @@ angular.module('transmartBaseUi')
 
                         // Notify the applicable controller that the chart directive instances
                         // can be created
-                        vm.resize(true);
+                        vm.resize(false);
                         vm.updateDimensions();
                         _deferred.resolve();
                     }, function (err) {
