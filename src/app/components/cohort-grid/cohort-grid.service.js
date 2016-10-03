@@ -38,7 +38,11 @@ angular.module('transmartBaseUi').factory('CohortGridService', ['$timeout', func
         columnDefs.push({'field': 'id', width: service.WIDTH_PER_COLUMN});
         rawHeaders.forEach(function (label) {
             if (_.find(columnDefs, {field: label.name}) == undefined) {
-                columnDefs.push({field: label.name, width: service.WIDTH_PER_COLUMN});
+                columnDefs.push({
+                    field: label.name,
+                    width: service.WIDTH_PER_COLUMN,
+                    displayName: label.name
+                });
             }
         });
         columnDefs.push({field: 'cohort-panel', width: service.WIDTH_PER_COLUMN});
