@@ -40,9 +40,9 @@ describe('CohortGridService', function () {
         it('should define columns from given labels', function () {
             expect(_colDefs).toEqual([
                 {field: 'id', width: 200},
-                {field: 'a', width: 200},
-                {field: 'b', width: 200},
-                {field: 'c', width: 200},
+                {field: 'a', width: 200, displayName: 'a'},
+                {field: 'b', width: 200, displayName: 'b'},
+                {field: 'c', width: 200, displayName: 'c'},
                 {field: 'cohort-panel', width: 200}
             ]);
         });
