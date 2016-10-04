@@ -33,6 +33,6 @@ angular.module('transmartBaseUi')
                     }
                 });
             }],
-            controllerAs : 'ctrl'
+            controllerAs: 'ctrl'
         };
     });
