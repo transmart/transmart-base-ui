@@ -34,16 +34,16 @@ describe('CohortGridService', function () {
         });
 
         it('should define column header', function () {
-            expect(_colDefs[0]).toEqual({field: 'id', width: 200});
+            expect(_colDefs[0]).toEqual({field: "fields['id']", width: 200, displayName: 'id'});
         });
 
         it('should define columns from given labels', function () {
             expect(_colDefs).toEqual([
-                {field: 'id', width: 200},
-                {field: 'a', width: 200, displayName: 'a'},
-                {field: 'b', width: 200, displayName: 'b'},
-                {field: 'c', width: 200, displayName: 'c'},
-                {field: 'cohort-panel', width: 200}
+                {field: "fields['id']", width: 200, displayName: 'id'},
+                {field: "fields['a']", width: 200, displayName: 'a'},
+                {field: "fields['b']", width: 200, displayName: 'b'},
+                {field: "fields['c']", width: 200, displayName: 'c'},
+                {field: "fields['cohort-panel']", width: 200, displayName: 'cohort-panel'}
             ]);
         });
     });
@@ -68,7 +68,7 @@ describe('CohortGridService', function () {
 
         it('should format data to table format', function () {
             expect(_formatted).toEqual([
-                {id: 1111, a: 'aa', b: 'bb', c: 'cc', 'cohort-panel': 'cohort-1'}
+                { fields: { id: 1111, a: 'aa', b: 'bb', c: 'cc', 'cohort-panel': 'cohort-1' } }
             ]);
         });
     });

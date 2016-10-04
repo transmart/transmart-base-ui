@@ -100,7 +100,7 @@ angular.module('transmartBaseUi')
                 vm.resize = function (reDistribute) {
                     var elId = '#' + vm.mainContainerId;
                     var labels = vm.cs.labels;
-                    if(labels.length > 0) {
+                    if (labels.length > 0) {
                         // Get width of the full gridster grid
                         var _gWidth = angular.element(elId).width();
 
@@ -622,15 +622,14 @@ angular.module('transmartBaseUi')
                  */
                 vm.createCohortChart = function (label, el) {
                     var _chart;
-
                     /**
                      * @param _missingLabelId
                      * @private
                      */
                     var _defaultDim = function (_missingLabelId) {
+                        var lbl = _missingLabelId || undefined;
                         vm.cs.dimensions[label.labelId] =
                             vm.cs.crossfilter.dimension(function (d) {
-                                var lbl = _missingLabelId || undefined;
                                 return d.labels[label.labelId] === undefined ? lbl : d.labels[label.labelId];
                             });
                         vm.cs.groups[label.labelId] =
@@ -676,9 +675,9 @@ angular.module('transmartBaseUi')
                         } else if (label.type === 'float') {
                             vm.cs.dimensions[label.labelId] =
                                 vm.cs.crossfilter.dimension(function (d) {
-                                return d.labels[label.labelId] ===
+                                    return d.labels[label.labelId] ===
                                     undefined ? undefined : d.labels[label.labelId].toFixed(label.precision === 0 ? 0 : label.precision);
-                            });
+                                });
                             vm.cs.groups[label.labelId] =
                                 vm.cs.dimensions[label.labelId].group();
                             _chart = DcChartsService.getBarChart(vm.cs.dimensions[label.labelId],
@@ -847,7 +846,7 @@ angular.module('transmartBaseUi')
                  * @memberof CohortSelectionCtrl
                  */
                 vm.addHistory = function (funcName, paramsArr) {
-                    if(vm.isRecordingHistory) {
+                    if (vm.isRecordingHistory) {
                         vm.history.push({
                             func: funcName,
                             params: paramsArr
@@ -861,18 +860,18 @@ angular.module('transmartBaseUi')
                  * @memberof CohortSelectionCtrl
                  */
                 vm.applyHistory = function () {
-                    if(vm.history.length > 0) {
+                    if (vm.history.length > 0) {
                         var index = 0;
                         _applyHistory(index);
                     }
                 }
 
                 function _applyHistory(index) {
-                    if(index < vm.history.length) {
+                    if (index < vm.history.length) {
                         vm.isRecordingHistory = false;
                         var historyObj = vm.history[index];
                         var promise = vm[historyObj.func].apply(vm, historyObj.params);
-                        if(promise) {
+                        if (promise) {
                             promise.then(function () {
                                 index++;
                                 _applyHistory(index);
@@ -891,7 +890,7 @@ angular.module('transmartBaseUi')
                  */
                 vm.addNode = function (node) {
                     var found = _.find(vm.cs.nodes, node);
-                    if(!found) {
+                    if (!found) {
                         vm.cs.nodes.push(node);
                     }
                 }
@@ -908,7 +907,7 @@ angular.module('transmartBaseUi')
                             fullName: label.label
                         }
                     });
-                    if(removed.length > 0) {
+                    if (removed.length > 0) {
                         return true;
                     }
                     else {
@@ -930,9 +929,9 @@ angular.module('transmartBaseUi')
 
                 $scope.$watch(function () {
                     return $element.parent().width();
-                }, function(newVal, oldVal) {
+                }, function (newVal, oldVal) {
                     vm.boxSize = newVal;
-                    if(Math.abs(newVal - oldVal) > 3) {
+                    if (Math.abs(newVal - oldVal) > 3) {
                         vm.resize(true);
                     }
                 });

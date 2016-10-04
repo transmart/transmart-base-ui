@@ -35,17 +35,26 @@ angular.module('transmartBaseUi').factory('CohortGridService', ['$timeout', func
      */
     service.prepareColumnDefs = function (rawHeaders) {
         var columnDefs = [];
-        columnDefs.push({'field': 'id', width: service.WIDTH_PER_COLUMN});
+        columnDefs.push({
+            field: "fields['id']",
+            width: service.WIDTH_PER_COLUMN,
+            displayName: 'id'
+        });
         rawHeaders.forEach(function (label) {
             if (_.find(columnDefs, {field: label.name}) == undefined) {
                 columnDefs.push({
-                    field: label.name,
+                    field: "fields['" + label.name + "']",
                     width: service.WIDTH_PER_COLUMN,
                     displayName: label.name
                 });
             }
         });
-        columnDefs.push({field: 'cohort-panel', width: service.WIDTH_PER_COLUMN});
+        columnDefs.push({
+            field: "fields['cohort-panel']",
+            width: service.WIDTH_PER_COLUMN,
+            displayName: 'cohort-panel'
+        });
+
         return columnDefs;
     };
 
@@ -64,8 +73,8 @@ angular.module('transmartBaseUi').factory('CohortGridService', ['$timeout', func
             labels.forEach(function (label) {
                 cleanSubject[label.name] = subject.labels[label.labelId];
             });
-            cleanSubject['cohort-panel'] = 'cohort-' + (subject.box.index+1);
-            formatted.push(cleanSubject);
+            cleanSubject['cohort-panel'] = 'cohort-' + (subject.box.index + 1);
+            formatted.push({'fields': cleanSubject});
         });
 
         return formatted;
