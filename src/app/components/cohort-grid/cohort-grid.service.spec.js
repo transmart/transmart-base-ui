@@ -50,7 +50,11 @@ describe('CohortGridService', function () {
 
     describe('convertToTable', function () {
         var _formatted,
-            _labels = [{name: 'a', labelId: 0}, {name: 'b', labelId: 1}, {name: 'c', labelId: 2}];
+            _labels = [
+                {name: 'a', labelId: 0, conceptPath:'x'},
+                {name: 'b', labelId: 1,  conceptPath:'y'},
+                {name: 'c', labelId: 2,  conceptPath:'z'}
+            ];
         var box = {
             index: 0,
             ctrl: {
@@ -59,7 +63,7 @@ describe('CohortGridService', function () {
                 }
             }
         };
-        var _subjects = [{id: 1111, labels: ['aa', 'bb', 'cc'], box: box}];
+        var _subjects = [{id: 1111, labels: {x:'aa', y:'bb', z:'cc'}, box: box}];
 
 
         beforeEach(function () {

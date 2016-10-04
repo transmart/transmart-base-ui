@@ -173,16 +173,28 @@ angular.module('transmartBaseUi')
                     vm.updateDimensions();
                 };
 
-                var _numDisplay = function (cDimension, cGroup, el) {
-                    var _number = dc.numberDisplay(el);
-                    _number.group(cGroup)
+                var _numDisplay = function (label, cGroup, el) {
+
+                    cGroup.reduce(
+                        function (p, v) {
+                            return v.labels[label.conceptPath] ? p + 1 : p;
+                        },
+                        function (p, v) {
+                            return v.labels[label.conceptPath] ? p - 1 : p;
+                        },
+                        function () {
+                            return 0;
+                        }
+                    );
+
+                    return dc.numberDisplay(el)
+                        .group(cGroup)
                         .html({
                             one: '%number',
                             some: '%number',
                             none: '%number'
                         })
-                        .formatNumber(d3.format('f'));
-                    return _number;
+                        .formatNumber(d3.format('.0'));
                 };
 
                 var _groupCharts = function (chart1, chart2) {
@@ -271,6 +283,7 @@ angular.module('transmartBaseUi')
                             // Create the new label object
                             label = {
                                 label: obs.label,
+                                conceptPath: obs.label,
                                 type: _getType(obs.value),
                                 name: _getLastToken(obs.label),
                                 labelId: vm.cs.chartId++,
@@ -295,8 +308,7 @@ angular.module('transmartBaseUi')
                         precision = precision[1] ? precision[1].length : 0;
                         label.precision = label.precision ? Math.min(label.precision, precision) : precision;
                     }
-
-                    return label.labelId;
+                    return label;
                 };
 
                 /**
@@ -314,7 +326,7 @@ angular.module('transmartBaseUi')
                         }
                     });
                     return foundChart;
-                }
+                };
 
                 /**
                  * Give a chart instance (normally a pie chart), filter it based on an array of words
@@ -328,7 +340,7 @@ angular.module('transmartBaseUi')
                             chart.filter(_f);
                         });
                         vm.updateDimensions();
-                        dc.renderAll();
+                        dc.redrawAll();
                     }
                 }
 
@@ -359,23 +371,22 @@ angular.module('transmartBaseUi')
                                 }
 
                                 // Add the concept to the list of chart labels
-                                var _newLabelId = _addLabel(obs, node, _filter);
+                                var _newLabel = _addLabel(obs, node, _filter);
 
                                 // Check if the subject of the observation is already present
                                 var foundSubject = _.find(vm.cs.subjects,
                                     {id: obs._embedded.subject.id});
 
                                 if (foundSubject) {
-                                    foundSubject.labels[_newLabelId] = obs.value;
+                                    foundSubject.labels[_newLabel.conceptPath] = obs.value;
                                 } else {
                                     obs._embedded.subject.labels = {};
-                                    obs._embedded.subject.labels[_newLabelId] = obs.value;
+                                    obs._embedded.subject.labels[_newLabel.conceptPath] = obs.value;
                                     vm.cs.subjects.push(obs._embedded.subject);
                                     vm.cs.crossfilter.add([obs._embedded.subject]);
                                 }
                             }
                         });
-
                         // Notify the applicable controller that the chart directive instances
                         // can be created
                         vm.resize(false);
@@ -398,12 +409,7 @@ angular.module('transmartBaseUi')
                  */
                 vm.filterSubjectsByLabel = function (subjects, label) {
                     subjects.forEach(function (subject, subjectIdx) {
-                        subject.labels = _.filter(subject.labels, function (subjectLabel, subjectLabelIdx) {
-                            return subjectLabelIdx !== label.labelId;
-                        });
-                        if (subject.labels.length < 1) {
-                            subjects.splice(subjectIdx, 1);
-                        }
+                        delete subject.labels[label.conceptPath];
                     });
                     return subjects;
                 };
@@ -465,7 +471,7 @@ angular.module('transmartBaseUi')
                     vm.updateDimensions();
                     vm.resize(true);
                     dc.redrawAll();
-                }
+                };
 
                 /**
                  * Remove label from cohort selection
@@ -510,12 +516,12 @@ angular.module('transmartBaseUi')
                         _deferred.reject('label is not defined');
                     }
 
+                    dc.renderAll();
                     return _deferred.promise;
                 };
 
                 var _createMultidimensionalChart = function (label, el) {
-                    var _chart, _min, _max;
-                    var boxId = label.boxId;
+                    var _chart, _min, _max, label1 = label.label[0], label2 = label.label[1];
 
                     // Check if label0 or label1 has categorical values
                     if (label.label[0].type === 'string' || label.label[1].type === 'string') {
@@ -529,16 +535,20 @@ angular.module('transmartBaseUi')
 
                             vm.cs.dimensions[label.labelId] =
                                 vm.cs.crossfilter.dimension(function (d) {
-                                    return d.labels[label.labelId] ? d.labels[label.labelId][_valueX] : undefined;
+                                    return d.labels[label.label[_valueX].conceptPath] ?
+                                        d.labels[label.label[_valueX].conceptPath] : undefined;
                                 });
+
                             vm.cs.groups[label.labelId] =
                                 vm.cs.dimensions[label.labelId].group().reduce(
                                     function (p, v) {
-                                        p.push(v.labels[label.labelId] ? +v.labels[label.labelId][_valueY] : undefined);
+                                        p.push(v.labels[label.label[_valueY].conceptPath] ?
+                                            +v.labels[label.label[_valueY].conceptPath] : undefined);
                                         return p;
                                     },
                                     function (p, v) {
-                                        p.splice(p.indexOf(v.labels[label.labelId] ? +v.labels[label.labelId][_valueY] : undefined), 1);
+                                        p.splice(p.indexOf(v.labels[label.label[_valueY].conceptPath] ?
+                                            +v.labels[label.label[_valueY].conceptPath] : undefined), 1);
                                         return p;
                                     },
                                     function () {
@@ -565,8 +575,10 @@ angular.module('transmartBaseUi')
                             // Both labels are categorical
                             vm.cs.dimensions[label.labelId] =
                                 vm.cs.crossfilter.dimension(function (d) {
-                                    return [d.labels[label.labelId] ? d.labels[label.labelId][0] : undefined,
-                                        d.labels[label.labelId] ? d.labels[label.labelId][1] : undefined];
+                                    return [
+                                        d.labels[label.label[0].conceptPath] ? d.labels[label.label[0].conceptPath] : undefined,
+                                        d.labels[label.label[1].conceptPath] ? d.labels[label.label[1].conceptPath] : undefined
+                                    ];
                                 });
                             vm.cs.groups[label.labelId] =
                                 vm.cs.dimensions[label.labelId].group();
@@ -584,17 +596,17 @@ angular.module('transmartBaseUi')
                         // Both labels are numerical, create a scatter plot
                         vm.cs.dimensions[label.labelId] =
                             vm.cs.crossfilter.dimension(function (d) {
-                                return [d.labels[label.labelId] ? d.labels[label.labelId][0] : undefined,
-                                    d.labels[label.labelId] ? d.labels[label.labelId][1] : undefined];
+                                return [d.labels[label.label[0].conceptPath] ? d.labels[label.label[0].conceptPath] : undefined,
+                                    d.labels[label.label[1].conceptPath] ? d.labels[label.label[1].conceptPath] : undefined];
                             });
 
                         vm.cs.groups[label.labelId] =
                             vm.cs.dimensions[label.labelId].group();
 
                         _max = vm.cs.dimensions[label.label[0].labelId]
-                            .top(1)[0].labels[label.label[0].labelId];
+                            .top(1)[0].labels[label.label[0].conceptPath];
                         _min = vm.cs.dimensions[label.label[0].labelId]
-                            .bottom(1)[0].labels[label.label[0].labelId];
+                            .bottom(1)[0].labels[label.label[0].conceptPath];
 
                         _chart = DcChartsService.getScatterPlot(
                             vm.cs.dimensions[label.labelId],
@@ -630,7 +642,8 @@ angular.module('transmartBaseUi')
                         var lbl = _missingLabelId || undefined;
                         vm.cs.dimensions[label.labelId] =
                             vm.cs.crossfilter.dimension(function (d) {
-                                return d.labels[label.labelId] === undefined ? lbl : d.labels[label.labelId];
+                                var lbl = _missingLabelId || undefined;
+                                return d.labels[label.conceptPath] === undefined ? lbl : d.labels[label.conceptPath];
                             });
                         vm.cs.groups[label.labelId] =
                             vm.cs.dimensions[label.labelId].group();
@@ -642,8 +655,7 @@ angular.module('transmartBaseUi')
                         // Create a number display if highdim
                         if (label.type === 'highdim') {
                             _defaultDim();
-                            _chart = _numDisplay(vm.cs.dimensions[label.labelId],
-                                vm.cs.groups[label.labelId], el);
+                            _chart = _numDisplay(label, vm.cs.groups[label.labelId], el);
                             _chart.type = 'NUMBER';
 
                             // Create a PIECHART if categorical
@@ -675,9 +687,9 @@ angular.module('transmartBaseUi')
                         } else if (label.type === 'float') {
                             vm.cs.dimensions[label.labelId] =
                                 vm.cs.crossfilter.dimension(function (d) {
-                                    return d.labels[label.labelId] ===
-                                    undefined ? undefined : d.labels[label.labelId].toFixed(label.precision === 0 ? 0 : label.precision);
-                                });
+                                return d.labels[label.conceptPath] ===
+                                    undefined ? undefined : d.labels[label.conceptPath].toFixed(label.precision === 0 ? 0 : label.precision);
+                            });
                             vm.cs.groups[label.labelId] =
                                 vm.cs.dimensions[label.labelId].group();
                             _chart = DcChartsService.getBarChart(vm.cs.dimensions[label.labelId],
@@ -826,7 +838,7 @@ angular.module('transmartBaseUi')
                  */
                 vm.duplicateBox = function () {
                     CohortSelectionService.duplicateBox(vm.boxId);
-                }
+                };
 
                 /**
                  * Remove the current cohort-selection box
@@ -852,7 +864,7 @@ angular.module('transmartBaseUi')
                             params: paramsArr
                         });
                     }
-                }
+                };
 
                 /**
                  * reApply the history, i.e. past user interactions
@@ -864,7 +876,7 @@ angular.module('transmartBaseUi')
                         var index = 0;
                         _applyHistory(index);
                     }
-                }
+                };
 
                 function _applyHistory(index) {
                     if (index < vm.history.length) {
@@ -877,8 +889,7 @@ angular.module('transmartBaseUi')
                                 _applyHistory(index);
                             });
                         }
-                    }
-                    else {
+                    } else {
                         vm.isRecordingHistory = true;
                     }
                 }
@@ -893,7 +904,7 @@ angular.module('transmartBaseUi')
                     if (!found) {
                         vm.cs.nodes.push(node);
                     }
-                }
+                };
 
                 /**
                  * Remove a node from the node collection of this cohort-selection
@@ -907,13 +918,14 @@ angular.module('transmartBaseUi')
                             fullName: label.label
                         }
                     });
-                    if (removed.length > 0) {
+
+                    if(removed.length > 0) {
                         return true;
                     }
                     else {
                         return false;
                     }
-                }
+                };
 
                 /**
                  * Automatically 'drop' the given nodes to this cohort-selection,
@@ -925,7 +937,7 @@ angular.module('transmartBaseUi')
                     nodes.forEach(function (node) {
                         vm.addNodeToActiveCohortSelection(node, []);
                     });
-                }
+                };
 
                 $scope.$watch(function () {
                     return $element.parent().width();

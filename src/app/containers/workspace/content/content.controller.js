@@ -74,7 +74,7 @@ angular.module('transmartBaseUi')
                             }
                         });
                     });
-                }
+                };
 
                 $scope.$on('cohortSelectionUpdateEvent', function (event) {
                     _updateCohortSelectionData();

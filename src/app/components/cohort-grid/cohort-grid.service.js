@@ -71,12 +71,11 @@ angular.module('transmartBaseUi').factory('CohortGridService', ['$timeout', func
             cleanSubject.id = subject.id;
             var labels = subject.box.ctrl.cs.labels;
             labels.forEach(function (label) {
-                cleanSubject[label.name] = subject.labels[label.labelId];
+                cleanSubject[label.name] = subject.labels[label.conceptPath];
             });
             cleanSubject['cohort-panel'] = 'cohort-' + (subject.box.index + 1);
             formatted.push({'fields': cleanSubject});
         });
-
         return formatted;
     };
 
