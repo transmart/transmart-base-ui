@@ -34,16 +34,28 @@ describe('CohortGridService', function () {
         });
 
         it('should define column header', function () {
-            expect(_colDefs[0]).toEqual({field: "fields['id']", width: 200, displayName: 'id'});
+            expect(_colDefs[0]).toEqual({
+                field: "fields['cohort-panel']",
+                width: 0.6*200,
+                displayName: 'cohort-panel',
+                pinnedLeft: true
+            });
+
+            expect(_colDefs[1]).toEqual({
+                field: "fields['id']",
+                width: 0.5*200,
+                displayName: 'id',
+                pinnedLeft: true
+            });
         });
 
         it('should define columns from given labels', function () {
             expect(_colDefs).toEqual([
-                {field: "fields['id']", width: 200, displayName: 'id'},
+                {field: "fields['cohort-panel']", width: 0.6*200, displayName: 'cohort-panel', pinnedLeft: true},
+                {field: "fields['id']", width: 0.5*200, displayName: 'id', pinnedLeft: true},
                 {field: "fields['a']", width: 200, displayName: 'a'},
                 {field: "fields['b']", width: 200, displayName: 'b'},
-                {field: "fields['c']", width: 200, displayName: 'c'},
-                {field: "fields['cohort-panel']", width: 200, displayName: 'cohort-panel'}
+                {field: "fields['c']", width: 200, displayName: 'c'}
             ]);
         });
     });

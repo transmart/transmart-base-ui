@@ -36,9 +36,17 @@ angular.module('transmartBaseUi').factory('CohortGridService', ['$timeout', func
     service.prepareColumnDefs = function (rawHeaders) {
         var columnDefs = [];
         columnDefs.push({
+            field: "fields['cohort-panel']",
+            width: 0.6*service.WIDTH_PER_COLUMN,
+            displayName: 'cohort-panel',
+            pinnedLeft: true
+        });
+
+        columnDefs.push({
             field: "fields['id']",
-            width: service.WIDTH_PER_COLUMN,
-            displayName: 'id'
+            width: 0.5*service.WIDTH_PER_COLUMN,
+            displayName: 'id',
+            pinnedLeft: true
         });
         rawHeaders.forEach(function (label) {
             if (_.find(columnDefs, {field: label.name}) == undefined) {
@@ -49,12 +57,6 @@ angular.module('transmartBaseUi').factory('CohortGridService', ['$timeout', func
                 });
             }
         });
-        columnDefs.push({
-            field: "fields['cohort-panel']",
-            width: service.WIDTH_PER_COLUMN,
-            displayName: 'cohort-panel'
-        });
-
         return columnDefs;
     };
 
@@ -68,12 +70,12 @@ angular.module('transmartBaseUi').factory('CohortGridService', ['$timeout', func
         var formatted = [];
         subjects.forEach(function (subject) {
             var cleanSubject = {};
+            cleanSubject['cohort-panel'] = 'cohort-' + (subject.box.index + 1);
             cleanSubject.id = subject.id;
             var labels = subject.box.ctrl.cs.labels;
             labels.forEach(function (label) {
                 cleanSubject[label.name] = subject.observations[label.conceptPath];
             });
-            cleanSubject['cohort-panel'] = 'cohort-' + (subject.box.index + 1);
             formatted.push({'fields': cleanSubject});
         });
         return formatted;

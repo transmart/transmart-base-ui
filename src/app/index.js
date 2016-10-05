@@ -23,6 +23,7 @@ angular.module('transmartBaseUi', [
         'ui.grid.resizeColumns',
         'ui.grid.exporter',
         'ui.grid.selection',
+        'ui.grid.pinning',
         'angular-click-outside',
         'toggle-switch',
         'transmartBaseUiConstants',

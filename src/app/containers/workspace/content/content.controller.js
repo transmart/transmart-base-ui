@@ -63,13 +63,15 @@ angular.module('transmartBaseUi')
                     //for each cohort-selection box
                     CohortSelectionService.boxes.forEach(function (box) {
                         box.ctrl.cs.selectedSubjects.forEach(function (subject) {
-                            if (vm.selectedSubjects.indexOf(subject) == -1) {
+                            var found = _.find(vm.selectedSubjects, {id: subject.id});
+                            if(!found) {
                                 subject['box'] = box;
                                 vm.selectedSubjects.push(subject);
                             }
                         });
                         box.ctrl.cs.labels.forEach(function (label) {
-                            if (vm.labels.indexOf(label) == -1) {
+                            var found = _.find(vm.labels, {conceptPath: label.conceptPath});
+                            if(!found) {
                                 vm.labels.push(label);
                             }
                         });
