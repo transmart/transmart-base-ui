@@ -63,7 +63,7 @@ describe('CohortGridService', function () {
                 }
             }
         };
-        var _subjects = [{id: 1111, labels: {x:'aa', y:'bb', z:'cc'}, box: box}];
+        var _subjects = [{id: 1111, observations: {x:'aa', y:'bb', z:'cc'}, box: box}];
 
 
         beforeEach(function () {

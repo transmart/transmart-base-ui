@@ -177,10 +177,10 @@ angular.module('transmartBaseUi')
 
                     cGroup.reduce(
                         function (p, v) {
-                            return v.labels[label.conceptPath] ? p + 1 : p;
+                            return v.observations[label.conceptPath] ? p + 1 : p;
                         },
                         function (p, v) {
-                            return v.labels[label.conceptPath] ? p - 1 : p;
+                            return v.observations[label.conceptPath] ? p - 1 : p;
                         },
                         function () {
                             return 0;
@@ -208,12 +208,19 @@ angular.module('transmartBaseUi')
                         boxId: vm.boxId,
                         box: CohortSelectionService.getBox(vm.boxId)
                     };
+
                     vm.cs.subjects.forEach(function (subject) {
-                        if (subject.labels[chart1.tsLabel.labelId] || subject.labels[chart2.tsLabel.labelId]) {
-                            subject.labels[_combinationLabel.labelId] = [subject.labels[chart1.tsLabel.labelId],
-                                subject.labels[chart2.tsLabel.labelId]];
+                        if (subject.observations[chart1.tsLabel.conceptPath] ||
+                            subject.observations[chart2.tsLabel.conceptPath]) {
+
+                            subject.observations[_combinationLabel.name] = [
+                                subject.observations[chart1.tsLabel.conceptPath],
+                                subject.observations[chart2.tsLabel.conceptPath]
+                            ];
+
                         }
                     });
+
                     vm.cs.labels.push(_combinationLabel);
                 };
 
@@ -378,10 +385,10 @@ angular.module('transmartBaseUi')
                                     {id: obs._embedded.subject.id});
 
                                 if (foundSubject) {
-                                    foundSubject.labels[_newLabel.conceptPath] = obs.value;
+                                    foundSubject.observations[_newLabel.conceptPath] = obs.value;
                                 } else {
-                                    obs._embedded.subject.labels = {};
-                                    obs._embedded.subject.labels[_newLabel.conceptPath] = obs.value;
+                                    obs._embedded.subject.observations = {};
+                                    obs._embedded.subject.observations[_newLabel.conceptPath] = obs.value;
                                     vm.cs.subjects.push(obs._embedded.subject);
                                     vm.cs.crossfilter.add([obs._embedded.subject]);
                                 }
@@ -409,7 +416,7 @@ angular.module('transmartBaseUi')
                  */
                 vm.filterSubjectsByLabel = function (subjects, label) {
                     subjects.forEach(function (subject, subjectIdx) {
-                        delete subject.labels[label.conceptPath];
+                        delete subject.observations[label.conceptPath];
                     });
                     return subjects;
                 };
@@ -535,20 +542,20 @@ angular.module('transmartBaseUi')
 
                             vm.cs.dimensions[label.labelId] =
                                 vm.cs.crossfilter.dimension(function (d) {
-                                    return d.labels[label.label[_valueX].conceptPath] ?
-                                        d.labels[label.label[_valueX].conceptPath] : undefined;
+                                    return d.observations[label.label[_valueX].conceptPath] ?
+                                        d.observations[label.label[_valueX].conceptPath] : undefined;
                                 });
 
                             vm.cs.groups[label.labelId] =
                                 vm.cs.dimensions[label.labelId].group().reduce(
                                     function (p, v) {
-                                        p.push(v.labels[label.label[_valueY].conceptPath] ?
-                                            +v.labels[label.label[_valueY].conceptPath] : undefined);
+                                        p.push(v.observations[label.label[_valueY].conceptPath] ?
+                                            +v.observations[label.label[_valueY].conceptPath] : undefined);
                                         return p;
                                     },
                                     function (p, v) {
-                                        p.splice(p.indexOf(v.labels[label.label[_valueY].conceptPath] ?
-                                            +v.labels[label.label[_valueY].conceptPath] : undefined), 1);
+                                        p.splice(p.indexOf(v.observations[label.label[_valueY].conceptPath] ?
+                                            +v.observations[label.label[_valueY].conceptPath] : undefined), 1);
                                         return p;
                                     },
                                     function () {
@@ -557,9 +564,9 @@ angular.module('transmartBaseUi')
                                 );
 
                             _max = vm.cs.dimensions[label.label[_valueY].labelId]
-                                .top(1)[0].labels[label.label[_valueY].labelId];
+                                .top(1)[0].observations[label.label[_valueY].conceptPath];
                             _min = vm.cs.dimensions[label.label[_valueY].labelId]
-                                .bottom(1)[0].labels[label.label[_valueY].labelId];
+                                .bottom(1)[0].observations[label.label[_valueY].conceptPath];
 
                             _chart = DcChartsService.getBoxPlot(vm.cs.dimensions[label.labelId],
                                 vm.cs.groups[label.labelId], el, {
@@ -576,19 +583,19 @@ angular.module('transmartBaseUi')
                             vm.cs.dimensions[label.labelId] =
                                 vm.cs.crossfilter.dimension(function (d) {
                                     return [
-                                        d.labels[label.label[0].conceptPath] ? d.labels[label.label[0].conceptPath] : undefined,
-                                        d.labels[label.label[1].conceptPath] ? d.labels[label.label[1].conceptPath] : undefined
+                                        d.observations[label.label[0].conceptPath] ?
+                                            d.observations[label.label[0].conceptPath] : undefined,
+                                        d.observations[label.label[1].conceptPath] ?
+                                            d.observations[label.label[1].conceptPath] : undefined
                                     ];
                                 });
-                            vm.cs.groups[label.labelId] =
-                                vm.cs.dimensions[label.labelId].group();
+                            vm.cs.groups[label.labelId] = vm.cs.dimensions[label.labelId].group();
 
                             _chart = DcChartsService.getHeatMap(vm.cs.dimensions[label.labelId],
                                 vm.cs.groups[label.labelId], el, {
                                     xLab: label.label[0].name,
                                     yLab: label.label[1].name
                                 });
-
                             _chart.type = 'HEATMAP';
 
                         }
@@ -596,17 +603,21 @@ angular.module('transmartBaseUi')
                         // Both labels are numerical, create a scatter plot
                         vm.cs.dimensions[label.labelId] =
                             vm.cs.crossfilter.dimension(function (d) {
-                                return [d.labels[label.label[0].conceptPath] ? d.labels[label.label[0].conceptPath] : undefined,
-                                    d.labels[label.label[1].conceptPath] ? d.labels[label.label[1].conceptPath] : undefined];
+                                return [
+                                    d.observations[label.label[0].conceptPath] ?
+                                        d.observations[label.label[0].conceptPath] : undefined,
+                                    d.observations[label.label[1].conceptPath] ?
+                                        d.observations[label.label[1].conceptPath] : undefined
+                                ];
                             });
 
                         vm.cs.groups[label.labelId] =
                             vm.cs.dimensions[label.labelId].group();
 
                         _max = vm.cs.dimensions[label.label[0].labelId]
-                            .top(1)[0].labels[label.label[0].conceptPath];
+                            .top(1)[0].observations[label.label[0].conceptPath];
                         _min = vm.cs.dimensions[label.label[0].labelId]
-                            .bottom(1)[0].labels[label.label[0].conceptPath];
+                            .bottom(1)[0].observations[label.label[0].conceptPath];
 
                         _chart = DcChartsService.getScatterPlot(
                             vm.cs.dimensions[label.labelId],
@@ -643,7 +654,7 @@ angular.module('transmartBaseUi')
                         vm.cs.dimensions[label.labelId] =
                             vm.cs.crossfilter.dimension(function (d) {
                                 var lbl = _missingLabelId || undefined;
-                                return d.labels[label.conceptPath] === undefined ? lbl : d.labels[label.conceptPath];
+                                return d.observations[label.conceptPath] === undefined ? lbl : d.observations[label.conceptPath];
                             });
                         vm.cs.groups[label.labelId] =
                             vm.cs.dimensions[label.labelId].group();
@@ -687,8 +698,10 @@ angular.module('transmartBaseUi')
                         } else if (label.type === 'float') {
                             vm.cs.dimensions[label.labelId] =
                                 vm.cs.crossfilter.dimension(function (d) {
-                                return d.labels[label.conceptPath] ===
-                                    undefined ? undefined : d.labels[label.conceptPath].toFixed(label.precision === 0 ? 0 : label.precision);
+                                return d.observations[label.conceptPath] === undefined ?
+                                    undefined : d.observations[label.conceptPath].toFixed(
+                                    label.precision === 0 ? 0 : label.precision
+                                );
                             });
                             vm.cs.groups[label.labelId] =
                                 vm.cs.dimensions[label.labelId].group();

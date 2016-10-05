@@ -201,10 +201,9 @@ angular.module('transmartBaseUi')
 
         if (opt.min !== undefined && opt.max !== undefined) {
             _bp.y(d3.scale.linear().domain([opt.min - 0.20 * opt.max, opt.max * 1.20]));
-        } else {
-            _bp.elasticY(true);
         }
 
+        _bp.elasticY(true);
         return _bp;
     };
 
@@ -304,7 +303,7 @@ angular.module('transmartBaseUi')
             }
         });
         return items;
-    }
+    };
 
     /**
      * Render all

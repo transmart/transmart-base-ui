@@ -227,7 +227,7 @@ describe('CohortSelectionCtrl', function () {
             _subjects = [
                 {
                     subject: 1,
-                    labels: {
+                    observations: {
                         label1:'label1',
                         label2:'label2',
                         label3:'label3'
@@ -236,7 +236,7 @@ describe('CohortSelectionCtrl', function () {
                 },
                 {
                     subject: 2,
-                    labels: {
+                    observations: {
                         label1:'label1'
                     }
                 }
@@ -247,15 +247,16 @@ describe('CohortSelectionCtrl', function () {
 
         it('should remove label from subject labels', function () {
             var _res = ctrl.filterSubjectsByLabel(_subjects, _label);
-            expect(_res[0].labels['label1']).not.toBeDefined();
+            expect(_res[0].observations['label1']).not.toBeDefined();
         });
 
-        it('should not remove any subject labels if label does not exist in any subject labels', function () {
+        it('should not remove any subject observations if label does not exist in any subject observations',
+            function () {
             var _res = ctrl.filterSubjectsByLabel(_subjects, _labelNo);
-            expect(_res[0].labels['label1']).toBeDefined();
-            expect(_res[0].labels['label2']).toBeDefined();
-            expect(_res[0].labels['label3']).toBeDefined();
-            expect(_res[1].labels['label1']).toBeDefined();
+            expect(_res[0].observations['label1']).toBeDefined();
+            expect(_res[0].observations['label2']).toBeDefined();
+            expect(_res[0].observations['label3']).toBeDefined();
+            expect(_res[1].observations['label1']).toBeDefined();
         });
 
     });
