@@ -227,38 +227,36 @@ describe('CohortSelectionCtrl', function () {
             _subjects = [
                 {
                     subject: 1,
-                    labels: ['label1', 'label2', 'label3']
+                    observations: {
+                        label1:'label1',
+                        label2:'label2',
+                        label3:'label3'
+                    }
+
                 },
                 {
                     subject: 2,
-                    labels: ['label1']
+                    observations: {
+                        label1:'label1'
+                    }
                 }
             ];
-            _label = {labelId: 0};
-            _labelNo = {labelId: 99};
+            _label = {labelId: 0, conceptPath:'label1'};
+            _labelNo = {labelId: 99, conceptPath:'label99'};
         });
 
         it('should remove label from subject labels', function () {
             var _res = ctrl.filterSubjectsByLabel(_subjects, _label);
-            expect(_res[0].labels[0]).not.toContain('label1');
+            expect(_res[0].observations['label1']).not.toBeDefined();
         });
 
-        it('should not remove subject from subject array if subject still has labels', function () {
-            var _res = ctrl.filterSubjectsByLabel(_subjects, _label);
-            expect(_res[0].subject).toEqual(1)
-        });
-
-        it('should remove subject from subject array if subject has empty labels', function () {
-            var _subject2Tmp = _subjects[1],
-                _res = ctrl.filterSubjectsByLabel(_subjects, _label);
-            expect(_res).not.toContain(_subject2Tmp);
-        });
-
-        it('should not remove any subject labels nor subject if label does not exist in any subject labels', function () {
+        it('should not remove any subject observations if label does not exist in any subject observations',
+            function () {
             var _res = ctrl.filterSubjectsByLabel(_subjects, _labelNo);
-            expect(_res.length).toEqual(2);
-            expect(_res[0].labels.length).toEqual(3);
-            expect(_res[1].labels.length).toEqual(1);
+            expect(_res[0].observations['label1']).toBeDefined();
+            expect(_res[0].observations['label2']).toBeDefined();
+            expect(_res[0].observations['label3']).toBeDefined();
+            expect(_res[1].observations['label1']).toBeDefined();
         });
 
     });
@@ -467,7 +465,7 @@ describe('CohortSelectionCtrl', function () {
             };
             var label = {
                 label: 'a_node_fullname'
-            }
+            };
             ctrl.cs.nodes.push(node);
             expect(ctrl.cs.nodes.length).toBe(1);
             var result = ctrl.removeNode(label);
