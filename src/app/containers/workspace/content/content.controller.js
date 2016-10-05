@@ -18,7 +18,9 @@ angular.module('transmartBaseUi')
                 vm.tabs = [
                     {title: 'Cohort Selection', active: true},
                     {title: 'Cohort Grid', active: false},
-                    {title: 'Saved Cohorts', active: false}
+                    {title: 'Saved Cohorts', active: false},
+                    {title: 'Data Export', active: false},
+                    {title: 'Data Export Jobs', active: false}
                 ];
 
                 /**
@@ -46,6 +48,12 @@ angular.module('transmartBaseUi')
                             break;
                         case 'cohortView':
                             vm.activateTab(vm.tabs[2].title, 'cohortView');
+                            break;
+                        case 'dataExport':
+                            vm.activateTab(vm.tabs[3].title, 'dataExport');
+                            break;
+                        case 'dataExportJobs':
+                            vm.activateTab(vm.tabs[4].title, 'dataExportJobs');
                             break;
                         default:
                             vm.activateTab(vm.tabs[0].title, 'cohortSelection');

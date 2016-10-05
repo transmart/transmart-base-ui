@@ -1,6 +1,13 @@
 'use strict';
 
 angular.module('transmartBaseUi')
+    /**
+     * The cohort-selection controller, where cohort-chart
+     * creation, update and removal are managed
+     * @memberof transmartBaseUi
+     * @ngdoc controller
+     * @name CohortSelectionCtrl
+     */
     .controller('CohortSelectionCtrl',
         ['$q', '$element', '$scope', 'CohortSelectionService', 'StudyListService', 'DcChartsService',
             'AlertService', '$uibModal',
