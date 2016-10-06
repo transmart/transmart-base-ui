@@ -14,25 +14,7 @@ angular.module('transmartBaseUi')
                 cohort: '=',
                 headers: '='
             },
-            controller: ['$scope', '$timeout', 'CohortGridService', function ($scope, $timeout, CohortGridService) {
-
-                var ctrl = this;
-
-                ctrl.gridOptions = CohortGridService.options;
-                ctrl.style_modifiers = {'height': CohortGridService.HEIGHT};
-
-                $scope.$watchCollection('headers', function (newValue, oldValue) {
-                    if (!_.isEqual(newValue, oldValue)) {
-                        CohortGridService.updateCohortGridView($scope.cohort, newValue);
-                    }
-                });
-
-                $scope.$watchCollection('cohort', function (newValue, oldValue) {
-                    if (!_.isEqual(newValue, oldValue)) {
-                        CohortGridService.updateCohortGridView(newValue, $scope.headers);
-                    }
-                });
-            }],
+            controller: 'CohortGridCtrl',
             controllerAs: 'ctrl'
         };
     });

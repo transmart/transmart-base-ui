@@ -1,3 +1,19 @@
+<div class="container">
+    <form>
+        <label class="checkbox-inline">
+            <input type="checkbox" ng-model="ctrl.allChecked" ng-change="ctrl.cohortCheckChange(undefined)" value="">
+            All
+        </label>
+
+        <label class="checkbox-inline" ng-repeat="box in ctrl.boxes" ng-if="box.ctrl.cs.selectedSubjects.length>0">
+            <input type="checkbox" ng-model="box.checked"
+                   ng-change="ctrl.cohortCheckChange(box)" value="">
+            {{box.ctrl.boxName}}
+        </label>
+    </form>
+    <br>
+</div>
+
 <div class="ts-cohort-grid-container">
     <div class="ts-cohort-grid ng-style: ctrl.style_modifiers" ui-grid="ctrl.gridOptions"
          ui-grid-pagination ui-grid-selection ui-grid-exporter ui-grid-resize-columns ui-grid-selection ui-grid-pinning>

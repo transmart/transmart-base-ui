@@ -9,6 +9,7 @@ angular.module('transmartBaseUi')
                 var vm = this;
                 vm.isRecordingHistory = true;
                 vm.boxId = CohortSelectionService.currentBoxId;
+                vm.boxName = 'Cohort-' + (+$scope.index+1);
                 vm.boxElm = $element;
                 vm.boxes = CohortSelectionService.boxes;
                 vm.domElement = $element;
@@ -958,6 +959,14 @@ angular.module('transmartBaseUi')
                     vm.boxSize = newVal;
                     if (Math.abs(newVal - oldVal) > 3) {
                         vm.resize(true);
+                    }
+                });
+
+                $scope.$watch(function () {
+                    return $scope.index;
+                }, function (newVal, oldVal) {
+                    if(!_.isEqual(newVal, oldVal)) {
+                        vm.boxName = 'Cohort-' + (+newVal+1);
                     }
                 });
 

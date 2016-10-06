@@ -84,7 +84,7 @@ describe('CohortGridService', function () {
 
         it('should format data to table format', function () {
             expect(_formatted).toEqual([
-                { fields: { id: 1111, a: 'aa', b: 'bb', c: 'cc', 'cohort-panel': 'cohort-1' } }
+                { fields: { 'cohort-panel': undefined, id: 1111, a: 'aa', b: 'bb', c: 'cc' } }
             ]);
         });
     });
