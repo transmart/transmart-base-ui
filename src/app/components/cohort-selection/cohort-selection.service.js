@@ -27,7 +27,9 @@ angular.module('transmartBaseUi')
                 boxId = UtilityService.guid();
                 service.currentBoxId = boxId;
                 var obj = {
-                    boxId: boxId
+                    boxId: boxId,
+                    //default ng-model value for the checkbox in cohort grid
+                    checked: true
                 };
                 service.boxes.push(obj);
 

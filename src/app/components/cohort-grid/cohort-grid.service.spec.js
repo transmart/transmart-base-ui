@@ -19,8 +19,8 @@ describe('CohortGridService', function () {
         expect(CohortGridService.options.enableSelectAll).toEqual(true);
         expect(CohortGridService.options.exporterCsvFilename).toEqual('cohort.csv');
         expect(CohortGridService.options.exporterMenuPdf).toEqual(false);
-        expect(CohortGridService.options.paginationPageSizes).toEqual([25, 50, 75]);
-        expect(CohortGridService.options.paginationPageSize).toEqual(25);
+        expect(CohortGridService.options.paginationPageSizes).toEqual([50, 75, 100]);
+        expect(CohortGridService.options.paginationPageSize).toEqual(50);
         expect(CohortGridService.options.columnDefs).toEqual([]);
         expect(CohortGridService.options.data).toEqual([]);
         expect(CohortGridService.options.enableFiltering).toEqual(false);
@@ -34,16 +34,28 @@ describe('CohortGridService', function () {
         });
 
         it('should define column header', function () {
-            expect(_colDefs[0]).toEqual({field: "fields['id']", width: 200, displayName: 'id'});
+            expect(_colDefs[0]).toEqual({
+                field: "fields['cohort-panel']",
+                width: 0.6*200,
+                displayName: 'cohort-panel',
+                pinnedLeft: true
+            });
+
+            expect(_colDefs[1]).toEqual({
+                field: "fields['id']",
+                width: 0.5*200,
+                displayName: 'id',
+                pinnedLeft: true
+            });
         });
 
         it('should define columns from given labels', function () {
             expect(_colDefs).toEqual([
-                {field: "fields['id']", width: 200, displayName: 'id'},
+                {field: "fields['cohort-panel']", width: 0.6*200, displayName: 'cohort-panel', pinnedLeft: true},
+                {field: "fields['id']", width: 0.5*200, displayName: 'id', pinnedLeft: true},
                 {field: "fields['a']", width: 200, displayName: 'a'},
                 {field: "fields['b']", width: 200, displayName: 'b'},
-                {field: "fields['c']", width: 200, displayName: 'c'},
-                {field: "fields['cohort-panel']", width: 200, displayName: 'cohort-panel'}
+                {field: "fields['c']", width: 200, displayName: 'c'}
             ]);
         });
     });
@@ -72,7 +84,7 @@ describe('CohortGridService', function () {
 
         it('should format data to table format', function () {
             expect(_formatted).toEqual([
-                { fields: { id: 1111, a: 'aa', b: 'bb', c: 'cc', 'cohort-panel': 'cohort-1' } }
+                { fields: { 'cohort-panel': undefined, id: 1111, a: 'aa', b: 'bb', c: 'cc' } }
             ]);
         });
     });

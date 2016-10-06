@@ -25,11 +25,7 @@
             <uib-tab-heading>
                 <span>{{vm.tabs[1].title}}</span>
             </uib-tab-heading>
-            <cohort-grid cohort="vm.selectedSubjects" headers="vm.labels" ng-show="vm.labels.length > 0"></cohort-grid>
-            <!--Cohort grid no data message-->
-            <div class="form-group has-warning" ng-show="vm.labels.length <= 0">
-                <span class="help-block">No cohort selected.</span>
-            </div>
+            <cohort-grid cohort="vm.selectedSubjects" headers="vm.labels"></cohort-grid>
         </uib-tab>
 
         <!----------- Tab: Saved Cohorts ----------->
