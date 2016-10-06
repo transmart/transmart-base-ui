@@ -19,8 +19,8 @@ describe('CohortGridService', function () {
         expect(CohortGridService.options.enableSelectAll).toEqual(true);
         expect(CohortGridService.options.exporterCsvFilename).toEqual('cohort.csv');
         expect(CohortGridService.options.exporterMenuPdf).toEqual(false);
-        expect(CohortGridService.options.paginationPageSizes).toEqual([25, 50, 75]);
-        expect(CohortGridService.options.paginationPageSize).toEqual(25);
+        expect(CohortGridService.options.paginationPageSizes).toEqual([50, 75, 100]);
+        expect(CohortGridService.options.paginationPageSize).toEqual(50);
         expect(CohortGridService.options.columnDefs).toEqual([]);
         expect(CohortGridService.options.data).toEqual([]);
         expect(CohortGridService.options.enableFiltering).toEqual(false);
