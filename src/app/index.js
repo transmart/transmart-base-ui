@@ -29,7 +29,8 @@ angular.module('transmartBaseUi', [
         'transmartBaseUiConstants',
         'transmartBaseUiGitConstants',
         'smartRApp',
-        'tmEndpoints'
+        'tmEndpoints',
+        'toastr'
     ])
     .config(['$stateProvider',  '$urlRouterProvider', 'cfpLoadingBarProvider', '$locationProvider',
         '$uibTooltipProvider', '$compileProvider',
