@@ -5,7 +5,7 @@
  * @ngdoc factory
  * @name AlertService
  */
-angular.module('tmEndpoints').factory('AlertService', ['$interval', function ($interval) {
+angular.module('tmEndpoints').factory('AlertService', ['$interval', 'toastr', function ($interval, toastr) {
     var service = {};
     var alerts = [];
     service.ids = 0;
@@ -45,6 +45,15 @@ angular.module('tmEndpoints').factory('AlertService', ['$interval', function ($i
     service.reset = function () {
         alerts = [];
     };
+
+    service.showToastrAlert = function (type, message) {
+        if(type === 'success') {
+            toastr.success(message);
+        }
+        else if(type === 'danger') {
+            toastr.error(message);
+        }
+    }
 
     return service;
 }]);

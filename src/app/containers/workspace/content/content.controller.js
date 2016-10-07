@@ -21,10 +21,6 @@ angular.module('transmartBaseUi')
                     {title: 'Saved Cohorts', active: false}
                 ];
 
-                // Alerts
-                vm.close = AlertService.remove;
-                vm.alerts = AlertService.get();
-
                 /**
                  * Activate tab
                  * @param tabTitle
