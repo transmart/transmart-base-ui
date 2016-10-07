@@ -725,7 +725,10 @@ angular.module('transmartBaseUi')
                         _filterChart(_chart, label.filters);
                     }
 
-                    //this listener function will be invoked after a filter is applied, added or removed.
+                    /*
+                     * this listener function will be invoked after a filter is applied, added or removed.
+                     * filtered.monitor is the event emitted during filtering
+                     */
                     _chart.on('filtered', _handleChartFilteredEvent);
 
                     //this listener function will be invoked after transitions after redraw and render.
@@ -747,7 +750,10 @@ angular.module('transmartBaseUi')
                 }
 
                 function _handleChartRenderletEvent(chart, filter) {
-                    DcChartsService.emphasizeChartLegend(chart);
+                    if(chart.type === 'PIECHART') {
+                        DcChartsService.emphasizeChartLegend(chart);
+                    }
+
                 }
 
                 /**
