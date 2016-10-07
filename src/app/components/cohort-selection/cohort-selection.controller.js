@@ -348,7 +348,7 @@ angular.module('transmartBaseUi')
                             chart.filter(_f);
                         });
                         vm.updateDimensions();
-                        dc.renderAll();
+                        vm.cs.charts.length ? dc.redrawAll() : dc.renderAll();
                     }
                 }
 
