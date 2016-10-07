@@ -12,7 +12,7 @@
                 uib-tooltip="Load cohorts"
                 tooltip-trigger="mouseenter"
                 tooltip-placement="top"
-                popupDelay="1000"><span class="glyphicon glyphicon-cloud-download"></span></button>
+                popupDelay="1000" disabled><span class="glyphicon glyphicon-cloud-download"></span></button>
         <button type="button"
                 class="btn btn-secondary"
                 ng-click="cohortSelectionCtrl.resetCharts()"
@@ -44,7 +44,6 @@
                 tooltip-trigger="mouseenter"
                 tooltip-placement="top"
                 popupDelay="1000"><span class="glyphicon glyphicon-duplicate"></span></button>
-
 
         <button ng-if="cohortSelectionCtrl.boxes.length>1" type="button"
                 class="btn btn-secondary"
