@@ -73,11 +73,6 @@ describe('ContentCtrl', function () {
             expect(ctrl.tabs[2].active).toBe(false);
         });
 
-        it('should define alert functions', function () {
-            expect(ctrl.close).toBeDefined();
-            expect(ctrl.alerts).toBeDefined();
-        });
-
         it('should define activateTab function', function () {
             expect(ctrl.activateTab).toBeDefined();
         })
