@@ -348,7 +348,7 @@ angular.module('transmartBaseUi')
                             chart.filter(_f);
                         });
                         vm.updateDimensions();
-                        vm.cs.charts.length ? dc.redrawAll() : dc.renderAll();
+                        dc.redrawAll();
                     }
                 }
 
@@ -717,6 +717,8 @@ angular.module('transmartBaseUi')
                     _chart.tsLabel = label;//update tsLabel
                     _chart.el = el;//update html obj
 
+                    _chart.render(); // render chart here,
+
                     /*
                      * when a sub-categorical label is dropped and the corresponding (parent) pie-chart is created,
                      * apply the filter of the sub-category on the chart
@@ -733,8 +735,6 @@ angular.module('transmartBaseUi')
 
                     //this listener function will be invoked after transitions after redraw and render.
                     _chart.on('renderlet', _handleChartRenderletEvent);
-
-                    _chart.render(); // render chart here
 
                     this.cs.charts.push(_chart);
 
