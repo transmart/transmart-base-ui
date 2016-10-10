@@ -9,7 +9,8 @@ angular.module('transmartBaseUi')
                 var vm = this;
                 vm.isRecordingHistory = true;
                 vm.boxId = CohortSelectionService.currentBoxId;
-                vm.boxName = 'Cohort-' + (+$scope.index+1);
+                vm.boxIndex = (+$scope.index+1);
+                vm.boxName = 'Cohort-' + vm.boxIndex;
                 vm.boxElm = $element;
                 vm.boxes = CohortSelectionService.boxes;
                 vm.domElement = $element;
@@ -972,7 +973,8 @@ angular.module('transmartBaseUi')
                     return $scope.index;
                 }, function (newVal, oldVal) {
                     if(!_.isEqual(newVal, oldVal)) {
-                        vm.boxName = 'Cohort-' + (+newVal+1);
+                        vm.boxIndex = (+newVal+1);
+                        vm.boxName = 'Cohort-' + vm.boxIndex;
                     }
                 });
 
