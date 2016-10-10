@@ -30,13 +30,13 @@ angular.module('transmartBaseUi')
                     /*
                      * 1. copy and apply history of one workspace to another
                      */
-                    // box.ctrl.history = _.cloneDeep(box.duplication.ctrl.history);
+                    // box.ctrl.history = _.clone(box.duplication.ctrl.history);
                     // box.ctrl.applyHistory();
 
                     /*
                      * 2. copy and apply nodes of one workspace to another
                      */
-                    box.ctrl.applyNodes(box.duplication.ctrl.cs.nodes);
+                    box.ctrl.applyDuplication(box.duplication);
                 }
 
                 scope.$watch('index', function (newVal, oldVal) {
