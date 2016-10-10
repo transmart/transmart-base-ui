@@ -331,7 +331,7 @@ angular.module('transmartBaseUi')
                 var _findChartByConceptPath = function (path, charts) {
                     var foundChart = null;
                     charts.forEach(function (_chart) {
-                        if (_chart.tsLabel.conceptPath == path) {
+                        if (_chart.tsLabel.conceptPath === path) {
                             foundChart = _chart;
                         }
                     });

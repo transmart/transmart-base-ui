@@ -71,7 +71,7 @@ angular.module('transmartBaseUi').factory('CohortGridService', ['$timeout', 'Coh
             var stringifyIndices = function (boxes) {
                 var result = '';
                 boxes.forEach(function (box) {
-                    result += box.ctrl.boxIndex + ',';
+                    result += 'cohort-'+box.ctrl.boxIndex + ',';
                 });
                 return result.substr(0,result.length-1);
             }
