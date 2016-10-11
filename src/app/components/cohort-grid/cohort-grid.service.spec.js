@@ -72,19 +72,20 @@ describe('CohortGridService', function () {
             ctrl: {
                 cs: {
                     labels: _labels
-                }
+                },
+                boxIndex: 1
             }
         };
-        var _subjects = [{id: 1111, observations: {x:'aa', y:'bb', z:'cc'}, box: box}];
+        var _subjects = [{id: 1111, observations: {x:'aa', y:'bb', z:'cc'}, boxes: [box]}];
 
 
         beforeEach(function () {
-            _formatted = CohortGridService.convertToTable(_subjects);
+            _formatted = CohortGridService.convertToTable(_subjects, _labels);
         });
 
         it('should format data to table format', function () {
             expect(_formatted).toEqual([
-                { fields: { 'cohort-panel': undefined, id: 1111, a: 'aa', b: 'bb', c: 'cc' } }
+                { fields: { 'cohort-panel': 'cohort-1', id: 1111, a: 'aa', b: 'bb', c: 'cc' } }
             ]);
         });
     });

@@ -134,6 +134,7 @@ describe('CohortSelectionCtrl', function () {
         it('should not invoke addNodeToActiveCohortSelection upon node-dropping when the pie-chart exists', function () {
             chart.tsLabel = {};
             chart.tsLabel.label = chartName;
+            chart.tsLabel.conceptPath = chartName;
             chart.filters = function () {
                 return [];
             };
@@ -228,21 +229,21 @@ describe('CohortSelectionCtrl', function () {
                 {
                     subject: 1,
                     observations: {
-                        label1:'label1',
-                        label2:'label2',
-                        label3:'label3'
+                        label1: 'label1',
+                        label2: 'label2',
+                        label3: 'label3'
                     }
 
                 },
                 {
                     subject: 2,
                     observations: {
-                        label1:'label1'
+                        label1: 'label1'
                     }
                 }
             ];
-            _label = {labelId: 0, conceptPath:'label1'};
-            _labelNo = {labelId: 99, conceptPath:'label99'};
+            _label = {labelId: 0, conceptPath: 'label1'};
+            _labelNo = {labelId: 99, conceptPath: 'label99'};
         });
 
         it('should remove label from subject labels', function () {
@@ -252,12 +253,12 @@ describe('CohortSelectionCtrl', function () {
 
         it('should not remove any subject observations if label does not exist in any subject observations',
             function () {
-            var _res = ctrl.filterSubjectsByLabel(_subjects, _labelNo);
-            expect(_res[0].observations['label1']).toBeDefined();
-            expect(_res[0].observations['label2']).toBeDefined();
-            expect(_res[0].observations['label3']).toBeDefined();
-            expect(_res[1].observations['label1']).toBeDefined();
-        });
+                var _res = ctrl.filterSubjectsByLabel(_subjects, _labelNo);
+                expect(_res[0].observations['label1']).toBeDefined();
+                expect(_res[0].observations['label2']).toBeDefined();
+                expect(_res[0].observations['label3']).toBeDefined();
+                expect(_res[1].observations['label1']).toBeDefined();
+            });
 
     });
 
@@ -369,15 +370,17 @@ describe('CohortSelectionCtrl', function () {
 
     describe('resetCharts', function () {
         var chart1, chart2;
-        beforeEach(function() {
+        beforeEach(function () {
             ctrl.cs.charts = [];
             chart1 = {
                 id: 'c1',
-                filter: function () {}
+                filter: function () {
+                }
             }
             chart2 = {
                 id: 'c2',
-                filter: function () {}
+                filter: function () {
+                }
             }
             ctrl.cs.charts.push(chart1);
             ctrl.cs.charts.push(chart2);
@@ -402,26 +405,42 @@ describe('CohortSelectionCtrl', function () {
         });
     });
 
-    describe('applyNodes', function () {
-        var nodes = [];
-        beforeEach(function () {
-            var node1 = {id: 'node1'};
-            var node2 = {id: 'node2'};
-            nodes.push(node1);
-            nodes.push(node2);
-        });
+    describe('applyDuplication', function () {
+        var chart = {
+            tsLabel: {
+                conceptPath: 'concept/path'
+            }
+        }
+        var node = {
+            restObj: {
+                fulllName: 'concept/path'
+            }
+        }
+        var dupBox = {
+            ctrl: {
+                cs: {
+                    nodes: [],
+                    charts: []
+                }
+            }
+        }
 
-        it('should iterate over nodes', function () {
-            spyOn(nodes, 'forEach');
-            ctrl.applyNodes(nodes);
-            expect(nodes.forEach).toHaveBeenCalled();
+        it('should call for each node', function () {
+            spyOn(dupBox.ctrl.cs.nodes, 'forEach');
+
+            ctrl.applyDuplication(dupBox);
+            expect(dupBox.ctrl.cs.nodes.forEach).toHaveBeenCalled();
         });
 
         it('should call addNodeToActiveCohortSelection', function () {
+            dupBox.ctrl.cs.nodes.push(node);
             spyOn(ctrl, 'addNodeToActiveCohortSelection');
-            ctrl.applyNodes(nodes);
+
+            ctrl.applyDuplication(dupBox);
             expect(ctrl.addNodeToActiveCohortSelection).toHaveBeenCalled();
         });
+
+
     });
 
     describe('addNode', function () {

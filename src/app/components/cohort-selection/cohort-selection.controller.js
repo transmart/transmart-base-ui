@@ -9,7 +9,8 @@ angular.module('transmartBaseUi')
                 var vm = this;
                 vm.isRecordingHistory = true;
                 vm.boxId = CohortSelectionService.currentBoxId;
-                vm.boxName = 'Cohort-' + (+$scope.index+1);
+                vm.boxIndex = (+$scope.index + 1);
+                vm.boxName = 'Cohort-' + vm.boxIndex;
                 vm.boxElm = $element;
                 vm.boxes = CohortSelectionService.boxes;
                 vm.domElement = $element;
@@ -299,7 +300,8 @@ angular.module('transmartBaseUi')
                                 resolved: false,
                                 filters: filters,
                                 boxId: vm.boxId,
-                                box: CohortSelectionService.getBox(vm.boxId)
+                                box: CohortSelectionService.getBox(vm.boxId),
+                                node: node
                             };
                             vm.cs.labels.push(label);
 
@@ -321,15 +323,15 @@ angular.module('transmartBaseUi')
 
                 /**
                  * @memberof CohortSelectionCtrl
-                 * @param {String} chartName -
-                 *      The chart name as the search word for the chart with tsLabel with the same string
+                 * @param {String} path - conceptPath
+                 * @param {Array} charts - the array of charts to be searched
                  * @returns {*} - The found chart in CohortSelectionCtrl.cs.charts,
                  *      with matching name chartName, if not found, return null
                  */
-                var _findChartByName = function (chartName) {
+                var _findChartByConceptPath = function (path, charts) {
                     var foundChart = null;
-                    vm.cs.charts.forEach(function (_chart) {
-                        if (_chart.tsLabel.label == chartName) {
+                    charts.forEach(function (_chart) {
+                        if (_chart.tsLabel.conceptPath === path) {
                             foundChart = _chart;
                         }
                     });
@@ -699,11 +701,11 @@ angular.module('transmartBaseUi')
                         } else if (label.type === 'float') {
                             vm.cs.dimensions[label.labelId] =
                                 vm.cs.crossfilter.dimension(function (d) {
-                                return d.observations[label.conceptPath] === undefined ?
-                                    undefined : d.observations[label.conceptPath].toFixed(
-                                    label.precision === 0 ? 0 : label.precision
-                                );
-                            });
+                                    return d.observations[label.conceptPath] === undefined ?
+                                        undefined : d.observations[label.conceptPath].toFixed(
+                                        label.precision === 0 ? 0 : label.precision
+                                    );
+                                });
                             vm.cs.groups[label.labelId] =
                                 vm.cs.dimensions[label.labelId].group();
                             _chart = DcChartsService.getBarChart(vm.cs.dimensions[label.labelId],
@@ -750,7 +752,7 @@ angular.module('transmartBaseUi')
                 }
 
                 function _handleChartRenderletEvent(chart, filter) {
-                    if(chart.type === 'PIECHART') {
+                    if (chart.type === 'PIECHART') {
                         DcChartsService.emphasizeChartLegend(chart);
                     }
 
@@ -780,7 +782,7 @@ angular.module('transmartBaseUi')
 
                 /**
                  * Handle node drop from study-accordion to cohort-selection panel.
-                 * Remark: node.restObj.fullName is equivalent to chart.tsLabel.label
+                 * Remark: node.restObj.fullName is equivalent to chart.tsLabel.conceptPath
                  * @memberof CohortSelectionCtrl
                  * @param event
                  * @param info
@@ -790,7 +792,7 @@ angular.module('transmartBaseUi')
                     var promise = undefined;
 
                     if (node.type === 'CATEGORICAL_OPTION') { //leaf node for pie chart
-                        var chart = _findChartByName(node.parent.restObj.fullName);
+                        var chart = _findChartByConceptPath(node.parent.restObj.fullName, vm.cs.charts);
                         if (chart == null) {
                             var filters = [{
                                 label: node.parent.restObj.fullName,
@@ -939,23 +941,29 @@ angular.module('transmartBaseUi')
                         }
                     });
 
-                    if(removed.length > 0) {
-                        return true;
-                    }
-                    else {
-                        return false;
-                    }
+                    return removed.length ? true: false;
                 };
 
+
                 /**
-                 * Automatically 'drop' the given nodes to this cohort-selection,
-                 * for the duplication of cohort-selection
-                 * @param nodes
+                 * Apply the duplication of an existing cohort-selection
+                 * @param - The box that needs to be duplicated
                  * @memberof CohortSelectionCtrl
                  */
-                vm.applyNodes = function (nodes) {
+                vm.applyDuplication = function (dupBox) {
+                    var nodes = dupBox.ctrl.cs.nodes;
                     nodes.forEach(function (node) {
-                        vm.addNodeToActiveCohortSelection(node, []);
+                        var filters = [];
+                        var charts = dupBox.ctrl.cs.charts;
+                        var conceptPath = node.restObj.fullName;
+                        var chart = _findChartByConceptPath(conceptPath, charts);
+                        if (chart && chart.filters()) {
+                            filters.push({
+                                label: conceptPath,
+                                filterWords: chart.filters()
+                            });
+                        }
+                        vm.addNodeToActiveCohortSelection(node, filters);
                     });
                 };
 
@@ -971,8 +979,9 @@ angular.module('transmartBaseUi')
                 $scope.$watch(function () {
                     return $scope.index;
                 }, function (newVal, oldVal) {
-                    if(!_.isEqual(newVal, oldVal)) {
-                        vm.boxName = 'Cohort-' + (+newVal+1);
+                    if (!_.isEqual(newVal, oldVal)) {
+                        vm.boxIndex = (+newVal + 1);
+                        vm.boxName = 'Cohort-' + vm.boxIndex;
                     }
                 });
 

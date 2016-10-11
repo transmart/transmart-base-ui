@@ -60,32 +60,40 @@ angular.module('transmartBaseUi').factory('CohortGridService', ['$timeout', 'Coh
             return columnDefs;
         };
 
-
         /**
          * Format data and labels for the gridview's data
          * @memberof CohortGridService
-         * @param subjects
+         * @param subjects - the selected subjects from cohort panels
+         * @param labels - the dragged-in nodes/labels by the user
          * @returns {Array}
          */
-        service.convertToTable = function (subjects) {
+        service.convertToTable = function (subjects, labels) {
+            var stringifyIndices = function (boxes) {
+                var result = '';
+                boxes.forEach(function (box) {
+                    result += 'cohort-'+box.ctrl.boxIndex + ',';
+                });
+                return result.substr(0,result.length-1);
+            }
+
             var formatted = [];
             subjects.forEach(function (subject) {
                 var cleanSubject = {};
-                cleanSubject['cohort-panel'] = subject.box.ctrl.boxName;
+                cleanSubject['cohort-panel'] = stringifyIndices(subject.boxes);
                 cleanSubject.id = subject.id;
-                var labels = subject.box.ctrl.cs.labels;
                 labels.forEach(function (label) {
                     cleanSubject[label.name] = subject.observations[label.conceptPath];
                 });
                 formatted.push({'fields': cleanSubject});
             });
+
             return formatted;
         };
 
         service.updateCohortGridView = function (subjects, labels) {
             $timeout(function () { // this is necessary for ui-grid to notice the change at all
                 if (subjects) {
-                    service.options.data = service.convertToTable(subjects);
+                    service.options.data = service.convertToTable(subjects, labels);
                     service.options.columnDefs = service.prepareColumnDefs(labels);
                 }
             });
