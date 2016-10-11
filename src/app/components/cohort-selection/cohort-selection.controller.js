@@ -100,29 +100,28 @@ angular.module('transmartBaseUi')
                  * @memberof CohortSelectionCtrl
                  */
                 vm.resize = function (reDistribute) {
-                    var elId = '#' + vm.mainContainerId;
                     var labels = vm.cs.labels;
                     if (labels.length > 0) {
+                        var elId = '#' + vm.mainContainerId;
                         // Get width of the full gridster grid
                         var _gWidth = angular.element(elId).width();
-
                         // Calculate the number of columns in the grid according to full gridster
                         // grid size and the base square size. Adjust by -1 if number of columns
                         // is not pair.
                         var _gCols = Math.floor(_gWidth / vm.gridsterConfig.G_BASE_WIDTH);
                         vm.gridsterOpts.columns = _gCols;
 
-                        // For each label create a gridster item
                         labels.forEach(function (label, index) {
-                            if (!label.sizeX || reDistribute) {
+                            if(!label.sizeX || reDistribute) {
                                 label.sizeX = vm.gridsterConfig.G_ITEM_SPAN_X;
                                 label.sizeY = vm.gridsterConfig.G_ITEM_SPAN_Y;
-                                // Spread items left to right
-                                label.col = (index * label.sizeX) % _gCols;
-                                // And top to bottom
-                                label.row = Math.floor((index * label.sizeX) / _gCols) * label.sizeY;
                             }
+                            // Spread items left to right
+                            label.col = (index * label.sizeX) % _gCols;
+                            // And top to bottom
+                            label.row = Math.floor((index * label.sizeX) / _gCols) * label.sizeY;
                         });
+
                     }
 
                     return labels;
@@ -362,51 +361,55 @@ angular.module('transmartBaseUi')
                  * @returns {*}
                  */
                 vm.addNodeToActiveCohortSelection = function (node, filters) {
-                    var _filter, _deferred = $q.defer();
+                    if(vm.cs.nodes.indexOf(node) == -1) {
+                        var _filter, _deferred = $q.defer();
 
-                    var _getFilter = function (label, filters) {
-                        return _.find(filters, {label: label});
-                    };
+                        var _getFilter = function (label, filters) {
+                            return _.find(filters, {label: label});
+                        };
 
-                    // Get all observations under the selected concept
-                    node.restObj.one('observations').get().then(function (observations) {
-                        vm.addNode(node);
-                        observations = observations._embedded.observations;
+                        // Get all observations under the selected concept
+                        node.restObj.one('observations').get().then(function (observations) {
+                            vm.addNode(node);
+                            observations = observations._embedded.observations;
 
-                        observations.forEach(function (obs) {
-                            if (obs.value !== null) {
+                            observations.forEach(function (obs) {
+                                if (obs.value !== null) {
 
-                                if (filters) {
-                                    _filter = _getFilter(obs.label, filters);
+                                    if (filters) {
+                                        _filter = _getFilter(obs.label, filters);
+                                    }
+
+                                    // Add the concept to the list of chart labels
+                                    var _newLabel = _addLabel(obs, node, _filter);
+
+                                    // Check if the subject of the observation is already present
+                                    var foundSubject = _.find(vm.cs.subjects,
+                                        {id: obs._embedded.subject.id});
+
+                                    if (foundSubject) {
+                                        foundSubject.observations[_newLabel.conceptPath] = obs.value;
+                                    } else {
+                                        obs._embedded.subject.observations = {};
+                                        obs._embedded.subject.observations[_newLabel.conceptPath] = obs.value;
+                                        vm.cs.subjects.push(obs._embedded.subject);
+                                        vm.cs.crossfilter.add([obs._embedded.subject]);
+                                    }
                                 }
-
-                                // Add the concept to the list of chart labels
-                                var _newLabel = _addLabel(obs, node, _filter);
-
-                                // Check if the subject of the observation is already present
-                                var foundSubject = _.find(vm.cs.subjects,
-                                    {id: obs._embedded.subject.id});
-
-                                if (foundSubject) {
-                                    foundSubject.observations[_newLabel.conceptPath] = obs.value;
-                                } else {
-                                    obs._embedded.subject.observations = {};
-                                    obs._embedded.subject.observations[_newLabel.conceptPath] = obs.value;
-                                    vm.cs.subjects.push(obs._embedded.subject);
-                                    vm.cs.crossfilter.add([obs._embedded.subject]);
-                                }
-                            }
+                            });
+                            // Notify the applicable controller that the chart directive instances
+                            // can be created
+                            vm.resize(false);
+                            vm.updateDimensions();
+                            _deferred.resolve();
+                        }, function (err) {
+                            _deferred.reject('Cannot get data from the end-point.' + err);
                         });
-                        // Notify the applicable controller that the chart directive instances
-                        // can be created
-                        vm.resize(false);
-                        vm.updateDimensions();
-                        _deferred.resolve();
-                    }, function (err) {
-                        _deferred.reject('Cannot get data from the end-point.' + err);
-                    });
 
-                    return _deferred.promise;
+                        return _deferred.promise;
+                    }
+
+                    return undefined;
                 };
 
 
@@ -941,7 +944,7 @@ angular.module('transmartBaseUi')
                         }
                     });
 
-                    return removed.length ? true: false;
+                    return removed.length ? true : false;
                 };
 
 
