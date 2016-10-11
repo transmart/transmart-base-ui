@@ -76,6 +76,10 @@ angular.module('transmartBaseUi', [
 
         }])
 
+    .controller('TransmartBaseUiCtrl', [function () {
+        console.log('transmart base ui control');
+    }])
+
     .run(['$rootScope', '$location', '$cookieStore', '$http', 'EndpointService',
         function ($rootScope, $location, $cookieStore, $http, EndpointService) {
 

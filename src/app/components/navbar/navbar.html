@@ -5,9 +5,8 @@
         </div>
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-6">
             <ul class="nav navbar-nav">
-                <li><a ui-sref="home">Home</a></li>
+                <li><a ui-sref="home"></a></li>
                 <li ui-sref-active-eq="active"><a ui-sref="workspace">Workspace &nbsp;</a></li>
-                <li ui-sref-active-eq="active"><a ui-sref="settings.connections">Settings</a></li>
                 <li ui-sref-active-eq="active" class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">SmartR <span class="caret"></span></a>
                     <ul class="dropdown-menu">
@@ -21,6 +20,7 @@
             </ul>
 
             <ul class="nav navbar-nav navbar-right">
+                <li ui-sref-active-eq="active"><a ui-sref="settings.connections"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span> Settings</a></li>
                 <li ui-sref-active-eq="active"><a ui-sref="help"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span>
                     Help</a></li>
             </ul>

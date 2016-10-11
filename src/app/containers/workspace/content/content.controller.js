@@ -7,9 +7,8 @@ angular.module('transmartBaseUi')
                 var vm = this;
                 vm.selectedSubjects = [];
                 vm.labels = [];
-                if (CohortSelectionService.boxes.length == 0) {
-                    CohortSelectionService.addBox();
-                }
+                CohortSelectionService.boxes = [];
+                CohortSelectionService.addBox();
 
                 vm.boxes = CohortSelectionService.boxes;
                 vm.el = $element;

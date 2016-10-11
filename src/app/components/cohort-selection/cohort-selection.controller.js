@@ -6,7 +6,7 @@ angular.module('transmartBaseUi')
             'AlertService', '$uibModal',
             function ($q, $element, $scope, CohortSelectionService, StudyListService, DcChartsService,
                       AlertService, $uibModal) {
-                var vm = this;
+                var vm = this; console.log('cohort selection ctrl, with service: ', CohortSelectionService.boxes);
                 vm.isRecordingHistory = true;
                 vm.boxId = CohortSelectionService.currentBoxId;
                 vm.boxIndex = (+$scope.index + 1);
