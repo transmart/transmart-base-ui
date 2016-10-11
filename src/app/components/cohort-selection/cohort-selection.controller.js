@@ -941,12 +941,7 @@ angular.module('transmartBaseUi')
                         }
                     });
 
-                    if (removed.length > 0) {
-                        return true;
-                    }
-                    else {
-                        return false;
-                    }
+                    return removed.length ? true: false;
                 };
 
 
