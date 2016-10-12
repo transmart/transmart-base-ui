@@ -493,4 +493,65 @@ describe('CohortSelectionCtrl', function () {
         });
     });
 
+    describe('resize', function () {
+        beforeEach(function () {
+            ctrl.cs.labels = [
+                {
+                    conceptPath: 'a/path/1',
+                    sizeX: 2,
+                    sizeY: 2
+                },
+                {
+                    conceptPath: 'a/path/2',
+                }
+            ];
+        });
+
+        it('should do resizing only when there are labels', function () {
+            spyOn(ctrl.cs.labels, 'forEach');
+            spyOn(Math, 'floor');
+            ctrl.resize(true);
+            expect(ctrl.cs.labels.forEach).toHaveBeenCalled();
+            expect(Math.floor).toHaveBeenCalled();
+        });
+
+        it('should not do resizing when there is no label', function () {
+            ctrl.cs.labels = [];
+            spyOn(ctrl.cs.labels, 'forEach');
+            spyOn(Math, 'floor');
+            ctrl.resize(true);
+            expect(ctrl.cs.labels.forEach).not.toHaveBeenCalled();
+            expect(Math.floor).not.toHaveBeenCalled();
+        });
+
+        it('should reset sizeX and sizeY of a label when reDistribute is true', function () {
+            ctrl.resize(true);
+            expect(ctrl.cs.labels[0].sizeX).toBe(1);
+            expect(ctrl.cs.labels[0].sizeY).toBe(1);
+            expect(ctrl.cs.labels[1].sizeX).toBe(1);
+            expect(ctrl.cs.labels[1].sizeY).toBe(1);
+        });
+
+        it('should not reset sizeX and sizeY of an existing label when reDistribute is false', function () {
+            ctrl.resize(false);
+            expect(ctrl.cs.labels[0].sizeX).toBe(2);
+            expect(ctrl.cs.labels[0].sizeY).toBe(2);
+            expect(ctrl.cs.labels[1].sizeX).toBe(1);
+            expect(ctrl.cs.labels[1].sizeY).toBe(1);
+        });
+
+
+        it('should call _.find when reDistribute is false', function () {
+            spyOn(_, 'find');
+            ctrl.resize(false);
+            expect(_.find).toHaveBeenCalled();
+        });
+
+        it('should not call _.find when reDistribute is true', function () {
+            spyOn(_, 'find');
+            ctrl.resize(true);
+            expect(_.find).not.toHaveBeenCalled();
+        });
+
+    });
 });
