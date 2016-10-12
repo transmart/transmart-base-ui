@@ -11,10 +11,10 @@ angular.module('transmartBaseUi')
                 url: '/help',
                 views: {
                     '@': {
-                        templateUrl: 'app/containers/help/help.html'
+                        templateUrl: '/app/containers/help/help.html'
                     },
                     'content@help': {
-                        templateUrl: 'app/containers/help/help.content.html',
+                        templateUrl: '/app/containers/help/help.content.html',
                         controller: 'HelpCtrl',
                         controllerAs: 'vm'
                     }

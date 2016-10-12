@@ -540,7 +540,6 @@ describe('CohortSelectionCtrl', function () {
             expect(ctrl.cs.labels[1].sizeY).toBe(1);
         });
 
-
         it('should call _.find when reDistribute is false', function () {
             spyOn(_, 'find');
             ctrl.resize(false);
@@ -551,6 +550,19 @@ describe('CohortSelectionCtrl', function () {
             spyOn(_, 'find');
             ctrl.resize(true);
             expect(_.find).not.toHaveBeenCalled();
+        });
+
+        it('should conditionally call _.times when reDistribute is false', function () {
+
+            spyOn(_, 'times');
+            ctrl.resize(false);
+            expect(_.times).not.toHaveBeenCalled();
+
+            ctrl.cs.labels.push({
+                conceptPath: 'a/path/3',
+            });
+            ctrl.resize(false);
+            expect(_.times).toHaveBeenCalled();
         });
 
     });

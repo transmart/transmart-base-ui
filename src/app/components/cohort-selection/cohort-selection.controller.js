@@ -6,8 +6,8 @@ angular.module('transmartBaseUi')
             'AlertService', '$uibModal',
             function ($q, $element, $scope, CohortSelectionService, StudyListService, DcChartsService,
                       AlertService, $uibModal) {
-                var vm = this; console.log('cohort selection ctrl, with service: ', CohortSelectionService.boxes);
-                vm.isRecordingHistory = true;
+                var vm = this;
+                vm.isRecordingHistory = false;
                 vm.boxId = CohortSelectionService.currentBoxId;
                 vm.boxIndex = (+$scope.index + 1);
                 vm.boxName = 'Cohort-' + vm.boxIndex;
@@ -213,10 +213,10 @@ angular.module('transmartBaseUi')
 
                             /*
                              * If there are not enough available cells for the un-positioned labels,
-                              * simply attach new cells to the tail of the cell grid
+                             * simply attach new cells to the tail of the cell grid
                              */
                             var diff = labelsToBeResized.length - availableCells.length;
-                            if(diff > 0) {
+                            if (diff > 0) {
                                 _.times(diff, function () {
                                     var col = lastCell.col + 1;
                                     var row = lastCell.row;
@@ -225,7 +225,7 @@ angular.module('transmartBaseUi')
                                         row++;
                                     }
                                     var foundCell = _.find(availableCells, {col: col, row: row});
-                                    if(!foundCell) {
+                                    if (!foundCell) {
                                         availableCells.push({col: col, row: row});
                                     }
                                 });
@@ -238,7 +238,7 @@ angular.module('transmartBaseUi')
                                 var cell = availableCells[index];
                                 label.sizeX = vm.gridsterConfig.G_ITEM_SPAN_X;
                                 label.sizeY = vm.gridsterConfig.G_ITEM_SPAN_Y;
-                                if(cell) {
+                                if (cell) {
                                     label.col = cell.col;
                                     label.row = cell.row;
                                 }
