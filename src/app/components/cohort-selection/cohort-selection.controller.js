@@ -101,6 +101,9 @@ angular.module('transmartBaseUi')
                  */
                 vm.resize = function (reDistribute) {
                     var labels = vm.cs.labels;
+                    /*
+                     * If there is any label to be positioned in the first place
+                     */
                     if (labels.length > 0) {
                         var elId = '#' + vm.mainContainerId;
                         // Get width of the full gridster grid
@@ -111,17 +114,136 @@ angular.module('transmartBaseUi')
                         var _gCols = Math.floor(_gWidth / vm.gridsterConfig.G_BASE_WIDTH);
                         vm.gridsterOpts.columns = _gCols;
 
-                        labels.forEach(function (label, index) {
-                            if(!label.sizeX || reDistribute) {
+                        /*
+                         * If all the charts need to be redistributed,
+                         * i.e. their positions and sizes will be reinitialized
+                         */
+                        if (reDistribute) {
+                            labels.forEach(function (label, index) {
                                 label.sizeX = vm.gridsterConfig.G_ITEM_SPAN_X;
                                 label.sizeY = vm.gridsterConfig.G_ITEM_SPAN_Y;
-                            }
-                            // Spread items left to right
-                            label.col = (index * label.sizeX) % _gCols;
-                            // And top to bottom
-                            label.row = Math.floor((index * label.sizeX) / _gCols) * label.sizeY;
-                        });
+                                // Spread items left to right
+                                label.col = (index * label.sizeX) % _gCols;
+                                // And top to bottom
+                                label.row = Math.floor((index * label.sizeX) / _gCols) * label.sizeY;
+                            });
+                        }
+                        /*
+                         * When only positioning the un-positioned charts,
+                         * and leave the other positioned charts as is
+                         */
+                        else {
+                            var cells = [], // the cells that existing charts occupy
+                                labelsToBeResized = [], // the labels corresponding the un-positioned charts
+                                rows = Math.ceil(labels.length / _gCols),// num of existing rows
+                                cols = _gCols, // num of existing cols
+                                lastCell = {col: 0, row: 0}; // the last cell from left to right, top to bottom
 
+                            /*
+                             * For each label, find existing cells and un-positioned labels,
+                             * also identify the last cell
+                             */
+                            labels.forEach(function (label, index) {
+                                if (label.sizeX) {
+                                    var cell = {
+                                        sizeX: label.sizeX,
+                                        sizeY: label.sizeY,
+                                        col: label.col,
+                                        row: label.row
+                                    }
+                                    cells.push(cell);
+
+                                    if (cell.col > lastCell.col || cell.row > lastCell.row) {
+                                        lastCell = cell;
+                                    }
+                                }
+                                else {
+                                    labelsToBeResized.push(label);
+                                }
+                            });
+
+                            /*
+                             * Find gaps that might exist among existing cells,
+                             * and put these gaps into availableCells for future use
+                             */
+                            var availableCells = [];
+                            if (cells.length === 0) {
+                                // If these is no existing cell, construct availableCells sequentially
+                                for (var i = 0; i < rows; i++) {
+                                    for (var j = 0; j < cols; j++) {
+                                        var cell = _.find(cells, {row: i, col: j});
+                                        if (!cell) {
+                                            availableCells.push({row: i, col: j});
+                                        }
+                                    }
+                                }
+                            }
+                            else {
+                                // If there are existing cells, find their neighbors to
+                                // the left or right, if these neighbors do not overlap with
+                                // other existing cells, put them into availabelCells
+                                cells.forEach(function (cell) {
+                                    var neighborLeft = {
+                                        col: cell.col - 1,
+                                        row: cell.row
+                                    }
+                                    if (neighborLeft.col < 0) {
+                                        neighborLeft.col = 0;
+                                    }
+                                    var foundNeighborLeft = _.find(cells, neighborLeft);
+                                    var duplicateLeft = _.find(availableCells, neighborLeft);
+                                    if (!foundNeighborLeft && !duplicateLeft) {
+                                        availableCells.push(neighborLeft);
+                                    }
+
+                                    var neighborRight = {
+                                        col: cell.col + cell.sizeX,
+                                        row: cell.row
+                                    }
+                                    if (neighborRight.col > _gCols - 1) {
+                                        neighborRight.col = 0;
+                                    }
+                                    var foundNeighborRight = _.find(cells, neighborRight);
+                                    var duplicateRight = _.find(availableCells, neighborRight);
+                                    if (!foundNeighborRight && !duplicateRight) {
+                                        availableCells.push(neighborRight);
+                                    }
+                                });
+                            }
+
+                            /*
+                             * If there are not enough available cells for the un-positioned labels,
+                              * simply attach new cells to the tail of the cell grid
+                             */
+                            var diff = labelsToBeResized.length - availableCells.length;
+                            if(diff > 0) {
+                                _.times(diff, function () {
+                                    var col = lastCell.col + 1;
+                                    var row = lastCell.row;
+                                    if (col > _gCols - 1) {
+                                        col = 0;
+                                        row++;
+                                    }
+                                    var foundCell = _.find(availableCells, {col: col, row: row});
+                                    if(!foundCell) {
+                                        availableCells.push({col: col, row: row});
+                                    }
+                                });
+                            }
+
+                            /*
+                             * For each new label, assign its position based on available cells
+                             */
+                            labelsToBeResized.forEach(function (label, index) {
+                                var cell = availableCells[index];
+                                label.sizeX = vm.gridsterConfig.G_ITEM_SPAN_X;
+                                label.sizeY = vm.gridsterConfig.G_ITEM_SPAN_Y;
+                                if(cell) {
+                                    label.col = cell.col;
+                                    label.row = cell.row;
+                                }
+                            });
+                        }
                     }
 
                     return labels;
@@ -361,55 +483,51 @@ angular.module('transmartBaseUi')
                  * @returns {*}
                  */
                 vm.addNodeToActiveCohortSelection = function (node, filters) {
-                    if(vm.cs.nodes.indexOf(node) == -1) {
-                        var _filter, _deferred = $q.defer();
+                    var _filter, _deferred = $q.defer();
 
-                        var _getFilter = function (label, filters) {
-                            return _.find(filters, {label: label});
-                        };
+                    var _getFilter = function (label, filters) {
+                        return _.find(filters, {label: label});
+                    };
 
-                        // Get all observations under the selected concept
-                        node.restObj.one('observations').get().then(function (observations) {
-                            vm.addNode(node);
-                            observations = observations._embedded.observations;
+                    // Get all observations under the selected concept
+                    node.restObj.one('observations').get().then(function (observations) {
+                        vm.addNode(node);
+                        observations = observations._embedded.observations;
 
-                            observations.forEach(function (obs) {
-                                if (obs.value !== null) {
+                        observations.forEach(function (obs) {
+                            if (obs.value !== null) {
 
-                                    if (filters) {
-                                        _filter = _getFilter(obs.label, filters);
-                                    }
-
-                                    // Add the concept to the list of chart labels
-                                    var _newLabel = _addLabel(obs, node, _filter);
-
-                                    // Check if the subject of the observation is already present
-                                    var foundSubject = _.find(vm.cs.subjects,
-                                        {id: obs._embedded.subject.id});
-
-                                    if (foundSubject) {
-                                        foundSubject.observations[_newLabel.conceptPath] = obs.value;
-                                    } else {
-                                        obs._embedded.subject.observations = {};
-                                        obs._embedded.subject.observations[_newLabel.conceptPath] = obs.value;
-                                        vm.cs.subjects.push(obs._embedded.subject);
-                                        vm.cs.crossfilter.add([obs._embedded.subject]);
-                                    }
+                                if (filters) {
+                                    _filter = _getFilter(obs.label, filters);
                                 }
-                            });
-                            // Notify the applicable controller that the chart directive instances
-                            // can be created
-                            vm.resize(false);
-                            vm.updateDimensions();
-                            _deferred.resolve();
-                        }, function (err) {
-                            _deferred.reject('Cannot get data from the end-point.' + err);
+
+                                // Add the concept to the list of chart labels
+                                var _newLabel = _addLabel(obs, node, _filter);
+
+                                // Check if the subject of the observation is already present
+                                var foundSubject = _.find(vm.cs.subjects,
+                                    {id: obs._embedded.subject.id});
+
+                                if (foundSubject) {
+                                    foundSubject.observations[_newLabel.conceptPath] = obs.value;
+                                } else {
+                                    obs._embedded.subject.observations = {};
+                                    obs._embedded.subject.observations[_newLabel.conceptPath] = obs.value;
+                                    vm.cs.subjects.push(obs._embedded.subject);
+                                    vm.cs.crossfilter.add([obs._embedded.subject]);
+                                }
+                            }
                         });
+                        // Notify the applicable controller that the chart directive instances
+                        // can be created
+                        vm.resize(false);
+                        vm.updateDimensions();
+                        _deferred.resolve();
+                    }, function (err) {
+                        _deferred.reject('Cannot get data from the end-point.' + err);
+                    });
 
-                        return _deferred.promise;
-                    }
-
-                    return undefined;
+                    return _deferred.promise;
                 };
 
 
