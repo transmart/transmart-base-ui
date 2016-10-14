@@ -118,7 +118,7 @@ angular.module('transmartBaseUi').factory('TreeNodeService', ['$q', function ($q
         prefix = prefix || '';
 
         if (node.loaded) {
-            deferred.resolve(node.loaded);
+            deferred.resolve(node.nodes);
             return deferred.promise;
         }
 
@@ -148,11 +148,10 @@ angular.module('transmartBaseUi').factory('TreeNodeService', ['$q', function ($q
         } else {
             // end of node
             node.loaded = true;
-            deferred.resolve(node.loaded);
+            deferred.resolve(node.nodes);
         }
         return deferred.promise;
     };
-
 
     /**
      * @memberof TreeNodeService
@@ -162,6 +161,66 @@ angular.module('transmartBaseUi').factory('TreeNodeService', ['$q', function ($q
     service.isCategoricalLeafNode = function (node) {
         return node.type === 'CATEGORICAL_OPTION';
     }
+
+    //TODO: remove this method from study accordion directive?
+    service.populateChildren = function (node) {
+        var deferred = $q.defer();
+        var prefix;
+
+        // first check if node has Restangular object or not
+        // if not it means it's root node a.k.a study
+        if (!node.hasOwnProperty('restObj')) {
+            node = service.setRootNodeAttributes(node);
+        }
+
+        // If the node is a study, we need to prepend 'concepts' to the url
+        if (node == node.study) {
+            prefix = 'concepts/';
+        }
+
+        node.isLoading = true;
+
+        service.getNodeChildren(node, prefix)
+            .then(deferred.resolve)
+            .catch(deferred.reject)
+            .finally(function () {
+                node.isLoading = false;
+        });
+
+        return deferred.promise;
+    };
+
+    service.expandConcept = function(node, conceptSplit) {
+        var deferred = $q.defer()
+
+        // Retrieve all children of the node.
+        // It's possible that these still need to be loaded.
+        service.populateChildren(node)
+            .then(function(result) {
+
+                // find matching child node
+                var matchingChild = undefined;
+                _.forEach(result, function(child) {
+                    if (child.title == conceptSplit[0]) {
+                        matchingChild = child;
+                        return false; //break from forEach
+                    }
+                })
+
+                // expand the matching child recursively
+                if (matchingChild && conceptSplit.length > 1) {
+                    service.expandConcept(matchingChild, conceptSplit.slice(1))
+                        .then(function(result) {
+                            deferred.resolve(result);
+                        });
+                }
+                else {
+                    deferred.resolve(matchingChild);
+                }
+            });
+
+        return deferred.promise;
+    };
 
     return service;
 

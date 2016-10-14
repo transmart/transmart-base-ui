@@ -459,11 +459,6 @@ angular.module('transmartBaseUi')
                 var _addLabel = function (obs, node, filterObj) {
                     // Check if label has already been added
                     var label = _.find(vm.cs.labels, {label: obs.label});
-                    var filters;
-
-                    if (filterObj) {
-                        filters = filterObj.filterWords;
-                    }
 
                     if (!label) {
 
@@ -478,7 +473,7 @@ angular.module('transmartBaseUi')
                                 labelId: vm.cs.chartId++,
                                 study: node.study,
                                 resolved: false,
-                                filters: filters,
+                                filters: filterObj ? filterObj.dcFilters : undefined,
                                 boxId: vm.boxId,
                                 box: CohortSelectionService.getBox(vm.boxId),
                                 node: node
@@ -543,16 +538,13 @@ angular.module('transmartBaseUi')
                  */
                 vm.addNodeToActiveCohortSelection = function (node, filters) {
                     var _filter, _deferred = $q.defer();
-                    var _getFilter = function (label, filters) {
-                        return _.find(filters, {label: label});
-                    };
 
                     var _iterateObservations = function (node, filters) {
                         node.observations.forEach(function (obs) {
                             if (obs.value !== null) {
 
                                 if (filters) {
-                                    _filter = _getFilter(obs.label, filters);
+                                    _filter = _.find(filters, {label: obs.label});
                                 }
                                 // Add the concept to the list of chart labels
                                 var _newLabel = _addLabel(obs, node, _filter);
@@ -991,6 +983,35 @@ angular.module('transmartBaseUi')
                     return _filters;
                 };
 
+                vm.addCohortFilter = function(node, filters) {
+                    var promise = undefined;
+
+                    if (node.type === 'CATEGORICAL_OPTION') { //leaf node for pie chart
+                        var chart = _findChartByConceptPath(node.parent.restObj.fullName, vm.cs.charts);
+                        if (chart == null) {
+                            var filterObjects = [{
+                                label: node.parent.restObj.fullName,
+                                dcFilters: [node.title]
+                            }];
+                            promise = vm.addNodeToActiveCohortSelection(node.parent, filterObjects);
+                        }
+                        else {
+                            _filterChart(chart, [node.title]);
+                        }
+                    }
+                    else {
+                        var filterObjects = [{
+                            label: node.restObj.fullName,
+                            dcFilters: filters
+                        }];
+                        promise = vm.addNodeToActiveCohortSelection(node, filterObjects);
+                    }
+
+                    vm.addHistory('addCohortFilter', [node, filters]);
+
+                    return promise;
+                }
+
                 /**
                  * Handle node drop from study-accordion to cohort-selection panel.
                  * Remark: node.restObj.fullName is equivalent to chart.tsLabel.conceptPath
@@ -1007,7 +1028,7 @@ angular.module('transmartBaseUi')
                         if (chart == null) {
                             var filters = [{
                                 label: node.parent.restObj.fullName,
-                                filterWords: [node.title]
+                                dcFilters: [node.title]
                             }];
                             promise = vm.addNodeToActiveCohortSelection(node.parent, filters);
                         }
@@ -1172,7 +1193,7 @@ angular.module('transmartBaseUi')
                         if (chart && chart.filters()) {
                             filters.push({
                                 label: conceptPath,
-                                filterWords: chart.filters()
+                                dcFilters: chart.filters()
                             });
                         }
                         // to make sure the nodes are added sequentially

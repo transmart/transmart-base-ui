@@ -22,8 +22,8 @@ angular.module('transmartBaseUi')
      * @ngdoc controller
      * @name cohortView
      */
-    .controller('CohortViewCtrl', ['$scope', '$timeout', '$q', 'CohortViewService', 'AlertService',
-            function ($scope, $timeout, $q, CohortViewService, AlertService) {
+    .controller('CohortViewCtrl', ['$scope', '$timeout', '$q', 'CohortViewService', 'AlertService', 'CohortSelectionService', 'QueryParserService',
+            function ($scope, $timeout, $q, CohortViewService, AlertService, CohortSelectionService, QueryParserService) {
 
                 $scope.cohorts = [];
                 var ctrl = this;
@@ -94,6 +94,31 @@ angular.module('transmartBaseUi')
                         return ctrl.removeCohort(cohort);
                     })).then(function() {
                         ctrl.loadCohorts();
+                    });
+                };
+
+
+                ctrl.loadCohort = function(cohort) {
+
+                    // Add a new cohort selection box
+                    //var boxId = CohortSelectionService.addBox();
+                    //var cohortSelectionCtrl = CohortSelectionService.getBox(boxId).ctrl;
+                    var cohortSelectionCtrl = CohortSelectionService.boxes[0].ctrl;
+
+                    // Parse query XML
+                    //var endpoint = EndpointService.getMasterEndpoint();
+                    console.log(cohortSelectionCtrl);
+                    QueryParserService.convertCohortFiltersFromXML(cohort.queryXML, cohortSelectionCtrl);
+
+                    //cohortSelectionCtrl.activateTab('Cohort Selection', 'cohortSelection');
+                };
+
+                ctrl.loadSelectedCohorts = function() {
+                    var selectedCohorts = ctrl.gridApi.selection.getSelectedRows();
+
+                    // Remove all selected cohorts and reload the list after completing
+                    selectedCohorts.forEach(function(cohort) {
+                        ctrl.loadCohort(cohort);
                     });
                 };
 

@@ -132,7 +132,7 @@ describe('CohortSelectionCtrl', function () {
         it('should invoke addNodeToActiveCohortSelection when a pieNode is newly dropped', function () {
             var filters = [{
                 label: 'parent/restobj/fullname',
-                filterWords: [undefined]
+                dcFilters: [undefined]
             }];
 
             spyOn(ctrl, 'onNodeDrop').and.callThrough();

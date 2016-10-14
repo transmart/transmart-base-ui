@@ -12,13 +12,21 @@ describe('XML2JSONService Unit Tests', function () {
     }));
 
     it('should parse xml to javascript object', function () {
-        var xml = "<data><firstName>John</firstName><lastName>Smith</lastName></data>";
+        var xml = "<data><users><firstName>John</firstName><lastName>Smith</lastName></users><users><firstName>Arthur</firstName><lastName>Dent</lastName></users></data>";
         var obj = XML2JSONService.xml2json(xml);
         expect(obj).toEqual(
             {
                 data: {
-                    firstName: "John",
-                    lastName: "Smith"
+                    users: [
+                        {
+                            firstName: "John",
+                            lastName: "Smith"
+                        },
+                        {
+                            firstName: "Arthur",
+                            lastName: "Dent"
+                        }
+                    ]
                 }
             });
     });
