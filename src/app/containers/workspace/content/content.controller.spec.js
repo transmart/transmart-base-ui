@@ -1,15 +1,17 @@
 'use strict';
 
 describe('ContentCtrl', function () {
-    var $controller, AlertService, ctrl, ctrlElm, rootScope, scope;
+    var $controller, AlertService, CohortSelectionService, ctrl, ctrlElm, rootScope, scope;
 
     beforeEach(module('transmartBaseUi'));
 
-    beforeEach(inject(function (_$controller_, _AlertService_, _$rootScope_) {
+    beforeEach(inject(function (_$controller_, _$rootScope_, _AlertService_, _CohortSelectionService_) {
         rootScope = _$rootScope_;
         scope = _$rootScope_.$new();
         $controller = _$controller_;
         AlertService = _AlertService_;
+        CohortSelectionService = _CohortSelectionService_;
+
         var params = {
             action: 'cohortGrid'
         }
@@ -79,4 +81,44 @@ describe('ContentCtrl', function () {
 
     });
 
+    describe('updateCohortSelectionData', function () {
+        var subject1, box1;
+
+        beforeEach(function () {
+            subject1 = {
+                id: 'subjectId1',
+                observations: {
+                    'a/concept/path': 'a-concept-value'
+                }
+            }
+
+            box1 = {
+                boxId: 'boxid1',
+                ctrl: {
+                    cs: {
+                        subjects: [subject1]
+                    }
+                }
+            }
+
+            CohortSelectionService.boxes = [box1];
+
+        });
+
+        it('should iterate over CohortSelectionService.boxes', function () {
+            spyOn(CohortSelectionService.boxes, 'forEach').and.callThrough();
+            spyOn(box1.ctrl.cs.subjects, 'forEach').and.callThrough();
+            spyOn(_, 'find');
+            ctrl.updateCohortSelectionData();
+            expect(CohortSelectionService.boxes.forEach).toHaveBeenCalled();
+            expect(box1.ctrl.cs.subjects.forEach).toHaveBeenCalled();
+            expect(_.find).toHaveBeenCalled();
+        });
+
+        it('should return subject observation dictionary', function () {
+            var subjectObs = ctrl.updateCohortSelectionData();
+            expect(subjectObs[0].id).toBe(subject1.id);
+            expect(subjectObs[0].observations).toBe(subject1.observations);
+        });
+    });
 });

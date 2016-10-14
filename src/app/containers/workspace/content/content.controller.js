@@ -7,9 +7,9 @@ angular.module('transmartBaseUi')
                 var vm = this;
                 vm.selectedSubjects = [];
                 vm.labels = [];
-                if (CohortSelectionService.boxes.length == 0) {
-                    CohortSelectionService.addBox();
-                }
+
+                CohortSelectionService.boxes = [];
+                CohortSelectionService.addBox();
 
                 vm.boxes = CohortSelectionService.boxes;
                 vm.el = $element;
@@ -52,32 +52,61 @@ angular.module('transmartBaseUi')
                     }
                 }
 
-                var _updateCohortSelectionData = function () {
+                vm.updateCohortSelectionData = function () {
+                    /*
+                     * Create dictionary array
+                     * each element: {id: subjectId, observations: observations}
+                     */
+                    var subjectObs = [];
+                    CohortSelectionService.boxes.forEach(function (box) {
+                        box.ctrl.cs.subjects.forEach(function (subject) {
+                            var _subject = _.find(subjectObs, {id: subject.id});
+                            if(!_subject) {
+                                subjectObs.push({
+                                    id: subject.id,
+                                    observations: subject.observations
+                                });
+                            }
+                            else {
+                                for (var key in subject.observations) {
+                                    _subject.observations[key] = subject.observations[key];
+                                }
+                            }
+                        });
+                    });
+
+                    /*
+                     * merge selected subjects and labels in multiple cohort-panels
+                     */
                     vm.selectedSubjects = [];
                     vm.labels = [];
                     var uniqueSubjects = [];
 
                     //for each cohort-selection box
                     CohortSelectionService.boxes.forEach(function (box) {
-                        if(box.checked) {
+                        if (box.checked) {
                             box.ctrl.cs.selectedSubjects.forEach(function (subject) {
                                 var uSubject = _.find(uniqueSubjects, {id: subject.id});
-                                if(!uSubject) {
+                                if (!uSubject) {
                                     uSubject = _.clone(subject);
                                     uSubject.boxes = [box];
                                     uniqueSubjects.push(uSubject);
                                 }
                                 else {
-                                    for(var key in subject.observations) {
-                                        uSubject.observations[key] = subject.observations[key];
-                                    }
                                     uSubject.boxes.push(box);
                                 }
                                 subject.boxes = uSubject.boxes;
+
+                                var obs = _.find(subjectObs, {id: subject.id});
+                                if(obs) {
+                                    for(var key in obs.observations) {
+                                        uSubject.observations[key] = obs.observations[key];
+                                    }
+                                }
                             });
                             box.ctrl.cs.labels.forEach(function (label) {
                                 var foundLabel = _.find(vm.labels, {conceptPath: label.conceptPath});
-                                if(!foundLabel) {
+                                if (!foundLabel) {
                                     vm.labels.push(label);
                                 }
                             });
@@ -86,10 +115,11 @@ angular.module('transmartBaseUi')
 
                     vm.selectedSubjects = uniqueSubjects;
 
+                    return subjectObs;
                 };
 
                 $scope.$on('cohortSelectionUpdateEvent', function (event) {
-                    _updateCohortSelectionData();
+                    vm.updateCohortSelectionData();
                 });
 
             }]);
