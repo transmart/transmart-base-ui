@@ -983,32 +983,21 @@ angular.module('transmartBaseUi')
                     return _filters;
                 };
 
+                /**
+                 * Adds the specified node and filter to the active selection.
+                 * @memberof CohortSelectionCtrl
+                 * @param node The node to be added to the selection
+                 * @param filters Array of dc filters to be added directly to the dc chart
+                 * @returns {Promise}
+                 */
                 vm.addCohortFilter = function(node, filters) {
-                    var promise = undefined;
-
-                    if (node.type === 'CATEGORICAL_OPTION') { //leaf node for pie chart
-                        var chart = _findChartByConceptPath(node.parent.restObj.fullName, vm.cs.charts);
-                        if (chart == null) {
-                            var filterObjects = [{
-                                label: node.parent.restObj.fullName,
-                                dcFilters: [node.title]
-                            }];
-                            promise = vm.addNodeToActiveCohortSelection(node.parent, filterObjects);
-                        }
-                        else {
-                            _filterChart(chart, [node.title]);
-                        }
-                    }
-                    else {
-                        var filterObjects = [{
-                            label: node.restObj.fullName,
-                            dcFilters: filters
-                        }];
-                        promise = vm.addNodeToActiveCohortSelection(node, filterObjects);
-                    }
-
                     vm.addHistory('addCohortFilter', [node, filters]);
 
+                    var filterObjects = [{
+                        label: node.restObj.fullName,
+                        dcFilters: filters
+                    }];
+                    var promise = vm.addNodeToActiveCohortSelection(node, filterObjects);
                     return promise;
                 }
 
@@ -1019,6 +1008,7 @@ angular.module('transmartBaseUi')
                  * @param event
                  * @param info
                  * @param node Dropped node from the study tree
+                 * @returns {Promise}
                  */
                 vm.onNodeDrop = function (event, info, node) {
                     var promise = undefined;

@@ -100,14 +100,10 @@ angular.module('transmartBaseUi')
 
                 ctrl.loadCohort = function(cohort) {
 
-                    // Add a new cohort selection box
-                    //var boxId = CohortSelectionService.addBox();
-                    //var cohortSelectionCtrl = CohortSelectionService.getBox(boxId).ctrl;
+                    // Get the controller for the selected workspace
                     var cohortSelectionCtrl = CohortSelectionService.boxes[0].ctrl;
 
                     // Parse query XML
-                    //var endpoint = EndpointService.getMasterEndpoint();
-                    console.log(cohortSelectionCtrl);
                     QueryParserService.convertCohortFiltersFromXML(cohort.queryXML, cohortSelectionCtrl);
 
                     //cohortSelectionCtrl.activateTab('Cohort Selection', 'cohortSelection');

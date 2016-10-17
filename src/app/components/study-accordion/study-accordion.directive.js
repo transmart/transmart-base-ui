@@ -49,22 +49,10 @@ angular.module('transmartBaseUi')
              * Populate node children
              * @memberof StudyAccordionCtrl
              * @param node
+             * @returns {Promise}
              */
             ctrl.populateChildren = function (node) {
-                var prefix;
-
-                // first check if node has Restangular object or not
-                // if not it means it's root node a.k.a study
-                if (!node.hasOwnProperty('restObj')) {
-                    node = TreeNodeService.setRootNodeAttributes(node);
-                    prefix = 'concepts/';
-                }
-
-                node.isLoading = true;
-
-                TreeNodeService.getNodeChildren(node, prefix).finally(function () {
-                    node.isLoading = false;
-                });
+                return TreeNodeService.populateChildren(node);
             };
 
             ctrl.prev_node = null;

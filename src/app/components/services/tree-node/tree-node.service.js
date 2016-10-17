@@ -162,9 +162,7 @@ angular.module('transmartBaseUi').factory('TreeNodeService', ['$q', function ($q
         return node.type === 'CATEGORICAL_OPTION';
     }
 
-    //TODO: remove this method from study accordion directive?
     service.populateChildren = function (node) {
-        var deferred = $q.defer();
         var prefix;
 
         // first check if node has Restangular object or not
@@ -180,14 +178,11 @@ angular.module('transmartBaseUi').factory('TreeNodeService', ['$q', function ($q
 
         node.isLoading = true;
 
-        service.getNodeChildren(node, prefix)
-            .then(deferred.resolve)
-            .catch(deferred.reject)
+        var promise = service.getNodeChildren(node, prefix)
             .finally(function () {
                 node.isLoading = false;
         });
-
-        return deferred.promise;
+        return promise;
     };
 
     service.expandConcept = function(node, conceptSplit) {
