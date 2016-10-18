@@ -5,11 +5,16 @@
  * @ngdoc factory
  * @name QueryParserService
  */
-angular.module('transmartBaseUi').factory('QueryParserService', ['XML2JSONService', 'StudyListService', 'TreeNodeService', '$q',
-    function (XML2JSONService, StudyListService, TreeNodeService, $q) {
+angular.module('transmartBaseUi').factory('QueryParserService', ['XML2JSONService', 'StudyListService', 'TreeNodeService', 'PromiseQueue',
+    function (XML2JSONService, StudyListService, TreeNodeService, PromiseQueue) {
 
         var service = {};
 
+      /**
+       * Puts the variable in a list if it is not already a list.
+       * @param variable The variable to return as a list
+       * @returns {*[]} The original list or the variable put in the list
+       */
         function makeList(variable) {
             return variable.constructor === Array ? variable : [variable];
         }
@@ -24,43 +29,28 @@ angular.module('transmartBaseUi').factory('QueryParserService', ['XML2JSONServic
         service.convertCohortFiltersFromXML = function (queryXML, cohortSelectionController) {
             var queryObj = XML2JSONService.xml2json(queryXML).query_definition;
 
-            // This array will hold the n-length queue
-            var promiseStack = [];
+            // We'll collect a queue of promises that cannot be executed in parallel
+            var promiseQueue = new PromiseQueue();
 
-            // Creates a new promise (don't fire it yet)
-            function newPromise (studyNode, conceptPath, filters) {
-                return function () {
-                    var deferred = $q.defer();
-
-                    TreeNodeService.expandConcept(studyNode, conceptPath)
-                        .then(function (response) {
-                            // Add the node and filters to the workspace
-                            cohortSelectionController.addCohortFilter(response, filters);
-                            deferred.resolve(response);
-                        }, function(reason) {
-                            deferred.reject(reason);
-                        });
-
-                    return deferred.promise;
-                };
-            }
-
-            //var currentExpansionPromise = undefined;
+            // Loop through the panels in the query
             _.each(makeList(queryObj.panel), function(panel) {
                 var studyNode, conceptPath;
                 var filters = [];
 
+                // Loop through the items in the panel
                 _.each(makeList(panel.item), function(item) {
 
                     // Split concept key by backslash and remove all empty entries
                     var splitKey = item.item_key.split('\\').filter(function(el) {
                         return el != "";
                     });
-                    var studyKey = '\\' + splitKey.slice(1, 3).join('\\') + '\\';
-                    conceptPath = splitKey.slice(3);
 
                     // Look up study
+                    var studyKey = '\\' + splitKey.slice(1, 3).join('\\') + '\\';
                     studyNode = StudyListService.getStudy(studyKey);
+
+                    // Save the rest of the key as the concept path
+                    conceptPath = splitKey.slice(3);
 
                     // Extract the filters
                     if (item.constrain_by_value) {
@@ -85,26 +75,18 @@ angular.module('transmartBaseUi').factory('QueryParserService', ['XML2JSONServic
 
                 // Add a new task to the queue
                 if (studyNode) {
-                    promiseStack.push(newPromise(studyNode, conceptPath, filters));
+                    promiseQueue.addPromiseCreator(function () {
+                        return TreeNodeService.expandConcept(studyNode, conceptPath)
+                            .then(function (response) {
+                                // Add the node and filters to the workspace
+                                cohortSelectionController.addCohortFilter(response, filters);
+                            });
+                    });
                 }
             });
 
-            // Fires the first promise in the queue
-            var fire = function () {
-                // If the queue has remaining items...
-                return promiseStack.length &&
-                        // Remove the first promise from the array
-                        // and execute it
-                        promiseStack.shift()()
-                        // When that promise resolves, fire the next
-                        // promise in our queue
-                        .then(function () {
-                            return fire();
-                        });
-            };
-
-            // Begin the queue
-            return fire();
+            // Start expanding the nodes
+            return promiseQueue.execute();
         };
 
         return service;
