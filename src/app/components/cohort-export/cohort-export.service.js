@@ -23,7 +23,6 @@ angular.module('transmartBaseUi')
                     checked: true
                 }
             ];
-
             return arr;
         };
 

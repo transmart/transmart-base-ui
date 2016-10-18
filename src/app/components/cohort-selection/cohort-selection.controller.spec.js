@@ -319,6 +319,7 @@ describe('CohortSelectionCtrl', function () {
 
     describe('addNodeToActiveCohortSelection', function () {
         var node = {};
+        var childNode = {};
 
         beforeEach(function () {
             node.restObj = Restangular;
@@ -326,6 +327,14 @@ describe('CohortSelectionCtrl', function () {
                 children: undefined
             };
             node.nodes = [];
+            node.observations = [{
+                value:  ''
+            }];
+
+            childNode.observations = [{
+                value: ''
+            }];
+
         });
 
         it('should try to retrieve child nodes when node.nodes = []', function () {
@@ -333,6 +342,58 @@ describe('CohortSelectionCtrl', function () {
             ctrl.addNodeToActiveCohortSelection(node, []);
 
             expect(TreeNodeService.getNodeChildren).toHaveBeenCalledWith(node);
+        });
+
+        it('should call addNode and iterate over observations when ' +
+            'node.nodes is empty and has categorical leaf child nodes', function () {
+            TreeNodeService.getNodeChildren = function (_node) {
+                return {
+                    then: function (func) {
+                        func();
+                    }
+                }
+            };
+            TreeNodeService.isCategoricalLeafNode = function (_node) {
+                return true;
+            };
+
+            spyOn(ctrl, 'addNode');
+            spyOn(node.observations, 'forEach');
+            ctrl.addNodeToActiveCohortSelection(node, []);
+            expect(ctrl.addNode).toHaveBeenCalledWith(node);
+            expect(node.observations.forEach).toHaveBeenCalled();
+        });
+
+        it('should call addNode and iterate over observations when ' +
+            'node.nodes is non-empty and has categorical leaf child nodes', function () {
+            node.nodes = [{
+                id: 'aNode'
+            }]
+            TreeNodeService.isCategoricalLeafNode = function (_node) {
+                return true;
+            };
+
+            spyOn(ctrl, 'addNode');
+            spyOn(node.observations, 'forEach');
+            ctrl.addNodeToActiveCohortSelection(node, []);
+            expect(ctrl.addNode).toHaveBeenCalledWith(node);
+            expect(node.observations.forEach).toHaveBeenCalled();
+        });
+
+        it('should iterate over child nodes, call addNode, and iterate over child observations ' +
+            'when node.nodes is non-empty and has no categorical leaf child node', function () {
+            node.nodes = [childNode];
+            TreeNodeService.isCategoricalLeafNode = function (_node) {
+                return false;
+            };
+
+            spyOn(node.nodes, 'forEach').and.callThrough();
+            spyOn(ctrl, 'addNode');
+            spyOn(childNode.observations, 'forEach');
+            ctrl.addNodeToActiveCohortSelection(node, []);
+            expect(node.nodes.forEach).toHaveBeenCalled();
+            expect(ctrl.addNode).toHaveBeenCalledWith(childNode);
+            expect(childNode.observations.forEach).toHaveBeenCalled();
         });
 
     });

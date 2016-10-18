@@ -122,10 +122,10 @@ angular.module('transmartBaseUi')
                         var elId = '#' + vm.mainContainerId;
                         // Get width of the full gridster grid
                         var _gWidth = angular.element(elId).width();
-                        if(_gWidth == 0) {
+                        if(_gWidth <= 0) {
                             _gWidth = angular.element('#main-container-div').width();
                         }
-                        
+
                         // Calculate the number of columns in the grid according to full gridster
                         // grid size and the base square size. Adjust by -1 if number of columns
                         // is not pair.
@@ -186,7 +186,7 @@ angular.module('transmartBaseUi')
                                         sizeY: label.sizeY,
                                         col: label.col,
                                         row: label.row
-                                    }
+                                    };
                                     cells.push(cell);
 
                                     if (cell.col > lastCell.col || cell.row > lastCell.row) {
@@ -222,7 +222,7 @@ angular.module('transmartBaseUi')
                                     var neighborLeft = {
                                         col: cell.col - 1,
                                         row: cell.row
-                                    }
+                                    };
                                     if (neighborLeft.col < 0) {
                                         neighborLeft.col = 0;
                                     }
@@ -235,7 +235,7 @@ angular.module('transmartBaseUi')
                                     var neighborRight = {
                                         col: cell.col + cell.sizeX,
                                         row: cell.row
-                                    }
+                                    };
                                     if (neighborRight.col > _gCols - 1) {
                                         neighborRight.col = 0;
                                     }
