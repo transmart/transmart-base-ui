@@ -1,19 +1,24 @@
 'use strict';
 
 describe('CohortSelectionCtrl', function () {
-    var $controller, AlertService, CohortSelectionService,
-        DcChartsService, Restangular, CohortChartMocks, ctrl, scope;
+    var $controller, AlertService, CohortSelectionService, TreeNodeService,
+        DcChartsService, Restangular, CohortChartMocks, ctrl, scope, $timeout,
+        reDistribution;
 
     beforeEach(module('transmartBaseUi'));
 
     beforeEach(inject(function (_$controller_, _AlertService_, _$rootScope_, _CohortSelectionService_,
-                                _DcChartsService_, _Restangular_, _CohortChartMocks_) {
+                                _DcChartsService_, _Restangular_, _CohortChartMocks_, _TreeNodeService_,
+                                _$timeout_) {
         // The injector unwraps the underscores (_) from around the parameter names when matching
         scope = _$rootScope_.$new();
         $controller = _$controller_;
         AlertService = _AlertService_;
         CohortSelectionService = _CohortSelectionService_;
+        TreeNodeService = _TreeNodeService_;
         DcChartsService = _DcChartsService_;
+        $timeout = _$timeout_;
+
         Restangular = angular.copy(_Restangular_, Restangular);
         CohortChartMocks = _CohortChartMocks_;
         scope.labels = CohortChartMocks.getMockLabels();
@@ -23,6 +28,12 @@ describe('CohortSelectionCtrl', function () {
         ctrl = $controller('CohortSelectionCtrl', {$scope: scope, $element: ctrlElm});
         spyOn(AlertService, 'get');
         scope.$digest();
+
+        reDistribution = {
+            sizeAndPosition: 'relayout the charts completely',
+            position: 'only relayout the positions of the charts',
+            none: 'detect gaps and insert the new chart(s)'
+        }
 
     }));
 
@@ -311,16 +322,19 @@ describe('CohortSelectionCtrl', function () {
 
         beforeEach(function () {
             node.restObj = Restangular;
+            node.restObj._links = {
+                children: undefined
+            };
+            node.nodes = [];
         });
 
-        it('should make restangular call when adding node to active cohort selection', function () {
-            spyOn(ctrl, 'addNodeToActiveCohortSelection').and.callThrough();
-            spyOn(node.restObj, 'one').and.callThrough();
-
+        it('should try to retrieve child nodes when node.nodes = []', function () {
+            spyOn(TreeNodeService, 'getNodeChildren').and.callThrough();
             ctrl.addNodeToActiveCohortSelection(node, []);
-            expect(ctrl.addNodeToActiveCohortSelection).toHaveBeenCalledWith(node, []);
-            expect(node.restObj.one).toHaveBeenCalled();
+
+            expect(TreeNodeService.getNodeChildren).toHaveBeenCalledWith(node);
         });
+
     });
 
     describe('createCohortChart', function () {
@@ -400,7 +414,7 @@ describe('CohortSelectionCtrl', function () {
 
         it('should update dimensions and resize charts', function () {
             expect(ctrl.updateDimensions).toHaveBeenCalled();
-            expect(ctrl.resize).toHaveBeenCalledWith(true);
+            expect(ctrl.resize).toHaveBeenCalled();
             expect(dc.redrawAll).toHaveBeenCalled();
         });
     });
@@ -425,16 +439,14 @@ describe('CohortSelectionCtrl', function () {
             }
         }
 
-        it('should call for each node', function () {
-            spyOn(dupBox.ctrl.cs.nodes, 'forEach');
-
-            ctrl.applyDuplication(dupBox);
-            expect(dupBox.ctrl.cs.nodes.forEach).toHaveBeenCalled();
-        });
-
         it('should call addNodeToActiveCohortSelection', function () {
             dupBox.ctrl.cs.nodes.push(node);
-            spyOn(ctrl, 'addNodeToActiveCohortSelection');
+            spyOn(ctrl, 'addNodeToActiveCohortSelection').and.callFake(function () {
+                return {
+                    then: function () {}
+
+                }
+            });
 
             ctrl.applyDuplication(dupBox);
             expect(ctrl.addNodeToActiveCohortSelection).toHaveBeenCalled();
@@ -510,7 +522,7 @@ describe('CohortSelectionCtrl', function () {
         it('should do resizing only when there are labels', function () {
             spyOn(ctrl.cs.labels, 'forEach');
             spyOn(Math, 'floor');
-            ctrl.resize(true);
+            ctrl.resize(reDistribution.none);
             expect(ctrl.cs.labels.forEach).toHaveBeenCalled();
             expect(Math.floor).toHaveBeenCalled();
         });
@@ -519,51 +531,37 @@ describe('CohortSelectionCtrl', function () {
             ctrl.cs.labels = [];
             spyOn(ctrl.cs.labels, 'forEach');
             spyOn(Math, 'floor');
-            ctrl.resize(true);
+            ctrl.resize(reDistribution.none);
             expect(ctrl.cs.labels.forEach).not.toHaveBeenCalled();
             expect(Math.floor).not.toHaveBeenCalled();
         });
 
-        it('should reset sizeX and sizeY of a label when reDistribute is true', function () {
-            ctrl.resize(true);
+        it('should reset sizeX and sizeY of a label when reDistribution.sizeAndPosition', function () {
+            spyOn(ctrl.cs.labels, 'forEach').and.callThrough();
+            ctrl.resize(reDistribution.sizeAndPosition);
             expect(ctrl.cs.labels[0].sizeX).toBe(1);
             expect(ctrl.cs.labels[0].sizeY).toBe(1);
             expect(ctrl.cs.labels[1].sizeX).toBe(1);
             expect(ctrl.cs.labels[1].sizeY).toBe(1);
+            expect(ctrl.cs.labels.forEach).toHaveBeenCalled();
         });
 
-        it('should not reset sizeX and sizeY of an existing label when reDistribute is false', function () {
-            ctrl.resize(false);
+        it('should not reset sizeX and sizeY of an existing label when reDistribute.position', function () {
+            ctrl.resize(reDistribution.position);
             expect(ctrl.cs.labels[0].sizeX).toBe(2);
             expect(ctrl.cs.labels[0].sizeY).toBe(2);
             expect(ctrl.cs.labels[1].sizeX).toBe(1);
             expect(ctrl.cs.labels[1].sizeY).toBe(1);
         });
 
-        it('should call _.find when reDistribute is false', function () {
-            spyOn(_, 'find');
-            ctrl.resize(false);
-            expect(_.find).toHaveBeenCalled();
+        it('should not reset sizeX and sizeY of an existing label when reDistribute.none', function () {
+            ctrl.resize(reDistribution.none);
+            expect(ctrl.cs.labels[0].sizeX).toBe(2);
+            expect(ctrl.cs.labels[0].sizeY).toBe(2);
+            expect(ctrl.cs.labels[1].sizeX).toBe(1);
+            expect(ctrl.cs.labels[1].sizeY).toBe(1);
         });
 
-        it('should not call _.find when reDistribute is true', function () {
-            spyOn(_, 'find');
-            ctrl.resize(true);
-            expect(_.find).not.toHaveBeenCalled();
-        });
-
-        it('should conditionally call _.times when reDistribute is false', function () {
-
-            spyOn(_, 'times');
-            ctrl.resize(false);
-            expect(_.times).not.toHaveBeenCalled();
-
-            ctrl.cs.labels.push({
-                conceptPath: 'a/path/3',
-            });
-            ctrl.resize(false);
-            expect(_.times).toHaveBeenCalled();
-        });
 
     });
 });

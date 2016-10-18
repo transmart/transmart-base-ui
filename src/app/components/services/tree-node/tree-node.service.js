@@ -150,9 +150,23 @@ angular.module('transmartBaseUi').factory('TreeNodeService', ['$q', function ($q
             node.loaded = true;
             deferred.resolve(node.loaded);
         }
-
         return deferred.promise;
     };
+
+
+    /**
+     * @memberof TreeNodeService
+     * @param node
+     * @returns boolean
+     */
+    service.isCategoricalLeafNode = function (node) {
+        if(node.type === 'CATEGORICAL_OPTION') {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
 
     return service;
 

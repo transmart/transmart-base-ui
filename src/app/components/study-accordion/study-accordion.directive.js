@@ -65,7 +65,6 @@ angular.module('transmartBaseUi')
                 TreeNodeService.getNodeChildren(node, prefix).finally(function () {
                     node.isLoading = false;
                 });
-
             };
 
             ctrl.prev_node = null;
