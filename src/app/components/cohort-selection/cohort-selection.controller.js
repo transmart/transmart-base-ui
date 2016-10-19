@@ -103,21 +103,12 @@ angular.module('transmartBaseUi')
                 };
 
                 /**
-                 * Rearrange the gridster layout of the charts
-                 * @param {boolean} if redistribute
+                 * The positions and sizes of the charts are reinitialized
                  * @memberof CohortSelectionCtrl
                  */
-                var reDistribution = {
-                    sizeAndPosition: 'relayout the charts completely',
-                    position: 'only relayout the positions of the charts',
-                    none: 'detect gaps and insert the new chart(s)'
-                }
-
-                vm.resize = function (reDistributionVal) {
+                vm.reSizeAndPosition = function () {
                     var labels = vm.cs.labels;
-                    /*
-                     * If there is any label to be positioned in the first place
-                     */
+                    //If there is any label to be positioned in the first place
                     if (labels.length > 0) {
                         var elId = '#' + vm.mainContainerId;
                         // Get width of the full gridster grid
@@ -125,165 +116,197 @@ angular.module('transmartBaseUi')
                         if(_gWidth <= 0) {
                             _gWidth = angular.element('#main-container-div').width();
                         }
-
                         // Calculate the number of columns in the grid according to full gridster
                         // grid size and the base square size. Adjust by -1 if number of columns
                         // is not pair.
                         var _gCols = Math.floor(_gWidth / vm.gridsterConfig.G_BASE_WIDTH);
                         vm.gridsterOpts.columns = _gCols;
-                        /*
-                         * If all the charts need to be redistributed,
-                         * i.e. their positions and sizes will be reinitialized
-                         */
-                        if (reDistributionVal === reDistribution.sizeAndPosition) {
-                            labels.forEach(function (label, index) {
-                                label.sizeX = vm.gridsterConfig.G_ITEM_SPAN_X;
-                                label.sizeY = vm.gridsterConfig.G_ITEM_SPAN_Y;
-                                // Spread items left to right
-                                label.col = (index * label.sizeX) % _gCols;
 
-                                // And top to bottom
-                                label.row = Math.floor((index * label.sizeX) / _gCols) * label.sizeY;
-                            });
+                        labels.forEach(function (label, index) {
+                            label.sizeX = vm.gridsterConfig.G_ITEM_SPAN_X;
+                            label.sizeY = vm.gridsterConfig.G_ITEM_SPAN_Y;
+                            // Spread items left to right
+                            label.col = (index * label.sizeX) % _gCols;
+
+                            // And top to bottom
+                            label.row = Math.floor((index * label.sizeX) / _gCols) * label.sizeY;
+                        });
+                    }
+                };
+
+                /**
+                 * Only re-initialize the positions of the charts, no size changing
+                 * @memberof CohortSelectionCtrl
+                 */
+                vm.rePosition = function () {
+                    var labels = vm.cs.labels;
+                    //If there is any label to be positioned in the first place
+                    if (labels.length > 0) {
+                        var elId = '#' + vm.mainContainerId;
+                        // Get width of the full gridster grid
+                        var _gWidth = angular.element(elId).width();
+                        if(_gWidth <= 0) {
+                            _gWidth = angular.element('#main-container-div').width();
                         }
-                        else if (reDistributionVal === reDistribution.position) {
-                            var colIndex = 0, rowIndex = 0;
-                            labels.forEach(function (label, index) {
-                                if (!label.sizeX) label.sizeX = vm.gridsterConfig.G_ITEM_SPAN_X;
-                                if (!label.sizeY) label.sizeY = vm.gridsterConfig.G_ITEM_SPAN_Y;
-                                // Spread items left to right
-                                label.col = colIndex;
-                                label.row = rowIndex;
+                        // Calculate the number of columns in the grid according to full gridster
+                        // grid size and the base square size. Adjust by -1 if number of columns
+                        // is not pair.
+                        var _gCols = Math.floor(_gWidth / vm.gridsterConfig.G_BASE_WIDTH);
+                        vm.gridsterOpts.columns = _gCols;
 
-                                colIndex += label.sizeX;
-                                if (colIndex >= _gCols) {
-                                    colIndex = 0;
-                                    rowIndex++;
-                                }
-                                // And top to bottom
-                                label.row = Math.floor((index * label.sizeX) / _gCols) * label.sizeY;
-                            });
+                        var colIndex = 0, rowIndex = 0;
+                        labels.forEach(function (label, index) {
+                            if (!label.sizeX) label.sizeX = vm.gridsterConfig.G_ITEM_SPAN_X;
+                            if (!label.sizeY) label.sizeY = vm.gridsterConfig.G_ITEM_SPAN_Y;
+                            // Spread items left to right
+                            label.col = colIndex;
+                            label.row = rowIndex;
+
+                            colIndex += label.sizeX;
+                            if (colIndex >= _gCols) {
+                                colIndex = 0;
+                                rowIndex++;
+                            }
+                            // And top to bottom
+                            label.row = Math.floor((index * label.sizeX) / _gCols) * label.sizeY;
+                        });
+                    }
+                };
+
+                /**
+                 * Different from vm.rePosition, this function
+                 * detects gaps and inserts the new chart(s)
+                 * @memberof CohortSelectionCtrl
+                 */
+                vm.reOrganize = function () {
+                    var labels = vm.cs.labels;
+                    //If there is any label to be positioned in the first place
+                    if (labels.length > 0) {
+                        var elId = '#' + vm.mainContainerId;
+                        // Get width of the full gridster grid
+                        var _gWidth = angular.element(elId).width();
+                        if(_gWidth <= 0) {
+                            _gWidth = angular.element('#main-container-div').width();
                         }
+                        // Calculate the number of columns in the grid according to full gridster
+                        // grid size and the base square size. Adjust by -1 if number of columns
+                        // is not pair.
+                        var _gCols = Math.floor(_gWidth / vm.gridsterConfig.G_BASE_WIDTH);
+                        vm.gridsterOpts.columns = _gCols;
+
+                        var cells = [], // the cells that existing charts occupy
+                            labelsToBeResized = [], // the labels corresponding the un-positioned charts
+                            rows = Math.ceil(labels.length / _gCols),// num of existing rows
+                            cols = _gCols, // num of existing cols
+                            lastCell = {col: 0, row: 0}; // the last cell from left to right, top to bottom
+
                         /*
-                         * When only positioning the un-positioned charts,
-                         * and leave the other positioned charts as is
+                         * For each label, find existing cells and un-positioned labels,
+                         * also identify the last cell
                          */
-                        else if (reDistributionVal === reDistribution.none) {
-                            var cells = [], // the cells that existing charts occupy
-                                labelsToBeResized = [], // the labels corresponding the un-positioned charts
-                                rows = Math.ceil(labels.length / _gCols),// num of existing rows
-                                cols = _gCols, // num of existing cols
-                                lastCell = {col: 0, row: 0}; // the last cell from left to right, top to bottom
+                        labels.forEach(function (label, index) {
+                            if (label.sizeX) {
+                                var cell = {
+                                    sizeX: label.sizeX,
+                                    sizeY: label.sizeY,
+                                    col: label.col,
+                                    row: label.row
+                                };
+                                cells.push(cell);
 
-                            /*
-                             * For each label, find existing cells and un-positioned labels,
-                             * also identify the last cell
-                             */
-                            labels.forEach(function (label, index) {
-                                if (label.sizeX) {
-                                    var cell = {
-                                        sizeX: label.sizeX,
-                                        sizeY: label.sizeY,
-                                        col: label.col,
-                                        row: label.row
-                                    };
-                                    cells.push(cell);
-
-                                    if (cell.col > lastCell.col || cell.row > lastCell.row) {
-                                        lastCell = cell;
-                                    }
-                                }
-                                else {
-                                    labelsToBeResized.push(label);
-                                }
-                            });
-
-                            /*
-                             * Find gaps that might exist among existing cells,
-                             * and put these gaps into availableCells for future use
-                             */
-                            var availableCells = [];
-                            if (cells.length === 0) {
-                                // If these is no existing cell, construct availableCells sequentially
-                                for (var i = 0; i < rows; i++) {
-                                    for (var j = 0; j < cols; j++) {
-                                        var cell = _.find(cells, {row: i, col: j});
-                                        if (!cell) {
-                                            availableCells.push({row: i, col: j});
-                                        }
-                                    }
+                                if (cell.col > lastCell.col || cell.row > lastCell.row) {
+                                    lastCell = cell;
                                 }
                             }
                             else {
-                                // If there are existing cells, find their neighbors to
-                                // the left or right, if these neighbors do not overlap with
-                                // other existing cells, put them into availabelCells
-                                cells.forEach(function (cell) {
-                                    var neighborLeft = {
-                                        col: cell.col - 1,
-                                        row: cell.row
-                                    };
-                                    if (neighborLeft.col < 0) {
-                                        neighborLeft.col = 0;
-                                    }
-                                    var foundNeighborLeft = _.find(cells, neighborLeft);
-                                    var duplicateLeft = _.find(availableCells, neighborLeft);
-                                    if (!foundNeighborLeft && !duplicateLeft) {
-                                        availableCells.push(neighborLeft);
-                                    }
-
-                                    var neighborRight = {
-                                        col: cell.col + cell.sizeX,
-                                        row: cell.row
-                                    };
-                                    if (neighborRight.col > _gCols - 1) {
-                                        neighborRight.col = 0;
-                                    }
-                                    var foundNeighborRight = _.find(cells, neighborRight);
-                                    var duplicateRight = _.find(availableCells, neighborRight);
-                                    if (!foundNeighborRight && !duplicateRight) {
-                                        availableCells.push(neighborRight);
-                                    }
-                                });
+                                labelsToBeResized.push(label);
                             }
+                        });
 
-                            /*
-                             * If there are not enough available cells for the un-positioned labels,
-                             * simply attach new cells to the tail of the cell grid
-                             */
-                            var diff = labelsToBeResized.length - availableCells.length;
-                            if (diff > 0) {
-                                _.times(diff, function () {
-                                    var col = lastCell.col + 1;
-                                    var row = lastCell.row;
-                                    if (col > _gCols - 1) {
-                                        col = 0;
-                                        row++;
+                        /*
+                         * Find gaps that might exist among existing cells,
+                         * and put these gaps into availableCells for future use
+                         */
+                        var availableCells = [];
+                        if (cells.length === 0) {
+                            // If these is no existing cell, construct availableCells sequentially
+                            for (var i = 0; i < rows; i++) {
+                                for (var j = 0; j < cols; j++) {
+                                    var cell = _.find(cells, {row: i, col: j});
+                                    if (!cell) {
+                                        availableCells.push({row: i, col: j});
                                     }
-                                    var foundCell = _.find(availableCells, {col: col, row: row});
-                                    if (!foundCell) {
-                                        availableCells.push({col: col, row: row});
-                                    }
-                                });
+                                }
                             }
+                        }
+                        else {
+                            // If there are existing cells, find their neighbors to
+                            // the left or right, if these neighbors do not overlap with
+                            // other existing cells, put them into availabelCells
+                            cells.forEach(function (cell) {
+                                var neighborLeft = {
+                                    col: cell.col - 1,
+                                    row: cell.row
+                                };
+                                if (neighborLeft.col < 0) {
+                                    neighborLeft.col = 0;
+                                }
+                                var foundNeighborLeft = _.find(cells, neighborLeft);
+                                var duplicateLeft = _.find(availableCells, neighborLeft);
+                                if (!foundNeighborLeft && !duplicateLeft) {
+                                    availableCells.push(neighborLeft);
+                                }
 
-                            /*
-                             * For each new label, assign its position based on available cells
-                             */
-                            labelsToBeResized.forEach(function (label, index) {
-                                var cell = availableCells[index];
-                                label.sizeX = vm.gridsterConfig.G_ITEM_SPAN_X;
-                                label.sizeY = vm.gridsterConfig.G_ITEM_SPAN_Y;
-                                if (cell) {
-                                    label.col = cell.col;
-                                    label.row = cell.row;
+                                var neighborRight = {
+                                    col: cell.col + cell.sizeX,
+                                    row: cell.row
+                                };
+                                if (neighborRight.col > _gCols - 1) {
+                                    neighborRight.col = 0;
+                                }
+                                var foundNeighborRight = _.find(cells, neighborRight);
+                                var duplicateRight = _.find(availableCells, neighborRight);
+                                if (!foundNeighborRight && !duplicateRight) {
+                                    availableCells.push(neighborRight);
                                 }
                             });
                         }
-                    }
 
-                    return labels;
+                        /*
+                         * If there are not enough available cells for the un-positioned labels,
+                         * simply attach new cells to the tail of the cell grid
+                         */
+                        var diff = labelsToBeResized.length - availableCells.length;
+                        if (diff > 0) {
+                            _.times(diff, function () {
+                                var col = lastCell.col + 1;
+                                var row = lastCell.row;
+                                if (col > _gCols - 1) {
+                                    col = 0;
+                                    row++;
+                                }
+                                var foundCell = _.find(availableCells, {col: col, row: row});
+                                if (!foundCell) {
+                                    availableCells.push({col: col, row: row});
+                                }
+                            });
+                        }
+
+                        /*
+                         * For each new label, assign its position based on available cells
+                         */
+                        labelsToBeResized.forEach(function (label, index) {
+                            var cell = availableCells[index];
+                            label.sizeX = vm.gridsterConfig.G_ITEM_SPAN_X;
+                            label.sizeY = vm.gridsterConfig.G_ITEM_SPAN_Y;
+                            if (cell) {
+                                label.col = cell.col;
+                                label.row = cell.row;
+                            }
+                        });
+                    }
                 };
+
 
                 /**
                  * Restore the data of the crossfilter to full set
@@ -546,7 +569,7 @@ angular.module('transmartBaseUi')
                                 }
                             }
                         });
-                        vm.resize(reDistribution.none);
+                        vm.reOrganize();
                         vm.updateDimensions();
                     }
 
@@ -667,7 +690,7 @@ angular.module('transmartBaseUi')
                         _chart.filter(null);
                     });
                     vm.updateDimensions();
-                    vm.resize(reDistribution.sizeAndPosition);
+                    vm.reSizeAndPosition();
                     dc.redrawAll();
                 };
 
@@ -1152,6 +1175,7 @@ angular.module('transmartBaseUi')
                                 filterWords: chart.filters()
                             });
                         }
+                        // to make sure the nodes are added sequentially
                         var promise = vm.addNodeToActiveCohortSelection(node, filters);
                         promise.then(function () {
                             index++;
@@ -1171,10 +1195,10 @@ angular.module('transmartBaseUi')
                     vm.boxSize = newVal;
                     if (newVal > 0 && oldVal > 0) {
                         if (newVal <= 400) {
-                            vm.resize(reDistribution.sizeAndPosition);
+                            vm.reSizeAndPosition();
                         }
                         else {
-                            vm.resize(reDistribution.position);
+                            vm.rePosition();
                         }
                     }
                 });

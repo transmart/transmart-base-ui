@@ -160,12 +160,7 @@ angular.module('transmartBaseUi').factory('TreeNodeService', ['$q', function ($q
      * @returns boolean
      */
     service.isCategoricalLeafNode = function (node) {
-        if(node.type === 'CATEGORICAL_OPTION') {
-            return true;
-        }
-        else {
-            return false;
-        }
+        return node.type === 'CATEGORICAL_OPTION';
     }
 
     return service;

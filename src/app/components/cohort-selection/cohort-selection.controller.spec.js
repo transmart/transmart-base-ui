@@ -462,7 +462,7 @@ describe('CohortSelectionCtrl', function () {
             spyOn(chart1, 'filter');
             spyOn(chart2, 'filter');
             spyOn(ctrl, 'updateDimensions');
-            spyOn(ctrl, 'resize');
+            spyOn(ctrl, 'reSizeAndPosition');
             spyOn(dc, 'redrawAll');
 
             ctrl.resetCharts();
@@ -473,9 +473,9 @@ describe('CohortSelectionCtrl', function () {
             expect(chart2.filter).toHaveBeenCalledWith(null);
         });
 
-        it('should update dimensions and resize charts', function () {
+        it('should update dimensions and reSizeAndPosition charts', function () {
             expect(ctrl.updateDimensions).toHaveBeenCalled();
-            expect(ctrl.resize).toHaveBeenCalled();
+            expect(ctrl.reSizeAndPosition).toHaveBeenCalled();
             expect(dc.redrawAll).toHaveBeenCalled();
         });
     });
@@ -566,7 +566,7 @@ describe('CohortSelectionCtrl', function () {
         });
     });
 
-    describe('resize', function () {
+    describe('reSizeAndPosition', function () {
         beforeEach(function () {
             ctrl.cs.labels = [
                 {
@@ -580,26 +580,26 @@ describe('CohortSelectionCtrl', function () {
             ];
         });
 
-        it('should do resizing only when there are labels', function () {
+        it('should reSizeAndPosition only when there are labels', function () {
             spyOn(ctrl.cs.labels, 'forEach');
             spyOn(Math, 'floor');
-            ctrl.resize(reDistribution.none);
+            ctrl.reSizeAndPosition();
             expect(ctrl.cs.labels.forEach).toHaveBeenCalled();
             expect(Math.floor).toHaveBeenCalled();
         });
 
-        it('should not do resizing when there is no label', function () {
+        it('should not reSizeAndPosition when there is no label', function () {
             ctrl.cs.labels = [];
             spyOn(ctrl.cs.labels, 'forEach');
             spyOn(Math, 'floor');
-            ctrl.resize(reDistribution.none);
+            ctrl.reSizeAndPosition();
             expect(ctrl.cs.labels.forEach).not.toHaveBeenCalled();
             expect(Math.floor).not.toHaveBeenCalled();
         });
 
-        it('should reset sizeX and sizeY of a label when reDistribution.sizeAndPosition', function () {
+        it('should reset sizeX and sizeY of a label', function () {
             spyOn(ctrl.cs.labels, 'forEach').and.callThrough();
-            ctrl.resize(reDistribution.sizeAndPosition);
+            ctrl.reSizeAndPosition();
             expect(ctrl.cs.labels[0].sizeX).toBe(1);
             expect(ctrl.cs.labels[0].sizeY).toBe(1);
             expect(ctrl.cs.labels[1].sizeX).toBe(1);
@@ -607,22 +607,88 @@ describe('CohortSelectionCtrl', function () {
             expect(ctrl.cs.labels.forEach).toHaveBeenCalled();
         });
 
-        it('should not reset sizeX and sizeY of an existing label when reDistribute.position', function () {
-            ctrl.resize(reDistribution.position);
-            expect(ctrl.cs.labels[0].sizeX).toBe(2);
-            expect(ctrl.cs.labels[0].sizeY).toBe(2);
-            expect(ctrl.cs.labels[1].sizeX).toBe(1);
-            expect(ctrl.cs.labels[1].sizeY).toBe(1);
-        });
-
-        it('should not reset sizeX and sizeY of an existing label when reDistribute.none', function () {
-            ctrl.resize(reDistribution.none);
-            expect(ctrl.cs.labels[0].sizeX).toBe(2);
-            expect(ctrl.cs.labels[0].sizeY).toBe(2);
-            expect(ctrl.cs.labels[1].sizeX).toBe(1);
-            expect(ctrl.cs.labels[1].sizeY).toBe(1);
-        });
-
-
     });
+
+    describe('rePosition', function () {
+        beforeEach(function () {
+            ctrl.cs.labels = [
+                {
+                    conceptPath: 'a/path/1',
+                    sizeX: 2,
+                    sizeY: 2
+                },
+                {
+                    conceptPath: 'a/path/2',
+                }
+            ];
+        });
+
+        it('should rePosition only when there are labels', function () {
+            spyOn(ctrl.cs.labels, 'forEach');
+            spyOn(Math, 'floor');
+            ctrl.rePosition();
+            expect(ctrl.cs.labels.forEach).toHaveBeenCalled();
+            expect(Math.floor).toHaveBeenCalled();
+        });
+
+        it('should not rePosition when there is no label', function () {
+            ctrl.cs.labels = [];
+            spyOn(ctrl.cs.labels, 'forEach');
+            spyOn(Math, 'floor');
+            ctrl.rePosition();
+            expect(ctrl.cs.labels.forEach).not.toHaveBeenCalled();
+            expect(Math.floor).not.toHaveBeenCalled();
+        });
+
+        it('should not reset sizeX and sizeY of an existing label', function () {
+            ctrl.rePosition();
+            expect(ctrl.cs.labels[0].sizeX).toBe(2);
+            expect(ctrl.cs.labels[0].sizeY).toBe(2);
+            expect(ctrl.cs.labels[1].sizeX).toBe(1);
+            expect(ctrl.cs.labels[1].sizeY).toBe(1);
+        });
+    });
+
+
+    describe('reOrganize', function () {
+        beforeEach(function () {
+            ctrl.cs.labels = [
+                {
+                    conceptPath: 'a/path/1',
+                    sizeX: 2,
+                    sizeY: 2
+                },
+                {
+                    conceptPath: 'a/path/2',
+                }
+            ];
+        });
+
+        it('should reOrganize only when there are labels', function () {
+            spyOn(ctrl.cs.labels, 'forEach');
+            spyOn(Math, 'floor');
+            ctrl.reOrganize();
+            expect(ctrl.cs.labels.forEach).toHaveBeenCalled();
+            expect(Math.floor).toHaveBeenCalled();
+        });
+
+        it('should not reOrganize when there is no label', function () {
+            ctrl.cs.labels = [];
+            spyOn(ctrl.cs.labels, 'forEach');
+            spyOn(Math, 'floor');
+            ctrl.reOrganize();
+            expect(ctrl.cs.labels.forEach).not.toHaveBeenCalled();
+            expect(Math.floor).not.toHaveBeenCalled();
+        });
+
+        it('should not reset sizeX and sizeY of an existing label', function () {
+            ctrl.reOrganize();
+            expect(ctrl.cs.labels[0].sizeX).toBe(2);
+            expect(ctrl.cs.labels[0].sizeY).toBe(2);
+            expect(ctrl.cs.labels[1].sizeX).toBe(1);
+            expect(ctrl.cs.labels[1].sizeY).toBe(1);
+        });
+    });
+
+
 });
