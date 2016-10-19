@@ -185,5 +185,76 @@ describe('TreeNodeService', function () {
 
     });
 
+    describe('populateChildren', function () {
+        var deferred, _n;
+
+        beforeEach(function () {
+            deferred = $q.defer();
+
+            _n = {
+                title: 'someTitle',
+                total: 999,
+                type: 'UNKNOWN',
+                isLoading: false
+            };
+
+            spyOn(TreeNodeService, 'setRootNodeAttributes').and.returnValue(_n);
+            spyOn(TreeNodeService, 'getNodeChildren').and.returnValue(deferred.promise);
+        });
+
+        it('should invoke TreeNodeService.getNodeChildren when populating node children', function () {
+            TreeNodeService.populateChildren({});
+            expect(TreeNodeService.setRootNodeAttributes).toHaveBeenCalled();
+            expect(TreeNodeService.getNodeChildren).toHaveBeenCalled();
+        });
+
+        it('should not invoke TreeNodeService.setRootNodeAttributes when populating study node', function () {
+            TreeNodeService.populateChildren({restObj:'foo'});
+            expect(TreeNodeService.setRootNodeAttributes).not.toHaveBeenCalled();
+            expect(TreeNodeService.getNodeChildren).toHaveBeenCalled();
+        });
+    });
+
+    describe('expandConcept', function () {
+        var targetNode, _n, conceptSplit;
+
+        beforeEach(function () {
+            targetNode = {
+                title: 'gender'
+            };
+            _n = {
+                title: 'someTitle',
+                total: 999,
+                type: 'UNKNOWN',
+                isLoading: false,
+                loaded: true,
+                restObj: {},
+                nodes: [
+                    {
+                        title: 'decoy'
+                    },
+                    {
+                        title: 'subjects',
+                        loaded: true,
+                        restObj: {},
+                        nodes: [
+                            targetNode
+                        ]
+                    }
+                ]
+            };
+            conceptSplit = ['subjects', 'gender'];
+
+            spyOn(TreeNodeService, 'populateChildren').and.callThrough();
+        });
+
+        it('should return the target node', function () {
+            TreeNodeService.expandConcept(_n, conceptSplit).then(function(result) {
+                expect(TreeNodeService.populateChildren).toHaveBeenCalled();
+                expect(result).toEqual([targetNode]);
+            });
+        });
+    });
+
 
 });

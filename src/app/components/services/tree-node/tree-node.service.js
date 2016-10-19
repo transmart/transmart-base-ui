@@ -162,6 +162,12 @@ angular.module('transmartBaseUi').factory('TreeNodeService', ['$q', function ($q
         return node.type === 'CATEGORICAL_OPTION';
     }
 
+    /*
+     * Populate node children
+     * @memberof TreeNodeService
+     * @param node
+     * @returns {Promise}
+     */
     service.populateChildren = function (node) {
         var prefix;
 
@@ -185,8 +191,14 @@ angular.module('transmartBaseUi').factory('TreeNodeService', ['$q', function ($q
         return promise;
     };
 
+    /**
+     * Expands the specified node along the concept path.
+     * @param node The node to be expanded
+     * @param conceptSplit List of concept path elements to be expanded
+     * @returns {Promise}
+     */
     service.expandConcept = function(node, conceptSplit) {
-        var deferred = $q.defer()
+        var deferred = $q.defer();
 
         // Retrieve all children of the node.
         // It's possible that these still need to be loaded.
@@ -200,7 +212,7 @@ angular.module('transmartBaseUi').factory('TreeNodeService', ['$q', function ($q
                         matchingChild = child;
                         return false; //break from forEach
                     }
-                })
+                });
 
                 // expand the matching child recursively
                 if (matchingChild && conceptSplit.length > 1) {

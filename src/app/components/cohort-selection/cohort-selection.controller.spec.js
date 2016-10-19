@@ -103,6 +103,31 @@ describe('CohortSelectionCtrl', function () {
         });
     });
 
+    describe('addCohortFilter', function() {
+        var node = {},
+            chartName = "parent/restobj/fullname",
+            dcFilters = [['category1'], ['category2']];
+
+        beforeEach(function () {
+            node.type = '';
+            node.restObj = {};
+            node.restObj.fullName = chartName;
+        });
+
+        it('should invoke addNodeToActiveCohortSelection when a cohort filter is added', function () {
+            var filters = [{
+                label: 'parent/restobj/fullname',
+                dcFilters: dcFilters
+            }];
+
+            spyOn(ctrl, 'addCohortFilter').and.callThrough();
+            spyOn(ctrl, 'addNodeToActiveCohortSelection');
+            ctrl.addCohortFilter(node, dcFilters)
+            expect(ctrl.addCohortFilter).toHaveBeenCalledWith(node, dcFilters);
+            expect(ctrl.addNodeToActiveCohortSelection).toHaveBeenCalledWith(node, filters);
+        });
+    });
+
     describe('onNodeDrop', function () {
         var pieNode = {}, node = {},
             chart = {
