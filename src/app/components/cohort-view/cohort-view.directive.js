@@ -58,7 +58,7 @@ angular.module('transmartBaseUi')
                  * Loads the list of cohorts.
                  * @memberof CohortViewCtrl
                  */
-                ctrl.loadCohorts = function() {
+                ctrl.loadCohortList = function() {
                     CohortViewService.getCohorts().then(function(cohorts) {
                         $scope.cohorts = cohorts;
                     }, function(error) {
@@ -95,11 +95,14 @@ angular.module('transmartBaseUi')
                     $q.all(selectedCohorts.map(function(cohort) {
                         return ctrl.removeCohort(cohort);
                     })).then(function() {
-                        ctrl.loadCohorts();
+                        ctrl.loadCohortList();
                     });
                 };
 
-
+                /**
+                 * Loads the specified cohort by parsing the query and adding the
+                 * nodes and filters to the cohort selection workspace.
+                 */
                 ctrl.loadCohort = function(cohort) {
 
                     // Get the controller for the selected workspace
@@ -111,6 +114,9 @@ angular.module('transmartBaseUi')
                     //TODO: automatically switch to cohort selection tab
                 };
 
+                /**
+                 * Loads the cohorts currently selected in the list.
+                 */
                 ctrl.loadSelectedCohorts = function() {
                     var selectedCohorts = ctrl.gridApi.selection.getSelectedRows();
 
@@ -121,7 +127,7 @@ angular.module('transmartBaseUi')
                 };
 
                 // Initialize the list
-                ctrl.loadCohorts();
-            }
+                ctrl.loadCohortList();
+                }
         ]
     );
