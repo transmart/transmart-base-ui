@@ -8,7 +8,6 @@ describe('StudyListService', function () {
         httpBackend,
         EndpointService,
         Restangular,
-        StudyListMocks,
         $rootScope;
 
     /**
@@ -121,5 +120,16 @@ describe('StudyListService', function () {
             expect(StudyListService.studyList[0].hide).toBe(true);
         });
     });
+
+    describe('getStudy', function() {
+        beforeEach(function() {
+            StudyListService.studyList = StudyListMocks.studies();
+        });
+
+        it('should return the study corresponding to the path', function() {
+            var study = StudyListService.getStudy("\\Public Studies\\GSE8581\\")
+            expect(study.id).toEqual("GSE8581");
+        });
+    })
 
 });

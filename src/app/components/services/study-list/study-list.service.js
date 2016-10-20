@@ -195,6 +195,22 @@ angular.module('transmartBaseUi').factory('StudyListService', ['$q', 'EndpointSe
             });
         };
 
+        /**
+         * Returns the study matching the specified path
+         * @param path String specifying the path to the study, including private/public studies
+         * @returns {object} The study node
+         */
+        service.getStudy = function(path) {
+            var matchedStudy = undefined;
+            _.forEach(service.studyList, function(study) {
+                if (study._embedded.ontologyTerm.fullName == path) {
+                    matchedStudy = study;
+                    return false; // break from forEach
+                }
+            });
+            return matchedStudy;
+        };
+
         return service;
     }]);
 

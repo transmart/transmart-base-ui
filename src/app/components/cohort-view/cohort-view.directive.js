@@ -22,8 +22,10 @@ angular.module('transmartBaseUi')
      * @ngdoc controller
      * @name cohortView
      */
-    .controller('CohortViewCtrl', ['$scope', '$timeout', '$q', 'CohortViewService', 'AlertService',
-            function ($scope, $timeout, $q, CohortViewService, AlertService) {
+    .controller('CohortViewCtrl', ['$scope', '$timeout', '$q', 'CohortViewService',
+        'AlertService', 'CohortSelectionService', 'QueryParserService',
+            function ($scope, $timeout, $q, CohortViewService, AlertService,
+                      CohortSelectionService, QueryParserService) {
 
                 $scope.cohorts = [];
                 var ctrl = this;
@@ -56,7 +58,7 @@ angular.module('transmartBaseUi')
                  * Loads the list of cohorts.
                  * @memberof CohortViewCtrl
                  */
-                ctrl.loadCohorts = function() {
+                ctrl.loadCohortList = function() {
                     CohortViewService.getCohorts().then(function(cohorts) {
                         $scope.cohorts = cohorts;
                     }, function(error) {
@@ -93,12 +95,39 @@ angular.module('transmartBaseUi')
                     $q.all(selectedCohorts.map(function(cohort) {
                         return ctrl.removeCohort(cohort);
                     })).then(function() {
-                        ctrl.loadCohorts();
+                        ctrl.loadCohortList();
+                    });
+                };
+
+                /**
+                 * Loads the specified cohort by parsing the query and adding the
+                 * nodes and filters to the cohort selection workspace.
+                 */
+                ctrl.loadCohort = function(cohort) {
+
+                    // Get the controller for the selected workspace
+                    var cohortSelectionCtrl = CohortSelectionService.boxes[0].ctrl;
+
+                    // Parse query XML
+                    QueryParserService.convertCohortFiltersFromXML(cohort.queryXML, cohortSelectionCtrl);
+
+                    //TODO: automatically switch to cohort selection tab
+                };
+
+                /**
+                 * Loads the cohorts currently selected in the list.
+                 */
+                ctrl.loadSelectedCohorts = function() {
+                    var selectedCohorts = ctrl.gridApi.selection.getSelectedRows();
+
+                    // Remove all selected cohorts and reload the list after completing
+                    selectedCohorts.forEach(function(cohort) {
+                        ctrl.loadCohort(cohort);
                     });
                 };
 
                 // Initialize the list
-                ctrl.loadCohorts();
-            }
+                ctrl.loadCohortList();
+                }
         ]
     );

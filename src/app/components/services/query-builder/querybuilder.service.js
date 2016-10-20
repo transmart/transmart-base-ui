@@ -108,9 +108,18 @@ angular.module('transmartBaseUi').factory('QueryBuilderService', ['JSON2XMLServi
      */
     function generatePanelItemsForCategories(cohortFilter) {
         var items = [];
-        _.each(cohortFilter.filters, function (filter) {
-            items.push(generatePanelItemForConcept(cohortFilter.label + filter, filter, cohortFilter.study.type));
-        });
+        if (cohortFilter.filters.length > 0) {
+            // If there are filters on the chart, add each filter value separately (leafs)
+            _.each(cohortFilter.filters, function (filter) {
+                items.push(generatePanelItemForConcept(cohortFilter.label + filter, filter, cohortFilter.study.type));
+            });
+        }
+        else {
+            // If there are no filters, just add the category concept (parent of the values).
+            // Name is the last part of the concept, but before the last backslash.
+            var name = cohortFilter.label.split('\\').slice(-2, -1)[0];
+            items.push(generatePanelItemForConcept(cohortFilter.label, name, cohortFilter.study.type));
+        }
         return items;
     }
 

@@ -4,41 +4,9 @@
  * @Description Service layer exposing a mock layer for QueryBuilder operations.
  */
 angular.module('transmartBaseUi')
-    .factory('QueryBuilderMocks', ['$q',
-        function ($q) {
+    .factory('QueryBuilderMocks', [
+        function () {
             var mock = {};
-
-            mock.filterCohortFullStudy = function() {
-                return [{
-                    name: 'Organism',
-                        type: 'string',
-                    label: '\\Public Studies\\GSE8581\\Subjects\\Organism\\',
-                    study: {
-						id: 'GSE8581',
-							type: 'public',
-							_embedded: {
-							ontologyTerm: {
-								fullName: '\\Public Studies\\GSE8581\\'
-							}
-						}
-                    },
-                    filters: []
-                }]
-            };
-
-            mock.filterCohortFullStudyResponse = function() {
-                return [{
-                    panel_number: 1,
-                    invert: 0,
-                    total_item_occurrences: 1,
-                    item: {
-                        item_name: "GSE8581",
-                        item_key: "\\\\Public Studies\\Public Studies\\GSE8581\\",
-                        tooltip: "\\Public Studies\\GSE8581\\",
-                        class: "ENC"
-                    }
-                }];
-            };
 
             mock.cohortFiltersWithCategories = function() {
                 return [
@@ -78,13 +46,23 @@ angular.module('transmartBaseUi')
                     invert: 0,
                     total_item_occurrences: 1,
                     item: [{
+                        item_name: "Organism",
+                        item_key: "\\\\Public Studies\\Public Studies\\GSE8581\\Subjects\\Organism\\",
+                        tooltip: "\\Public Studies\\GSE8581\\Subjects\\Organism\\",
+                        class: "ENC"
+                    }]
+                }, {
+                    panel_number: 2,
+                    invert: 0,
+                    total_item_occurrences: 1,
+                    item: [{
                         item_name: "female",
                         item_key: "\\\\Public Studies\\Public Studies\\GSE8581\\Subjects\\Sex\\female",
                         tooltip: "\\Public Studies\\GSE8581\\Subjects\\Sex\\female",
                         class: "ENC"
                     }]
                 }, {
-                    panel_number: 2,
+                    panel_number: 3,
                     invert: 0,
                     total_item_occurrences: 1,
                     item: [{

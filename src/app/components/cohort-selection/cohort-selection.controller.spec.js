@@ -103,6 +103,31 @@ describe('CohortSelectionCtrl', function () {
         });
     });
 
+    describe('addNodeWithFilters', function() {
+        var node = {},
+            chartName = "parent/restobj/fullname",
+            dcFilters = [['category1'], ['category2']];
+
+        beforeEach(function () {
+            node.type = '';
+            node.restObj = {};
+            node.restObj.fullName = chartName;
+        });
+
+        it('should invoke addNodeToActiveCohortSelection when a cohort filter is added', function () {
+            var filters = [{
+                label: 'parent/restobj/fullname',
+                dcFilters: dcFilters
+            }];
+
+            spyOn(ctrl, 'addNodeWithFilters').and.callThrough();
+            spyOn(ctrl, 'addNodeToActiveCohortSelection');
+            ctrl.addNodeWithFilters(node, dcFilters)
+            expect(ctrl.addNodeWithFilters).toHaveBeenCalledWith(node, dcFilters);
+            expect(ctrl.addNodeToActiveCohortSelection).toHaveBeenCalledWith(node, filters);
+        });
+    });
+
     describe('onNodeDrop', function () {
         var pieNode = {}, node = {},
             chart = {
@@ -132,7 +157,7 @@ describe('CohortSelectionCtrl', function () {
         it('should invoke addNodeToActiveCohortSelection when a pieNode is newly dropped', function () {
             var filters = [{
                 label: 'parent/restobj/fullname',
-                filterWords: [undefined]
+                dcFilters: [undefined]
             }];
 
             spyOn(ctrl, 'onNodeDrop').and.callThrough();
