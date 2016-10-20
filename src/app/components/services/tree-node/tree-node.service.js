@@ -162,6 +162,15 @@ angular.module('transmartBaseUi').factory('TreeNodeService', ['$q', function ($q
         return node.type === 'CATEGORICAL_OPTION';
     }
 
+    /**
+     * @memberof TreeNodeService
+     * @param node
+     * @returns boolean
+     */
+    service.isCategoricalParentNode = function (node) {
+        return node.type === 'CATEGORICAL_CONTAINER';
+    }
+
     /*
      * Populate node children
      * @memberof TreeNodeService
@@ -214,15 +223,22 @@ angular.module('transmartBaseUi').factory('TreeNodeService', ['$q', function ($q
                     }
                 });
 
-                // expand the matching child recursively
                 if (matchingChild && conceptSplit.length > 1) {
+                    // expand the matching child recursively
                     service.expandConcept(matchingChild, conceptSplit.slice(1))
                         .then(function(result) {
                             deferred.resolve(result);
                         });
                 }
                 else {
-                    deferred.resolve(matchingChild);
+                    // We found our target node, but expand one level deeper.
+                    // This is required for categorical nodes, because
+                    // they only have their type set properly when their
+                    // children are loaded.
+                    service.populateChildren(matchingChild)
+                        .then(function(result) {
+                            deferred.resolve(matchingChild);
+                        });
                 }
             });
 

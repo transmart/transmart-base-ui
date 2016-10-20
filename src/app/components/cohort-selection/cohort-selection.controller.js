@@ -993,6 +993,12 @@ angular.module('transmartBaseUi')
                 vm.addNodeWithFilters = function(node, filters) {
                     vm.addHistory('addNodeWithFilters', [node, filters]);
 
+                    if (TreeNodeService.isCategoricalParentNode(node)) {
+                        filters = [];
+                    }
+                    if (TreeNodeService.isCategoricalLeafNode(node)) {
+                        node = node.parent;
+                    }
                     var filterObjects = [{
                         label: node.restObj.fullName,
                         dcFilters: filters

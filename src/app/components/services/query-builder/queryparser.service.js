@@ -68,7 +68,6 @@ angular.module('transmartBaseUi').factory('QueryParserService', ['XML2JSONServic
                     else {
                         // Category
                         filters.push(conceptPath.slice(-1));
-                        conceptPath = conceptPath.slice(0, -1);
                     }
 
                 });
