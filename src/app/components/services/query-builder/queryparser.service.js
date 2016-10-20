@@ -17,7 +17,7 @@ angular.module('transmartBaseUi').factory('QueryParserService',
        * @returns {*[]} The original list or the variable put in the list
        */
         function makeList(variable) {
-            return variable.constructor === Array ? variable : [variable];
+            return _.isArray(variable) ? variable : [variable];
         }
 
         /**
