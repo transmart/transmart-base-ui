@@ -22,8 +22,10 @@ angular.module('transmartBaseUi')
      * @ngdoc controller
      * @name cohortView
      */
-    .controller('CohortViewCtrl', ['$scope', '$timeout', '$q', 'CohortViewService', 'AlertService', 'CohortSelectionService', 'QueryParserService',
-            function ($scope, $timeout, $q, CohortViewService, AlertService, CohortSelectionService, QueryParserService) {
+    .controller('CohortViewCtrl', ['$scope', '$timeout', '$q', 'CohortViewService',
+        'AlertService', 'CohortSelectionService', 'QueryParserService',
+            function ($scope, $timeout, $q, CohortViewService, AlertService,
+                      CohortSelectionService, QueryParserService) {
 
                 $scope.cohorts = [];
                 var ctrl = this;
@@ -106,7 +108,7 @@ angular.module('transmartBaseUi')
                     // Parse query XML
                     QueryParserService.convertCohortFiltersFromXML(cohort.queryXML, cohortSelectionCtrl);
 
-                    //cohortSelectionCtrl.activateTab('Cohort Selection', 'cohortSelection');
+                    //TODO: automatically switch to cohort selection tab
                 };
 
                 ctrl.loadSelectedCohorts = function() {

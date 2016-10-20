@@ -5,7 +5,8 @@
  * @ngdoc factory
  * @name QueryParserService
  */
-angular.module('transmartBaseUi').factory('QueryParserService', ['XML2JSONService', 'StudyListService', 'TreeNodeService', 'PromiseQueue',
+angular.module('transmartBaseUi').factory('QueryParserService',
+    ['XML2JSONService', 'StudyListService', 'TreeNodeService', 'PromiseQueue',
     function (XML2JSONService, StudyListService, TreeNodeService, PromiseQueue) {
 
         var service = {};
