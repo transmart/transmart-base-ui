@@ -103,7 +103,7 @@ describe('CohortSelectionCtrl', function () {
         });
     });
 
-    describe('addCohortFilter', function() {
+    describe('addNodeWithFilters', function() {
         var node = {},
             chartName = "parent/restobj/fullname",
             dcFilters = [['category1'], ['category2']];
@@ -120,10 +120,10 @@ describe('CohortSelectionCtrl', function () {
                 dcFilters: dcFilters
             }];
 
-            spyOn(ctrl, 'addCohortFilter').and.callThrough();
+            spyOn(ctrl, 'addNodeWithFilters').and.callThrough();
             spyOn(ctrl, 'addNodeToActiveCohortSelection');
-            ctrl.addCohortFilter(node, dcFilters)
-            expect(ctrl.addCohortFilter).toHaveBeenCalledWith(node, dcFilters);
+            ctrl.addNodeWithFilters(node, dcFilters)
+            expect(ctrl.addNodeWithFilters).toHaveBeenCalledWith(node, dcFilters);
             expect(ctrl.addNodeToActiveCohortSelection).toHaveBeenCalledWith(node, filters);
         });
     });

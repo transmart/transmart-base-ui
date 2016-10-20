@@ -990,8 +990,8 @@ angular.module('transmartBaseUi')
                  * @param filters Array of dc filters to be added directly to the dc chart
                  * @returns {Promise}
                  */
-                vm.addCohortFilter = function(node, filters) {
-                    vm.addHistory('addCohortFilter', [node, filters]);
+                vm.addNodeWithFilters = function(node, filters) {
+                    vm.addHistory('addNodeWithFilters', [node, filters]);
 
                     var filterObjects = [{
                         label: node.restObj.fullName,

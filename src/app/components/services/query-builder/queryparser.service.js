@@ -79,7 +79,7 @@ angular.module('transmartBaseUi').factory('QueryParserService', ['XML2JSONServic
                         return TreeNodeService.expandConcept(studyNode, conceptPath)
                             .then(function (response) {
                                 // Add the node and filters to the workspace
-                                cohortSelectionController.addCohortFilter(response, filters);
+                                cohortSelectionController.addNodeWithFilters(response, filters);
                             });
                     });
                 }
