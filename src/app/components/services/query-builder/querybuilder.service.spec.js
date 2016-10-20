@@ -14,11 +14,6 @@ describe('QueryBuilderService Unit Tests', function () {
         QueryBuilderMocks = _QueryBuilderMocks_;
     }));
 
-    it('should convert cohort filters without a selection to cover the entire study', function () {
-       expect(QueryBuilderService.convertCohortFiltersToI2B2Panels(QueryBuilderMocks.filterCohortFullStudy()))
-            .toEqual(QueryBuilderMocks.filterCohortFullStudyResponse());
-    });
-
     it('should convert cohort filters with categories', function () {
         expect(QueryBuilderService.convertCohortFiltersToI2B2Panels(QueryBuilderMocks.cohortFiltersWithCategories()))
             .toEqual(QueryBuilderMocks.cohortFiltersWithCategoriesResponse());
