@@ -10,9 +10,9 @@ angular.module('transmartBaseUi')
      */
     .controller('CohortSelectionCtrl',
         ['$q', '$element', '$scope', 'CohortSelectionService', 'StudyListService', 'DcChartsService',
-            'AlertService', '$uibModal', 'TreeNodeService',
+            'AlertService', '$uibModal', 'TreeNodeService', 'ContentService',
             function ($q, $element, $scope, CohortSelectionService, StudyListService, DcChartsService,
-                      AlertService, $uibModal, TreeNodeService) {
+                      AlertService, $uibModal, TreeNodeService, ContentService) {
                 var vm = this;
                 vm.isRecordingHistory = false;
                 vm.boxId = CohortSelectionService.currentBoxId;
@@ -1072,6 +1072,15 @@ angular.module('transmartBaseUi')
                         controller: 'SaveCohortDialogCtrl as vm',
                         animation: false
                     });
+                };
+
+                /**
+                 * Switch to the "Saved Cohorts" tab
+                 * @memberof CohortSelectionCtrl
+                 */
+                vm.switchToSavedCohortsTab = function () {
+                    // switch to "Saved Cohorts" selection tab
+                    ContentService.activateTab(ContentService.tabs[2].title, 'cohortView');
                 };
 
                 /**
