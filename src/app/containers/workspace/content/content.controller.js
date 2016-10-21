@@ -2,8 +2,10 @@
 
 angular.module('transmartBaseUi')
     .controller('ContentCtrl',
-        ['$scope', '$window', '$element', 'CohortSelectionService', 'AlertService', '$stateParams', '$state',
-            function ($scope, $window, $element, CohortSelectionService, AlertService, $stateParams, $state) {
+        ['$scope', '$window', '$element', 'CohortSelectionService', 'ContentService',
+            'AlertService', '$state', '$stateParams',
+            function ($scope, $window, $element, CohortSelectionService, ContentService,
+                      AlertService, $state, $stateParams) {
                 var vm = this;
                 vm.selectedSubjects = [];
                 vm.labels = [];
@@ -13,33 +15,30 @@ angular.module('transmartBaseUi')
 
                 vm.boxes = CohortSelectionService.boxes;
                 vm.el = $element;
-
-                // Tabs
-                vm.tabs = [
-                    {title: 'Cohort Selection', active: true},
-                    {title: 'Cohort Grid', active: false},
-                    {title: 'Saved Cohorts', active: false},
-                    {title: 'Data Export', active: false},
-                    {title: 'Data Export Jobs', active: false}
-                ];
+                vm.tabs = ContentService.tabs;
+                vm.activeTabIndex = 0;
 
                 /**
                  * Activate tab
                  * @param tabTitle
                  * @param tabAction
+                 * @param el - the content's element
                  */
                 vm.activateTab = function (tabTitle, tabAction) {
-                    vm.tabs.forEach(function (tab) {
-                        tab.active = tab.title === tabTitle;
+                    vm.tabs.forEach(function (tab, index) {
+                        tab.active = (tab.title === tabTitle);
+                        if(tab.active) {
+                            vm.activeTabIndex = index;
+                        }
                     });
-                    $state.go('workspace', {action: tabAction});
-
+                    // $state.go('workspace', {action: tabAction});
                     var cohortSelectionBox =
-                        angular.element($element).find(document.querySelector('.cohort-selection-box'));
+                        angular.element(vm.el).find(document.querySelector('.cohort-selection-box'));
                     if (cohortSelectionBox.hasClass('ui-layout-hidden')) {
                         cohortSelectionBox.removeClass('ui-layout-hidden');
                     }
                 };
+
 
                 if ($stateParams !== undefined) {
                     switch ($stateParams.action) {
@@ -69,7 +68,7 @@ angular.module('transmartBaseUi')
                     CohortSelectionService.boxes.forEach(function (box) {
                         box.ctrl.cs.subjects.forEach(function (subject) {
                             var _subject = _.find(subjectObs, {id: subject.id});
-                            if(!_subject) {
+                            if (!_subject) {
                                 subjectObs.push({
                                     id: subject.id,
                                     observations: subject.observations
@@ -106,8 +105,8 @@ angular.module('transmartBaseUi')
                                 subject.boxes = uSubject.boxes;
 
                                 var obs = _.find(subjectObs, {id: subject.id});
-                                if(obs) {
-                                    for(var key in obs.observations) {
+                                if (obs) {
+                                    for (var key in obs.observations) {
                                         uSubject.observations[key] = obs.observations[key];
                                     }
                                 }
@@ -129,5 +128,7 @@ angular.module('transmartBaseUi')
                 $scope.$on('cohortSelectionUpdateEvent', function (event) {
                     vm.updateCohortSelectionData();
                 });
+
+                ContentService.ctrl = vm;
 
             }]);
