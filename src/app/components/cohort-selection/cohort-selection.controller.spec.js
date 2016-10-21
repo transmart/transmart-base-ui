@@ -82,13 +82,15 @@ describe('CohortSelectionCtrl', function () {
         it('should remove chart from charts', function () {
             var _label = {
                 labelId: 2
-            }
+            };
             spyOn(ctrl, 'removeLabel').and.callThrough();
             spyOn(ctrl, 'filterSubjectsByLabel');
+            spyOn(dc.chartRegistry, 'deregister');
             ctrl.removeLabel(_label);
             expect(ctrl.cs.charts.length).toBe(2);
             expect(ctrl.cs.labels.length).toBe(2);
             expect(ctrl.filterSubjectsByLabel).toHaveBeenCalled();
+            expect(dc.chartRegistry.deregister).toHaveBeenCalled();
         });
     });
 

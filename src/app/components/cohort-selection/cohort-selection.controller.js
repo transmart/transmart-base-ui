@@ -651,6 +651,7 @@ angular.module('transmartBaseUi')
                     return _.filter(charts, function (chartToBeRemoved) {
                         if (chartToBeRemoved.id === label.labelId) {
                             chartToBeRemoved.filter(null); // clear filter
+                            dc.chartRegistry.deregister(chartToBeRemoved);
                         }
                         return chartToBeRemoved.id !== label.labelId;
                     });
@@ -696,6 +697,7 @@ angular.module('transmartBaseUi')
 
                     if (label) {
                         vm.removeNode(label);
+
                         // Remove associated chart from cs.charts
                         vm.cs.charts = _removeChartFromCharts(vm.cs.charts, label);
 
@@ -729,7 +731,7 @@ angular.module('transmartBaseUi')
                         _deferred.reject('label is not defined');
                     }
 
-                    dc.renderAll();
+                    dc.redrawAll();
                     return _deferred.promise;
                 };
 
@@ -1191,24 +1193,26 @@ angular.module('transmartBaseUi')
                     var _applyNode = function (nodes, index) {
 
                         var node = nodes[index];
-                        var filters = [];
-                        var charts = dupBox.ctrl.cs.charts;
-                        var conceptPath = node.restObj.fullName;
-                        var chart = _findChartByConceptPath(conceptPath, charts);
-                        if (chart && chart.filters()) {
-                            filters.push({
-                                label: conceptPath,
-                                dcFilters: chart.filters()
+                        if(node) {
+                            var filters = [];
+                            var charts = dupBox.ctrl.cs.charts;
+                            var conceptPath = node.restObj.fullName;
+                            var chart = _findChartByConceptPath(conceptPath, charts);
+                            if (chart && chart.filters()) {
+                                filters.push({
+                                    label: conceptPath,
+                                    dcFilters: chart.filters()
+                                });
+                            }
+                            // to make sure the nodes are added sequentially
+                            var promise = vm.addNodeToActiveCohortSelection(node, filters);
+                            promise.then(function () {
+                                index++;
+                                if(index < nodes.length) {
+                                    _applyNode(nodes, index);
+                                }
                             });
                         }
-                        // to make sure the nodes are added sequentially
-                        var promise = vm.addNodeToActiveCohortSelection(node, filters);
-                        promise.then(function () {
-                            index++;
-                            if(index < nodes.length) {
-                                _applyNode(nodes, index);
-                            }
-                        });
                     };
 
                     var index = 0;
