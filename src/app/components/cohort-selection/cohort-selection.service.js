@@ -140,5 +140,26 @@ angular.module('transmartBaseUi')
             return id;
         };
 
+        /**
+         * @memberof CohortSelectionService
+         * @param {String} path - conceptPath
+         * @param {Array} charts - the array of charts to be searched
+         * @returns {*} - The found chart in CohortSelectionCtrl.cs.charts,
+         *      with matching name chartName, if not found, return null
+         */
+        service.findChartByConceptPath = function (path, charts) {
+            var foundChart = null;
+            charts.forEach(function (_chart) {
+                if (_chart.tsLabel.conceptPath === path) {
+                    foundChart = _chart;
+                }
+                else if (_chart.tsLabel.type === 'combination'
+                    && _chart.tsLabel.name === path) {
+                    foundChart = _chart;
+                }
+            });
+            return foundChart;
+        };
+
         return service;
     }]);

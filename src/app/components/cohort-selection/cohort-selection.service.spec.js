@@ -54,4 +54,34 @@ describe('CohortSelectionService', function () {
 
     });
 
+    describe('findChartByConceptPath', function () {
+        var chart = {
+            tsLabel: {
+                conceptPath: 'a/concept/path',
+                type: 'numeric'
+            }
+        };
+        var combinationChart = {
+            tsLabel: {
+                conceptPath: 'a/combination/concept/path',
+                name: 'combi-chart',
+                type: 'combination'
+            }
+        };
+        var charts = [chart, combinationChart];
+
+        it('should return combinationChart', function () {
+            var inputPath = 'combi-chart';
+            var foundChart = CohortSelectionService.findChartByConceptPath(inputPath, charts);
+            expect(foundChart).toBe(combinationChart);
+        });
+
+        it('should return null if path or name does not match', function () {
+            var inputPath = 'combi-chart-wrong';
+            var foundChart = CohortSelectionService.findChartByConceptPath(inputPath, charts);
+            expect(foundChart).toBe(null);
+        });
+
+    });
+
 });

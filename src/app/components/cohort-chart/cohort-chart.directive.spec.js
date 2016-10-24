@@ -1,7 +1,8 @@
 'use strict';
 
 describe('Unit testing cohort-chart directive', function () {
-    var ctrl, $controller, $compile, rootScope, ctrlScope, scope, chartElm, CohortChartMocks, CohortSelectionMocks;
+    var ctrl, $controller, $compile, rootScope, ctrlScope, scope, chartElm,
+        CohortChartMocks, CohortSelectionMocks, CohortSelectionService;
 
     // Load the transmartBaseUi module, which contains the directive
     beforeEach(function () {
@@ -12,7 +13,8 @@ describe('Unit testing cohort-chart directive', function () {
 
     // Store references to $rootScope and $compile
     // so they are available to all tests in this describe block
-    beforeEach(inject(function (_$controller_, _$compile_, _$rootScope_, _CohortChartMocks_, _CohortSelectionMocks_) {
+    beforeEach(inject(function (_$controller_, _$compile_, _$rootScope_, _CohortChartMocks_,
+                                _CohortSelectionMocks_, _CohortSelectionService_) {
         // The injector unwraps the underscores (_) from around the parameter
         // names when matching
         $controller = _$controller_;
@@ -22,23 +24,25 @@ describe('Unit testing cohort-chart directive', function () {
         ctrlScope = rootScope.$new();
         CohortSelectionMocks = _CohortSelectionMocks_;
         CohortChartMocks = _CohortChartMocks_;
+        CohortSelectionService = _CohortSelectionService_;
 
         scope.gridsterOpts = CohortSelectionMocks.getGridsterOptions();
         scope.gridsterItem = CohortSelectionMocks.getGridsterItem();
         scope.gridster = CohortSelectionMocks.getGridster();
         scope.labels = CohortChartMocks.getMockLabels();
         scope.label = scope.labels[0];
-
         var boxId = CohortChartMocks.getBoxId();
-        var ctrlElm = angular.element('<div id='+boxId+'></div>');
+        scope.tsLabel = {
+            boxId: boxId
+        };
+
+        var ctrlElm = angular.element('<div id=' + boxId + '></div>');
         ctrl = $controller('CohortSelectionCtrl', {$scope: ctrlScope, $element: ctrlElm});
-        ctrlElm.scope = function () {
+        CohortSelectionService.getBox = function (boxId) {
             return {
-                box: {
-                    ctrl: ctrl
-                }
+                ctrl: ctrl
             }
-        }
+        };
 
         spyOn(angular, 'element').and.returnValue(ctrlElm);
 

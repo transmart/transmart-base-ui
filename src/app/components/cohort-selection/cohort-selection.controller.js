@@ -113,7 +113,7 @@ angular.module('transmartBaseUi')
                         var elId = '#' + vm.mainContainerId;
                         // Get width of the full gridster grid
                         var _gWidth = angular.element(elId).width();
-                        if(_gWidth <= 0) {
+                        if (_gWidth <= 0) {
                             _gWidth = angular.element('#main-container-div').width();
                         }
                         // Calculate the number of columns in the grid according to full gridster
@@ -145,7 +145,7 @@ angular.module('transmartBaseUi')
                         var elId = '#' + vm.mainContainerId;
                         // Get width of the full gridster grid
                         var _gWidth = angular.element(elId).width();
-                        if(_gWidth <= 0) {
+                        if (_gWidth <= 0) {
                             _gWidth = angular.element('#main-container-div').width();
                         }
                         // Calculate the number of columns in the grid according to full gridster
@@ -185,7 +185,7 @@ angular.module('transmartBaseUi')
                         var elId = '#' + vm.mainContainerId;
                         // Get width of the full gridster grid
                         var _gWidth = angular.element(elId).width();
-                        if(_gWidth <= 0) {
+                        if (_gWidth <= 0) {
                             _gWidth = angular.element('#main-container-div').width();
                         }
                         // Calculate the number of columns in the grid according to full gridster
@@ -292,6 +292,8 @@ angular.module('transmartBaseUi')
                             });
                         }
 
+                        //prioritize the available cells
+                        availableCells = _.sortBy(availableCells, ['col', 'row']);
                         /*
                          * For each new label, assign its position based on available cells
                          */
@@ -379,13 +381,15 @@ angular.module('transmartBaseUi')
                         .formatNumber(d3.format('.0'));
                 };
 
-                var _groupCharts = function (chart1, chart2) {
+                var _groupCharts = function (chart1, chart2, filterObj) {
+
                     var _combinationLabel = {
                         labelId: vm.cs.chartId++,
-                        label: [chart1.tsLabel, chart2.tsLabel],
+                        labels: [chart1.tsLabel, chart2.tsLabel],
                         name: chart1.tsLabel.name + ' - ' + chart2.tsLabel.name,
                         resolved: false,
                         study: chart1.tsLabel.study,
+                        filters: filterObj ? filterObj.dcFilters : undefined,
                         type: 'combination',
                         boxId: vm.boxId,
                         box: CohortSelectionService.getBox(vm.boxId)
@@ -399,11 +403,22 @@ angular.module('transmartBaseUi')
                                 subject.observations[chart1.tsLabel.conceptPath],
                                 subject.observations[chart2.tsLabel.conceptPath]
                             ];
-
                         }
                     });
 
                     vm.cs.labels.push(_combinationLabel);
+
+                    //add combination node to the node list
+                    var combinationNode = {
+                        label: _combinationLabel,
+                        type: 'COMBINATION',
+                        chart1: chart1,
+                        chart2: chart2
+                    };
+                    _combinationLabel.node = combinationNode;
+
+                    vm.cs.nodes.push(combinationNode);
+                    vm.reOrganize();
                 };
 
                 var _groupingChart = {};
@@ -478,6 +493,7 @@ angular.module('transmartBaseUi')
                                 box: CohortSelectionService.getBox(vm.boxId),
                                 node: node
                             };
+                            node.label = label;
                             vm.cs.labels.push(label);
 
                         } else {
@@ -494,23 +510,6 @@ angular.module('transmartBaseUi')
                         label.precision = label.precision ? Math.min(label.precision, precision) : precision;
                     }
                     return label;
-                };
-
-                /**
-                 * @memberof CohortSelectionCtrl
-                 * @param {String} path - conceptPath
-                 * @param {Array} charts - the array of charts to be searched
-                 * @returns {*} - The found chart in CohortSelectionCtrl.cs.charts,
-                 *      with matching name chartName, if not found, return null
-                 */
-                var _findChartByConceptPath = function (path, charts) {
-                    var foundChart = null;
-                    charts.forEach(function (_chart) {
-                        if (_chart.tsLabel.conceptPath === path) {
-                            foundChart = _chart;
-                        }
-                    });
-                    return foundChart;
                 };
 
                 /**
@@ -542,7 +541,6 @@ angular.module('transmartBaseUi')
                     var _iterateObservations = function (node, filters) {
                         node.observations.forEach(function (obs) {
                             if (obs.value !== null) {
-
                                 if (filters) {
                                     _filter = _.find(filters, {label: obs.label});
                                 }
@@ -563,7 +561,7 @@ angular.module('transmartBaseUi')
                         });
                         vm.reOrganize();
                         vm.updateDimensions();
-                    }
+                    };
 
                     var _loadObservations = function (node, filters) {
                         if (!node.observations) {
@@ -580,33 +578,42 @@ angular.module('transmartBaseUi')
                             _iterateObservations(node, filters);
                             _deferred.resolve();
                         }
-                    }
+                    };
 
-                    if (node.nodes.length == 0) {
-                        var treeNodePromise = TreeNodeService.getNodeChildren(node);
-                        treeNodePromise.then(function () {
-                            if (node.nodes.length == 0 ||
-                                TreeNodeService.isCategoricalLeafNode(node.nodes[0])) {
-                                vm.addNode(node);
-                                _loadObservations(node, filters);
-                            }
-                            else {
-                                node.nodes.forEach(function (child) {
-                                    vm.addNode(child);
-                                    _loadObservations(child, filters);
-                                });
-                            }
-                        });
+
+                    //if the node is not a combination node for combination chart
+                    if (node.type !== 'COMBINATION') {
+                        if (node.nodes.length == 0) {
+                            var treeNodePromise = TreeNodeService.getNodeChildren(node);
+                            treeNodePromise.then(function () {
+                                if (node.nodes.length == 0 ||
+                                    TreeNodeService.isCategoricalLeafNode(node.nodes[0])) {
+                                    vm.addNode(node);
+                                    _loadObservations(node, filters);
+                                }
+                                else {
+                                    node.nodes.forEach(function (child) {
+                                        vm.addNode(child);
+                                        _loadObservations(child, filters);
+                                    });
+                                }
+                            });
+                        }
+                        else if (TreeNodeService.isCategoricalLeafNode(node.nodes[0])) {
+                            vm.addNode(node);
+                            _loadObservations(node, filters);
+                        }
+                        else {
+                            node.nodes.forEach(function (child) {
+                                vm.addNode(child);
+                                _loadObservations(child, filters);
+                            });
+                        }
                     }
-                    else if (TreeNodeService.isCategoricalLeafNode(node.nodes[0])) {
-                        vm.addNode(node);
-                        _loadObservations(node, filters);
-                    }
+                    //if the node is a combination node for combination chart
                     else {
-                        node.nodes.forEach(function (child) {
-                            vm.addNode(child);
-                            _loadObservations(child, filters);
-                        });
+                        _groupCharts(node.chart1, node.chart2, filters[0]);
+                        _deferred.resolve();
                     }
 
                     return _deferred.promise;
@@ -736,34 +743,34 @@ angular.module('transmartBaseUi')
                 };
 
                 var _createMultidimensionalChart = function (label, el) {
-                    var _chart, _min, _max, label1 = label.label[0], label2 = label.label[1];
+                    var _chart, _min, _max, label1 = label.labels[0], label2 = label.labels[1];
 
                     // Check if label0 or label1 has categorical values
-                    if (label.label[0].type === 'string' || label.label[1].type === 'string') {
+                    if (label.labels[0].type === 'string' || label.labels[1].type === 'string') {
 
                         // Check if one of them is not categorical
-                        if (label.label[0].type !== 'string' || label.label[1].type !== 'string') {
+                        if (label.labels[0].type !== 'string' || label.labels[1].type !== 'string') {
 
                             // Always categorical on X axis
-                            var _valueX = label.label[0].type === 'string' ? 0 : 1;
+                            var _valueX = label.labels[0].type === 'string' ? 0 : 1;
                             var _valueY = _valueX === 0 ? 1 : 0;
 
                             vm.cs.dimensions[label.labelId] =
                                 vm.cs.crossfilter.dimension(function (d) {
-                                    return d.observations[label.label[_valueX].conceptPath] ?
-                                        d.observations[label.label[_valueX].conceptPath] : undefined;
+                                    return d.observations[label.labels[_valueX].conceptPath] ?
+                                        d.observations[label.labels[_valueX].conceptPath] : undefined;
                                 });
 
                             vm.cs.groups[label.labelId] =
                                 vm.cs.dimensions[label.labelId].group().reduce(
                                     function (p, v) {
-                                        p.push(v.observations[label.label[_valueY].conceptPath] ?
-                                            +v.observations[label.label[_valueY].conceptPath] : undefined);
+                                        p.push(v.observations[label.labels[_valueY].conceptPath] ?
+                                            +v.observations[label.labels[_valueY].conceptPath] : undefined);
                                         return p;
                                     },
                                     function (p, v) {
-                                        p.splice(p.indexOf(v.observations[label.label[_valueY].conceptPath] ?
-                                            +v.observations[label.label[_valueY].conceptPath] : undefined), 1);
+                                        p.splice(p.indexOf(v.observations[label.labels[_valueY].conceptPath] ?
+                                            +v.observations[label.labels[_valueY].conceptPath] : undefined), 1);
                                         return p;
                                     },
                                     function () {
@@ -771,15 +778,15 @@ angular.module('transmartBaseUi')
                                     }
                                 );
 
-                            _max = vm.cs.dimensions[label.label[_valueY].labelId]
-                                .top(1)[0].observations[label.label[_valueY].conceptPath];
-                            _min = vm.cs.dimensions[label.label[_valueY].labelId]
-                                .bottom(1)[0].observations[label.label[_valueY].conceptPath];
+                            _max = vm.cs.dimensions[label.labels[_valueY].labelId]
+                                .top(1)[0].observations[label.labels[_valueY].conceptPath];
+                            _min = vm.cs.dimensions[label.labels[_valueY].labelId]
+                                .bottom(1)[0].observations[label.labels[_valueY].conceptPath];
 
                             _chart = DcChartsService.getBoxPlot(vm.cs.dimensions[label.labelId],
                                 vm.cs.groups[label.labelId], el, {
-                                    xLab: label.label[_valueX].name,
-                                    yLab: label.label[_valueY].name,
+                                    xLab: label.labels[_valueX].name,
+                                    yLab: label.labels[_valueY].name,
                                     min: _min,
                                     max: _max
                                 });
@@ -791,18 +798,18 @@ angular.module('transmartBaseUi')
                             vm.cs.dimensions[label.labelId] =
                                 vm.cs.crossfilter.dimension(function (d) {
                                     return [
-                                        d.observations[label.label[0].conceptPath] ?
-                                            d.observations[label.label[0].conceptPath] : undefined,
-                                        d.observations[label.label[1].conceptPath] ?
-                                            d.observations[label.label[1].conceptPath] : undefined
+                                        d.observations[label.labels[0].conceptPath] ?
+                                            d.observations[label.labels[0].conceptPath] : undefined,
+                                        d.observations[label.labels[1].conceptPath] ?
+                                            d.observations[label.labels[1].conceptPath] : undefined
                                     ];
                                 });
                             vm.cs.groups[label.labelId] = vm.cs.dimensions[label.labelId].group();
 
                             _chart = DcChartsService.getHeatMap(vm.cs.dimensions[label.labelId],
                                 vm.cs.groups[label.labelId], el, {
-                                    xLab: label.label[0].name,
-                                    yLab: label.label[1].name
+                                    xLab: label.labels[0].name,
+                                    yLab: label.labels[1].name
                                 });
                             _chart.type = 'HEATMAP';
 
@@ -812,20 +819,20 @@ angular.module('transmartBaseUi')
                         vm.cs.dimensions[label.labelId] =
                             vm.cs.crossfilter.dimension(function (d) {
                                 return [
-                                    d.observations[label.label[0].conceptPath] ?
-                                        d.observations[label.label[0].conceptPath] : undefined,
-                                    d.observations[label.label[1].conceptPath] ?
-                                        d.observations[label.label[1].conceptPath] : undefined
+                                    d.observations[label.labels[0].conceptPath] ?
+                                        d.observations[label.labels[0].conceptPath] : undefined,
+                                    d.observations[label.labels[1].conceptPath] ?
+                                        d.observations[label.labels[1].conceptPath] : undefined
                                 ];
                             });
 
                         vm.cs.groups[label.labelId] =
                             vm.cs.dimensions[label.labelId].group();
 
-                        _max = vm.cs.dimensions[label.label[0].labelId]
-                            .top(1)[0].observations[label.label[0].conceptPath];
-                        _min = vm.cs.dimensions[label.label[0].labelId]
-                            .bottom(1)[0].observations[label.label[0].conceptPath];
+                        _max = vm.cs.dimensions[label.labels[0].labelId]
+                            .top(1)[0].observations[label.labels[0].conceptPath];
+                        _min = vm.cs.dimensions[label.labels[0].labelId]
+                            .bottom(1)[0].observations[label.labels[0].conceptPath];
 
                         _chart = DcChartsService.getScatterPlot(
                             vm.cs.dimensions[label.labelId],
@@ -834,8 +841,8 @@ angular.module('transmartBaseUi')
                             {
                                 min: _min,
                                 max: _max,
-                                xLab: label.label[0].name,
-                                yLab: label.label[1].name
+                                xLab: label.labels[0].name,
+                                yLab: label.labels[1].name
                             }
                         );
 
@@ -861,7 +868,6 @@ angular.module('transmartBaseUi')
                         var lbl = _missingLabelId || undefined;
                         vm.cs.dimensions[label.labelId] =
                             vm.cs.crossfilter.dimension(function (d) {
-                                var lbl = _missingLabelId || undefined;
                                 return d.observations[label.conceptPath] === undefined ? lbl : d.observations[label.conceptPath];
                             });
                         vm.cs.groups[label.labelId] =
@@ -992,7 +998,7 @@ angular.module('transmartBaseUi')
                  * @param filters Array of dc filters to be added directly to the dc chart
                  * @returns {Promise}
                  */
-                vm.addNodeWithFilters = function(node, filters) {
+                vm.addNodeWithFilters = function (node, filters) {
                     vm.addHistory('addNodeWithFilters', [node, filters]);
 
                     if (TreeNodeService.isCategoricalParentNode(node)) {
@@ -1022,7 +1028,8 @@ angular.module('transmartBaseUi')
                     var promise = undefined;
 
                     if (TreeNodeService.isCategoricalLeafNode(node)) { //leaf node for pie chart
-                        var chart = _findChartByConceptPath(node.parent.restObj.fullName, vm.cs.charts);
+                        var chart =
+                            CohortSelectionService.findChartByConceptPath(node.parent.restObj.fullName, vm.cs.charts);
                         if (chart == null) {
                             var filters = [{
                                 label: node.parent.restObj.fullName,
@@ -1174,11 +1181,20 @@ angular.module('transmartBaseUi')
                  * @memberof CohortSelectionCtrl
                  */
                 vm.removeNode = function (label) {
-                    var removed = _.remove(vm.cs.nodes, {
-                        restObj: {
-                            fullName: label.label
+                    var filterOpt = {
+                        label: {
+                            conceptPath: label.conceptPath
                         }
-                    });
+                    };
+                    if (label.type === 'combination') {
+                        filterOpt = {
+                            label: {
+                                name: label.name
+                            }
+                        };
+                    }
+
+                    var removed = _.remove(vm.cs.nodes, filterOpt);
 
                     return removed.length ? true : false;
                 };
@@ -1190,14 +1206,15 @@ angular.module('transmartBaseUi')
                  */
                 vm.applyDuplication = function (dupBox) {
                     var nodes = dupBox.ctrl.cs.nodes;
-                    var _applyNode = function (nodes, index) {
 
+                    var _applyNode = function (nodes, index) {
                         var node = nodes[index];
-                        if(node) {
+                        //if the node exists
+                        if (node) {
                             var filters = [];
                             var charts = dupBox.ctrl.cs.charts;
-                            var conceptPath = node.restObj.fullName;
-                            var chart = _findChartByConceptPath(conceptPath, charts);
+                            var conceptPath = node.type === 'COMBINATION' ? node.label.name : node.label.conceptPath;
+                            var chart = CohortSelectionService.findChartByConceptPath(conceptPath, charts);
                             if (chart && chart.filters()) {
                                 filters.push({
                                     label: conceptPath,
@@ -1208,7 +1225,7 @@ angular.module('transmartBaseUi')
                             var promise = vm.addNodeToActiveCohortSelection(node, filters);
                             promise.then(function () {
                                 index++;
-                                if(index < nodes.length) {
+                                if (index < nodes.length) {
                                     _applyNode(nodes, index);
                                 }
                             });

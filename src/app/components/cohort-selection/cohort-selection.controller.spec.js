@@ -516,6 +516,10 @@ describe('CohortSelectionCtrl', function () {
         var node = {
             restObj: {
                 fulllName: 'concept/path'
+            },
+            label: {
+                name: 'aLabelName',
+                conceptPath: 'a/concept/path'
             }
         }
         var dupBox = {
@@ -532,14 +536,23 @@ describe('CohortSelectionCtrl', function () {
             spyOn(ctrl, 'addNodeToActiveCohortSelection').and.callFake(function () {
                 return {
                     then: function () {}
-
                 }
             });
-
             ctrl.applyDuplication(dupBox);
             expect(ctrl.addNodeToActiveCohortSelection).toHaveBeenCalled();
         });
 
+        it('should call findChartByConceptPath', function () {
+            dupBox.ctrl.cs.nodes.push(node);
+            spyOn(ctrl, 'addNodeToActiveCohortSelection').and.callFake(function () {
+                return {
+                    then: function () {}
+                }
+            });
+            spyOn(CohortSelectionService, 'findChartByConceptPath');
+            ctrl.applyDuplication(dupBox);
+            expect(CohortSelectionService.findChartByConceptPath).toHaveBeenCalled();
+        });
 
     });
 
@@ -580,10 +593,14 @@ describe('CohortSelectionCtrl', function () {
                 id: 'a_node',
                 restObj: {
                     fullName: 'a_node_fullname'
+                },
+                label: {
+                    name: 'aLabelName',
+                    conceptPath: 'a/concept/path'
                 }
             };
             var label = {
-                label: 'a_node_fullname'
+                conceptPath: 'a/concept/path'
             };
             ctrl.cs.nodes.push(node);
             expect(ctrl.cs.nodes.length).toBe(1);

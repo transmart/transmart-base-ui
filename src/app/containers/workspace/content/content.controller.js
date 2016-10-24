@@ -27,11 +27,11 @@ angular.module('transmartBaseUi')
                 vm.activateTab = function (tabTitle, tabAction) {
                     vm.tabs.forEach(function (tab, index) {
                         tab.active = (tab.title === tabTitle);
-                        if(tab.active) {
+                        if (tab.active) {
                             vm.activeTabIndex = index;
                         }
                     });
-                    // $state.go('workspace', {action: tabAction});
+
                     var cohortSelectionBox =
                         angular.element(vm.el).find(document.querySelector('.cohort-selection-box'));
                     if (cohortSelectionBox.hasClass('ui-layout-hidden')) {
