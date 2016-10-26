@@ -1113,10 +1113,12 @@ angular.module('transmartBaseUi')
                  */
                 vm.removeBox = function () {
                     vm.clearSelection();
+                    // remove box from the service storage
                     CohortSelectionService.removeBox(vm.boxId);
+                    // immediately hide the div from sight
+                    angular.element('#cohort-box-container-'+vm.boxId).css('visibility', 'hidden');
                     $scope.$emit('cohortSelectionUpdateEvent');
                 };
-
 
                 /**
                  * Add history records (i.e. which functions to be called with what params)
