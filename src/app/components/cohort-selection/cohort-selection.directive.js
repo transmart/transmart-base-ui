@@ -22,6 +22,7 @@ angular.module('transmartBaseUi')
                 var box = scope.box;
                 box.index = +scope.index;
                 box.ctrl = CohortSelectionCtrl;
+                box.ctrl.boxId = box.boxId;
 
                 /*
                  * Two ways to duplicate a cohort-selection box

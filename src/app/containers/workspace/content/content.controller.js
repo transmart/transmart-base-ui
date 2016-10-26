@@ -10,8 +10,18 @@ angular.module('transmartBaseUi')
                 vm.selectedSubjects = [];
                 vm.labels = [];
 
-                CohortSelectionService.boxes = [];
-                CohortSelectionService.addBox();
+                if(CohortSelectionService.boxes.length > 0) {
+                    var oldBoxes = _.clone(CohortSelectionService.boxes);
+                    CohortSelectionService.boxes = [];
+                    oldBoxes.forEach(function (oldBox) {
+                        var box = CohortSelectionService.addBox();
+                        box.checked = oldBox.checked;
+                        box.duplication = oldBox;
+                    });
+                }
+                else {
+                    CohortSelectionService.addBox();
+                }
 
                 vm.boxes = CohortSelectionService.boxes;
                 vm.el = $element;

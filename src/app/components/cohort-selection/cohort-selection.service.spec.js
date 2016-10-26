@@ -25,15 +25,15 @@ describe('CohortSelectionService', function () {
     });
 
     describe('removeBox', function () {
-        var newBoxId;
+        var newBox;
 
         beforeEach(function () {
-            newBoxId = CohortSelectionService.addBox();
+            newBox = CohortSelectionService.addBox();
         });
 
         it('should not remove the box when there is only one left', function () {
             expect(CohortSelectionService.boxes.length).toBe(1);
-            CohortSelectionService.removeBox(newBoxId);
+            CohortSelectionService.removeBox(newBox.boxId);
             expect(CohortSelectionService.boxes.length).toBe(1);
         });
 
@@ -48,7 +48,7 @@ describe('CohortSelectionService', function () {
                     return angular.element('<div></div>');
                 }
             });
-            CohortSelectionService.removeBox(newBoxId);
+            CohortSelectionService.removeBox(newBox.boxId);
             expect(CohortSelectionService.boxes.length).toBe(1);
         });
 

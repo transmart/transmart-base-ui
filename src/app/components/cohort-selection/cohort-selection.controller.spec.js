@@ -2,8 +2,7 @@
 
 describe('CohortSelectionCtrl', function () {
     var $controller, AlertService, CohortSelectionService, TreeNodeService,
-        DcChartsService, Restangular, CohortChartMocks, ctrl, scope, $timeout,
-        reDistribution;
+        DcChartsService, Restangular, CohortChartMocks, ctrl, scope, $timeout;
 
     beforeEach(module('transmartBaseUi'));
 
@@ -28,12 +27,6 @@ describe('CohortSelectionCtrl', function () {
         ctrl = $controller('CohortSelectionCtrl', {$scope: scope, $element: ctrlElm});
         spyOn(AlertService, 'get');
         scope.$digest();
-
-        reDistribution = {
-            sizeAndPosition: 'relayout the charts completely',
-            position: 'only relayout the positions of the charts',
-            none: 'detect gaps and insert the new chart(s)'
-        }
 
     }));
 

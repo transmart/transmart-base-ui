@@ -22,16 +22,17 @@ angular.module('transmartBaseUi')
          * @memberof CohortSelectionService
          */
         service.addBox = function () {
+            var boxObj = undefined;
             var boxId = undefined;
             if (service.boxes.length < service.MAX_NUM_BOXES) {
                 boxId = UtilityService.guid();
                 service.currentBoxId = boxId;
-                var obj = {
+                boxObj = {
                     boxId: boxId,
                     //default ng-model value for the checkbox in cohort grid
                     checked: true
                 };
-                service.boxes.push(obj);
+                service.boxes.push(boxObj);
 
                 var boxsetContainer = angular.element('#cohort-selection-ui-layout-div');
                 var boxsetContainerWidth = boxsetContainer.width();
@@ -41,7 +42,7 @@ angular.module('transmartBaseUi')
                 }
             }
 
-            return boxId;
+            return boxObj;
         };
 
         /**
@@ -52,9 +53,9 @@ angular.module('transmartBaseUi')
          */
         service.duplicateBox = function (boxId) {
             var currBox = service.getBox(boxId);
-            var newBoxId = service.addBox();
-            if(currBox && newBoxId) {
-                service.getBox(newBoxId).duplication = currBox;
+            var newBox = service.addBox();
+            if(currBox && newBox) {
+                newBox.duplication = currBox;
             }
         };
 
