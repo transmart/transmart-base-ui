@@ -42,15 +42,23 @@ describe('CohortViewService', function () {
         });
 
         afterEach(function () {
+            httpBackend.flush();
             httpBackend.verifyNoOutstandingExpectation();
             httpBackend.verifyNoOutstandingRequest();
         });
 
         it('should return all cohorts', function() {
-            CohortViewService.getCohorts().then(function(res) {
-                expect(res[0]._embedded.values.length).toEqual(3);
+            CohortViewService.getCohorts().then(function(cohorts) {
+                expect(cohorts.length).toEqual(3);
             });
-            httpBackend.flush();
+        });
+
+        it('should set a description property on the cohorts', function() {
+            CohortViewService.getCohorts().then(function(cohorts) {
+                cohorts.forEach(function(cohort) {
+                    expect(cohort.description).toBeDefined();
+                });
+            })
         });
     });
 
