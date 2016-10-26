@@ -10,8 +10,18 @@ angular.module('transmartBaseUi')
                 vm.selectedSubjects = [];
                 vm.labels = [];
 
-                CohortSelectionService.boxes = [];
-                CohortSelectionService.addBox();
+                if(CohortSelectionService.boxes.length > 0) {
+                    var oldBoxes = _.clone(CohortSelectionService.boxes);
+                    CohortSelectionService.boxes = [];
+                    oldBoxes.forEach(function (oldBox) {
+                        var box = CohortSelectionService.addBox();
+                        box.checked = oldBox.checked;
+                        box.duplication = oldBox;
+                    });
+                }
+                else {
+                    CohortSelectionService.addBox();
+                }
 
                 vm.boxes = CohortSelectionService.boxes;
                 vm.el = $element;
@@ -27,11 +37,11 @@ angular.module('transmartBaseUi')
                 vm.activateTab = function (tabTitle, tabAction) {
                     vm.tabs.forEach(function (tab, index) {
                         tab.active = (tab.title === tabTitle);
-                        if(tab.active) {
+                        if (tab.active) {
                             vm.activeTabIndex = index;
                         }
                     });
-                    // $state.go('workspace', {action: tabAction});
+
                     var cohortSelectionBox =
                         angular.element(vm.el).find(document.querySelector('.cohort-selection-box'));
                     if (cohortSelectionBox.hasClass('ui-layout-hidden')) {

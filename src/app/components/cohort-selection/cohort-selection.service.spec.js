@@ -25,15 +25,15 @@ describe('CohortSelectionService', function () {
     });
 
     describe('removeBox', function () {
-        var newBoxId;
+        var newBox;
 
         beforeEach(function () {
-            newBoxId = CohortSelectionService.addBox();
+            newBox = CohortSelectionService.addBox();
         });
 
         it('should not remove the box when there is only one left', function () {
             expect(CohortSelectionService.boxes.length).toBe(1);
-            CohortSelectionService.removeBox(newBoxId);
+            CohortSelectionService.removeBox(newBox.boxId);
             expect(CohortSelectionService.boxes.length).toBe(1);
         });
 
@@ -48,8 +48,38 @@ describe('CohortSelectionService', function () {
                     return angular.element('<div></div>');
                 }
             });
-            CohortSelectionService.removeBox(newBoxId);
+            CohortSelectionService.removeBox(newBox.boxId);
             expect(CohortSelectionService.boxes.length).toBe(1);
+        });
+
+    });
+
+    describe('findChartByConceptPath', function () {
+        var chart = {
+            tsLabel: {
+                conceptPath: 'a/concept/path',
+                type: 'numeric'
+            }
+        };
+        var combinationChart = {
+            tsLabel: {
+                conceptPath: 'a/combination/concept/path',
+                name: 'combi-chart',
+                type: 'combination'
+            }
+        };
+        var charts = [chart, combinationChart];
+
+        it('should return combinationChart', function () {
+            var inputPath = 'combi-chart';
+            var foundChart = CohortSelectionService.findChartByConceptPath(inputPath, charts);
+            expect(foundChart).toBe(combinationChart);
+        });
+
+        it('should return null if path or name does not match', function () {
+            var inputPath = 'combi-chart-wrong';
+            var foundChart = CohortSelectionService.findChartByConceptPath(inputPath, charts);
+            expect(foundChart).toBe(null);
         });
 
     });
