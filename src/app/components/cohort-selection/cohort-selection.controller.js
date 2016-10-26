@@ -15,7 +15,6 @@ angular.module('transmartBaseUi')
                       AlertService, $uibModal, TreeNodeService, ContentService) {
                 var vm = this;
                 vm.isRecordingHistory = false;
-                // vm.boxId = CohortSelectionService.currentBoxId;
                 vm.boxIndex = (+$scope.index + 1);
                 vm.boxName = 'Cohort-' + vm.boxIndex;
                 vm.boxElm = $element;
