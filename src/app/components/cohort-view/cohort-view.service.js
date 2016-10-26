@@ -5,8 +5,9 @@
  * @ngdoc factory
  * @name CohortViewService
  */
-angular.module('transmartBaseUi').factory('CohortViewService', ['$timeout', 'EndpointService', '$q',
-    function ($timeout, EndpointService, $q) {
+angular.module('transmartBaseUi').factory('CohortViewService',
+    ['$timeout', 'EndpointService', '$q', 'QueryParserService',
+    function ($timeout, EndpointService, $q, QueryParserService) {
 
         var service = {
             options: {
@@ -18,7 +19,9 @@ angular.module('transmartBaseUi').factory('CohortViewService', ['$timeout', 'End
                 columnDefs: [{field: 'name', name: 'Name', width: '**'},
                     {field: 'id', name: 'ID', width: '*'},
                     {field: 'setSize', name: 'Set size', width: '*'},
-                    {field: 'username', name: 'User', width: '*'}
+                    {field: 'username', name: 'User', width: '*'},
+                    {field: 'description', name: 'Description', width: '**',
+                        cellTemplate: 'app/components/cohort-view/cohort-view-tooltip.tpl.html'}
                 ], // columns is stored here
                 data: 'cohorts',
                 enableFiltering: true
@@ -32,18 +35,15 @@ angular.module('transmartBaseUi').factory('CohortViewService', ['$timeout', 'End
          * @memberof CohortViewService
          */
         service.getCohorts = function () {
-            var deferred = $q.defer();
-
             // TODO: allow cohorts to be retrieved from other sources than the master endpoint?
             var endpoint = EndpointService.getMasterEndpoint();
-            endpoint.restangular.all('patient_sets').getList().then(function (cohorts) {
-                deferred.resolve(cohorts);
-            })
-                .catch(function (err) {
-                    deferred.reject(err);
+            return endpoint.restangular.all('patient_sets').getList().then(function (cohorts) {
+                // Annotate the cohorts with the descriptions
+                cohorts.forEach(function(cohort) {
+                    cohort.description = QueryParserService.parseQueryXMLToDescription(cohort.queryXML);
                 });
-
-            return deferred.promise;
+                return cohorts;
+            });
         };
 
         /** Removes the specified cohort.

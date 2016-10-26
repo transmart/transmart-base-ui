@@ -20,6 +20,73 @@ angular.module('transmartBaseUi').factory('QueryParserService',
             return _.isArray(variable) ? variable : [variable];
         }
 
+        service.parseQueryXMLToDescription = function (queryXML) {
+            var description = '';
+            var queryObj = XML2JSONService.xml2json(queryXML).query_definition;
+
+            // Loop through the panels in the query
+            _.each(makeList(queryObj.panel), function(panel) {
+                var studyNode, conceptPath;
+                var filters = [];
+
+                // Loop through the items in the panel
+                _.each(makeList(panel.item), function(item) {
+
+                    // Split concept key by backslash and remove all empty entries
+                    var splitKey = item.item_key.split('\\').filter(function(el) {
+                        return el != "";
+                    });
+
+                    // Include study name, but only once
+                    if (!description) {
+                        var studyName = splitKey[2];
+                        description = studyName + ' ';
+                    }
+
+                    if (splitKey.length > 3) {
+                        // Save the rest of the key as the concept path
+                        conceptPath = splitKey.slice(3);
+
+                        // Extract the filters
+                        if (item.constrain_by_value) {
+                            // Numerical range
+                            var constraint = item.constrain_by_value;
+                            if (constraint.value_operator == 'BETWEEN') {
+                                // Numeric range
+                                // The constraint string is formatted like '34.3 and 45.6'
+                                var betweenValues = constraint.value_constraint.split(' ');
+                                var minValue = parseFloat(betweenValues[0]).toPrecision(3);
+                                var maxValue = parseFloat(betweenValues[2]).toPrecision(3);
+                                filters.push([minValue, maxValue]);
+                            }
+                        }
+                        else {
+                            // Category
+                            filters.push(conceptPath[conceptPath.length - 1]);
+                        }
+                    }
+
+                });
+
+                if (conceptPath) {
+                    // Include the concept
+                    var conceptTerm = conceptPath[conceptPath.length - 1];
+                    if (_.includes(filters, conceptTerm)) {
+                        conceptTerm = conceptPath[conceptPath.length - 2];
+                    }
+                    description += conceptTerm + ' ';
+
+                    // Include the filters on the concept
+                    if (filters.length > 0) {
+                        description += '[' + filters.join(', ') + '] ';
+                    }
+                }
+
+            });
+
+            return description;
+        }
+
         /**
          * Converts the selections in the cohort filters from i2b2 query xml.
          * @memberof QueryParserService
