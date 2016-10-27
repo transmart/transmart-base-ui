@@ -203,7 +203,8 @@ angular.module('transmartBaseUi')
                 .elasticY(true)
                 .transitionDuration(_CONF.TRANSITION_DURATION)
                 .yAxisLabel(opt.yLab ? opt.yLab : '')
-                .xAxisLabel(opt.xLab ? opt.xLab : '');
+                .xAxisLabel(opt.xLab ? opt.xLab : '')
+                .colors(d3.scale.category20());
 
             if (opt.min !== undefined && opt.max !== undefined) {
                 _bp.y(d3.scale.linear().domain([opt.min - 0.20 * opt.max, opt.max * 1.20]));

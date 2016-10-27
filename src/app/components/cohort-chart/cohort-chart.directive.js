@@ -20,7 +20,7 @@ angular.module('transmartBaseUi')
                 restrict: 'E',
                 templateUrl: 'app/components/cohort-chart/cohort-chart.tpl.html',
                 scope: _scope,
-                link: function (scope, el) {
+                link: function (scope, el) { // -- begin of the link function --
                     var cohortSelectionCtrl = CohortSelectionService.getBox(scope.tsLabel.boxId).ctrl;
 
                     var _chart,
@@ -49,6 +49,17 @@ angular.module('transmartBaseUi')
                             curColWidth: newValues[2],
                             curRowHeight: newValues[3]
                         };
+
+                        if (!_.isEqual(newValues, oldValues)) {
+                            var _node = CohortSelectionService.findNodeByConceptPath
+                                (_chart.tsLabel.conceptPath, cohortSelectionCtrl.cs.nodes);
+                            if(_node) {
+                                _node.label.sizeX = _chart.gridInfo.sizeX;
+                                _node.label.sizeY = _chart.gridInfo.sizeY;
+                                _node.label.curColWidth = _chart.gridInfo.curColWidth;
+                                _node.label.curRowHeight = _chart.gridInfo.curRowHeight;
+                            }
+                        }
                         // Number of characters after which the title string will be cut off
                         // 10 pixels per characters is assumed
                         scope.cutOff = _chart.gridInfo.sizeX * (_chart.gridInfo.curColWidth - 5) / 10;
@@ -76,6 +87,6 @@ angular.module('transmartBaseUi')
                     scope.clearFilter = function (label) {
                         return cohortSelectionCtrl.clearChartFilterByLabel(label);
                     }
-                }
+                }// -- end of the link function --
             };
         }]);

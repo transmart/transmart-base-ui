@@ -54,7 +54,7 @@ angular.module('transmartBaseUi')
         service.duplicateBox = function (boxId) {
             var currBox = service.getBox(boxId);
             var newBox = service.addBox();
-            if(currBox && newBox) {
+            if (currBox && newBox) {
                 newBox.duplication = currBox;
             }
         };
@@ -160,6 +160,22 @@ angular.module('transmartBaseUi')
                 }
             });
             return foundChart;
+        };
+
+        /**
+         * @memberof CohortSelectionService
+         * @param path - conceptPath
+         * @param nodes - the array of nodes in ctrl.cs.nodes
+         * @returns {Object} - the found node
+         */
+        service.findNodeByConceptPath = function (path, nodes) {
+            var foundNode = undefined;
+            nodes.forEach(function (node) {
+               if(node.label.conceptPath === path) {
+                   foundNode = node;
+               }
+            });
+            return foundNode;
         };
 
         return service;
