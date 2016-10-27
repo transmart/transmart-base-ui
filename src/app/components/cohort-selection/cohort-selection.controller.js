@@ -20,8 +20,6 @@ angular.module('transmartBaseUi')
                 vm.boxElm = $element;
                 vm.boxes = CohortSelectionService.boxes;
                 vm.domElement = $element;
-                vm.mainContainerId =
-                    CohortSelectionService.setElementAttrs($element, vm.boxId);
                 vm.history = [];
 
                 vm.cs = {};
@@ -70,7 +68,7 @@ angular.module('transmartBaseUi')
                 vm.gridsterConfig = {
                     // Base width for a gridster square, this value will be adapted to fit
                     // exaclty an even number of squares in the grid according to window size
-                    G_BASE_WIDTH: 200,
+                    G_BASE_WIDTH: 230,
                     // Number of columns a gridster item will occupy by default
                     G_ITEM_SPAN_X: 1,
                     // Number of rows a gridster item will occupy by default
@@ -91,7 +89,17 @@ angular.module('transmartBaseUi')
                     vm.cs.dimensions = [];
                     vm.cs.maxNoOfDimensions = 20;
                     vm.cs.groups = [];
+                    if (vm.cs.labels) {
+                        vm.cs.labels.forEach(function (label) {
+                            label.node = undefined;
+                        });
+                    }
                     vm.cs.labels = [];
+                    if (vm.cs.nodes) {
+                        vm.cs.nodes.forEach(function (node) {
+                            node.label = undefined;
+                        });
+                    }
                     vm.cs.nodes = [];
                     vm.cs.selected = 0;
                     vm.cs.total = 0;
@@ -126,7 +134,6 @@ angular.module('transmartBaseUi')
                             label.sizeY = vm.gridsterConfig.G_ITEM_SPAN_Y;
                             // Spread items left to right
                             label.col = (index * label.sizeX) % _gCols;
-
                             // And top to bottom
                             label.row = Math.floor((index * label.sizeX) / _gCols) * label.sizeY;
                         });
@@ -154,20 +161,21 @@ angular.module('transmartBaseUi')
                         vm.gridsterOpts.columns = _gCols;
 
                         var colIndex = 0, rowIndex = 0;
+                        var rowOffset = 0;
                         labels.forEach(function (label, index) {
                             if (!label.sizeX) label.sizeX = vm.gridsterConfig.G_ITEM_SPAN_X;
                             if (!label.sizeY) label.sizeY = vm.gridsterConfig.G_ITEM_SPAN_Y;
-                            // Spread items left to right
                             label.col = colIndex;
                             label.row = rowIndex;
-
+                            if (label.sizeY > rowOffset) {
+                                rowOffset = label.sizeY;
+                            }
                             colIndex += label.sizeX;
                             if (colIndex >= _gCols) {
                                 colIndex = 0;
-                                rowIndex++;
+                                rowIndex += rowOffset;
+                                rowOffset = 0;
                             }
-                            // And top to bottom
-                            label.row = Math.floor((index * label.sizeX) / _gCols) * label.sizeY;
                         });
                     }
                 };
@@ -201,20 +209,22 @@ angular.module('transmartBaseUi')
 
                         /*
                          * For each label, find existing cells and un-positioned labels,
+                         * each cell occupies 1x1 space,
                          * also identify the last cell
                          */
                         labels.forEach(function (label, index) {
                             if (label.sizeX) {
-                                var cell = {
-                                    sizeX: label.sizeX,
-                                    sizeY: label.sizeY,
-                                    col: label.col,
-                                    row: label.row
-                                };
-                                cells.push(cell);
-
-                                if (cell.col > lastCell.col || cell.row > lastCell.row) {
-                                    lastCell = cell;
+                                for (var i = 0; i < label.sizeX; i++) {
+                                    for (var j = 0; j < label.sizeY; j++) {
+                                        var cell = {
+                                            col: +label.col + i,
+                                            row: +label.row + j
+                                        };
+                                        cells.push(cell);
+                                        if (cell.col > lastCell.col || cell.row > lastCell.row) {
+                                            lastCell = cell;
+                                        }
+                                    }
                                 }
                             }
                             else {
@@ -251,13 +261,14 @@ angular.module('transmartBaseUi')
                                     neighborLeft.col = 0;
                                 }
                                 var foundNeighborLeft = _.find(cells, neighborLeft);
+
                                 var duplicateLeft = _.find(availableCells, neighborLeft);
                                 if (!foundNeighborLeft && !duplicateLeft) {
                                     availableCells.push(neighborLeft);
                                 }
 
                                 var neighborRight = {
-                                    col: cell.col + cell.sizeX,
+                                    col: cell.col + 1,
                                     row: cell.row
                                 };
                                 if (neighborRight.col > _gCols - 1) {
@@ -270,7 +281,6 @@ angular.module('transmartBaseUi')
                                 }
                             });
                         }
-
                         /*
                          * If there are not enough available cells for the un-positioned labels,
                          * simply attach new cells to the tail of the cell grid
@@ -298,11 +308,15 @@ angular.module('transmartBaseUi')
                          */
                         labelsToBeResized.forEach(function (label, index) {
                             var cell = availableCells[index];
-                            label.sizeX = vm.gridsterConfig.G_ITEM_SPAN_X;
-                            label.sizeY = vm.gridsterConfig.G_ITEM_SPAN_Y;
-                            if (cell) {
-                                label.col = cell.col;
-                                label.row = cell.row;
+                            if (!label.sizeX) label.sizeX = vm.gridsterConfig.G_ITEM_SPAN_X;
+                            if (!label.sizeY) label.sizeY = vm.gridsterConfig.G_ITEM_SPAN_Y;
+                            if (!label.col) {
+                                if (cell) label.col = cell.col;
+                                else label.col = 0;
+                            }
+                            if (!label.row) {
+                                if (cell) label.row = cell.row;
+                                else label.row = 0;
                             }
                         });
                     }
@@ -490,7 +504,11 @@ angular.module('transmartBaseUi')
                                 filters: filterObj ? filterObj.dcFilters : undefined,
                                 boxId: vm.boxId,
                                 box: CohortSelectionService.getBox(vm.boxId),
-                                node: node
+                                node: node,
+                                col: node.label ? node.label.col : undefined,
+                                row: node.label ? node.label.row : undefined,
+                                sizeX: node.label ? node.label.sizeX : undefined,
+                                sizeY: node.label ? node.label.sizeY : undefined
                             };
                             node.label = label;
                             vm.cs.labels.push(label);
@@ -1025,6 +1043,7 @@ angular.module('transmartBaseUi')
                  */
                 vm.onNodeDrop = function (event, info, node) {
                     var promise = undefined;
+                    node.label = undefined; // clear existing label
 
                     if (TreeNodeService.isCategoricalLeafNode(node)) { //leaf node for pie chart
                         var chart =
@@ -1116,7 +1135,7 @@ angular.module('transmartBaseUi')
                     // remove box from the service storage
                     CohortSelectionService.removeBox(vm.boxId);
                     // immediately hide the div from sight
-                    angular.element('#cohort-box-container-'+vm.boxId).css('visibility', 'hidden');
+                    angular.element('#cohort-box-container-' + vm.boxId).css('visibility', 'hidden');
                     $scope.$emit('cohortSelectionUpdateEvent');
                 };
 

@@ -84,4 +84,21 @@ describe('CohortSelectionService', function () {
 
     });
 
+    describe('findNodeByConceptPath', function () {
+        var path = 'a/path';
+        var node = {
+            label: {
+                conceptPath: path
+            }
+        };
+        it('should find the node if the correct path is provided', function () {
+            var foundNode = CohortSelectionService.findNodeByConceptPath(path, [node]);
+            expect(foundNode).toBe(node);
+        });
+        it('should not find the node if the path is incorrect', function () {
+            var foundNode = CohortSelectionService.findNodeByConceptPath(path+'-', [node]);
+            expect(foundNode).not.toBe(node);
+        });
+    });
+
 });
