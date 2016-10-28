@@ -7,8 +7,8 @@
  * @description handles cohort chart creation and user-interaction
  */
 angular.module('transmartBaseUi')
-    .directive('tsCohortChart', ['DcChartsService', 'CohortSelectionService',
-        function (DcChartsService, CohortSelectionService) {
+    .directive('tsCohortChart', ['DcChartsService', 'CohortSelectionService', 'toastr',
+        function (DcChartsService, CohortSelectionService, toastr) {
 
             var _scope = {
                 tsGridster: '=',
@@ -26,16 +26,48 @@ angular.module('transmartBaseUi')
                     var _chart,
                         _bodyDiv = el.find('div')[2];
 
-                    // always create new chart even it's been cached
                     _chart = cohortSelectionCtrl.createCohortChart(scope.tsLabel, _bodyDiv);
+                    /*
+                     * this listener function will be invoked after a filter is applied, added or removed.
+                     * filtered.monitor is the event emitted during filtering
+                     */
+                    _chart.on('filtered', function () {
+                        //keep the tsLabel.filters to be in sync with chart.filters()
+                        var filters = _chart.filters();
+                        _chart.tsLabel.filters = filters;
+                        cohortSelectionCtrl.updateDimensions();
 
+                        //update the min and max values if it is a bar chart
+                        if (filters.length > 0 && scope.isBarChart) {
+                            scope.filterOpt.min = _.floor(filters[0][0], 1);
+                            scope.filterOpt.max = _.floor(filters[0][1], 1);
+                        }
+                    });
+
+                    /*
+                     * this listener function will be invoked after transitions after redraw and render.
+                     */
+                    _chart.on('renderlet', function () {
+                        if (_chart.type === 'PIECHART') {
+                            DcChartsService.emphasizeChartLegend(_chart);
+                        }
+                    });
+
+                    scope.chart = _chart;
 
                     // check if chart is number chart or not
                     scope.isNumberChart = _chart.type === 'NUMBER';
-                    scope.chart = _chart;
+                    // check if chart is bar chart or not
+                    scope.isBarChart = _chart.type === 'BARCHART',
+                        // show group icon
+                        scope.showGroupIcon = scope.tsLabel.type !== 'combination' && scope.tsLabel.type !== 'highdim';
 
-                    // show group icon
-                    scope.showGroupIcon = scope.tsLabel.type !== 'combination' && scope.tsLabel.type !== 'highdim';
+                    scope.filterOpt = {
+                        // the flag indicating whether to show the manual filter input option
+                        showFilterInput: false,
+                        min: null,
+                        max: null
+                    };
 
                     // resize chart when container is being resized
                     scope.$watchGroup([
@@ -52,8 +84,8 @@ angular.module('transmartBaseUi')
 
                         if (!_.isEqual(newValues, oldValues)) {
                             var _node = CohortSelectionService.findNodeByConceptPath
-                                (_chart.tsLabel.conceptPath, cohortSelectionCtrl.cs.nodes);
-                            if(_node) {
+                            (_chart.tsLabel.conceptPath, cohortSelectionCtrl.cs.nodes);
+                            if (_node) {
                                 _node.label.sizeX = _chart.gridInfo.sizeX;
                                 _node.label.sizeY = _chart.gridInfo.sizeY;
                                 _node.label.curColWidth = _chart.gridInfo.curColWidth;
@@ -85,8 +117,35 @@ angular.module('transmartBaseUi')
                     };
 
                     scope.clearFilter = function (label) {
+                        scope.filterOpt.min = null;
+                        scope.filterOpt.max = null;
                         return cohortSelectionCtrl.clearChartFilterByLabel(label);
-                    }
+                    };
+
+                    scope.toggleFilterInput = function () {
+                        if (scope.isBarChart) {
+                            scope.filterOpt.showFilterInput = !scope.filterOpt.showFilterInput;
+                        }
+                    };
+
+                    scope.filterBarChart = function () {
+                        var min = +scope.filterOpt.min,
+                            max = +scope.filterOpt.max;
+                        if (_.isNumber(min) &&
+                            _.isNumber(max) &&
+                            max > min) {
+                            var range = dc.filters.RangedFilter(min, max);
+                            scope.chart.filter(null);
+                            scope.chart.filter(range);
+                            scope.chart.redraw();
+                        }
+                        else if (_.isNaN(min) || _.isNaN(max)) {
+                            toastr.error('Please specify numeric values.');
+                        }
+                        else if (max <= min) {
+                            toastr.error('Max should be larger than min.');
+                        }
+                    };
                 }// -- end of the link function --
             };
         }]);

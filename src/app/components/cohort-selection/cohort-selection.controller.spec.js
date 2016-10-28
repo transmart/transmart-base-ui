@@ -418,50 +418,6 @@ describe('CohortSelectionCtrl', function () {
 
     });
 
-    describe('createCohortChart', function () {
-        var label, el, subjects;
-
-        beforeEach(function () {
-            label = {
-                $$hashKey: "object:306",
-                col: 0,
-                row: 0,
-                filter: undefined,
-                label: "/Public Studies/AAA_TRANSLOCATION/Gender/",
-                labelId: 0,
-                name: "Gender",
-                resolved: false,
-                sizeX: 3,
-                sizeY: 3,
-                type: "string",
-                boxId: ctrl.boxId
-            };
-            el = document.createElement('div');
-            subjects = [{
-                id: 1, gender: 'male', labels: {}
-            }, {
-                id: 2, gender: 'female', labels: {}
-            }, {
-                id: 3, gender: 'male', labels: {}
-            }, {
-                id: 4, gender: 'female', labels: {}
-            }, {
-                id: 5, gender: 'unknown', labels: {}
-            }];
-        });
-
-        it('should listen to the filtered and renderlet events', function () {
-            var _chart = jasmine.createSpyObj('_chart', ['on', 'render']);
-            var _func = jasmine.any(Function);
-
-            spyOn(DcChartsService, 'getPieChart').and.returnValue(_chart);
-            ctrl.createCohortChart(label, el);
-
-            expect(_chart.on).toHaveBeenCalledWith('filtered', _func);
-            expect(_chart.on).toHaveBeenCalledWith('renderlet', _func);
-
-        });
-    });
 
     describe('resetCharts', function () {
         var chart1, chart2;
@@ -709,6 +665,7 @@ describe('CohortSelectionCtrl', function () {
             expect(Math.floor).toHaveBeenCalled();
         });
 
+
         it('should not reOrganize when there is no label', function () {
             ctrl.cs.labels = [];
             spyOn(ctrl.cs.labels, 'forEach');
@@ -725,6 +682,121 @@ describe('CohortSelectionCtrl', function () {
             expect(ctrl.cs.labels[1].sizeX).toBe(1);
             expect(ctrl.cs.labels[1].sizeY).toBe(1);
         });
+    });
+
+    describe('createCohortChart', function () {
+        var label, el, subjects;
+
+        beforeEach(function () {
+            label = {
+                $$hashKey: "object:306",
+                col: 0,
+                row: 0,
+                filter: undefined,
+                label: "/Public Studies/AAA_TRANSLOCATION/Gender/",
+                labelId: 0,
+                name: "Gender",
+                resolved: false,
+                sizeX: 3,
+                sizeY: 3,
+                type: "string",
+                boxId: ctrl.boxId
+            };
+            el = document.createElement('div');
+            subjects = [{
+                id: 1, gender: 'male', labels: {}
+            }, {
+                id: 2, gender: 'female', labels: {}
+            }, {
+                id: 3, gender: 'male', labels: {}
+            }, {
+                id: 4, gender: 'female', labels: {}
+            }, {
+                id: 5, gender: 'unknown', labels: {}
+            }];
+
+        });
+
+        it('should create high dimensional chart', function () {
+            label.type = 'highdim';
+            spyOn(DcChartsService, 'getNumDisplay').and.callFake(function () {
+                return {
+                    render: function () {
+                    }
+                }
+            });
+            var chart = ctrl.createCohortChart(label, el);
+            expect(DcChartsService.getNumDisplay).toHaveBeenCalled();
+            expect(chart.type).toBe('NUMBER');
+            expect(chart.id).toBe(label.labelId);
+            expect(chart.tsLabel).toBe(label);
+            expect(chart.el).toBe(el);
+        });
+
+        it('should create pie chart', function () {
+            label.type = 'string';
+            spyOn(DcChartsService, 'getPieChart').and.callFake(function () {
+                return {
+                    render: function () {
+                    }
+                }
+            });
+            var chart = ctrl.createCohortChart(label, el);
+            expect(DcChartsService.getPieChart).toHaveBeenCalled();
+            expect(chart.type).toBe('PIECHART');
+        });
+
+        it('should create bar chart if lable.type is number', function () {
+            label.type = 'number';
+            spyOn(DcChartsService, 'getBarChart').and.callFake(function () {
+                return {
+                    render: function () {
+                    }
+                }
+            });
+            var chart = ctrl.createCohortChart(label, el);
+            expect(DcChartsService.getBarChart).toHaveBeenCalled();
+            expect(chart.type).toBe('BARCHART');
+        });
+
+        it('should create bar chart if lable.type is float', function () {
+            label.type = 'float';
+            spyOn(DcChartsService, 'getBarChart').and.callFake(function () {
+                return {
+                    render: function () {
+                    }
+                }
+            });
+            var chart = ctrl.createCohortChart(label, el);
+            expect(DcChartsService.getBarChart).toHaveBeenCalled();
+            expect(chart.type).toBe('BARCHART');
+        });
+
+        it('should add new chart to the cs.charts array', function () {
+            spyOn(DcChartsService, 'getBarChart').and.callFake(function () {
+                return {
+                    render: function () {
+                    }
+                }
+            });
+            var chart = ctrl.createCohortChart(label, el);
+            expect(ctrl.cs.charts.length).toBe(1);
+            expect(ctrl.cs.charts[0]).toBe(chart);
+        });
+
+        it('should filter the chart when label.filters is present', function () {
+            var chart = {
+                render: function () {}
+            };
+            label.filters = [];
+            spyOn(DcChartsService, 'getBarChart').and.callFake(function () {
+                return chart;
+            });
+            spyOn(ctrl, 'filterChart');
+            ctrl.createCohortChart(label, el);
+            expect(ctrl.filterChart).toHaveBeenCalled();
+        });
+
     });
 
 
