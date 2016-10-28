@@ -1242,13 +1242,14 @@ angular.module('transmartBaseUi')
                                 });
                             }
                             // to make sure the nodes are added sequentially
-                            var promise = vm.addNodeToActiveCohortSelection(node, filters);
-                            promise.then(function () {
-                                index++;
-                                if (index < nodes.length) {
-                                    _applyNode(nodes, index);
-                                }
-                            });
+                            // add the copy of the node, because each controller needs its independent node set
+                            vm.addNodeToActiveCohortSelection(_.clone(node), filters)
+                                .then(function () {
+                                    index++;
+                                    if (index < nodes.length) {
+                                        _applyNode(nodes, index);
+                                    }
+                                });
                         }
                     };
 
