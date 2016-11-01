@@ -89,17 +89,7 @@ angular.module('transmartBaseUi')
                     vm.cs.dimensions = [];
                     vm.cs.maxNoOfDimensions = 20;
                     vm.cs.groups = [];
-                    if (vm.cs.labels) {
-                        vm.cs.labels.forEach(function (label) {
-                            label.node = undefined;
-                        });
-                    }
                     vm.cs.labels = [];
-                    if (vm.cs.nodes) {
-                        vm.cs.nodes.forEach(function (node) {
-                            node.label = undefined;
-                        });
-                    }
                     vm.cs.nodes = [];
                     vm.cs.selected = 0;
                     vm.cs.total = 0;
@@ -349,6 +339,7 @@ angular.module('transmartBaseUi')
                 };
 
                 vm.restoreCrossfilter();
+
                 // Initialize the chart service only if uninitialized
                 if (!vm.cs.mainDimension) {
                     vm.reset();
@@ -370,29 +361,6 @@ angular.module('transmartBaseUi')
                     vm.updateDimensions();
                 };
 
-                var _numDisplay = function (label, cGroup, el) {
-
-                    cGroup.reduce(
-                        function (p, v) {
-                            return v.observations[label.conceptPath] ? p + 1 : p;
-                        },
-                        function (p, v) {
-                            return v.observations[label.conceptPath] ? p - 1 : p;
-                        },
-                        function () {
-                            return 0;
-                        }
-                    );
-
-                    return dc.numberDisplay(el)
-                        .group(cGroup)
-                        .html({
-                            one: '%number',
-                            some: '%number',
-                            none: '%number'
-                        })
-                        .formatNumber(d3.format('.0'));
-                };
 
                 var _groupCharts = function (chart1, chart2, filterObj) {
 
@@ -535,7 +503,7 @@ angular.module('transmartBaseUi')
                  * @param {Object} chart - The chart instance in CohortSelectionCtrl.cs.charts
                  * @param {Array} filters - The filtering words or criteria that filter the chart
                  */
-                function _filterChart(chart, filters) {
+                vm.filterChart = function (chart, filters) {
                     if (_.isArray(filters) && filters.length > 0) {
                         filters.forEach(function (_f) {
                             chart.filter(_f);
@@ -897,7 +865,7 @@ angular.module('transmartBaseUi')
                         // Create a number display if highdim
                         if (label.type === 'highdim') {
                             _defaultDim();
-                            _chart = _numDisplay(label, vm.cs.groups[label.labelId], el);
+                            _chart = DcChartsService.getNumDisplay(label, vm.cs.groups[label.labelId], el);
                             _chart.type = 'NUMBER';
 
                             // Create a PIECHART if categorical
@@ -954,37 +922,13 @@ angular.module('transmartBaseUi')
                      * apply the filter of the sub-category on the chart
                      */
                     if (label.filters !== undefined) {
-                        _filterChart(_chart, label.filters);
+                        vm.filterChart(_chart, label.filters);
                     }
-
-                    /*
-                     * this listener function will be invoked after a filter is applied, added or removed.
-                     * filtered.monitor is the event emitted during filtering
-                     */
-                    _chart.on('filtered', _handleChartFilteredEvent);
-
-                    //this listener function will be invoked after transitions after redraw and render.
-                    _chart.on('renderlet', _handleChartRenderletEvent);
 
                     this.cs.charts.push(_chart);
 
                     return _chart;
                 };
-
-                function _handleChartFilteredEvent(chart, filter) {
-                    /*
-                     * keep the tsLabel.filters to be in sync with chart.filters()
-                     */
-                    chart.tsLabel.filters = chart.filters();
-                    vm.updateDimensions();
-                }
-
-                function _handleChartRenderletEvent(chart, filter) {
-                    if (chart.type === 'PIECHART') {
-                        DcChartsService.emphasizeChartLegend(chart);
-                    }
-
-                }
 
                 /**
                  * Return active filters
@@ -1056,7 +1000,7 @@ angular.module('transmartBaseUi')
                             promise = vm.addNodeToActiveCohortSelection(node.parent, filters);
                         }
                         else {
-                            _filterChart(chart, [node.title]);
+                            vm.filterChart(chart, [node.title]);
                         }
                     }
                     else {
@@ -1242,13 +1186,14 @@ angular.module('transmartBaseUi')
                                 });
                             }
                             // to make sure the nodes are added sequentially
-                            var promise = vm.addNodeToActiveCohortSelection(node, filters);
-                            promise.then(function () {
-                                index++;
-                                if (index < nodes.length) {
-                                    _applyNode(nodes, index);
-                                }
-                            });
+                            // add the copy of the node, because each controller needs its independent node set
+                            vm.addNodeToActiveCohortSelection(_.clone(node), filters)
+                                .then(function () {
+                                    index++;
+                                    if (index < nodes.length) {
+                                        _applyNode(nodes, index);
+                                    }
+                                });
                         }
                     };
 

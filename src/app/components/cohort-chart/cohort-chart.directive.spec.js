@@ -1,8 +1,8 @@
 'use strict';
 
 describe('Unit testing cohort-chart directive', function () {
-    var ctrl, $controller, $compile, rootScope, ctrlScope, scope, chartElm,
-        CohortChartMocks, CohortSelectionMocks, CohortSelectionService;
+    var ctrl, $controller, $compile, rootScope, scope, chartElm, toastr,
+        CohortChartMocks, CohortSelectionMocks, CohortSelectionService, DcChartsService;
 
     // Load the transmartBaseUi module, which contains the directive
     beforeEach(function () {
@@ -13,31 +13,35 @@ describe('Unit testing cohort-chart directive', function () {
 
     // Store references to $rootScope and $compile
     // so they are available to all tests in this describe block
-    beforeEach(inject(function (_$controller_, _$compile_, _$rootScope_, _CohortChartMocks_,
-                                _CohortSelectionMocks_, _CohortSelectionService_) {
+    beforeEach(inject(function (_$controller_, _$compile_, _$rootScope_, _CohortChartMocks_, _toastr_,
+                                _CohortSelectionMocks_, _CohortSelectionService_, _DcChartsService_) {
         // The injector unwraps the underscores (_) from around the parameter
         // names when matching
         $controller = _$controller_;
         $compile = _$compile_;
         rootScope = _$rootScope_;
         scope = rootScope.$new();
-        ctrlScope = rootScope.$new();
         CohortSelectionMocks = _CohortSelectionMocks_;
         CohortChartMocks = _CohortChartMocks_;
         CohortSelectionService = _CohortSelectionService_;
+        DcChartsService = _DcChartsService_;
+        toastr = _toastr_;
 
         scope.gridsterOpts = CohortSelectionMocks.getGridsterOptions();
         scope.gridsterItem = CohortSelectionMocks.getGridsterItem();
         scope.gridster = CohortSelectionMocks.getGridster();
         scope.labels = CohortChartMocks.getMockLabels();
         scope.label = scope.labels[0];
+        scope.filterOpt = {
+            showFilterInput: false
+        }
         var boxId = CohortChartMocks.getBoxId();
         scope.tsLabel = {
             boxId: boxId
         };
 
         var ctrlElm = angular.element('<div id=' + boxId + '></div>');
-        ctrl = $controller('CohortSelectionCtrl', {$scope: ctrlScope, $element: ctrlElm});
+        ctrl = $controller('CohortSelectionCtrl', {$scope: scope, $element: ctrlElm});
         CohortSelectionService.getBox = function (boxId) {
             return {
                 ctrl: ctrl
@@ -45,6 +49,11 @@ describe('Unit testing cohort-chart directive', function () {
         };
 
         spyOn(angular, 'element').and.returnValue(ctrlElm);
+        spyOn(ctrl, 'createCohortChart').and.callFake(function () {
+            var _chart = jasmine.createSpyObj('_chart',
+                ['on', 'filter', 'render', 'redraw']);
+            return _chart;
+        });
 
         var chartHtml = '<ts-cohort-chart class="chart-container" ts-gridster-item="gridsterItem" ts-label="label" ts-gridster="gridster"></ts-cohort-chart>';
         chartElm = $compile(chartHtml)(scope);
@@ -54,6 +63,17 @@ describe('Unit testing cohort-chart directive', function () {
 
     it('should contain ts-cohort-chart-container', function () {
         expect(chartElm.html()).toContain('chart-container');
+    });
+
+    it('should call CohortSelectionCtrl.createCohortChart', function () {
+        expect(ctrl.createCohortChart).toHaveBeenCalled();
+    });
+
+    it('should listen to chart events', function () {
+        var _func = jasmine.any(Function);
+        var _chart = chartElm.isolateScope().chart;
+        expect(_chart.on).toHaveBeenCalledWith('filtered', _func);
+        expect(_chart.on).toHaveBeenCalledWith('renderlet', _func);
     });
 
     it('should group charts', function() {
@@ -85,4 +105,48 @@ describe('Unit testing cohort-chart directive', function () {
         chartElm.isolateScope().clearFilter(label);
         expect(ctrl.clearChartFilterByLabel).toHaveBeenCalledWith(label);
     });
+
+    it('should perform toggle filter input action only when isBarChart is true', function () {
+        var _scope = chartElm.isolateScope();
+        _scope.isBarChart = true;
+        _scope.toggleFilterInput();
+        expect(_scope.filterOpt.showFilterInput).toBe(true);
+
+        _scope.isBarChart = false;
+        _scope.toggleFilterInput();
+        expect(_scope.filterOpt.showFilterInput).toBe(true);
+    });
+
+    it('should perform bar-chart filtering', function () {
+        var _scope = chartElm.isolateScope();
+        _scope.filterOpt.min = 20;
+        _scope.filterOpt.max = 100;
+        spyOn(_, 'isNumber').and.callFake(function () {
+            return true;
+        });
+        spyOn(dc.filters, 'RangedFilter');
+        _scope.filterBarChart();
+        expect(_.isNumber).toHaveBeenCalled();
+        expect(dc.filters.RangedFilter).toHaveBeenCalled();
+        expect(_scope.chart.filter).toHaveBeenCalled();
+        expect(_scope.chart.redraw).toHaveBeenCalled();
+    });
+
+    it('should report error when isNaN', function () {
+        var _scope = chartElm.isolateScope();
+        _scope.filterOpt.min = NaN;
+        spyOn(toastr, 'error');
+        _scope.filterBarChart();
+        expect(toastr.error).toHaveBeenCalled();
+    });
+
+    it('should report error when max <= min', function () {
+        var _scope = chartElm.isolateScope();
+        _scope.filterOpt.min = 100;
+        _scope.filterOpt.max = 100;
+        spyOn(toastr, 'error');
+        _scope.filterBarChart();
+        expect(toastr.error).toHaveBeenCalled();
+    });
+
 });

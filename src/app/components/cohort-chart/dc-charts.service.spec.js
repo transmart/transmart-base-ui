@@ -4,7 +4,9 @@
 'use strict';
 
 describe('DcChartsService Unit Tests', function () {
-    var DcChartsService;
+    var DcChartsService,
+        chart;
+    var cDimension, cGroup, el, opt, label;
 
     // Setup
     beforeEach(function () {
@@ -13,6 +15,51 @@ describe('DcChartsService Unit Tests', function () {
 
     beforeEach(inject(function (_DcChartsService_) {
         DcChartsService = _DcChartsService_;
+        var func = function () {
+            return chart;
+        };
+        chart = {
+            rendered: false,
+            width: func,
+            height: func,
+            margins: func,
+            innerRadius: func,
+            dimension: func,
+            xAxisPadding: func,
+            yAxisPadding: func,
+            yAxisLabel: func,
+            xAxisLabel: func,
+            elasticX: func,
+            centerBar: func,
+            elasticY: func,
+            gap: func,
+            group: func,
+            x: func,
+            y: func,
+            renderLabel: func,
+            legend: func,
+            transitionDuration: func,
+            colors: func,
+            renderHorizontalGridLines: func,
+            xUnits: func,
+            yAxis: func,
+            ticks: func,
+            keyAccessor: func,
+            valueAccessor: func,
+            colorAccessor: func,
+            title: func,
+            calculateColorDomain: func,
+            html: func,
+            formatNumber: func
+        };
+        cDimension = {};
+        cGroup = {
+            reduce: func
+        };
+        el = {};
+        opt = undefined;
+        label = {};
+
     }));
 
     describe('emphasizeChartLegend', function () {
@@ -49,6 +96,112 @@ describe('DcChartsService Unit Tests', function () {
             expect(items.length).toEqual(0);
         });
 
+    });
+
+    describe('getPieChart', function () {
+
+        it('should call and configure dc.pieChart', function () {
+            spyOn(dc, 'pieChart').and.callFake(function () {
+                return chart;
+            });
+
+            DcChartsService.getPieChart(cDimension, cGroup, el, opt);
+            expect(dc.pieChart).toHaveBeenCalled();
+
+        });
+    });
+
+    describe('getBarChart', function () {
+
+        it('should call and configure dc.barChart', function () {
+
+            spyOn(dc, 'barChart').and.callFake(function () {
+                return chart;
+            });
+
+            DcChartsService.getBarChart(cDimension, cGroup, el, opt);
+            expect(dc.barChart).toHaveBeenCalled();
+        });
+
+        it('should accept opt with float', function () {
+            opt = {};
+            opt.float = 1.1;
+            spyOn(dc, 'barChart').and.callFake(function () {
+                return chart;
+            });
+            DcChartsService.getBarChart(cDimension, cGroup, el, opt);
+        });
+    });
+
+    describe('getBoxPlot', function () {
+
+        it('should call and configure dc.boxPlot', function () {
+
+            spyOn(dc, 'boxPlot').and.callFake(function () {
+                return chart;
+            });
+
+            DcChartsService.getBoxPlot(cDimension, cGroup, el, opt);
+            expect(dc.boxPlot).toHaveBeenCalled();
+        });
+
+        it('should accept opt with min and max values', function () {
+            opt = {};
+            opt.min = 1.1; opt.max = 2.2;
+            spyOn(dc, 'boxPlot').and.callFake(function () {
+                return chart;
+            });
+            DcChartsService.getBoxPlot(cDimension, cGroup, el, opt);
+        });
+    });
+
+    describe('getScatterPlot', function () {
+
+        it('should call and configure dc.scatterPlot', function () {
+            opt = {};
+            opt.min = 1.1; opt.max = 2.2;
+            spyOn(dc, 'scatterPlot').and.callFake(function () {
+                return chart;
+            });
+
+            DcChartsService.getScatterPlot(cDimension, cGroup, el, opt);
+            expect(dc.scatterPlot).toHaveBeenCalled();
+        });
+
+        it('should call and configure dc.scatterPlot without opt.min and opt.max', function () {
+            opt = {};
+            opt.min = undefined; opt.max = undefined;
+            spyOn(dc, 'scatterPlot').and.callFake(function () {
+                return chart;
+            });
+
+            DcChartsService.getScatterPlot(cDimension, cGroup, el, opt);
+            expect(dc.scatterPlot).toHaveBeenCalled();
+        });
+    });
+
+    describe('getHeatMap', function () {
+
+        it('should call and configure dc.scatterPlot', function () {
+            spyOn(dc, 'heatMap').and.callFake(function () {
+                return chart;
+            });
+
+            DcChartsService.getHeatMap(cDimension, cGroup, el, opt);
+            expect(dc.heatMap).toHaveBeenCalled();
+        });
+    });
+
+    describe('getNumDisplay', function () {
+
+        it('should call and configure dc.numberDisplay', function () {
+            spyOn(dc, 'numberDisplay').and.callFake(function () {
+                return chart;
+            });
+
+            DcChartsService.getNumDisplay(label, cGroup, el);
+            expect(dc.numberDisplay).toHaveBeenCalled();
+        });
     });
 
     describe('resizeChart', function () {

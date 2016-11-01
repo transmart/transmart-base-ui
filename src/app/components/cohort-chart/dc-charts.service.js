@@ -37,8 +37,10 @@ angular.module('transmartBaseUi')
          */
         service.resizeChart = function (_chart) {
 
-            var width = (_chart.gridInfo.sizeX * _chart.gridInfo.curColWidth) - 50;
-            var height = (_chart.gridInfo.sizeY * _chart.gridInfo.curRowHeight) - 60;
+            var widthOffset = 50,
+                heightOffset = (_chart.type === 'BARCHART') ? 80 : 60;
+            var width = (_chart.gridInfo.sizeX * _chart.gridInfo.curColWidth) - widthOffset;
+            var height = (_chart.gridInfo.sizeY * _chart.gridInfo.curRowHeight) - heightOffset;
 
             if (width > 0 &&
                 height > 0 &&
@@ -285,6 +287,37 @@ angular.module('transmartBaseUi')
         };
 
         /**
+         * create dc.js number display
+         * @param label
+         * @param cGroup
+         * @param el
+         * @returns {dc.dataCount|dc.numberDisplay}
+         */
+        service.getNumDisplay = function (label, cGroup, el) {
+
+            cGroup.reduce(
+                function (p, v) {
+                    return v.observations[label.conceptPath] ? p + 1 : p;
+                },
+                function (p, v) {
+                    return v.observations[label.conceptPath] ? p - 1 : p;
+                },
+                function () {
+                    return 0;
+                }
+            );
+
+            return dc.numberDisplay(el)
+                .group(cGroup)
+                .html({
+                    one: '%number',
+                    some: '%number',
+                    none: '%number'
+                })
+                .formatNumber(d3.format('.0'));
+        };
+
+        /**
          * Emphasize pie chart legends when the corresponding slices are selected
          * @memberof DcChartsService
          * @param chart
@@ -309,20 +342,6 @@ angular.module('transmartBaseUi')
                 }
             });
             return items;
-        };
-
-        /**
-         * Render all
-         * @memberof DcChartsService
-         * @param {Array} charts
-         */
-        service.renderAll = function (charts) {
-            angular.forEach(charts, function (chart) {
-                if (!chart.rendered) {
-                    chart.render();
-                    chart.rendered = true;
-                }
-            });
         };
 
         // at the end ..
