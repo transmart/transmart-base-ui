@@ -121,6 +121,35 @@ angular.module('transmartBaseUi')
                 }];
             };
 
+            mock.cohortFiltersWithHighDimData = function() {
+                return [
+                    {
+                        name: 'Lung',
+                        type: 'highdim',
+                        label: '\\Private Studies\\GSE8581\\Biomarker Data\\GPL570\\Lung\\',
+                        study: {
+                            type: 'private'
+                        },
+                        filters: []
+                    }
+                ];
+
+            };
+
+            mock.cohortFiltersWithHighDimDataResponse = function() {
+                return [{
+                    panel_number: 1,
+                    invert: 0,
+                    total_item_occurrences: 1,
+                    item: [{
+                        item_name: 'Lung',
+                        item_key: '\\\\Private Studies\\Private Studies\\GSE8581\\Biomarker Data\\GPL570\\Lung\\',
+                        tooltip: '\\Private Studies\\GSE8581\\Biomarker Data\\GPL570\\Lung\\',
+                        class: 'ENC'
+                    }]
+                }];
+            };
+
             mock.cohortFiltersToXML = function() {
                 return {
                     cohortName: 'my cohort',

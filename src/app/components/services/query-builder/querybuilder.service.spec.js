@@ -22,7 +22,11 @@ describe('QueryBuilderService Unit Tests', function () {
     it('should convert cohort filters with number ranges', function () {
         expect(QueryBuilderService.convertCohortFiltersToI2B2Panels(QueryBuilderMocks.cohortFiltersWithNumberRanges()))
             .toEqual(QueryBuilderMocks.cohortFiltersWithNumberRangesResponse());
+    });
 
+    it('should convert cohort filters with high dimensional data', function() {
+        expect(QueryBuilderService.convertCohortFiltersToI2B2Panels(QueryBuilderMocks.cohortFiltersWithHighDimData()))
+            .toEqual(QueryBuilderMocks.cohortFiltersWithHighDimDataResponse());
     });
 
     it('should convert cohort filters to xml', function () {

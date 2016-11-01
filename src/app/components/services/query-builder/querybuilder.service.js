@@ -37,16 +37,16 @@ angular.module('transmartBaseUi').factory('QueryBuilderService', ['JSON2XMLServi
         var panels = [];
 
         _.each(cohortFilters, function (cohortFilter) {
-            var items;
+            var items = [];
 
             // Numbers and float are constrained by a range
             if (cohortFilter.type == 'float' || cohortFilter.type == 'number') {
                 items = generatePanelItemsForNumericRanges(cohortFilter);
             }
 
-            // Constrain by one or more categories
-            if (cohortFilter.type == 'string') {
-                items = generatePanelItemsForCategories(cohortFilter);
+            // Constrain by one or more categories or high dimensional data
+            if (cohortFilter.type == 'string' || cohortFilter.type == 'highdim') {
+                items = generatePanelItemsForConcepts(cohortFilter);
             }
 
             if (items.length > 0) {
@@ -106,7 +106,7 @@ angular.module('transmartBaseUi').factory('QueryBuilderService', ['JSON2XMLServi
      * @param cohortFilter
      * @returns {Array}
      */
-    function generatePanelItemsForCategories(cohortFilter) {
+    function generatePanelItemsForConcepts(cohortFilter) {
         var items = [];
         if (cohortFilter.filters.length > 0) {
             // If there are filters on the chart, add each filter value separately (leafs)
