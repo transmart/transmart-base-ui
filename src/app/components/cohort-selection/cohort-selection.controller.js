@@ -94,7 +94,9 @@ angular.module('transmartBaseUi')
                     vm.cs.selected = 0;
                     vm.cs.total = 0;
                     vm.cs.mainDimension = vm.cs.crossfilter.dimension(function (d) {
-                        return d.labels;
+                        // return a column attribute so that the rows are sorted according to
+                        // that attribute, in this case, sorting the subjects w.r.t their ids
+                        return d.id;
                     });
                     vm.history = [];
                 };
@@ -362,7 +364,7 @@ angular.module('transmartBaseUi')
                 };
 
 
-                var _groupCharts = function (chart1, chart2, filterObj) {
+                vm.combineCharts = function (chart1, chart2, filterObj) {
 
                     var _combinationLabel = {
                         labelId: vm.cs.chartId++,
@@ -402,20 +404,20 @@ angular.module('transmartBaseUi')
                     vm.reOrganize();
                 };
 
-                var _groupingChart = {};
+                vm.currentChartGrouping = {};
 
                 vm.groupCharts = function (newChart, turnOff) {
                     // If a first chart was already selected, group them together
-                    if (_groupingChart.chartOne) {
-                        _groupCharts(newChart, _groupingChart.chartOne);
+                    if (vm.currentChartGrouping.chartOne) {
+                        vm.combineCharts(newChart, vm.currentChartGrouping.chartOne);
                         // Turn off both selection lights
-                        _groupingChart.turnOff();
+                        vm.currentChartGrouping.turnOff();
                         turnOff();
-                        _groupingChart = {};
+                        vm.currentChartGrouping = {};
                         // If this is the first chart selected
                     } else {
-                        _groupingChart.chartOne = newChart;
-                        _groupingChart.turnOff = turnOff;
+                        vm.currentChartGrouping.chartOne = newChart;
+                        vm.currentChartGrouping.turnOff = turnOff;
                     }
                 };
 
@@ -430,19 +432,7 @@ angular.module('transmartBaseUi')
                     return what.indexOf('\\') === -1 ? what : _t[_t.length - 2];
                 };
 
-                var _getType = function (value) {
-                    var _type = typeof value;
-                    if (_type === 'string') {
-                        if (value === 'E' || value === 'MRNA') {
-                            _type = 'highdim';
-                        }
-                    } else if (_type === 'number') {
-                        if ((value % 1) !== 0) {
-                            _type = 'float';
-                        }
-                    }
-                    return _type;
-                };
+
 
                 /**
                  * Add new label to list and check data type
@@ -452,7 +442,7 @@ angular.module('transmartBaseUi')
                  * @returns {int} labelId
                  * @private
                  */
-                var _addLabel = function (obs, node, filterObj) {
+                vm.addLabel = function (obs, node, filterObj) {
                     // Check if label has already been added
                     var label = _.find(vm.cs.labels, {label: obs.label});
 
@@ -464,7 +454,7 @@ angular.module('transmartBaseUi')
                             label = {
                                 label: obs.label,
                                 conceptPath: obs.label,
-                                type: _getType(obs.value),
+                                type: CohortSelectionService.getLabelType(obs.value),
                                 name: _getLastToken(obs.label),
                                 labelId: vm.cs.chartId++,
                                 study: node.study,
@@ -486,10 +476,10 @@ angular.module('transmartBaseUi')
                         }
                     } else {
                         // if label already exists check its type
-                        label.type = label.type === 'float' ? label.type : _getType(obs.value);
+                        label.type = label.type === 'float' ? label.type : CohortSelectionService.getLabelType(obs.value);
                     }
 
-                    if (label.type === 'float') {
+                    if (label && label.type === 'float') {
                         var precision = (obs.value + '').split('.');
                         precision = precision[1] ? precision[1].length : 0;
                         label.precision = label.precision ? Math.min(label.precision, precision) : precision;
@@ -530,7 +520,7 @@ angular.module('transmartBaseUi')
                                     _filter = _.find(filters, {label: obs.label});
                                 }
                                 // Add the concept to the list of chart labels
-                                var _newLabel = _addLabel(obs, node, _filter);
+                                var _newLabel = vm.addLabel(obs, node, _filter);
                                 // Check if the subject of the observation is already present
                                 var foundSubject = _.find(vm.cs.subjects,
                                     {id: obs._embedded.subject.id});
@@ -597,7 +587,7 @@ angular.module('transmartBaseUi')
                     }
                     //if the node is a combination node for combination chart
                     else {
-                        _groupCharts(node.chart1, node.chart2, filters[0]);
+                        vm.combineCharts(node.chart1, node.chart2, filters[0]);
                         _deferred.resolve();
                     }
 
@@ -727,17 +717,17 @@ angular.module('transmartBaseUi')
                     return _deferred.promise;
                 };
 
-                var _createMultidimensionalChart = function (label, el) {
+                vm.createMultidimensionalChart = function (label, el) {
                     var _chart, _min, _max, label1 = label.labels[0], label2 = label.labels[1];
 
                     // Check if label0 or label1 has categorical values
-                    if (label.labels[0].type === 'string' || label.labels[1].type === 'string') {
+                    if (label1.type === 'string' || label2.type === 'string') {
 
                         // Check if one of them is not categorical
-                        if (label.labels[0].type !== 'string' || label.labels[1].type !== 'string') {
+                        if (label1.type !== 'string' || label2.type !== 'string') {
 
                             // Always categorical on X axis
-                            var _valueX = label.labels[0].type === 'string' ? 0 : 1;
+                            var _valueX = label1.type === 'string' ? 0 : 1;
                             var _valueY = _valueX === 0 ? 1 : 0;
 
                             vm.cs.dimensions[label.labelId] =
@@ -804,20 +794,20 @@ angular.module('transmartBaseUi')
                         vm.cs.dimensions[label.labelId] =
                             vm.cs.crossfilter.dimension(function (d) {
                                 return [
-                                    d.observations[label.labels[0].conceptPath] ?
-                                        d.observations[label.labels[0].conceptPath] : undefined,
-                                    d.observations[label.labels[1].conceptPath] ?
-                                        d.observations[label.labels[1].conceptPath] : undefined
+                                    d.observations[label1.conceptPath] ?
+                                        d.observations[label1.conceptPath] : undefined,
+                                    d.observations[label2.conceptPath] ?
+                                        d.observations[label2.conceptPath] : undefined
                                 ];
                             });
 
                         vm.cs.groups[label.labelId] =
                             vm.cs.dimensions[label.labelId].group();
 
-                        _max = vm.cs.dimensions[label.labels[0].labelId]
-                            .top(1)[0].observations[label.labels[0].conceptPath];
-                        _min = vm.cs.dimensions[label.labels[0].labelId]
-                            .bottom(1)[0].observations[label.labels[0].conceptPath];
+                        _max = vm.cs.dimensions[label1.labelId]
+                            .top(1)[0].observations[label1.conceptPath];
+                        _min = vm.cs.dimensions[label1.labelId]
+                            .bottom(1)[0].observations[label1.conceptPath];
 
                         _chart = DcChartsService.getScatterPlot(
                             vm.cs.dimensions[label.labelId],
@@ -826,8 +816,8 @@ angular.module('transmartBaseUi')
                             {
                                 min: _min,
                                 max: _max,
-                                xLab: label.labels[0].name,
-                                yLab: label.labels[1].name
+                                xLab: label1.name,
+                                yLab: label2.name
                             }
                         );
 
@@ -860,7 +850,7 @@ angular.module('transmartBaseUi')
                     };
 
                     if (label.type === 'combination') {
-                        _chart = _createMultidimensionalChart(label, el);
+                        _chart = vm.createMultidimensionalChart(label, el);
                     } else {
                         // Create a number display if highdim
                         if (label.type === 'highdim') {
@@ -961,7 +951,6 @@ angular.module('transmartBaseUi')
                  */
                 vm.addNodeWithFilters = function (node, filters) {
                     vm.addHistory('addNodeWithFilters', [node, filters]);
-
                     if (TreeNodeService.isCategoricalParentNode(node)) {
                         filters = [];
                     }
@@ -974,7 +963,7 @@ angular.module('transmartBaseUi')
                     }];
                     var promise = vm.addNodeToActiveCohortSelection(node, filterObjects);
                     return promise;
-                }
+                };
 
                 /**
                  * Handle node drop from study-accordion to cohort-selection panel.

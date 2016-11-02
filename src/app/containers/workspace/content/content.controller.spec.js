@@ -1,21 +1,25 @@
 'use strict';
 
 describe('ContentCtrl', function () {
-    var $controller, AlertService, CohortSelectionService, ctrl, ctrlElm, rootScope, scope;
+    var $controller, AlertService, CohortSelectionService, ctrl, ctrlElm, rootScope, scope,
+        $stateParams, CohortSelectionMocks;
 
     beforeEach(module('transmartBaseUi'));
 
-    beforeEach(inject(function (_$controller_, _$rootScope_, _AlertService_, _CohortSelectionService_) {
+    beforeEach(inject(function (_$controller_, _$rootScope_, _AlertService_, _CohortSelectionService_,
+                                _$stateParams_, _CohortSelectionMocks_) {
         rootScope = _$rootScope_;
         scope = _$rootScope_.$new();
         $controller = _$controller_;
         AlertService = _AlertService_;
         CohortSelectionService = _CohortSelectionService_;
+        $stateParams = _$stateParams_;
+        CohortSelectionMocks = _CohortSelectionMocks_;
 
         var params = {
             action: 'cohortGrid'
         }
-        ctrlElm = angular.element('<div></div>');
+        ctrlElm = angular.element('<div class="ui-layout-hidden"></div>');
 
         ctrl = $controller('ContentCtrl',
             {
@@ -23,6 +27,7 @@ describe('ContentCtrl', function () {
                 $element: ctrlElm,
                 $stateParams: params
             });
+        scope.$digest();
     }));
 
     describe('Initialization of controller', function () {
@@ -53,56 +58,87 @@ describe('ContentCtrl', function () {
             var params = {
                 action: 'cohortView'
             }
-            ctrl = $controller('ContentCtrl',
+            $controller('ContentCtrl',
                 {
                     $scope: scope,
                     $element: ctrlElm,
                     $stateParams: params
                 });
-            expect(ctrl.tabs[0].active).toBe(false);
-            expect(ctrl.tabs[1].active).toBe(false);
-            expect(ctrl.tabs[2].active).toBe(true);
 
             params.action = 'cohortSelection';
+            $controller('ContentCtrl',
+                {
+                    $scope: scope,
+                    $element: ctrlElm,
+                    $stateParams: params
+                });
+
+            params.action = 'dataExport';
             ctrl = $controller('ContentCtrl',
                 {
                     $scope: scope,
                     $element: ctrlElm,
                     $stateParams: params
                 });
-            expect(ctrl.tabs[0].active).toBe(true);
-            expect(ctrl.tabs[1].active).toBe(false);
-            expect(ctrl.tabs[2].active).toBe(false);
+
+            params.action = 'dataExportJobs';
+            ctrl = $controller('ContentCtrl',
+                {
+                    $scope: scope,
+                    $element: ctrlElm,
+                    $stateParams: params
+                });
         });
 
         it('should define activateTab function', function () {
             expect(ctrl.activateTab).toBeDefined();
-        })
+        });
 
     });
 
     describe('updateCohortSelectionData', function () {
-        var subject1, box1;
+        var subject1, anotherSubject1, subject2,
+            box1, label1, label2;
 
         beforeEach(function () {
             subject1 = {
                 id: 'subjectId1',
                 observations: {
-                    'a/concept/path': 'a-concept-value'
+                    'a/concept/path1': 'value1'
                 }
-            }
+            };
+            anotherSubject1 = {
+                id: 'subjectId1',
+                observations: {
+                    'a/concept/path2': 'value2'
+                }
+            };
+            subject2 = {
+                id: 'subjectId2',
+                observations: {
+                    'a/concept/path2': 'value2'
+                }
+            };
+            label1 = {
+                conceptPath: 'a/concept/path1'
+            };
+            label2 = {
+                conceptPath: 'a/concept/path2'
+            };
 
             box1 = {
                 boxId: 'boxid1',
+                checked: false,
                 ctrl: {
                     cs: {
-                        subjects: [subject1]
+                        subjects: [subject1, anotherSubject1, subject2],
+                        selectedSubjects: [subject1, anotherSubject1, subject2],
+                        labels: [label1, label2]
                     }
                 }
-            }
+            };
 
             CohortSelectionService.boxes = [box1];
-
         });
 
         it('should iterate over CohortSelectionService.boxes', function () {
@@ -120,5 +156,21 @@ describe('ContentCtrl', function () {
             expect(subjectObs[0].id).toBe(subject1.id);
             expect(subjectObs[0].observations).toBe(subject1.observations);
         });
+
+        it('should consider the checked boxes', function () {
+            box1.checked = true;
+            ctrl.updateCohortSelectionData();
+        });
+
     });
+
+    describe('event handling', function () {
+
+        it('should handle cohortSelectionUpdateEvent', function () {
+            spyOn(ctrl, 'updateCohortSelectionData');
+            scope.$emit('cohortSelectionUpdateEvent');
+            expect(ctrl.updateCohortSelectionData).toHaveBeenCalled();
+        });
+    });
+
 });
