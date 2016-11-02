@@ -137,7 +137,9 @@ angular.module('transmartBaseUi').factory('QueryParserService',
                     else {
                         // Other type of filters, such as categorical.
                         // It could still be numerical node, but we don't know
-                        // the type of node yet, so we'll figure this out later
+                        // the type of node yet, so we'll figure this out later.
+                        // In any case, we'll need to store the filter in case it is
+                        // a categorical value and we have multiple of them
                         filters.push(conceptPath.slice(-1));
                     }
 
@@ -150,7 +152,8 @@ angular.module('transmartBaseUi').factory('QueryParserService',
                             .then(function (node) {
 
                                 // Based on the type of node, make modifications to filters or node
-                                if (TreeNodeService.isCategoricalParentNode(node)) {
+                                if (TreeNodeService.isCategoricalParentNode(node) ||
+                                        TreeNodeService.isHighDimensionalNode(node)) {
                                     filters = [];
                                 }
                                 if (TreeNodeService.isCategoricalLeafNode(node)) {
