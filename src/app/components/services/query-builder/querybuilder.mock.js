@@ -103,22 +103,35 @@ angular.module('transmartBaseUi')
             };
 
             mock.cohortFiltersWithNumberRangesResponse = function() {
-                return [{
-                    panel_number: 1,
-                    invert: 0,
-                    total_item_occurrences: 1,
-                    item: [{
-                        item_name: 'Age',
-                        item_key: '\\\\Public Studies\\Public Studies\\GSE8581\\Subjects\\Age\\',
-                        tooltip: '\\Public Studies\\GSE8581\\Subjects\\Age\\',
-                        class: 'ENC',
-                        constrain_by_value: {
-                            value_operator: 'BETWEEN',
-                            value_constraint: '65 and 70',
-                            value_type: 'NUMBER'
-                        }
-                    }]
-                }];
+                return [
+                    {
+                        panel_number: 1,
+                        invert: 0,
+                        total_item_occurrences: 1,
+                        item: [{
+                            item_name: 'Age',
+                            item_key: '\\\\Public Studies\\Public Studies\\GSE8581\\Subjects\\Age\\',
+                            tooltip: '\\Public Studies\\GSE8581\\Subjects\\Age\\',
+                            class: 'ENC',
+                            constrain_by_value: {
+                                value_operator: 'BETWEEN',
+                                value_constraint: '65 and 70',
+                                value_type: 'NUMBER'
+                            }
+                        }]
+                    },
+                    {
+                        panel_number: 2,
+                        invert: 0,
+                        total_item_occurrences: 1,
+                        item: [{
+                            item_name: 'Height',
+                            item_key: '\\\\Public Studies\\Public Studies\\GSE8581\\Subjects\\Height\\',
+                            tooltip: '\\Public Studies\\GSE8581\\Subjects\\Height\\',
+                            class: 'ENC'
+                        }]
+                    }
+                ];
             };
 
             mock.cohortFiltersWithHighDimData = function() {

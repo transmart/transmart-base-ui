@@ -96,6 +96,7 @@ angular.module('transmartBaseUi').factory('QueryParserService',
          */
         service.convertCohortFiltersFromXML = function (queryXML, cohortSelectionController) {
             var queryObj = XML2JSONService.xml2json(queryXML).query_definition;
+            console.log(queryObj);
 
             // We'll collect a queue of promises that cannot be executed in parallel
             var promiseQueue = new PromiseQueue();
@@ -134,7 +135,9 @@ angular.module('transmartBaseUi').factory('QueryParserService',
                         }
                     }
                     else {
-                        // Category
+                        // Other type of filters, such as categorical.
+                        // It could still be numerical node, but we don't know
+                        // the type of node yet, so we'll figure this out later
                         filters.push(conceptPath.slice(-1));
                     }
 
@@ -144,9 +147,25 @@ angular.module('transmartBaseUi').factory('QueryParserService',
                 if (studyNode) {
                     promiseQueue.addPromiseCreator(function () {
                         return TreeNodeService.expandConcept(studyNode, conceptPath)
-                            .then(function (response) {
+                            .then(function (node) {
+
+                                // Based on the type of node, make modifications to filters or node
+                                if (TreeNodeService.isCategoricalParentNode(node)) {
+                                    filters = [];
+                                }
+                                if (TreeNodeService.isCategoricalLeafNode(node)) {
+                                    node = node.parent;
+                                }
+                                if (TreeNodeService.isNumericalNode(node)) {
+                                    // Now that we know the type of the node is numerical,
+                                    // we must check if we have the proper type of filters
+                                    filters = filters.filter(function(filter) {
+                                        return filter.filterType == 'RangedFilter';
+                                    });
+                                }
+
                                 // Add the node and filters to the workspace
-                                cohortSelectionController.addNodeWithFilters(response, filters);
+                                cohortSelectionController.addNodeWithFilters(node, filters);
                             });
                     });
                 }

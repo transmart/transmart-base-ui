@@ -85,17 +85,17 @@ angular.module('transmartBaseUi').factory('QueryBuilderService', ['JSON2XMLServi
      */
     function generatePanelItemsForNumericRanges(cohortFilter) {
         var items = [];
-
-        _.each(cohortFilter.filters, function (filter) {
-            items.push({
-                'item_name': cohortFilter.name,
-                'item_key': getStudyTypePrefix(cohortFilter.study.type) + cohortFilter.label,
-                'tooltip': cohortFilter.label,
-                'class': 'ENC',
-                'constrain_by_value': generateConstraintByValueBetween(filter[0], filter[1])
+        if (cohortFilter.filters.length > 0) {
+            _.each(cohortFilter.filters, function (filter) {
+                var item = generatePanelItemForConcept(cohortFilter.label, cohortFilter.name, cohortFilter.study.type);
+                item['constrain_by_value'] = generateConstraintByValueBetween(filter[0], filter[1]);
+                items.push(item);
             });
-        });
-
+        }
+        else {
+            // If there are no range filters, just add the concept node
+            items.push(generatePanelItemForConcept(cohortFilter.label, cohortFilter.name, cohortFilter.study.type));
+        }
         return items;
     }
 
