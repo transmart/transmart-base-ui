@@ -40,7 +40,7 @@ angular.module('transmartBaseUi')
                 ];
             };
 
-            mock.cohortFiltersWithCategoriesResponse = function() {
+            mock.cohortFiltersWithCategoriesI2B2Panels = function() {
                 return [{
                     panel_number: 1,
                     invert: 0,
@@ -102,7 +102,7 @@ angular.module('transmartBaseUi')
                 ];
             };
 
-            mock.cohortFiltersWithNumberRangesResponse = function() {
+            mock.cohortFiltersWithNumberRangesI2B2Panels = function() {
                 return [
                     {
                         panel_number: 1,
@@ -149,7 +149,7 @@ angular.module('transmartBaseUi')
 
             };
 
-            mock.cohortFiltersWithHighDimDataResponse = function() {
+            mock.cohortFiltersWithHighDimDataI2B2Panels = function() {
                 return [{
                     panel_number: 1,
                     invert: 0,
@@ -163,7 +163,7 @@ angular.module('transmartBaseUi')
                 }];
             };
 
-            mock.cohortFiltersToXML = function() {
+            mock.cohortFilters = function() {
                 return {
                     cohortName: 'my cohort',
                     cohortFilters: [
@@ -189,7 +189,7 @@ angular.module('transmartBaseUi')
                 }
             };
 
-            mock.cohortFiltersToXMLResponse = function() {
+            mock.cohortFiltersXML = function() {
                 var q = '<query_definition><query_name>my cohort</query_name><panel>' +
                     '<panel_number>1</panel_number><invert>0</invert><total_item_occurrences>1</total_item_occurrences>' +
                     '<item><item_name>Age</item_name><item_key>\\\\Public Studies\\Public Studies\\GSE8581\\Subjects\\Age\\</item_key>' +

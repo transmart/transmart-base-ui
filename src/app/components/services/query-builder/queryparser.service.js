@@ -90,14 +90,23 @@ angular.module('transmartBaseUi').factory('QueryParserService',
         /**
          * Converts the selections in the cohort filters from i2b2 query xml.
          * @memberof QueryParserService
-         * @param cohortFilters
-         * @param name
-         * @returns {*}
+         * @param queryXML String in i2b2 query XML format
+         * @param cohortSelectionController the controller that can be used to update the active selection
+         * @returns {Promise}
          */
         service.convertCohortFiltersFromXML = function (queryXML, cohortSelectionController) {
             var queryObj = XML2JSONService.xml2json(queryXML).query_definition;
-            console.log(queryObj);
+            return service.convertCohortFiltersFromQueryDefinition(queryObj, cohortSelectionController);
+        }
 
+        /**
+         * Converts the selections in the cohort filters from i2b2 query xml.
+         * @memberof QueryParserService
+         * @param queryObj JSON object representing the i2b2 query
+         * @param cohortSelectionController the controller that can be used to update the active selection
+         * @returns {Promise}
+         */
+        service.convertCohortFiltersFromQueryDefinition = function (queryObj, cohortSelectionController) {
             // We'll collect a queue of promises that cannot be executed in parallel
             var promiseQueue = new PromiseQueue();
 
