@@ -2,13 +2,14 @@
 
 describe('CohortSelectionCtrl', function () {
     var $controller, AlertService, CohortSelectionService, TreeNodeService,
-        DcChartsService, Restangular, CohortChartMocks, ctrl, scope, $timeout;
+        DcChartsService, Restangular, CohortChartMocks, ctrl, scope, ctrlElm,
+        $timeout, ContentService, CohortSelectionMocks;
 
     beforeEach(module('transmartBaseUi'));
 
     beforeEach(inject(function (_$controller_, _AlertService_, _$rootScope_, _CohortSelectionService_,
                                 _DcChartsService_, _Restangular_, _CohortChartMocks_, _TreeNodeService_,
-                                _$timeout_) {
+                                _$timeout_, _ContentService_, _CohortSelectionMocks_) {
         // The injector unwraps the underscores (_) from around the parameter names when matching
         scope = _$rootScope_.$new();
         $controller = _$controller_;
@@ -17,13 +18,15 @@ describe('CohortSelectionCtrl', function () {
         TreeNodeService = _TreeNodeService_;
         DcChartsService = _DcChartsService_;
         $timeout = _$timeout_;
+        CohortSelectionMocks = _CohortSelectionMocks_;
+        ContentService = _ContentService_;
 
         Restangular = angular.copy(_Restangular_, Restangular);
         CohortChartMocks = _CohortChartMocks_;
         scope.labels = CohortChartMocks.getMockLabels();
         scope.label = scope.labels[0];
 
-        var ctrlElm = angular.element('<div></div>');
+        ctrlElm = angular.element('<div></div>');
         ctrl = $controller('CohortSelectionCtrl', {$scope: scope, $element: ctrlElm});
         spyOn(AlertService, 'get');
         scope.$digest();
@@ -63,7 +66,7 @@ describe('CohortSelectionCtrl', function () {
                 {labelId: 1},
                 {labelId: 2},
                 {labelId: 3}
-            ]
+            ];
         });
 
         it('should be able to remove a label ', function () {
@@ -76,14 +79,42 @@ describe('CohortSelectionCtrl', function () {
             var _label = {
                 labelId: 2
             };
-            spyOn(ctrl, 'removeLabel').and.callThrough();
             spyOn(ctrl, 'filterSubjectsByLabel');
             spyOn(dc.chartRegistry, 'deregister');
+            spyOn(ctrl, 'updateDimensions');
             ctrl.removeLabel(_label);
             expect(ctrl.cs.charts.length).toBe(2);
             expect(ctrl.cs.labels.length).toBe(2);
             expect(ctrl.filterSubjectsByLabel).toHaveBeenCalled();
             expect(dc.chartRegistry.deregister).toHaveBeenCalled();
+            expect(ctrl.updateDimensions).toHaveBeenCalled();
+        });
+
+        it('should call reset when labels array is empty', function () {
+            var _label = {
+                labelId: 2
+            };
+            var filterFunc = function (filters) {
+                return filters;
+            }
+            ctrl.cs.charts = [
+                {id: 2, filter: filterFunc}
+            ];
+            ctrl.cs.labels = [
+                {labelId: 2}
+            ];
+
+            spyOn(ctrl, 'filterSubjectsByLabel');
+            spyOn(dc.chartRegistry, 'deregister');
+            ctrl.removeLabel(_label);
+            expect(ctrl.cs.charts.length).toBe(0);
+            expect(ctrl.cs.labels.length).toBe(0);
+            expect(ctrl.filterSubjectsByLabel).toHaveBeenCalled();
+            expect(dc.chartRegistry.deregister).toHaveBeenCalled();
+        });
+
+        it('should defer rejection when label is undefined', function () {
+            ctrl.removeLabel(undefined);
         });
     });
 
@@ -98,7 +129,7 @@ describe('CohortSelectionCtrl', function () {
         });
     });
 
-    describe('addNodeWithFilters', function() {
+    describe('addNodeWithFilters', function () {
         var node = {},
             chartName = "parent/restobj/fullname",
             dcFilters = [['category1'], ['category2']];
@@ -348,7 +379,7 @@ describe('CohortSelectionCtrl', function () {
             };
             node.nodes = [];
             node.observations = [{
-                value:  ''
+                value: ''
             }];
 
             childNode.observations = [{
@@ -414,6 +445,13 @@ describe('CohortSelectionCtrl', function () {
             expect(node.nodes.forEach).toHaveBeenCalled();
             expect(ctrl.addNode).toHaveBeenCalledWith(childNode);
             expect(childNode.observations.forEach).toHaveBeenCalled();
+        });
+
+        it('should accept combination node', function () {
+            var node = {type: 'COMBINATION'};
+            spyOn(ctrl, 'combineCharts');
+            ctrl.addNodeToActiveCohortSelection(node, []);
+            expect(ctrl.combineCharts).toHaveBeenCalled();
         });
 
     });
@@ -484,7 +522,8 @@ describe('CohortSelectionCtrl', function () {
             dupBox.ctrl.cs.nodes.push(node);
             spyOn(ctrl, 'addNodeToActiveCohortSelection').and.callFake(function () {
                 return {
-                    then: function () {}
+                    then: function () {
+                    }
                 }
             });
             ctrl.applyDuplication(dupBox);
@@ -495,7 +534,8 @@ describe('CohortSelectionCtrl', function () {
             dupBox.ctrl.cs.nodes.push(node);
             spyOn(ctrl, 'addNodeToActiveCohortSelection').and.callFake(function () {
                 return {
-                    then: function () {}
+                    then: function () {
+                    }
                 }
             });
             spyOn(CohortSelectionService, 'findChartByConceptPath');
@@ -717,6 +757,18 @@ describe('CohortSelectionCtrl', function () {
 
         });
 
+        it('should create combination chart', function () {
+            label.type = 'combination';
+            spyOn(ctrl, 'createMultidimensionalChart').and.callFake(function () {
+                return {
+                    render: function () {
+                    }
+                }
+            });
+            ctrl.createCohortChart(label, el);
+            expect(ctrl.createMultidimensionalChart).toHaveBeenCalled();
+        });
+
         it('should create high dimensional chart', function () {
             label.type = 'highdim';
             spyOn(DcChartsService, 'getNumDisplay').and.callFake(function () {
@@ -786,7 +838,8 @@ describe('CohortSelectionCtrl', function () {
 
         it('should filter the chart when label.filters is present', function () {
             var chart = {
-                render: function () {}
+                render: function () {
+                }
             };
             label.filters = [];
             spyOn(DcChartsService, 'getBarChart').and.callFake(function () {
@@ -799,5 +852,337 @@ describe('CohortSelectionCtrl', function () {
 
     });
 
+    describe('restoreCrossfilter', function () {
+
+        it('should not restore crossfilter when subjects is empty', function () {
+            ctrl.cs.subjects = [];
+            var restored = ctrl.restoreCrossfilter();
+            expect(restored).toBe(false);
+        });
+
+        it('should restore crossfilter when there is subjects', function () {
+            ctrl.cs.subjects = [{
+                id: 1, gender: 'male', labels: {}
+            }, {
+                id: 2, gender: 'female', labels: {}
+            }, {
+                id: 3, gender: 'male', labels: {}
+            }];
+            var restored = ctrl.restoreCrossfilter();
+            expect(restored).toBe(true);
+        });
+    });
+
+    describe('updateDimensions', function () {
+        it('should update dimensions', function () {
+            spyOn(ctrl.cs.crossfilter, 'groupAll').and.callThrough();
+            spyOn(ctrl.cs.mainDimension, 'top');
+            ctrl.updateDimensions();
+            expect(ctrl.cs.crossfilter.groupAll).toHaveBeenCalled();
+            expect(ctrl.cs.mainDimension.top).toHaveBeenCalled();
+        });
+    });
+
+    describe('scope.watch', function () {
+
+        it('should emit cohortSelectionUpdateEvent when ctrl.cs is changed', function () {
+            spyOn(scope, '$emit');
+            ctrl.reset();
+            scope.$digest();
+            expect(scope.$emit).toHaveBeenCalledWith('cohortSelectionUpdateEvent');
+        });
+
+        it('should call reSizeAndPosition when newVal and oldVal are positive', function () {
+            var parentObj = {
+                _width: 200,
+                width: function (w) {
+                    if (w) parentObj._width = w;
+                    else return parentObj._width;
+                }
+            };
+            ctrlElm.parent = function () {
+                return parentObj;
+            };
+            scope.$digest();
+            ctrlElm.parent().width(300);
+            spyOn(ctrl, 'reSizeAndPosition');
+            scope.$digest();
+            expect(ctrl.reSizeAndPosition).toHaveBeenCalled();
+        });
+
+        it('should call rePosition when newVal is larger than 400', function () {
+            var parentObj = {
+                _width: 200,
+                width: function (w) {
+                    if (w) parentObj._width = w;
+                    else return parentObj._width;
+                }
+            };
+            ctrlElm.parent = function () {
+                return parentObj;
+            };
+            scope.$digest();
+            ctrlElm.parent().width(401);
+            spyOn(ctrl, 'rePosition');
+            scope.$digest();
+            expect(ctrl.rePosition).toHaveBeenCalled();
+        });
+
+        it('should call rePosition when newVal is larger than 400', function () {
+            scope.index = 0;
+            scope.$digest();
+            expect(ctrl.boxIndex).toEqual(1);
+            expect(ctrl.boxName).toBe('Cohort-' + ctrl.boxIndex);
+        });
+    });
+
+    describe('createMultidimensionalChart', function () {
+        var genderNode, genderLabel,
+            raceNode, raceLabel,
+            lengthNode, lengthLabel,
+            genderLengthLabel, lengthAgeLabel,
+            genderRaceLabel,
+            el;
+
+        beforeEach(function () {
+            el = document.createElement('div');
+            ctrl.reset();
+
+            genderNode = CohortSelectionMocks.getGenderNode();
+            genderLabel = _.clone(genderNode.label);
+            ctrl.cs.labels.push(genderLabel);
+            ctrl.onNodeDrop({}, {}, genderNode);
+            ctrl.createCohortChart(genderLabel, el);
+
+            lengthNode = CohortSelectionMocks.getLengthNode();
+            lengthLabel = _.clone(lengthNode.label);
+            ctrl.cs.labels.push(lengthNode.label);
+            ctrl.onNodeDrop({}, {}, lengthNode);
+            ctrl.createCohortChart(lengthLabel, el);
+
+            raceNode = CohortSelectionMocks.getRaceNode();
+            raceLabel = _.clone(raceNode.label);
+            ctrl.cs.labels.push(raceLabel);
+            ctrl.onNodeDrop({}, {}, raceNode);
+            ctrl.createCohortChart(raceLabel, el);
+
+            genderLengthLabel = CohortSelectionMocks.getGenderLengthLabel();
+            genderRaceLabel = CohortSelectionMocks.getGenderRaceLabel();
+            lengthAgeLabel = CohortSelectionMocks.getLengthAgeLabel();
+
+        });
+
+        it('should create boxplot for one string and one numeric label', function () {
+            ctrl.createMultidimensionalChart(genderLengthLabel, el);
+        });
+
+        it('should create heatmap for both string labels', function () {
+            ctrl.createMultidimensionalChart(genderRaceLabel, el);
+        });
+
+        it('should create scatterplot for both numeric labels', function () {
+            ctrl.createMultidimensionalChart(lengthAgeLabel, el);
+        });
+
+    });
+
+    describe('onNodeOver', function () {
+        var event;
+        var targetElm;
+
+        beforeEach(function () {
+            targetElm = angular.element('<div></div>');
+            event = {
+                target: targetElm
+            };
+        });
+
+        it('should add class chart-container-hover', function () {
+            ctrl.onNodeOver(event);
+            var hasIt = targetElm.hasClass('chart-container-hover');
+            expect(hasIt).toBe(true);
+        });
+    });
+
+    describe('onNodeOut', function () {
+        var event;
+        var targetElm;
+
+        beforeEach(function () {
+            targetElm = angular.element('<div class="chart-container-hover"></div>');
+            event = {
+                target: targetElm
+            };
+        });
+
+        it('should remove class chart-container-hover', function () {
+            ctrl.onNodeOut(event);
+            var hasIt = targetElm.hasClass('chart-container-hover');
+            expect(hasIt).toBe(false);
+        });
+    });
+
+    describe('box operations', function () {
+        it('should call perform box-adding tasks', function () {
+            spyOn(CohortSelectionService, 'addBox');
+            ctrl.addBox();
+            expect(CohortSelectionService.addBox).toHaveBeenCalled();
+        });
+
+        it('should call perform box-removal tasks', function () {
+            spyOn(ctrl, 'clearSelection');
+            spyOn(CohortSelectionService, 'removeBox');
+            ctrl.removeBox();
+            expect(ctrl.clearSelection).toHaveBeenCalled();
+            expect(CohortSelectionService.removeBox).toHaveBeenCalled();
+        });
+
+        it('should call perform box-duplicating tasks', function () {
+            spyOn(CohortSelectionService, 'duplicateBox');
+            ctrl.duplicateBox();
+            expect(CohortSelectionService.duplicateBox).toHaveBeenCalled();
+        });
+    });
+
+    describe('switchToSavedCohortsTab', function () {
+        it('should switch to saved-cohorts tab', function () {
+            spyOn(ContentService, 'activateTab');
+            ctrl.switchToSavedCohortsTab();
+            expect(ContentService.activateTab)
+                .toHaveBeenCalledWith(ContentService.tabs[2].title, 'cohortView');
+        });
+    });
+
+    describe('openSaveCohortModal', function () {
+        it('should be able to open cohort modal', function () {
+            ctrl.openSaveCohortModal();
+        });
+    });
+
+    describe('getCohortFilters', function () {
+
+        it('should get the cohort filters based on existing charts', function () {
+            ctrl.reset();
+            var el = document.createElement('div');
+            var genderNode = CohortSelectionMocks.getGenderNode();
+            var genderLabel = _.clone(genderNode.label);
+            ctrl.cs.labels.push(genderLabel);
+            ctrl.onNodeDrop({}, {}, genderNode);
+
+            ctrl.createCohortChart(genderLabel, el);
+            var filters = ctrl.getCohortFilters();
+            expect(filters.length).toBe(1);
+        });
+    });
+
+    describe('addNodeWithFilters', function () {
+
+        beforeEach(function () {
+            ctrl.reset();
+            spyOn(ctrl, 'addNodeToActiveCohortSelection').and.callFake(function () {
+                return {};
+            });
+        });
+
+        it('should accept categorical parent node', function () {
+            var genderNode = CohortSelectionMocks.getGenderNode();
+            ctrl.addNodeWithFilters(genderNode, []);
+        });
+
+        it('should accept categorical leaf node', function () {
+            var genderLeafNode = CohortSelectionMocks.getGenderLeafNode();
+            ctrl.addNodeWithFilters(genderLeafNode, []);
+        });
+    });
+
+    describe('combineCharts', function () {
+        var chart1, chart2;
+
+        beforeEach(function () {
+            var el = document.createElement('div');
+            var genderNode = CohortSelectionMocks.getGenderNode();
+            var genderLabel = _.clone(genderNode.label);
+            ctrl.cs.labels.push(genderLabel);
+            ctrl.onNodeDrop({}, {}, genderNode);
+            ctrl.createCohortChart(genderLabel, el);
+
+            var lengthNode = CohortSelectionMocks.getLengthNode();
+            var lengthLabel = _.clone(lengthNode.label);
+            ctrl.cs.labels.push(lengthNode.label);
+            ctrl.onNodeDrop({}, {}, lengthNode);
+            ctrl.createCohortChart(lengthLabel, el);
+
+            chart1 = ctrl.cs.charts[0];
+            chart2 = ctrl.cs.charts[1];
+        });
+
+        it('should call combineCharts when filterObj is undefined', function () {
+            ctrl.combineCharts(chart1, chart2, undefined);
+        });
+
+        it('should call combineCharts when filterObj is defined', function () {
+            var filterObj = {
+                dcFilters: {}
+            };
+            ctrl.combineCharts(chart1, chart2, filterObj);
+        });
+    });
+
+    describe('groupCharts', function () {
+
+        beforeEach(function () {
+            var el = document.createElement('div');
+            var genderNode = CohortSelectionMocks.getGenderNode();
+            var genderLabel = _.clone(genderNode.label);
+            ctrl.cs.labels.push(genderLabel);
+            ctrl.onNodeDrop({}, {}, genderNode);
+            ctrl.createCohortChart(genderLabel, el);
+
+            var ageNode = CohortSelectionMocks.getAgeNode();
+            var ageLabel = _.clone(ageNode.label);
+            ctrl.cs.labels.push(ageLabel);
+            ctrl.onNodeDrop({}, {}, ageNode);
+            ctrl.createCohortChart(ageLabel, el);
+        });
+
+        it('should call perform chart grouping when ctrl.currentChartGrouping is {}', function () {
+            ctrl.groupCharts(ctrl.cs.charts[0], {});
+        });
+
+        it('should perform chart grouping when ctrl.currentChartGrouping has chartOne', function () {
+            var func = function () {
+            };
+            ctrl.currentChartGrouping = {
+                chartOne: ctrl.cs.charts[0],
+                turnOff: func
+            };
+            ctrl.groupCharts(ctrl.cs.charts[1], func);
+        });
+    });
+
+    describe('addLabel', function () {
+        var genderNode;
+        var ageNode;
+
+        beforeEach(function () {
+            genderNode = CohortSelectionMocks.getGenderNode();
+            ageNode = CohortSelectionMocks.getAgeNode();
+        });
+
+        it('should add label when it has not been added before', function () {
+            ctrl.addLabel(genderNode.observations[0], genderNode, {});
+        });
+
+        it('should give alert when the number of labels exceeds max', function () {
+            _.times(ctrl.cs.maxNoOfDimensions+1, function () {
+                ctrl.cs.labels.push(ageNode.label);
+            });
+            ctrl.addLabel(genderNode.observations[0], genderNode, {});
+        });
+
+        it('should calculate precision when label.type is float ', function () {
+            ctrl.addLabel(ageNode.observations[0], ageNode, {});
+        });
+    });
 
 });

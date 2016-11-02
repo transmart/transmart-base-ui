@@ -178,5 +178,24 @@ angular.module('transmartBaseUi')
             return foundNode;
         };
 
+        /**
+         * @memberof CohortSelectionService
+         * @param value
+         * @returns {string} - The type of label
+         */
+        service.getLabelType = function (value) {
+            var _type = typeof value;
+            if (_type === 'string') {
+                if (value === 'E' || value === 'MRNA') {
+                    _type = 'highdim';
+                }
+            } else if (_type === 'number') {
+                if ((value % 1) !== 0) {
+                    _type = 'float';
+                }
+            }
+            return _type;
+        };
+
         return service;
     }]);

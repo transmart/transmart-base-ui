@@ -22,6 +22,13 @@ describe('CohortSelectionService', function () {
             expect(CohortSelectionService.boxes.length).toBe(1);
         });
 
+        it('should deal with the situation when the number of boxes > 2', function () {
+            CohortSelectionService.MAX_NUM_BOXES = 10;
+            CohortSelectionService.addBox();
+            CohortSelectionService.addBox();
+            CohortSelectionService.addBox();
+        });
+
     });
 
     describe('removeBox', function () {
@@ -96,8 +103,69 @@ describe('CohortSelectionService', function () {
             expect(foundNode).toBe(node);
         });
         it('should not find the node if the path is incorrect', function () {
-            var foundNode = CohortSelectionService.findNodeByConceptPath(path+'-', [node]);
+            var foundNode = CohortSelectionService.findNodeByConceptPath(path + '-', [node]);
             expect(foundNode).not.toBe(node);
+        });
+    });
+
+    describe('duplicateBox', function () {
+        var box;
+        beforeEach(function () {
+            box = CohortSelectionService.addBox();
+        });
+
+        it('should perform duplication of box', function () {
+            CohortSelectionService.duplicateBox(box.boxId);
+        });
+    });
+
+    describe('removeBox', function () {
+        var box, ctrl;
+        beforeEach(function () {
+            box = CohortSelectionService.addBox();
+            var boxElm = {
+                parent: function () {
+                    return {
+                        width: function () {
+                            return 100;
+                        }
+                    }
+                }
+            };
+            ctrl = {
+                boxElm: boxElm
+            };
+            box.ctrl = ctrl;
+        });
+
+        it('should perform removal of box', function () {
+            CohortSelectionService.addBox().ctrl = ctrl;
+            CohortSelectionService.removeBox(box.boxId);
+        });
+
+        it('should adjust width when boxes.length > 2', function () {
+            CohortSelectionService.MAX_NUM_BOXES = 10;
+            CohortSelectionService.addBox().ctrl = ctrl;
+            CohortSelectionService.addBox().ctrl = ctrl;
+            CohortSelectionService.addBox().ctrl = ctrl;
+            CohortSelectionService.removeBox(box.boxId);
+        });
+
+        it('should handle non-existing boxId', function () {
+            CohortSelectionService.addBox().ctrl = ctrl;
+            CohortSelectionService.removeBox(box.boxId + '123');
+        });
+    });
+
+    describe('getLabelType', function () {
+        it('should handle string values', function () {
+            var val = 'E';
+            var type = CohortSelectionService.getLabelType(val);
+            expect(type).toBe('highdim');
+
+            val = 'MRNA';
+            type = CohortSelectionService.getLabelType(val);
+            expect(type).toBe('highdim');
         });
     });
 
