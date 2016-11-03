@@ -40,7 +40,7 @@ angular.module('transmartBaseUi')
                 ];
             };
 
-            mock.cohortFiltersWithCategoriesResponse = function() {
+            mock.cohortFiltersWithCategoriesI2B2Panels = function() {
                 return [{
                     panel_number: 1,
                     invert: 0,
@@ -102,26 +102,68 @@ angular.module('transmartBaseUi')
                 ];
             };
 
-            mock.cohortFiltersWithNumberRangesResponse = function() {
+            mock.cohortFiltersWithNumberRangesI2B2Panels = function() {
+                return [
+                    {
+                        panel_number: 1,
+                        invert: 0,
+                        total_item_occurrences: 1,
+                        item: [{
+                            item_name: 'Age',
+                            item_key: '\\\\Public Studies\\Public Studies\\GSE8581\\Subjects\\Age\\',
+                            tooltip: '\\Public Studies\\GSE8581\\Subjects\\Age\\',
+                            class: 'ENC',
+                            constrain_by_value: {
+                                value_operator: 'BETWEEN',
+                                value_constraint: '65 and 70',
+                                value_type: 'NUMBER'
+                            }
+                        }]
+                    },
+                    {
+                        panel_number: 2,
+                        invert: 0,
+                        total_item_occurrences: 1,
+                        item: [{
+                            item_name: 'Height',
+                            item_key: '\\\\Public Studies\\Public Studies\\GSE8581\\Subjects\\Height\\',
+                            tooltip: '\\Public Studies\\GSE8581\\Subjects\\Height\\',
+                            class: 'ENC'
+                        }]
+                    }
+                ];
+            };
+
+            mock.cohortFiltersWithHighDimData = function() {
+                return [
+                    {
+                        name: 'Lung',
+                        type: 'highdim',
+                        label: '\\Private Studies\\GSE8581\\Biomarker Data\\GPL570\\Lung\\',
+                        study: {
+                            type: 'private'
+                        },
+                        filters: []
+                    }
+                ];
+
+            };
+
+            mock.cohortFiltersWithHighDimDataI2B2Panels = function() {
                 return [{
                     panel_number: 1,
                     invert: 0,
                     total_item_occurrences: 1,
                     item: [{
-                        item_name: 'Age',
-                        item_key: '\\\\Public Studies\\Public Studies\\GSE8581\\Subjects\\Age\\',
-                        tooltip: '\\Public Studies\\GSE8581\\Subjects\\Age\\',
-                        class: 'ENC',
-                        constrain_by_value: {
-                            value_operator: 'BETWEEN',
-                            value_constraint: '65 and 70',
-                            value_type: 'NUMBER'
-                        }
+                        item_name: 'Lung',
+                        item_key: '\\\\Private Studies\\Private Studies\\GSE8581\\Biomarker Data\\GPL570\\Lung\\',
+                        tooltip: '\\Private Studies\\GSE8581\\Biomarker Data\\GPL570\\Lung\\',
+                        class: 'ENC'
                     }]
                 }];
             };
 
-            mock.cohortFiltersToXML = function() {
+            mock.cohortFilters = function() {
                 return {
                     cohortName: 'my cohort',
                     cohortFilters: [
@@ -147,7 +189,7 @@ angular.module('transmartBaseUi')
                 }
             };
 
-            mock.cohortFiltersToXMLResponse = function() {
+            mock.cohortFiltersXML = function() {
                 var q = '<query_definition><query_name>my cohort</query_name><panel>' +
                     '<panel_number>1</panel_number><invert>0</invert><total_item_occurrences>1</total_item_occurrences>' +
                     '<item><item_name>Age</item_name><item_key>\\\\Public Studies\\Public Studies\\GSE8581\\Subjects\\Age\\</item_key>' +

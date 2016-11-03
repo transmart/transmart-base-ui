@@ -6,8 +6,8 @@
  * @name CohortViewService
  */
 angular.module('transmartBaseUi').factory('CohortViewService',
-    ['$timeout', 'EndpointService', '$q', 'QueryParserService',
-    function ($timeout, EndpointService, $q, QueryParserService) {
+    ['$timeout', 'EndpointService', '$q', 'QueryParserService', 'uiGridConstants',
+    function ($timeout, EndpointService, $q, QueryParserService, uiGridConstants) {
 
         var service = {
             options: {
@@ -17,7 +17,10 @@ angular.module('transmartBaseUi').factory('CohortViewService',
                 paginationPageSizes: [25, 50, 75],
                 paginationPageSize: 25,
                 columnDefs: [{field: 'name', name: 'Name', width: '**'},
-                    {field: 'id', name: 'ID', width: '*'},
+                    {field: 'id', name: 'ID', width: '*', sort: {
+                        direction: uiGridConstants.DESC,
+                        priority: 0
+                    }},
                     {field: 'setSize', name: 'Set size', width: '*'},
                     {field: 'username', name: 'User', width: '*'},
                     {field: 'description', name: 'Description', width: '**',

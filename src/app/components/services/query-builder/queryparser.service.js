@@ -90,13 +90,23 @@ angular.module('transmartBaseUi').factory('QueryParserService',
         /**
          * Converts the selections in the cohort filters from i2b2 query xml.
          * @memberof QueryParserService
-         * @param cohortFilters
-         * @param name
-         * @returns {*}
+         * @param queryXML String in i2b2 query XML format
+         * @param cohortSelectionController the controller that can be used to update the active selection
+         * @returns {Promise}
          */
         service.convertCohortFiltersFromXML = function (queryXML, cohortSelectionController) {
             var queryObj = XML2JSONService.xml2json(queryXML).query_definition;
+            return service.convertCohortFiltersFromQueryDefinition(queryObj, cohortSelectionController);
+        }
 
+        /**
+         * Converts the selections in the cohort filters from i2b2 query xml.
+         * @memberof QueryParserService
+         * @param queryObj JSON object representing the i2b2 query
+         * @param cohortSelectionController the controller that can be used to update the active selection
+         * @returns {Promise}
+         */
+        service.convertCohortFiltersFromQueryDefinition = function (queryObj, cohortSelectionController) {
             // We'll collect a queue of promises that cannot be executed in parallel
             var promiseQueue = new PromiseQueue();
 
@@ -134,7 +144,11 @@ angular.module('transmartBaseUi').factory('QueryParserService',
                         }
                     }
                     else {
-                        // Category
+                        // Other type of filters, such as categorical.
+                        // It could still be numerical node, but we don't know
+                        // the type of node yet, so we'll figure this out later.
+                        // In any case, we'll need to store the filter in case it is
+                        // a categorical value and we have multiple of them
                         filters.push(conceptPath.slice(-1));
                     }
 
@@ -144,9 +158,26 @@ angular.module('transmartBaseUi').factory('QueryParserService',
                 if (studyNode) {
                     promiseQueue.addPromiseCreator(function () {
                         return TreeNodeService.expandConcept(studyNode, conceptPath)
-                            .then(function (response) {
+                            .then(function (node) {
+
+                                // Based on the type of node, make modifications to filters or node
+                                if (TreeNodeService.isCategoricalParentNode(node) ||
+                                        TreeNodeService.isHighDimensionalNode(node)) {
+                                    filters = [];
+                                }
+                                if (TreeNodeService.isCategoricalLeafNode(node)) {
+                                    node = node.parent;
+                                }
+                                if (TreeNodeService.isNumericalNode(node)) {
+                                    // Now that we know the type of the node is numerical,
+                                    // we must check if we have the proper type of filters
+                                    filters = filters.filter(function(filter) {
+                                        return filter.filterType == 'RangedFilter';
+                                    });
+                                }
+
                                 // Add the node and filters to the workspace
-                                cohortSelectionController.addNodeWithFilters(response, filters);
+                                cohortSelectionController.addNodeWithFilters(node, filters);
                             });
                     });
                 }

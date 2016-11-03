@@ -16,23 +16,27 @@ describe('QueryBuilderService Unit Tests', function () {
 
     it('should convert cohort filters with categories', function () {
         expect(QueryBuilderService.convertCohortFiltersToI2B2Panels(QueryBuilderMocks.cohortFiltersWithCategories()))
-            .toEqual(QueryBuilderMocks.cohortFiltersWithCategoriesResponse());
+            .toEqual(QueryBuilderMocks.cohortFiltersWithCategoriesI2B2Panels());
     });
 
     it('should convert cohort filters with number ranges', function () {
         expect(QueryBuilderService.convertCohortFiltersToI2B2Panels(QueryBuilderMocks.cohortFiltersWithNumberRanges()))
-            .toEqual(QueryBuilderMocks.cohortFiltersWithNumberRangesResponse());
+            .toEqual(QueryBuilderMocks.cohortFiltersWithNumberRangesI2B2Panels());
+    });
 
+    it('should convert cohort filters with high dimensional data', function() {
+        expect(QueryBuilderService.convertCohortFiltersToI2B2Panels(QueryBuilderMocks.cohortFiltersWithHighDimData()))
+            .toEqual(QueryBuilderMocks.cohortFiltersWithHighDimDataI2B2Panels());
     });
 
     it('should convert cohort filters to xml', function () {
         expect(
             QueryBuilderService
                 .convertCohortFiltersToXML(
-                    QueryBuilderMocks.cohortFiltersToXML().cohortFilters,
-                    QueryBuilderMocks.cohortFiltersToXML().cohortName)
+                    QueryBuilderMocks.cohortFilters().cohortFilters,
+                    QueryBuilderMocks.cohortFilters().cohortName)
         )
-        .toEqual(QueryBuilderMocks.cohortFiltersToXMLResponse());
+        .toEqual(QueryBuilderMocks.cohortFiltersXML());
     });
 
 });

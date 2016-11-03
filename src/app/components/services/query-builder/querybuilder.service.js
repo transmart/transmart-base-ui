@@ -37,16 +37,16 @@ angular.module('transmartBaseUi').factory('QueryBuilderService', ['JSON2XMLServi
         var panels = [];
 
         _.each(cohortFilters, function (cohortFilter) {
-            var items;
+            var items = [];
 
             // Numbers and float are constrained by a range
             if (cohortFilter.type == 'float' || cohortFilter.type == 'number') {
                 items = generatePanelItemsForNumericRanges(cohortFilter);
             }
 
-            // Constrain by one or more categories
-            if (cohortFilter.type == 'string') {
-                items = generatePanelItemsForCategories(cohortFilter);
+            // Constrain by one or more categories or high dimensional data
+            if (cohortFilter.type == 'string' || cohortFilter.type == 'highdim') {
+                items = generatePanelItemsForConcepts(cohortFilter);
             }
 
             if (items.length > 0) {
@@ -85,17 +85,17 @@ angular.module('transmartBaseUi').factory('QueryBuilderService', ['JSON2XMLServi
      */
     function generatePanelItemsForNumericRanges(cohortFilter) {
         var items = [];
-
-        _.each(cohortFilter.filters, function (filter) {
-            items.push({
-                'item_name': cohortFilter.name,
-                'item_key': getStudyTypePrefix(cohortFilter.study.type) + cohortFilter.label,
-                'tooltip': cohortFilter.label,
-                'class': 'ENC',
-                'constrain_by_value': generateConstraintByValueBetween(filter[0], filter[1])
+        if (cohortFilter.filters.length > 0) {
+            _.each(cohortFilter.filters, function (filter) {
+                var item = generatePanelItemForConcept(cohortFilter.label, cohortFilter.name, cohortFilter.study.type);
+                item['constrain_by_value'] = generateConstraintByValueBetween(filter[0], filter[1]);
+                items.push(item);
             });
-        });
-
+        }
+        else {
+            // If there are no range filters, just add the concept node
+            items.push(generatePanelItemForConcept(cohortFilter.label, cohortFilter.name, cohortFilter.study.type));
+        }
         return items;
     }
 
@@ -106,7 +106,7 @@ angular.module('transmartBaseUi').factory('QueryBuilderService', ['JSON2XMLServi
      * @param cohortFilter
      * @returns {Array}
      */
-    function generatePanelItemsForCategories(cohortFilter) {
+    function generatePanelItemsForConcepts(cohortFilter) {
         var items = [];
         if (cohortFilter.filters.length > 0) {
             // If there are filters on the chart, add each filter value separately (leafs)

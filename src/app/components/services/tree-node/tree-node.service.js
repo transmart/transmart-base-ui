@@ -171,6 +171,24 @@ angular.module('transmartBaseUi').factory('TreeNodeService', ['$q', function ($q
         return node.type === 'CATEGORICAL_CONTAINER';
     }
 
+    /**
+     * @memberof TreeNodeService
+     * @param node
+     * @returns boolean
+     */
+    service.isNumericalNode = function (node) {
+        return node.type === 'NUMERIC';
+    }
+
+    /**
+     * @memberof TreeNodeService
+     * @param node
+     * @returns boolean
+     */
+    service.isHighDimensionalNode = function (node) {
+        return node.type === 'HIGH_DIMENSIONAL';
+    }
+
     /*
      * Populate node children
      * @memberof TreeNodeService
