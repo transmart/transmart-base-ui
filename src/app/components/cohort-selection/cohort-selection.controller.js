@@ -154,6 +154,7 @@ angular.module('transmartBaseUi')
 
                         var colIndex = 0, rowIndex = 0;
                         var rowOffset = 0;
+                        labels = _.sortBy(labels, ['col', 'row']);
                         labels.forEach(function (label, index) {
                             if (!label.sizeX) label.sizeX = vm.gridsterConfig.G_ITEM_SPAN_X;
                             if (!label.sizeY) label.sizeY = vm.gridsterConfig.G_ITEM_SPAN_Y;
