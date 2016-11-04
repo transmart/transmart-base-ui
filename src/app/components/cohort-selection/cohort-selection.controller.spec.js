@@ -657,9 +657,13 @@ describe('CohortSelectionCtrl', function () {
         });
 
         it('should rePosition only when there are labels', function () {
+            spyOn(_, 'sortBy').and.callFake(function () {
+                return ctrl.cs.labels;
+            });
             spyOn(ctrl.cs.labels, 'forEach');
             spyOn(Math, 'floor');
             ctrl.rePosition();
+            expect(_.sortBy).toHaveBeenCalled();
             expect(ctrl.cs.labels.forEach).toHaveBeenCalled();
             expect(Math.floor).toHaveBeenCalled();
         });
