@@ -2,9 +2,10 @@
 /* jshint undef: false */
 
 describe('CohortViewService', function () {
-    var CohortViewService, $timeout, $q, deferred;
-
     var CohortViewService,
+        $timeout,
+        $q,
+        deferred,
         CohortViewMocks,
         httpBackend,
         EndpointService,
@@ -21,7 +22,8 @@ describe('CohortViewService', function () {
         module('transmartBaseUi');
     });
 
-    beforeEach(inject(function (_CohortViewService_, _CohortViewMocks_, _$httpBackend_, _EndpointService_, _Restangular_, _$rootScope_) {
+    beforeEach(inject(function (_CohortViewService_, _CohortViewMocks_, _$httpBackend_,
+                                _EndpointService_, _Restangular_, _$rootScope_) {
         httpBackend = _$httpBackend_;
         $rootScope = _$rootScope_;
         CohortViewService = _CohortViewService_;
