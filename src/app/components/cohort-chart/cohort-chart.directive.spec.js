@@ -117,36 +117,75 @@ describe('Unit testing cohort-chart directive', function () {
         expect(_scope.filterOpt.showFilterInput).toBe(true);
     });
 
-    it('should perform bar-chart filtering', function () {
-        var _scope = chartElm.isolateScope();
-        _scope.filterOpt.min = 20;
-        _scope.filterOpt.max = 100;
-        spyOn(_, 'isNumber').and.callFake(function () {
-            return true;
+    describe('filterBarChart', function () {
+
+        beforeEach(function () {
+            var _scope = chartElm.isolateScope();
+            _scope.chart.xAxisMin = function () {
+                return 20;
+            };
+            _scope.chart.xAxisMax = function () {
+                return 100;
+            };
         });
-        spyOn(dc.filters, 'RangedFilter');
-        _scope.filterBarChart();
-        expect(_.isNumber).toHaveBeenCalled();
-        expect(dc.filters.RangedFilter).toHaveBeenCalled();
-        expect(_scope.chart.filter).toHaveBeenCalled();
-        expect(_scope.chart.redraw).toHaveBeenCalled();
-    });
 
-    it('should report error when isNaN', function () {
-        var _scope = chartElm.isolateScope();
-        _scope.filterOpt.min = NaN;
-        spyOn(toastr, 'error');
-        _scope.filterBarChart();
-        expect(toastr.error).toHaveBeenCalled();
-    });
+        it('should perform bar-chart filtering', function () {
+            var _scope = chartElm.isolateScope();
+            _scope.filterOpt.min = 20;
+            _scope.filterOpt.max = 100;
 
-    it('should report error when max <= min', function () {
-        var _scope = chartElm.isolateScope();
-        _scope.filterOpt.min = 100;
-        _scope.filterOpt.max = 100;
-        spyOn(toastr, 'error');
-        _scope.filterBarChart();
-        expect(toastr.error).toHaveBeenCalled();
+            spyOn(dc.filters, 'RangedFilter');
+            _scope.filterBarChart();
+            expect(dc.filters.RangedFilter).toHaveBeenCalled();
+            expect(_scope.chart.filter).toHaveBeenCalled();
+            expect(_scope.chart.redraw).toHaveBeenCalled();
+        });
+
+        it('should report error when isNaN', function () {
+            var _scope = chartElm.isolateScope();
+            _scope.filterOpt.min = NaN;
+            spyOn(toastr, 'error');
+            _scope.filterBarChart();
+            expect(toastr.error).toHaveBeenCalled();
+        });
+
+        it('should report error when max <= min', function () {
+            var _scope = chartElm.isolateScope();
+            _scope.filterOpt.min = 100;
+            _scope.filterOpt.max = 100;
+            spyOn(toastr, 'error');
+            _scope.filterBarChart();
+            expect(toastr.error).toHaveBeenCalled();
+        });
+
+        it('should handle the min == null case', function () {
+            var _scope = chartElm.isolateScope();
+            _scope.filterOpt.min = null;
+            _scope.filterOpt.max = 100;
+            _scope.filterBarChart();
+        });
+
+        it('should handle the max == null case', function () {
+            var _scope = chartElm.isolateScope();
+            _scope.filterOpt.min = 20;
+            _scope.filterOpt.max = null;
+            _scope.filterBarChart();
+        });
+
+        it('should handle the min value out of range', function () {
+            var _scope = chartElm.isolateScope();
+            _scope.filterOpt.min = 19;
+            _scope.filterOpt.max = 100;
+            _scope.filterBarChart();
+        });
+
+        it('should handle the max value out of range', function () {
+            var _scope = chartElm.isolateScope();
+            _scope.filterOpt.min = 20;
+            _scope.filterOpt.max = 101;
+            _scope.filterBarChart();
+        });
+
     });
 
 });

@@ -129,23 +129,56 @@ angular.module('transmartBaseUi')
                     };
 
                     scope.filterBarChart = function () {
+
                         var min = +scope.filterOpt.min,
                             max = +scope.filterOpt.max;
-                        if (_.isNumber(min) &&
-                            _.isNumber(max) &&
-                            max > min) {
-                            var range = dc.filters.RangedFilter(min, max);
-                            scope.chart.filter(null);
-                            scope.chart.filter(range);
-                            scope.chart.redraw();
+
+                        if (scope.filterOpt.min === null || scope.filterOpt.min === '') {
+                            min = null;
                         }
-                        else if (_.isNaN(min) || _.isNaN(max)) {
-                            toastr.error('Please specify numeric values.');
+                        if (scope.filterOpt.max === null || scope.filterOpt.max === '') {
+                            max = null;
                         }
-                        else if (max <= min) {
-                            toastr.error('Max should be larger than min.');
+
+                        if (_.isNaN(min) || _.isNaN(max) || (min === null && max === null)) {
+                            toastr.error('Please specify numeric values for the filter input.');
+                        }
+                        else {
+                            var mmin = +scope.chart.xAxisMin();
+                            var mmax = +scope.chart.xAxisMax();
+                            var outOfRange = false;
+
+                            if (min === null) {
+                                min = mmin;
+                            }
+                            else if (min < mmin) {
+                                outOfRange = true;
+                                toastr.error('min value out of range');
+                            }
+
+                            if (max === null) {
+                                max = mmax;
+                            }
+                            else if (max > mmax) {
+                                outOfRange = true;
+                                toastr.error('max value out of range');
+                            }
+
+                            if (!outOfRange) {
+                                if (max > min) {
+                                    var range = dc.filters.RangedFilter(min, max);
+                                    scope.chart.filter(null);
+                                    scope.chart.filter(range);
+                                    scope.chart.redraw();
+                                }
+                                else if (max <= min) {
+                                    toastr.error('Max should be larger than min.');
+                                }
+                            }
+
                         }
                     };
+
                 }// -- end of the link function --
             };
         }]);
