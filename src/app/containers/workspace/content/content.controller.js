@@ -18,10 +18,13 @@ angular.module('transmartBaseUi')
                         box.checked = oldBox.checked;
                         box.duplication = oldBox;
                     });
-                }
-                else {
+                } else {
                     CohortSelectionService.addBox();
                 }
+
+                // Alerts
+                vm.close = AlertService.remove;
+                vm.alerts = AlertService.get();
 
                 vm.boxes = CohortSelectionService.boxes;
                 vm.el = $element;

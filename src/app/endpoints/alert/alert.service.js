@@ -53,7 +53,7 @@ angular.module('tmEndpoints').factory('AlertService', ['$interval', 'toastr', fu
         else if(type === 'danger') {
             toastr.error(message);
         }
-    }
+    };
 
     return service;
 }]);

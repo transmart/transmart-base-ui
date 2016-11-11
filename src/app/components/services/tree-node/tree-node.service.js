@@ -86,7 +86,9 @@ angular.module('transmartBaseUi').factory('TreeNodeService', ['$q', function ($q
                     newNode.parent = node;
                 }
             })
-            .catch(function () {
+            .catch(function (e) {
+                console.log(e)
+                    newNode.status = e.status;
                 // reject error node
                 deferred.reject(setErrorNode(newNode));
             })
@@ -137,12 +139,12 @@ angular.module('transmartBaseUi').factory('TreeNodeService', ['$q', function ($q
                         node.nodes.push(newNode);
                     })
                     .catch(function (errNode) {
-                        node.nodes.push(errNode);
+                        if (errNode.status !== 403) node.nodes.push(errNode);
                     })
                     .finally(function () {
-                        if (childLinks.length === node.nodes.length) {
+                        // if (childLinks.length === node.nodes.length) {
                             deferred.resolve(node.nodes);
-                        }
+                        // }
                     });
             });
         } else {
