@@ -15,12 +15,13 @@
            placeholder="Search term"
            bu-enter-key="vm.addSearchKey();"
            ng-model="vm.searchTerm"
-           ng-disabled="vm.publicStudies.length == 0 && vm.privateStudies.length == 0">
+           ng-disabled="vm.studies.length">
 
     <ul class="list-inline ts-selected-keywords">
         <li ng-repeat="searchKey in vm.searchKeys track by $index" class="label label-primary">
             {{searchKey}}
-            <span class="glyphicon glyphicon-remove" aria-hidden="true" ng-click="vm.removeSearchKey(searchKey);"></span>
+            <span class="glyphicon glyphicon-remove" aria-hidden="true"
+                  ng-click="vm.removeSearchKey(searchKey);"></span>
         </li>
         <li class="label label-danger" ng-if="vm.searchKeys.length > 0">
             Clear
@@ -30,30 +31,21 @@
 
     <!-- START STUDIES -->
     <uib-accordion close-others="true">
+        <uib-accordion-group heading="Highlights" is-open="true" ng-if="false">
+            <span ng-if="vm.studies.length">
+            No studies loaded.
+            </span>
 
-        <uib-accordion-group heading="Highlights"
-                             is-open="true"
-                             ng-if="false">
-      <span ng-if="vm.publicStudies.length == 0 && vm.privateStudies.length == 0">
-        No studies loaded.
-      </span>
-      <span ng-if="vm.publicStudies.length > 0 || vm.privateStudies.length > 0">
-        Browse studies by clicking the study headers below.
-      </span>
+            <span ng-if="vm.studies.length">
+            Browse studies by clicking the study headers below.
+            </span>
         </uib-accordion-group>
 
-        <study-accordion studies="vm.publicStudies"
-                         title="'Public studies'"
-                         ng-if="vm.publicStudies.length > 0"
+        <study-accordion studies="vm.studies"
+                         title="'Studies'"
+                         ng-if="vm.studies.length > 0"
                          study-shown='vm.searchTerm'>
         </study-accordion>
-
-        <study-accordion studies="vm.privateStudies"
-                         title="'Private studies'"
-                         ng-if="vm.privateStudies.length > 0"
-                         study-shown='vm.searchTerm'>
-        </study-accordion>
-
     </uib-accordion>
 
 </div>

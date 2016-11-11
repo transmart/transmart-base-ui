@@ -195,16 +195,8 @@ describe('StudyListInterceptor', function () {
             }
         ];
 
-        it ('should give study type based on prefixes', function () {
-            var _res = StudyListInterceptor.customResponseInterceptor(dummyStudiesMore, 'getList', 'studies'),
-                _publicStudies = _.filter(_res, {type: 'public'}),
-                _otherStudies = _.filter(_res, {type: 'other'}),
-                _privateStudies = _.filter(_res, {type: 'private'});
-
-            expect(_publicStudies.length).toEqual(1);
-            expect(_privateStudies.length).toEqual(1);
-            expect(_otherStudies.length).toEqual(1);
-
+        it ('should show studies and finish loading when a study is loaded', function () {
+            var _res = StudyListInterceptor.customResponseInterceptor(dummyStudiesMore, 'getList', 'studies');
             _res.forEach(function (study) {
                expect(study.hide).toEqual(false);
                expect(study.isLoading).toEqual(false);
