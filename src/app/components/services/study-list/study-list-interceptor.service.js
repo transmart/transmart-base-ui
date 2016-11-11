@@ -24,14 +24,6 @@ angular.module('transmartBaseUi').factory('StudyListInterceptor', [function () {
     service.customResponseInterceptor = function (data, operation, what) {
         if (operation === 'getList' && what === 'studies') {
             _.forEach(data, function (study) {
-                study.isLoading = true;
-                if (study._embedded.ontologyTerm.fullName.split('\\')[1] === 'Public Studies') {
-                    study.type = 'public';
-                } else if (study._embedded.ontologyTerm.fullName.split('\\')[1] === 'Private Studies') {
-                    study.type = 'private';
-                } else {
-                    study.type = 'other';
-                }
                 study.hide = false; // show study by default
                 study.isLoading = false;
             });

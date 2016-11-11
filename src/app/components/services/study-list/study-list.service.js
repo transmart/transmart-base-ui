@@ -43,7 +43,7 @@ angular.module('transmartBaseUi').factory('StudyListService', ['$q', 'EndpointSe
             var deferred = $q.defer(), defers = [];
             var fnStudyInterceptor = StudyListInterceptor.customResponseInterceptor;
 
-	        /**
+        /**
              * Have we already retrieved the studies?
              * If so resolve and return
              */
@@ -134,7 +134,7 @@ angular.module('transmartBaseUi').factory('StudyListService', ['$q', 'EndpointSe
                     pair.push(k);
                 }
 
-	            /**
+                /**
                  * Search through all the key value pairs of the study and where possible, attached metadata.
                  */
                 _.each(pair, function (searchString) {

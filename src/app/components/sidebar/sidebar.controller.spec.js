@@ -24,8 +24,7 @@ describe('SidebarCtrl', function () {
     });
 
     it('should start with no studies loaded', function () {
-        expect(ctrl.publicStudies.length).toEqual(0);
-        expect(ctrl.privateStudies.length).toEqual(0);
+        expect(ctrl.studies.length).toEqual(0);
     });
 
     describe('addSearchKey', function () {

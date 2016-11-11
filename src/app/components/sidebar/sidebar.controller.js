@@ -11,8 +11,7 @@ angular.module('transmartBaseUi')
 
             var vm = this;
 
-            vm.publicStudies = [];
-            vm.privateStudies = [];
+            vm.studies = [];
 
             vm.searchTerm = '';
             // Default to false (OR) for toggle switch
@@ -76,8 +75,7 @@ angular.module('transmartBaseUi')
              */
             vm.loadStudies = function () {
                 StudyListService.getAllStudies().then(function (res) {
-                    vm.publicStudies = _.filter(res, {type: 'public'});
-                    vm.privateStudies = _.filter(res, {type: 'private'});
+                    vm.studies = res;
                 });
             };
 
