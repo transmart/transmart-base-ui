@@ -15,7 +15,7 @@
            placeholder="Search term"
            bu-enter-key="vm.addSearchKey();"
            ng-model="vm.searchTerm"
-           ng-disabled="vm.studies.length">
+           ng-disabled="!vm.studies.length">
 
     <ul class="list-inline ts-selected-keywords">
         <li ng-repeat="searchKey in vm.searchKeys track by $index" class="label label-primary">
