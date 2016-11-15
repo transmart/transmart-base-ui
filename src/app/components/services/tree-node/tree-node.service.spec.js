@@ -78,6 +78,7 @@ describe('TreeNodeService', function () {
                 function (err) {
                     expect(err).toEqual({
                         title: 'SomeLabel',
+                        status: 404,
                         nodes: [],
                         loaded: true,
                         study: undefined,

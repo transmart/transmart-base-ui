@@ -52,8 +52,10 @@ angular.module('transmartBaseUi')
              * @returns {Promise}
              */
             ctrl.populateChildren = function (node) {
-                if (node.disabled) {
+                if (!node.hasOwnProperty('accessibleByUser')) {
                     return TreeNodeService.populateChildren(node);
+                } else {
+                    return node.accessibleByUser.view ? TreeNodeService.populateChildren(node) : null;
                 }
             };
 
