@@ -87,8 +87,7 @@ angular.module('transmartBaseUi').factory('TreeNodeService', ['$q', function ($q
                 }
             })
             .catch(function (e) {
-                console.log(e)
-                    newNode.status = e.status;
+                newNode.status = e.status;
                 // reject error node
                 deferred.reject(setErrorNode(newNode));
             })
