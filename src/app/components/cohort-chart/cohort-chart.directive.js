@@ -146,13 +146,16 @@ angular.module('transmartBaseUi')
                         else {
                             var mmin = +scope.chart.xAxisMin();
                             var mmax = +scope.chart.xAxisMax();
+                            var adjusted = false;
 
                             if (min === null || min < mmin) {
                                 min = mmin;
+                                adjusted = true;
                             }
 
                             if (max === null || max > mmax) {
-                                max = mmax + 0.001;
+                                max = mmax;
+                                adjusted = true;
                             }
 
                             if (max > min) {
@@ -160,6 +163,9 @@ angular.module('transmartBaseUi')
                                 scope.chart.filter(null);
                                 scope.chart.filter(range);
                                 scope.chart.redraw();
+                            }
+                            else if(adjusted) {
+                                toastr.error('Selection out of bound.');
                             }
                             else if (max <= min) {
                                 toastr.error('Max should be larger than min.');
