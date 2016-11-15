@@ -129,7 +129,6 @@ angular.module('transmartBaseUi').factory('TreeNodeService', ['$q', function ($q
         }
 
         childLinks = node.restObj._links.children; // check if it has child links
-
         if (childLinks) {
             // start to load its children
             childLinks.forEach(function (link) {
@@ -139,9 +138,6 @@ angular.module('transmartBaseUi').factory('TreeNodeService', ['$q', function ($q
                     })
                     .catch(function (errNode) {
                         if (errNode.status !== 403) {
-                            if (node.hasOwnProperty('disabled')) {
-                                node.disabled = true;
-                            }
                             node.nodes.push(errNode);
                         }
                     })

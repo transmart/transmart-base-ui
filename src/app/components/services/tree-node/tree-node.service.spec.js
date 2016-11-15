@@ -167,6 +167,19 @@ describe('TreeNodeService', function () {
             flushHttoBackend();
         });
 
+        it('should not load failed child nodes when unauthorized', function () {
+
+            httpBackend.when('GET', '/' + prefix + link.title).respond(403);
+            httpBackend.when('GET', '/' + prefix + link.title + '/subjects').respond(403);
+            spyOn(_dummyNode.restObj, 'one').and.callThrough();
+
+            TreeNodeService.getNodeChildren(_dummyNode, 'concepts/').then(function (res) {
+                expect(res.length).toEqual(0);
+            });
+
+            flushHttoBackend();
+        });
+
         it('should not load node when node is already loaded', function () {
             _dummyNode.loaded = true;
             TreeNodeService.getNodeChildren(_dummyNode).then(function (res) {

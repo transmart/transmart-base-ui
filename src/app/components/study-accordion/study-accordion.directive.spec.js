@@ -22,33 +22,26 @@ describe('studyAccordion', function () {
     }));
 
     describe('$scope.populateChildren', function () {
-        var deferred, _n;
+        var deferred;
 
         beforeEach(function () {
             deferred = $q.defer();
-
-            _n = {
-                title: 'someTitle',
-                total: 999,
-                type: 'UNKNOWN',
-                isLoading: false
-            };
-
-            spyOn(TreeNodeService, 'setRootNodeAttributes').and.returnValue(_n);
-            spyOn(TreeNodeService, 'getNodeChildren').and.returnValue(deferred.promise);
-            spyOn(controller, 'clearMetadata');
+            spyOn(TreeNodeService, 'populateChildren');
         });
 
-        it('should invoke TreeNodeService.getNodeChildren when populating node children', function () {
-            controller.populateChildren({});
-            expect(TreeNodeService.setRootNodeAttributes).toHaveBeenCalled();
-            expect(TreeNodeService.getNodeChildren).toHaveBeenCalled();
+        it('should return null when node is not accessible by user', function () {
+           controller.populateChildren({restObj:'foo', accessibleByUser : {view : false}});
+            expect(TreeNodeService.populateChildren).not.toHaveBeenCalled();
         });
 
-        it('should not invoke TreeNodeService.setRootNodeAttributes when populating study node', function () {
+        it('should return null when node is not accessible by user', function () {
+            controller.populateChildren({restObj:'foo', accessibleByUser : {view : true}});
+            expect(TreeNodeService.populateChildren).toHaveBeenCalled();
+        });
+
+        it('should return null when node is not accessible by user', function () {
             controller.populateChildren({restObj:'foo'});
-            expect(TreeNodeService.setRootNodeAttributes).not.toHaveBeenCalled();
-            expect(TreeNodeService.getNodeChildren).toHaveBeenCalled();
+            expect(TreeNodeService.populateChildren).toHaveBeenCalled();
         });
 
     });
