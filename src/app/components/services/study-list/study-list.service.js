@@ -43,7 +43,7 @@ angular.module('transmartBaseUi').factory('StudyListService', ['$q', 'EndpointSe
             var deferred = $q.defer(), defers = [];
             var fnStudyInterceptor = StudyListInterceptor.customResponseInterceptor;
 
-        /**
+            /**
              * Have we already retrieved the studies?
              * If so resolve and return
              */

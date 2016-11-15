@@ -27,8 +27,8 @@ angular.module('transmartBaseUi')
      * @ngdoc controller
      * @name StudyAccordionCtrl
      */
-    .controller('StudyAccordionCtrl', ['$uibModal', 'UtilService', 'TreeNodeService',
-        function ($uibModal, UtilService, TreeNodeService) {
+    .controller('StudyAccordionCtrl', ['$uibModal', 'UtilService', 'TreeNodeService', '$scope',
+        function ($uibModal, UtilService, TreeNodeService, $scope) {
 
             var ctrl = this;
 
@@ -52,7 +52,11 @@ angular.module('transmartBaseUi')
              * @returns {Promise}
              */
             ctrl.populateChildren = function (node) {
-                return TreeNodeService.populateChildren(node);
+                if (!node.hasOwnProperty('accessibleByUser')) {
+                    return TreeNodeService.populateChildren(node);
+                } else {
+                    return node.accessibleByUser.view ? TreeNodeService.populateChildren(node) : null;
+                }
             };
 
             ctrl.prev_node = null;

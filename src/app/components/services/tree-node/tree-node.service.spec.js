@@ -78,6 +78,7 @@ describe('TreeNodeService', function () {
                 function (err) {
                     expect(err).toEqual({
                         title: 'SomeLabel',
+                        status: 404,
                         nodes: [],
                         loaded: true,
                         study: undefined,
@@ -161,6 +162,19 @@ describe('TreeNodeService', function () {
                 expect(res[0].title).toEqual('SomeLabel');
                 expect(res[0].loaded).toEqual(true);
                 expect(res[0].type).toEqual('FAILED_CALL');
+            });
+
+            flushHttoBackend();
+        });
+
+        it('should not load failed child nodes when unauthorized', function () {
+
+            httpBackend.when('GET', '/' + prefix + link.title).respond(403);
+            httpBackend.when('GET', '/' + prefix + link.title + '/subjects').respond(403);
+            spyOn(_dummyNode.restObj, 'one').and.callThrough();
+
+            TreeNodeService.getNodeChildren(_dummyNode, 'concepts/').then(function (res) {
+                expect(res.length).toEqual(0);
             });
 
             flushHttoBackend();

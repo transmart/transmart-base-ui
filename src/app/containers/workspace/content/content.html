@@ -1,6 +1,11 @@
 <div class="main-container" id="main-container-div">
 
+    <uib-alert class="alert-div" ng-repeat="alert in vm.alerts" type="{{alert.type}}" close="vm.close(alert.id)">
+        {{alert.message}}
+    </uib-alert>
+
     <uib-tabset active="vm.activeTabIndex">
+
         <!----------- Tab: Cohort Selection ----------->
         <uib-tab active="vm.tabs[0].active" ng-click="vm.activateTab(tabs[0].title, 'cohortSelection');">
             <uib-tab-heading>
@@ -9,11 +14,11 @@
 
             <div ui-layout="{flow : 'column', 'disableToggle': true }" id="cohort-selection-ui-layout-div"
                  class="cohort-selection-boxset">
-                <div ui-layout-container="central" min-size="260px" class="cohort-selection-box"
+                    <div ui-layout-container="central" min-size="260px" class="cohort-selection-box"
                      ng-repeat="box in vm.boxes track by box.boxId"
                      id="cohort-box-container-{{box.boxId}}">
-                    <cohort-selection box="box" index={{$index}}></cohort-selection>
-                </div>
+                        <cohort-selection box="box" index={{$index}}></cohort-selection>
+                    </div>
             </div>
 
         </uib-tab>

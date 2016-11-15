@@ -86,7 +86,8 @@ angular.module('transmartBaseUi').factory('TreeNodeService', ['$q', function ($q
                     newNode.parent = node;
                 }
             })
-            .catch(function () {
+            .catch(function (e) {
+                newNode.status = e.status;
                 // reject error node
                 deferred.reject(setErrorNode(newNode));
             })
@@ -128,7 +129,6 @@ angular.module('transmartBaseUi').factory('TreeNodeService', ['$q', function ($q
         }
 
         childLinks = node.restObj._links.children; // check if it has child links
-
         if (childLinks) {
             // start to load its children
             childLinks.forEach(function (link) {
@@ -137,12 +137,12 @@ angular.module('transmartBaseUi').factory('TreeNodeService', ['$q', function ($q
                         node.nodes.push(newNode);
                     })
                     .catch(function (errNode) {
-                        node.nodes.push(errNode);
+                        if (errNode.status !== 403) {
+                            node.nodes.push(errNode);
+                        }
                     })
                     .finally(function () {
-                        if (childLinks.length === node.nodes.length) {
-                            deferred.resolve(node.nodes);
-                        }
+                        deferred.resolve(node.nodes);
                     });
             });
         } else {
@@ -160,7 +160,7 @@ angular.module('transmartBaseUi').factory('TreeNodeService', ['$q', function ($q
      */
     service.isCategoricalLeafNode = function (node) {
         return node.type === 'CATEGORICAL_OPTION';
-    }
+    };
 
     /**
      * @memberof TreeNodeService
@@ -169,7 +169,7 @@ angular.module('transmartBaseUi').factory('TreeNodeService', ['$q', function ($q
      */
     service.isCategoricalParentNode = function (node) {
         return node.type === 'CATEGORICAL_CONTAINER';
-    }
+    };
 
     /**
      * @memberof TreeNodeService
@@ -178,7 +178,7 @@ angular.module('transmartBaseUi').factory('TreeNodeService', ['$q', function ($q
      */
     service.isNumericalNode = function (node) {
         return node.type === 'NUMERIC';
-    }
+    };
 
     /**
      * @memberof TreeNodeService
@@ -187,7 +187,7 @@ angular.module('transmartBaseUi').factory('TreeNodeService', ['$q', function ($q
      */
     service.isHighDimensionalNode = function (node) {
         return node.type === 'HIGH_DIMENSIONAL';
-    }
+    };
 
     /*
      * Populate node children
@@ -215,6 +215,7 @@ angular.module('transmartBaseUi').factory('TreeNodeService', ['$q', function ($q
             .finally(function () {
                 node.isLoading = false;
         });
+
         return promise;
     };
 
