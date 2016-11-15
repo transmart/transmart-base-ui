@@ -186,6 +186,13 @@ describe('Unit testing cohort-chart directive', function () {
             _scope.filterBarChart();
         });
 
+        it('should deal with the case when both min and max inputs are out of bound', function () {
+            var _scope = chartElm.isolateScope();
+            _scope.filterOpt.min = 0;
+            _scope.filterOpt.max = 1;
+            _scope.filterBarChart();
+        });
+
     });
 
 });

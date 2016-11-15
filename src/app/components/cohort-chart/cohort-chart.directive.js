@@ -164,7 +164,7 @@ angular.module('transmartBaseUi')
                                 scope.chart.filter(range);
                                 scope.chart.redraw();
                             }
-                            else if(adjusted) {
+                            else if (adjusted) {
                                 toastr.error('Selection out of bound.');
                             }
                             else if (max <= min) {
