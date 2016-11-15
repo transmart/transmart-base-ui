@@ -39,8 +39,8 @@ angular.module('transmartBaseUi')
 
                         //update the min and max values if it is a bar chart
                         if (filters.length > 0 && scope.isBarChart) {
-                            scope.filterOpt.min = _.floor(filters[0][0], 1);
-                            scope.filterOpt.max = _.floor(filters[0][1], 1);
+                            scope.filterOpt.min = _.floor(filters[0][0], 3);
+                            scope.filterOpt.max = _.floor(filters[0][1], 3);
                         }
                     });
 
@@ -146,34 +146,29 @@ angular.module('transmartBaseUi')
                         else {
                             var mmin = +scope.chart.xAxisMin();
                             var mmax = +scope.chart.xAxisMax();
-                            var outOfRange = false;
+                            var adjusted = false;
 
-                            if (min === null) {
+                            if (min === null || min < mmin) {
                                 min = mmin;
-                            }
-                            else if (min < mmin) {
-                                outOfRange = true;
-                                toastr.error('min value out of range');
+                                adjusted = true;
                             }
 
-                            if (max === null) {
+                            if (max === null || max > mmax) {
                                 max = mmax;
-                            }
-                            else if (max > mmax) {
-                                outOfRange = true;
-                                toastr.error('max value out of range');
+                                adjusted = true;
                             }
 
-                            if (!outOfRange) {
-                                if (max > min) {
-                                    var range = dc.filters.RangedFilter(min, max);
-                                    scope.chart.filter(null);
-                                    scope.chart.filter(range);
-                                    scope.chart.redraw();
-                                }
-                                else if (max <= min) {
-                                    toastr.error('Max should be larger than min.');
-                                }
+                            if (max > min) {
+                                var range = dc.filters.RangedFilter(min, max);
+                                scope.chart.filter(null);
+                                scope.chart.filter(range);
+                                scope.chart.redraw();
+                            }
+                            else if (adjusted) {
+                                toastr.error('Selection out of bound.');
+                            }
+                            else if (max <= min) {
+                                toastr.error('Max should be larger than min.');
                             }
 
                         }

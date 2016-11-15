@@ -47,12 +47,13 @@
         </div>
         <!-- Bar chart only ------------------------------------------------->
         <div ng-if="filterOpt.showFilterInput">
-            <div class="col-xs-5 chart-filter-div">
-                <input class="form-control chart-filter-input" type="text" placeholder="min"
+            <div class="col-xs-5 barchart-filter-min">
+                <input class="form-control barchart-filter-input" type="text" placeholder="min"
                 ng-model="filterOpt.min" onfocus="this.select();">
             </div>
-            <div class="col-xs-5 chart-filter-div">
-                <input class="form-control chart-filter-input" type="text" placeholder="max"
+            <span class="col-xs-2 barchart-filter-tip">&le;<i>x</i>&lt;</span>
+            <div class="col-xs-5 barchart-filter-max">
+                <input class="form-control barchart-filter-input" type="text" placeholder="max"
                 ng-model="filterOpt.max" onfocus="this.select();">
             </div>
             <button class="btn btn-default chart-filter-btn" ng-click="filterBarChart()">Filter</button>

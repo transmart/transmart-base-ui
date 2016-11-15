@@ -154,7 +154,8 @@ angular.module('transmartBaseUi')
 
                         var colIndex = 0, rowIndex = 0;
                         var rowOffset = 0;
-                        labels = _.sortBy(labels, ['col', 'row']);
+
+                        labels = _.sortBy(labels, ['row', 'col']);
                         labels.forEach(function (label, index) {
                             if (!label.sizeX) label.sizeX = vm.gridsterConfig.G_ITEM_SPAN_X;
                             if (!label.sizeY) label.sizeY = vm.gridsterConfig.G_ITEM_SPAN_Y;
@@ -432,7 +433,6 @@ angular.module('transmartBaseUi')
                     var _t = what.split('\\').slice(1);
                     return what.indexOf('\\') === -1 ? what : _t[_t.length - 2];
                 };
-
 
 
                 /**
