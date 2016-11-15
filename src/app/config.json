@@ -2,8 +2,8 @@
     "dev": {
         "IS_TESTING": false,
         "MASTER_ENDPOINT_CONFIG": {
-            "title": "transmart-gb",
-            "url": "http://transmart-gb.thehyve.net/transmart",
+            "title": "translocation-test",
+            "url": "http://transmart-test-translocation.thehyve.net/transmart",
             "apiVersion": "v1",
             "isOAuth": true,
             "isMaster": true
@@ -26,8 +26,8 @@
     "test": {
         "IS_TESTING": true,
         "MASTER_ENDPOINT_CONFIG": {
-            "title": "transmart-gb",
-            "url": "http://transmart-gb.thehyve.net/transmart",
+            "title": "translocation-test",
+            "url": "http://transmart-test-translocation.thehyve.net/transmart",
             "apiVersion": "v1",
             "isOAuth": true,
             "isMaster": true
