@@ -60,18 +60,6 @@ angular.module('transmartBaseUi').factory('QueryBuilderService', ['JSON2XMLServi
 
         });
 
-        // If we didn't find any filters, add the entire study as a filter
-        if (panels.length == 0) {
-            var studyKey = cohortFilters[0].study._embedded.ontologyTerm.fullName;
-            panels.push({
-                'panel_number': 1,
-                'invert': 0,
-                'total_item_occurrences': 1,
-                'item': generatePanelItemForConcept(studyKey,
-                    cohortFilters[0].study.id, cohortFilters[0].study.type)
-            });
-        }
-
         return panels;
     };
 
@@ -87,14 +75,14 @@ angular.module('transmartBaseUi').factory('QueryBuilderService', ['JSON2XMLServi
         var items = [];
         if (cohortFilter.filters.length > 0) {
             _.each(cohortFilter.filters, function (filter) {
-                var item = generatePanelItemForConcept(cohortFilter.label, cohortFilter.name, cohortFilter.study.type);
+                var item = generatePanelItemForConcept(cohortFilter);
                 item['constrain_by_value'] = generateConstraintByValueBetween(filter[0], filter[1]);
                 items.push(item);
             });
         }
         else {
             // If there are no range filters, just add the concept node
-            items.push(generatePanelItemForConcept(cohortFilter.label, cohortFilter.name, cohortFilter.study.type));
+            items.push(generatePanelItemForConcept(cohortFilter));
         }
         return items;
     }
@@ -111,14 +99,11 @@ angular.module('transmartBaseUi').factory('QueryBuilderService', ['JSON2XMLServi
         if (cohortFilter.filters.length > 0) {
             // If there are filters on the chart, add each filter value separately (leafs)
             _.each(cohortFilter.filters, function (filter) {
-                items.push(generatePanelItemForConcept(cohortFilter.label + filter, filter, cohortFilter.study.type));
+                items.push(generatePanelItemForConcept(cohortFilter, filter));
             });
         }
         else {
-            // If there are no filters, just add the category concept (parent of the values).
-            // Name is the last part of the concept, but before the last backslash.
-            var name = cohortFilter.label.split('\\').slice(-2, -1)[0];
-            items.push(generatePanelItemForConcept(cohortFilter.label, name, cohortFilter.study.type));
+            items.push(generatePanelItemForConcept(cohortFilter));
         }
         return items;
     }
@@ -139,37 +124,29 @@ angular.module('transmartBaseUi').factory('QueryBuilderService', ['JSON2XMLServi
     }
 
     /**
-     * Generate a separate panel item for the specified concept. The type is
-     * used to generate the prefix.
-     * @memberof QueryBuilderService
-     * @param key
-     * @param name
-     * @param studyType
+     * Generate a separate panel item for the specified concept.
+     * @param cohortFilter
      * @returns {{item_name: *, item_key: *, tooltip: *, class: string}}
      */
-    function generatePanelItemForConcept(key, name, studyType) {
+    function generatePanelItemForConcept(cohortFilter, filter) {
+
+        var name = cohortFilter.name;
+        var key = cohortFilter.study._embedded.ontologyTerm.key;
+        var tip = cohortFilter.label;
+        if (filter) {
+            name = filter;
+            key += filter;
+            tip += filter;
+        }
+
         return {
             'item_name': name,
-            'item_key': getStudyTypePrefix(studyType) + key,
-            'tooltip': key,
-            'class': 'ENC',
+            'item_key': key,
+            'tooltip': tip,
+            'class': 'ENC'
         };
     }
 
-    /**
-     * Returns the study prefix (Public Studies / Private Studies) based on the study type.
-     * @memberof QueryBuilderService
-     * @param studyType
-     * @returns {*}
-     */
-    function getStudyTypePrefix(studyType) {
-        switch (studyType) {
-            case 'public':
-                return '\\\\Public Studies';
-            case 'private':
-                return '\\\\Private Studies';
-        }
-    }
 
     return service;
 }]);

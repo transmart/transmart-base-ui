@@ -15,18 +15,24 @@ describe('QueryBuilderService Unit Tests', function () {
     }));
 
     it('should convert cohort filters with categories', function () {
-        expect(QueryBuilderService.convertCohortFiltersToI2B2Panels(QueryBuilderMocks.cohortFiltersWithCategories()))
-            .toEqual(QueryBuilderMocks.cohortFiltersWithCategoriesI2B2Panels());
+        var cohortFilters = QueryBuilderMocks.cohortFiltersWithCategories();
+        var convertedOutput = QueryBuilderService.convertCohortFiltersToI2B2Panels(cohortFilters);
+        var expectedOutput = QueryBuilderMocks.cohortFiltersWithCategoriesI2B2Panels();
+        expect(convertedOutput).toEqual(expectedOutput);
     });
 
     it('should convert cohort filters with number ranges', function () {
-        expect(QueryBuilderService.convertCohortFiltersToI2B2Panels(QueryBuilderMocks.cohortFiltersWithNumberRanges()))
-            .toEqual(QueryBuilderMocks.cohortFiltersWithNumberRangesI2B2Panels());
+        var cohortFilters = QueryBuilderMocks.cohortFiltersWithNumberRanges();
+        var convertedOutput = QueryBuilderService.convertCohortFiltersToI2B2Panels(cohortFilters);
+        var expectedOutput = QueryBuilderMocks.cohortFiltersWithNumberRangesI2B2Panels();
+        expect(convertedOutput).toEqual(expectedOutput);
     });
 
-    it('should convert cohort filters with high dimensional data', function() {
-        expect(QueryBuilderService.convertCohortFiltersToI2B2Panels(QueryBuilderMocks.cohortFiltersWithHighDimData()))
-            .toEqual(QueryBuilderMocks.cohortFiltersWithHighDimDataI2B2Panels());
+    it('should convert cohort filters with high dimensional data', function () {
+        var cohortFilters = QueryBuilderMocks.cohortFiltersWithHighDimData();
+        var convertedOutput = QueryBuilderService.convertCohortFiltersToI2B2Panels(cohortFilters);
+        var expectedOutput = QueryBuilderMocks.cohortFiltersWithHighDimDataI2B2Panels();
+        expect(convertedOutput).toEqual(expectedOutput);
     });
 
     it('should convert cohort filters to xml', function () {
@@ -36,7 +42,7 @@ describe('QueryBuilderService Unit Tests', function () {
                     QueryBuilderMocks.cohortFilters().cohortFilters,
                     QueryBuilderMocks.cohortFilters().cohortName)
         )
-        .toEqual(QueryBuilderMocks.cohortFiltersXML());
+            .toEqual(QueryBuilderMocks.cohortFiltersXML());
     });
 
 });
