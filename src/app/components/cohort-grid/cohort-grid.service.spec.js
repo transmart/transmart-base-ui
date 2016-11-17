@@ -36,23 +36,23 @@ describe('CohortGridService', function () {
         it('should define column header', function () {
             expect(_colDefs[0]).toEqual({
                 field: "fields['cohort-panel']",
-                width: 0.6*200,
+                width: 0.6 * 200,
                 displayName: 'cohort-panel',
                 pinnedLeft: true
             });
 
             expect(_colDefs[1]).toEqual({
                 field: "fields['id']",
-                width: 0.5*200,
-                displayName: 'id',
+                width: 200,
+                displayName: 'Patient Id',
                 pinnedLeft: true
             });
         });
 
         it('should define columns from given labels', function () {
             expect(_colDefs).toEqual([
-                {field: "fields['cohort-panel']", width: 0.6*200, displayName: 'cohort-panel', pinnedLeft: true},
-                {field: "fields['id']", width: 0.5*200, displayName: 'id', pinnedLeft: true},
+                {field: "fields['cohort-panel']", width: 0.6 * 200, displayName: 'cohort-panel', pinnedLeft: true},
+                {field: "fields['id']", width: 200, displayName: 'Patient Id', pinnedLeft: true},
                 {field: "fields['a']", width: 200, displayName: 'a'},
                 {field: "fields['b']", width: 200, displayName: 'b'},
                 {field: "fields['c']", width: 200, displayName: 'c'}
@@ -63,9 +63,9 @@ describe('CohortGridService', function () {
     describe('convertToTable', function () {
         var _formatted,
             _labels = [
-                {name: 'a', labelId: 0, conceptPath:'x'},
-                {name: 'b', labelId: 1,  conceptPath:'y'},
-                {name: 'c', labelId: 2,  conceptPath:'z'}
+                {name: 'a', labelId: 0, conceptPath: 'x'},
+                {name: 'b', labelId: 1, conceptPath: 'y'},
+                {name: 'c', labelId: 2, conceptPath: 'z'}
             ];
         var box = {
             index: 0,
@@ -76,7 +76,11 @@ describe('CohortGridService', function () {
                 boxIndex: 1
             }
         };
-        var _subjects = [{id: 1111, observations: {x:'aa', y:'bb', z:'cc'}, boxes: [box]}];
+        var _subjects = [{
+            id: 1111,
+            inTrialId: 'IN_TRIAL_ID',
+            observations: {x: 'aa', y: 'bb', z: 'cc'},
+            boxes: [box]}];
 
 
         beforeEach(function () {
@@ -85,7 +89,7 @@ describe('CohortGridService', function () {
 
         it('should format data to table format', function () {
             expect(_formatted).toEqual([
-                { fields: { 'cohort-panel': 'cohort-1', id: 1111, a: 'aa', b: 'bb', c: 'cc' } }
+                {fields: {'cohort-panel': 'cohort-1', id: 'IN_TRIAL_ID', a: 'aa', b: 'bb', c: 'cc'}}
             ]);
         });
     });
