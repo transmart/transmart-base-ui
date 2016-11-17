@@ -44,8 +44,8 @@ angular.module('transmartBaseUi').factory('CohortGridService', ['$timeout', 'Coh
             });
             columnDefs.push({
                 field: "fields['id']",
-                width: 0.5 * service.WIDTH_PER_COLUMN,
-                displayName: 'id',
+                width: service.WIDTH_PER_COLUMN,
+                displayName: 'Patient Id',
                 pinnedLeft: true
             });
             rawHeaders.forEach(function (label) {
@@ -80,7 +80,7 @@ angular.module('transmartBaseUi').factory('CohortGridService', ['$timeout', 'Coh
             subjects.forEach(function (subject) {
                 var cleanSubject = {};
                 cleanSubject['cohort-panel'] = stringifyIndices(subject.boxes);
-                cleanSubject.id = subject.id;
+                cleanSubject.id = subject.inTrialId;
                 labels.forEach(function (label) {
                     cleanSubject[label.name] = subject.observations[label.conceptPath];
                 });
