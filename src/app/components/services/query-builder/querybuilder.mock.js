@@ -10,44 +10,35 @@ angular.module('transmartBaseUi')
 
             mock.cohortFiltersWithCategories = function () {
 
+                var studyObj = {
+                    _embedded: {
+                        ontologyTerm: {
+                            fullName: '\\Public Studies\\GSE8581\\',
+                            key: '\\\\Public Studies\\Public Studies\\GSE8581\\'
+                        }
+                    }
+                };
+
                 return [
                     {
                         name: 'Organism',
                         type: 'string',
                         label: '\\Public Studies\\GSE8581\\Subjects\\Organism\\',
-                        study: {
-                            _embedded: {
-                                ontologyTerm: {
-                                    key: '\\\\Public Studies\\Public Studies\\GSE8581\\Subjects\\Organism\\'
-                                }
-                            }
-                        },
+                        study: studyObj,
                         filters: []
                     },
                     {
                         name: 'Sex',
                         type: 'string',
                         label: '\\Public Studies\\GSE8581\\Subjects\\Sex\\',
-                        study: {
-                            _embedded: {
-                                ontologyTerm: {
-                                    key: '\\\\Public Studies\\Public Studies\\GSE8581\\Subjects\\Sex\\'
-                                }
-                            }
-                        },
+                        study: studyObj,
                         filters: ['female']
                     },
                     {
                         name: 'Diagnosis',
                         type: 'string',
                         label: '\\Public Studies\\GSE8581\\Subjects\\Diagnosis\\',
-                        study: {
-                            _embedded: {
-                                ontologyTerm: {
-                                    key: '\\\\Public Studies\\Public Studies\\GSE8581\\Subjects\\Diagnosis\\'
-                                }
-                            }
-                        },
+                        study: studyObj,
                         filters: ['carcinoid', 'hematoma']
                     }
                 ];
@@ -93,31 +84,28 @@ angular.module('transmartBaseUi')
             };
 
             mock.cohortFiltersWithNumberRanges = function () {
+                var studyObj = {
+                    _embedded: {
+                        ontologyTerm: {
+                            fullName: '\\Public Studies\\GSE8581\\',
+                            key: '\\\\Public Studies\\Public Studies\\GSE8581\\'
+                        }
+                    }
+                };
+
                 return [
                     {
                         name: 'Age',
                         type: 'number',
                         label: '\\Public Studies\\GSE8581\\Subjects\\Age\\',
-                        study: {
-                            _embedded: {
-                                ontologyTerm: {
-                                    key: '\\\\Public Studies\\Public Studies\\GSE8581\\Subjects\\Age\\'
-                                }
-                            }
-                        },
+                        study: studyObj,
                         filters: [[65, 70]]
                     },
                     {
                         name: 'Height',
                         type: 'number',
                         label: '\\Public Studies\\GSE8581\\Subjects\\Height\\',
-                        study: {
-                            _embedded: {
-                                ontologyTerm: {
-                                    key: '\\\\Public Studies\\Public Studies\\GSE8581\\Subjects\\Height\\'
-                                }
-                            }
-                        },
+                        study: studyObj,
                         filters: []
                     }
                 ];
@@ -156,19 +144,21 @@ angular.module('transmartBaseUi')
             };
 
             mock.cohortFiltersWithHighDimData = function () {
+                var studyObj = {
+                    _embedded: {
+                        ontologyTerm: {
+                            fullName: '\\Private Studies\\GSE8581\\',
+                            key: '\\\\Private Studies\\Private Studies\\GSE8581\\'
+                        }
+                    }
+                };
+
                 return [
                     {
                         name: 'Lung',
                         type: 'highdim',
                         label: '\\Private Studies\\GSE8581\\Biomarker Data\\GPL570\\Lung\\',
-                        study: {
-                            _embedded: {
-                                ontologyTerm: {
-                                    key: '\\\\Private Studies\\Private Studies\\GSE8581\\Biomarker' +
-                                    ' Data\\GPL570\\Lung\\',
-                                }
-                            }
-                        },
+                        study: studyObj,
                         filters: []
                     }
                 ];
@@ -190,6 +180,15 @@ angular.module('transmartBaseUi')
             };
 
             mock.cohortFilters = function () {
+                var studyObj = {
+                    _embedded: {
+                        ontologyTerm: {
+                            fullName: '\\Public Studies\\GSE8581\\',
+                            key: '\\\\Public Studies\\Public Studies\\GSE8581\\'
+                        }
+                    }
+                };
+
                 return {
                     cohortName: 'my cohort',
                     cohortFilters: [
@@ -197,26 +196,14 @@ angular.module('transmartBaseUi')
                             name: 'Age',
                             type: 'number',
                             label: '\\Public Studies\\GSE8581\\Subjects\\Age\\',
-                            study: {
-                                _embedded: {
-                                    ontologyTerm: {
-                                        key: '\\\\Public Studies\\Public Studies\\GSE8581\\Subjects\\Age\\'
-                                    }
-                                }
-                            },
+                            study: studyObj,
                             filters: [[65, 70]]
                         },
                         {
                             name: 'Diagnosis',
                             type: 'string',
                             label: '\\Public Studies\\GSE8581\\Subjects\\Diagnosis\\',
-                            study: {
-                                _embedded: {
-                                    ontologyTerm: {
-                                        key: '\\\\Public Studies\\Public Studies\\GSE8581\\Subjects\\Diagnosis\\'
-                                    }
-                                }
-                            },
+                            study: studyObj,
                             filters: ['carcinoid', 'hematoma']
                         }
                     ]
