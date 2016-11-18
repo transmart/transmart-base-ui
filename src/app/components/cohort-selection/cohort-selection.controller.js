@@ -121,6 +121,7 @@ angular.module('transmartBaseUi')
                         var _gCols = Math.floor(_gWidth / vm.gridsterConfig.G_BASE_WIDTH);
                         vm.gridsterOpts.columns = _gCols;
 
+                        labels = _.sortBy(labels, ['row', 'col']);
                         labels.forEach(function (label, index) {
                             label.sizeX = vm.gridsterConfig.G_ITEM_SPAN_X;
                             label.sizeY = vm.gridsterConfig.G_ITEM_SPAN_Y;

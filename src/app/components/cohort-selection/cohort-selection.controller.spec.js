@@ -614,9 +614,13 @@ describe('CohortSelectionCtrl', function () {
         });
 
         it('should reSizeAndPosition only when there are labels', function () {
+            spyOn(_, 'sortBy').and.callFake(function () {
+                return ctrl.cs.labels;
+            });
             spyOn(ctrl.cs.labels, 'forEach');
             spyOn(Math, 'floor');
             ctrl.reSizeAndPosition();
+            expect(_.sortBy).toHaveBeenCalled();
             expect(ctrl.cs.labels.forEach).toHaveBeenCalled();
             expect(Math.floor).toHaveBeenCalled();
         });
@@ -631,8 +635,12 @@ describe('CohortSelectionCtrl', function () {
         });
 
         it('should reset sizeX and sizeY of a label', function () {
+            spyOn(_, 'sortBy').and.callFake(function () {
+                return ctrl.cs.labels;
+            });
             spyOn(ctrl.cs.labels, 'forEach').and.callThrough();
             ctrl.reSizeAndPosition();
+            expect(_.sortBy).toHaveBeenCalled();
             expect(ctrl.cs.labels[0].sizeX).toBe(1);
             expect(ctrl.cs.labels[0].sizeY).toBe(1);
             expect(ctrl.cs.labels[1].sizeX).toBe(1);
