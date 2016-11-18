@@ -57,7 +57,6 @@ angular.module('transmartBaseUi').factory('QueryBuilderService', ['JSON2XMLServi
                     'item': items
                 });
             }
-
         });
 
         return panels;
@@ -129,10 +128,12 @@ angular.module('transmartBaseUi').factory('QueryBuilderService', ['JSON2XMLServi
      * @returns {{item_name: *, item_key: *, tooltip: *, class: string}}
      */
     function generatePanelItemForConcept(cohortFilter, filter) {
-
+        var studyName = cohortFilter.study._embedded.ontologyTerm.fullName;
         var name = cohortFilter.name;
-        var key = cohortFilter.study._embedded.ontologyTerm.key;
         var tip = cohortFilter.label;
+        var tail = cohortFilter.label.substr(studyName.length, tip.length);
+        var key = cohortFilter.study._embedded.ontologyTerm.key + tail;
+
         if (filter) {
             name = filter;
             key += filter;
@@ -145,6 +146,7 @@ angular.module('transmartBaseUi').factory('QueryBuilderService', ['JSON2XMLServi
             'tooltip': tip,
             'class': 'ENC'
         };
+
     }
 
 
