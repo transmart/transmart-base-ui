@@ -1,0 +1,32 @@
+<h1>Mocked data types</h1>
+
+<div class="well" ng-repeat="conceptDataType in cohortExportCtrl.conceptDataTypes">
+    <div class="row">
+        <span class="col-md-6"><h4>{{conceptDataType.name}}</h4></span>
+
+        <span class="col-md-2 btn-group">
+            <button class="btn button-label btn-info">{{conceptDataType.exportDataType}}</button>
+            <button class="btn btn-info dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button>
+            <ul class="dropdown-menu">
+                <li ng-repeat="exportDataType in cohortExportCtrl.exportDataTypes">
+                    <a ng-click="cohortExportCtrl.onExportDataTypeClick(conceptDataType, exportDataType)">
+                        {{exportDataType}}</a>
+                </li>
+            </ul>
+        </span>
+
+        <div class="checkbox-inline">
+            <label class="col-md-1 cohort-export-checkbox">
+                <input type="checkbox" ng-model="conceptDataType.checked" value="">
+            </label>
+        </div>
+
+    </div>
+    <div class="row">
+        <span class="col-md-10"><p>description</p></span>
+    </div>
+</div>
+
+<div class="text-center">
+    <button type="button" class="btn btn-default">Export</button>
+</div>

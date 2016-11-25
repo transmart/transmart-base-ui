@@ -1,66 +1,115 @@
 'use strict';
 
 angular.module('transmartBaseUi')
-  .directive('studyAccordion', [ function() {
-    return {
-      restrict: 'E',
-      scope: {
-        studies: '=studies',
-        title: '=title',
-        studyShown: '='
-      },
-      templateUrl: 'app/components/study-accordion/study-accordion.tpl.html',
-      controller : 'StudyAccordionCtrl as ctrl'
-    };
-  }])
-  .controller('StudyAccordionCtrl', ['$scope', '$uibModal', 'UtilService', 'TreeNodeService', '$log',
-    function ($scope, $uibModal, UtilService, TreeNodeService, $log) {
+    /**
+     * This directive creates the study accordion
+     * @memberof transmartBaseUi
+     * @ngdoc directive
+     * @name studyAccordion
+     */
+    .directive('studyAccordion', [function () {
+        return {
+            restrict: 'E',
+            scope: {
+                studies: '=studies',
+                title: '=title',
+                studyShown: '='
+            },
+            templateUrl: 'app/components/study-accordion/study-accordion.tpl.html',
+            controller: 'StudyAccordionCtrl as ctrl',
+            controllerAs : 'ctrl'
+        };
+    }])
 
-      $scope.treeConfig = {
-        drag: false,
-        collapsed: true
-      };
+    /**
+     * Controller for study accordion
+     * @memberof transmartBaseUi
+     * @ngdoc controller
+     * @name StudyAccordionCtrl
+     */
+    .controller('StudyAccordionCtrl', ['$uibModal', 'UtilService', 'TreeNodeService', '$scope',
+        function ($uibModal, UtilService, TreeNodeService, $scope) {
 
-      $scope.isURL =  UtilService.isURL;
+            var ctrl = this;
 
-      $scope.status = {
-        isFirstOpen: false,
-        isFirstDisabled: false,
-        oneAtATime: true
-      };
+            ctrl.treeConfig = {
+                drag: false,
+                collapsed: true
+            };
 
-      $scope.populateChildren = function (node) {
+            ctrl.isURL = UtilService.isURL;
 
-        // first check if node has restangular object or not
-        // if not it means it's root node a.k.a study
+            ctrl.status = {
+                isFirstOpen: false,
+                isFirstDisabled: false,
+                oneAtATime: true
+            };
 
-        if (!node.hasOwnProperty('restObj')) {
-          node = TreeNodeService.setRootNodeAttributes(node);
-          return TreeNodeService.getNodeChildren(node, 'concepts/').then(function (result) {
-            node.isLoading = false;
-          });
-        }
+            /**
+             * Populate node children
+             * @memberof StudyAccordionCtrl
+             * @param node
+             * @returns {Promise}
+             */
+            ctrl.populateChildren = function (node) {
+                if (!node.hasOwnProperty('accessibleByUser')) {
+                    return TreeNodeService.populateChildren(node);
+                } else {
+                    return node.accessibleByUser.view ? TreeNodeService.populateChildren(node) : null;
+                }
+            };
 
-        node.isLoading = true;
-        TreeNodeService.getNodeChildren(node).then(function (result) {
-          node.isLoading = false;
-        });
+            ctrl.prev_node = null;
 
-      };
+            /**
+             * Clear metadata popup of a node
+             * @memberof StudyAccordionCtrl
+             * @param node
+             * @returns {{isSame: boolean, popover: *}}
+             */
+            ctrl.clearMetadata = function (node) {
+                //reset or toggle the flags
+                var isSame = false;
+                if (ctrl.prev_node !== null && ctrl.prev_node.$$hashKey == node.$$hashKey) {
+                    isSame = true;
+                }
+                if (!isSame && ctrl.prev_node !== null) {
+                    ctrl.prev_node.isPopOpen = false;
+                }
+                node.isPopOpen = !node.isPopOpen;
+                ctrl.prev_node = node;
 
-      $scope.displayMetadata = function (node) {
-        if (node) {
-          $scope.metadataObj = {};
-          if (node.hasOwnProperty('restObj')) {
-            $scope.metadataObj.title = node.title;
-            $scope.metadataObj.fullname = node.restObj.fullName;
-            $scope.metadataObj.body = node.restObj.metadata;
-          } else if (node.hasOwnProperty('_embedded')) {
-            $scope.metadataObj.title = node._embedded.ontologyTerm.name;
-            $scope.metadataObj.fullname = node._embedded.ontologyTerm.fullName;
-            $scope.metadataObj.body = node._embedded.ontologyTerm.metadata;
-          }
-        }
-      };
+                //clear the html
+                ctrl.metadataObj = {};
+                var query = document.getElementsByClassName("popover");
+                var popoverElements = angular.element(query);
+                popoverElements.remove();
 
-  }]);
+                return {
+                    isSame: isSame,
+                    popover: popoverElements
+                };
+            };
+
+            /**
+             * Display metadata of a node
+             * @memberof StudyAccordionCtrl
+             * @param node
+             */
+            ctrl.displayMetadata = function (node) {
+                if (node) {
+                    ctrl.clearMetadata(node);
+                    if (node.hasOwnProperty('_embedded')) {
+                        ctrl.metadataObj.title = node._embedded.ontologyTerm.name;
+                        ctrl.metadataObj.fullname = node._embedded.ontologyTerm.fullName;
+                        ctrl.metadataObj.body = node._embedded.ontologyTerm.metadata;
+                    } else if (node.hasOwnProperty('restObj')) {
+                        ctrl.metadataObj.title = node.title;
+                        ctrl.metadataObj.fullname = node.restObj.fullName;
+                        ctrl.metadataObj.body = node.restObj.metadata;
+                    }
+                }//if
+            };
+
+
+        }]);

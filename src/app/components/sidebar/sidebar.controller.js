@@ -1,90 +1,98 @@
 'use strict';
 
+/**
+ * @memberof transmartBaseUi
+ * @ngdoc controller
+ * @name SidebarCtrl
+ */
 angular.module('transmartBaseUi')
-  .controller('SidebarCtrl', ['$scope', 'StudyListService', 'EndpointService', '$rootScope',
-    function ($scope, StudyListService, EndpointService, $rootScope) {
+    .controller('SidebarCtrl', ['$scope', 'StudyListService',
+        function ($scope, StudyListService) {
 
-      $rootScope.publicStudies = [];
-      $rootScope.privateStudies = [];
+            var vm = this;
 
-      $scope.searchTerm = '';
-      // Default to false (OR)
-      $scope.searchMode = false;
-      $scope.operator = 'OR';
-      $scope.searchKeys = [];
+            vm.studies = [];
 
-      $scope.$watch('searchMode', function(newVal){
-        $scope.operator = newVal ? 'AND' : 'OR';
-        StudyListService.showStudiesByKeys($scope.searchKeys, $scope.operator);
-      });
+            vm.searchTerm = '';
+            // Default to false (OR) for toggle switch
+            vm.searchMode = false;
+            vm.operator = 'OR';
+            vm.searchKeys = [];
 
-      /**
-       * Add search key, invoked when user press Enter key in search input box.
-       */
-      $scope.addSearchKey = function () {
-        if ($scope.searchKeys.indexOf($scope.searchTerm) < 0 && $scope.searchTerm.trim() !== '') {
-          $scope.searchKeys.push($scope.searchTerm);
-          $scope.searchTerm = '';
-          // search metadata
-          StudyListService.showStudiesByKeys($scope.searchKeys, $scope.operator);
+            $scope.$watch(
+                function() { return vm.searchMode; },
+                function (newVal) {
+                    if (!vm.searchTerm && !vm.searchKeys.length) {
+                        vm.removeAllSearchKeys();
+                        return false;
+                    }
+                    vm.operator = newVal ? 'AND' : 'OR';
+                    StudyListService.showStudiesByKeys(vm.searchKeys, vm.operator);
+                }
+            );
+
+            /**
+             * Add search key, invoked when user press Enter key in search input box.
+             * @memberof SidebarCtrl
+             */
+            vm.addSearchKey = function () {
+                if (vm.searchKeys.indexOf(vm.searchTerm) < 0 && vm.searchTerm.trim() !== '') {
+                    vm.searchKeys.push(vm.searchTerm);
+                    vm.searchTerm = '';
+                    // search metadata
+                    StudyListService.showStudiesByKeys(vm.searchKeys, vm.operator);
+                }
+            };
+
+            /**
+             * Clear all search keys
+             * @memberof SidebarCtrl
+             */
+            vm.removeAllSearchKeys = function () {
+                vm.searchKeys = [];
+                StudyListService.showAll();
+            };
+
+            /**
+             * Remove a search key
+             * @memberof SidebarCtrl
+             * @param searchKey
+             */
+            vm.removeSearchKey = function (searchKey) {
+                var idx = vm.searchKeys.indexOf(searchKey);
+                if (idx > -1) {
+                    vm.searchKeys.splice(idx, 1);
+                }
+                // Re-display studies of remaining matched search keywords or show all studies when there's no search
+                // keys left
+                vm.searchKeys.length > 0 ?
+                    StudyListService.showStudiesByKeys(vm.searchKeys, vm.operator) : StudyListService.showAll();
+            };
+
+            /**
+             * Load studies from available endpoints
+             * @memberof SidebarCtrl
+             */
+            vm.loadStudies = function () {
+                StudyListService.getAllStudies().then(function (res) {
+                    vm.studies = res;
+                });
+            };
+
+            vm.loadStudies();
+        }])
+    .directive('buEnterKey', function () {
+        return {
+            restrict: 'A',
+            link: function ($scope, $element, $attrs, ctrls) {
+                $element.bind("keypress", function (event) {
+                    var keyCode = event.which || event.keyCode;
+                    if (keyCode === 13) {
+                        $scope.$apply(function () {
+                            $scope.$eval($attrs.buEnterKey, {$event: event});
+                        });
+                    }
+                });
+            }
         }
-      };
-
-      /**
-       * Clear all search keys
-       */
-      $scope.removeAllSearchKeys = function () {
-        $scope.searchKeys = [];
-        StudyListService.showAll();
-      };
-
-      /**
-       * Remove a search key
-       * @param searchKey
-         */
-      $scope.removeSearchKey = function (searchKey) {
-        var idx = $scope.searchKeys.indexOf(searchKey);
-        if (idx > -1) {
-          $scope.searchKeys.splice(idx, 1);
-        }
-        // Re-display studies of remaining matched search keywords or show all studies when there's no search keys left
-        $scope.searchKeys.length > 0 ?
-          StudyListService.showStudiesByKeys($scope.searchKeys, $scope.operator) : StudyListService.showAll();
-      };
-
-      /**
-       * Load studies from available endpoints
-       */
-      $scope.loadStudies = function () {
-
-        var _endpoints = EndpointService.getEndpoints(); // get available endpoints
-
-        _.each(_endpoints, function (endpoint) {
-          StudyListService.loadStudyList(endpoint).then(function (result) {
-            $rootScope.publicStudies = StudyListService.getPublicStudies();
-            $rootScope.privateStudies =  StudyListService.getPrivateStudies();
-          }, function () {
-            EndpointService.invalidateEndpoint(endpoint);
-          });
-        });
-      };
-
-      $scope.loadStudies();
-
-
-    }])
-  .directive('buEnterKey', function () {
-    return {
-      restrict: 'A',
-      link : function ($scope, $element, $attrs, ctrls) {
-        $element.bind("keypress", function(event) {
-          var keyCode = event.which || event.keyCode;
-          if (keyCode === 13) {
-            $scope.$apply(function() {
-              $scope.$eval($attrs.buEnterKey, {$event: event});
-            });
-          }
-        });
-      }
-    }
-  });
+    });

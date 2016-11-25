@@ -14,4 +14,5 @@ install:
 
 script:
     - node_modules/.bin/gulp --env test test
+    - node_modules/.bin/gulp build
     - codecov

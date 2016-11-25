@@ -1,0 +1,63 @@
+<div class="main-container" id="main-container-div">
+
+    <uib-alert class="alert-div" ng-repeat="alert in vm.alerts" type="{{alert.type}}" close="vm.close(alert.id)">
+        {{alert.message}}
+    </uib-alert>
+
+    <uib-tabset active="vm.activeTabIndex">
+
+        <!----------- Tab: Cohort Selection ----------->
+        <uib-tab active="vm.tabs[0].active" ng-click="vm.activateTab(tabs[0].title, 'cohortSelection');">
+            <uib-tab-heading>
+                <span>{{vm.tabs[0].title}}</span>
+            </uib-tab-heading>
+
+            <div ui-layout="{flow : 'column', 'disableToggle': true }" id="cohort-selection-ui-layout-div"
+                 class="cohort-selection-boxset">
+                    <div ui-layout-container="central" min-size="260px" class="cohort-selection-box"
+                     ng-repeat="box in vm.boxes track by box.boxId"
+                     id="cohort-box-container-{{box.boxId}}">
+                        <cohort-selection box="box" index={{$index}}></cohort-selection>
+                    </div>
+            </div>
+
+        </uib-tab>
+
+        <!----------- Tab: Cohort Grid ----------->
+        <uib-tab active="vm.tabs[1].active" ng-click="vm.activateTab(vm.tabs[1].title, 'cohortGrid');">
+            <uib-tab-heading>
+                <span>{{vm.tabs[1].title}}</span>
+            </uib-tab-heading>
+
+            <cohort-grid cohort="vm.selectedSubjects" headers="vm.labels"></cohort-grid>
+        </uib-tab>
+
+        <!----------- Tab: Saved Cohorts ----------->
+        <uib-tab active="vm.tabs[2].active" ng-click="vm.activateTab(vm.tabs[2].title, 'cohortView');">
+            <uib-tab-heading>
+                <span>{{vm.tabs[2].title}}</span>
+            </uib-tab-heading>
+            <cohort-view ng-if="vm.tabs[2].active"></cohort-view>
+
+        </uib-tab>
+
+        <!----------- Tab: Data Export ----------->
+        <uib-tab active="vm.tabs[3].active" ng-click="vm.activateTab(vm.tabs[3].title, 'dataExport');">
+            <uib-tab-heading>
+                <span>{{vm.tabs[3].title}}</span>
+            </uib-tab-heading>
+            <cohort-export></cohort-export>
+        </uib-tab>
+
+        <!----------- Tab: Data Export Jobs ----------->
+        <uib-tab active="vm.tabs[4].active" ng-click="vm.activateTab(vm.tabs[4].title, 'dataExportJobs');">
+            <uib-tab-heading>
+                <span>{{vm.tabs[4].title}}</span>
+            </uib-tab-heading>
+            <cohort-export-jobs></cohort-export-jobs>
+        </uib-tab>
+
+    </uib-tabset>
+
+</div>
+

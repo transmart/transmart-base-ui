@@ -1,0 +1,96 @@
+<div class="btn-toolbar" role="toolbar">
+    <div class="btn-group" role="group">
+        <button type="button"
+                class="btn btn-secondary"
+                ng-click="cohortSelectionCtrl.openSaveCohortModal()"
+                uib-tooltip="Save cohorts"
+                tooltip-trigger="mouseenter"
+                tooltip-placement="top"
+                popupDelay="1000"><span class="glyphicon glyphicon-cloud-upload"></span></button>
+        <button type="button"
+                class="btn btn-secondary"
+                ng-click="cohortSelectionCtrl.switchToSavedCohortsTab()"
+                uib-tooltip="Load cohorts"
+                tooltip-trigger="mouseenter"
+                tooltip-placement="top"
+                popupDelay="1000"><span class="glyphicon glyphicon-cloud-download"></span></button>
+        <button type="button"
+                class="btn btn-secondary"
+                ng-click="cohortSelectionCtrl.resetCharts()"
+                uib-tooltip="Reset charts"
+                tooltip-trigger="mouseenter"
+                tooltip-placement="top"
+                popupDelay="1000"><span class="glyphicon glyphicon-repeat"></span></button>
+        <button type="button"
+                class="btn btn-secondary"
+                ng-click="cohortSelectionCtrl.clearSelection()"
+                uib-tooltip="Clear charts"
+                tooltip-trigger="mouseenter"
+                tooltip-placement="top"
+                popupDelay="1000"><span class="glyphicon glyphicon-erase"></span></button>
+    </div>
+    <div class="btn-group" role="group">
+        <button type="button"
+                class="btn btn-secondary"
+                ng-click="cohortSelectionCtrl.addBox()"
+                uib-tooltip="New cohort panel"
+                tooltip-trigger="mouseenter"
+                tooltip-placement="top"
+                popupDelay="1000"><span class="glyphicon glyphicon-plus"></span></button>
+
+        <button type="button"
+                class="btn btn-secondary"
+                ng-click="cohortSelectionCtrl.duplicateBox()"
+                uib-tooltip="Duplicate cohort panel"
+                tooltip-trigger="mouseenter"
+                tooltip-placement="top"
+                popupDelay="1000"><span class="glyphicon glyphicon-duplicate"></span></button>
+
+        <button ng-if="cohortSelectionCtrl.boxes.length>1" type="button"
+                class="btn btn-secondary"
+                ng-click="cohortSelectionCtrl.removeBox()"
+                uib-tooltip="Close workspace"
+                tooltip-trigger="mouseenter"
+                tooltip-placement="top"
+                popupDelay="1000"><span class="glyphicon glyphicon-remove"></span></button>
+    </div>
+
+    <div>
+        <h5><span class="cohort-name-label pull-right"> {{cohortSelectionCtrl.boxName}} </span></h5>
+    </div>
+
+    <br>
+</div>
+
+<div class="progress-container">
+    <uib-progressbar max="100" value="cohortSelectionCtrl.cs.selected/(cohortSelectionCtrl.cs.total/100)"
+                     ng-class="{'progress-striped': cohortSelectionCtrl.cohortUpdating}" class="progress active"
+                     animate="true">
+        <div class="data-count">{{cohortSelectionCtrl.cs.selected}}/{{cohortSelectionCtrl.cs.total}}</div>
+    </uib-progressbar>
+</div>
+
+<div data-drop="true" ng-model='cohortSelectionCtrl.droppedNode'
+     jqyoui-droppable="{
+                    multiple:true,
+                    onDrop:'cohortSelectionCtrl.onNodeDrop(cohortSelectionCtrl.droppedNode)',
+                    onOver:'cohortSelectionCtrl.onNodeOver',
+                    onOut:'cohortSelectionCtrl.onNodeOut' }"
+     class="text-center main-chart-container">
+
+    <div gridster="cohortSelectionCtrl.gridsterOpts">
+        <span ng-if="cohortSelectionCtrl.cs.labels.length == 0" class="ts-well-placeholder-text">
+                        Drag and drop nodes here
+        </span>
+
+        <ul>
+            <li gridster-item="label" ng-repeat="label in cohortSelectionCtrl.cs.labels">
+                <ts-cohort-chart class="chart-container"
+                                 ts-gridster-item="gridsterItem"
+                                 ts-gridster="gridster"
+                                 ts-label="label">
+                </ts-cohort-chart>
+            </li>
+        </ul>
+    </div>
+</div>

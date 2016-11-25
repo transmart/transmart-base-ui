@@ -8,3 +8,4 @@ coverage/
 dist/
 transmart-base-ui.iml
 src/app/config.js
+src/app/containers/help/help.constant.js
